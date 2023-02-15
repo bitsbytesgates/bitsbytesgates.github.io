@@ -9,7 +9,6 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/index.html' | absolute_url }}">Home</a>
 
     {% comment %}
       The code below dynamically generates a sidebar nav of pages with
@@ -18,14 +17,32 @@
     <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/index.html' | absolute_url }}">Home</a>
     {% endcomment %}
 
+    <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/index.html' | absolute_url }}">Home</a>
+    <a class="sidebar-nav-item{% if page.title == 'Archive' %} active{% endif %}" href="{{ '/posts.html' | absolute_url }}">Posts</a>
     {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+    <ul class="BlogPostTreeUL">
     {% for year in postsByYear %}
+        <li><span class="caret">{{ year.name }}</span>
+        <!--
         <a class="sidebar-nav-item active" href="{{ year.url | absolute_url }}">{{ year.name }}</a>
+          -->
+        <ul class="nested">
         {% assign postsByMonth = year.items | group_by_exp: "post", "post.date | date: '%b'" %}
         {% for month in postsByMonth %}
-        <a class="sidebar-nav-item active" href="{{ month.url | absolute_url }}">{{ month.name }}</a>
+        <li><span class="caret">{{ month.name }}</span>
+        <ul class="nested">
+        {% for post in month.items %}
+        <li><a href="{{ post.url }}">{{ post.title }}</a></li>
         {% endfor %}
+        <!--
+        <a class="sidebar-nav-item active" href="{{ month.url | absolute_url }}">{{ month.name }}</a>
+          -->
+        </ul>
+        {% endfor %}
+        </ul>
+        </li>
     {% endfor %}
+    </ul>
 
     {% comment %}
     {% assign pages_list = site.pages | sort:"url" %}
