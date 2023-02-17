@@ -14,7 +14,7 @@ jobs:
         - name: Install Jekyll
           run: |
             sudo apt-get install ruby-full build-essential zlib1g-dev cmake doxygen ninja-build
-            sudo gem install jekyll bundler jekyll-theme-tactile redcarpet pygments.rb jekyll-paginate
+            sudo gem install jekyll bundler jekyll-theme-tactile redcarpet pygments.rb jekyll-paginate jekyll-feed
         - name: Install and build
           run: |
             jekyll build -d web
