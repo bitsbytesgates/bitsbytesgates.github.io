@@ -4,10 +4,8 @@
 
 #layout: home
 layout: default
-title: Home
+#title: Home
 ---
-
-Here is some text to show where the body should be.
 
 <div class="blog-index">  
   {% assign post = site.posts.first %}

@@ -1,0 +1,21 @@
+---
+layout: default
+title: Post Archive
+---
+
+<H1>Post Archive</H1>
+
+{% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+{% for year in postsByYear %}
+<H2>{{ year.name }}</H2>
+
+{% assign postsByMonth = year.items | group_by_exp: "post", "post.date | date: '%b'" %}
+{% for month in postsByMonth %}
+<H3>{{ month.name }}</H3>
+{% for post in month.items %}
+<a href="{{post.url}}"><H4><b><u>{{ post.title }}</b></u></H4></a>
+{{ post.content | strip_html | truncatewords: 50 }}
+{% endfor %}
+{% endfor %}
+  
+{% endfor %}

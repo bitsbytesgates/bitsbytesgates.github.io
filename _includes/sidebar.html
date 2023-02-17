@@ -18,7 +18,7 @@
     {% endcomment %}
 
     <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/index.html' | absolute_url }}">Home</a>
-    <a class="sidebar-nav-item{% if page.title == 'Archive' %} active{% endif %}" href="{{ '/posts.html' | absolute_url }}">Posts</a>
+    <a class="sidebar-nav-item{% if page.title == 'Archive' %} active{% endif %}" href="{{ '/archive.html' | absolute_url }}">Archive</a>
     {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
     <ul class="BlogPostTreeUL">
     {% for year in postsByYear %}
@@ -64,7 +64,7 @@
 
   <div class="sidebar-item">
     <p>
-      &copy; {{ site.time | date: '%Y' }} Matthew Ballance. 
+      &copy; 2014-{{ site.time | date: '%Y' }} Matthew Ballance. 
       <br/>
       All rights reserved.
     </p>
