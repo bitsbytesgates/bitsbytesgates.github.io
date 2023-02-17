@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Adding Task-Based Bus Functional Models to Cocotb &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2019/11/30/adding-task-based-bus-functional-models.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL">
+    
+        <li><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Adding Task-Based Bus Functional Models to Cocotb &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2019/11/30/adding-task-based-bus-functional-models.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+    
+
+  <div class="post">
+    <h1 class="post-title">Adding Task-Based Bus Functional Models to Cocotb</h1>
+    <span class="post-date">30 Nov 2019</span>
+    <div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-aarPEh0FznY/XeHKvRPXqiI/AAAAAAAACvs/WpejMUFSUaY8WPzZ5627osj4ulNERg-8QCLcBGAsYHQ/s1600/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://1.bp.blogspot.com/-aarPEh0FznY/XeHKvRPXqiI/AAAAAAAACvs/WpejMUFSUaY8WPzZ5627osj4ulNERg-8QCLcBGAsYHQ/s1600/splash.png" /></a></div><br /><div><br />Getting a project started -- even to a certain level of completeness -- is often pretty simple. A couple weekends of hacking often results in pretty good progress and results. Finishing things up, in contrast, is often a slow process. That has certainly been the case with some work I did back in May and June this year to prototype a task-based interface between Python and an HDL simulator. The proof-of-concept work I did at the time seemed quite promising, but the clear next step was to make that work more accessible to others. That "last little bit of work" has certainly turned out to take more time that I had originally assumed!<br /><br /></div><div>Just as a reminder, the motivation for interacting with an HDL environment at the task level is quite simple: performance. Communicating across language (especially interpreted language) boundaries tends to be expensive, so minimizing the number of cross-language communications is critical to achieving high throughput. Using a task-based interface between Python and an HDL environment boosts performance in three ways. First, a task-based interface groups data so fewer language-boundary crossings are required to communicate a given amount of data. Secondly, and more importantly, using a task-based interface enables the HDL environment to filter events and only interact with the Python environment when absolutely necessary. Finally, using a task-based interface enables integrations with high(er)-speed environments, such as emulation or the current release of Verilator, where signal-level integration isn't practical.</div><div><br /></div><div>I started looking at Python as a testbench language for reasons that might initially seem strange: the Python ecosystem (primarily <a href="https://pypi.org/">PyPi</a>) that makes it easy to publish bits of library and utility code in a way that it is easily-accessible to others. Often, the ability to take advantage of the work of others is gated by the effort required to gather all the required software dependencies. The Python ecosystem promises to alleviate that challenge, and I was excited to explore the possibilities.</div><div><br /><b>Where Does it Fit?</b></div><div>I'm aware of a few projects that use Python for verification, but it currently appears that&nbsp;<a href="https://cocotb.readthedocs.io/en/latest/introduction.html">Cocotb</a>&nbsp;is the most visible Python-based testbench for doing hardware verification using Python testbench code. Consequently, it made very good sense to see whether the task-based integration I had prototyped could be integrated with the existing Cocotb library.<br /><br /></div><div>Cocotb is a Python library that supports light-weight concurrency via co-routines, and provides primitives for coordinating these co-routines with each other and with activity in a HDL simulation environment. In addition to the Python library, Cocotb provides native-compiled C/C++ libraries that integrate with the simulation environment via APIS implemented by the simulator (VPI, DPI, FLI, or VHPI depending on the simulator). Currently, Cocotb interacts with simulation environments at the signal level.<br /><br /></div><div>In considering how to add task-based interactions to Cocotb, there were a several requirements that I thought were quite important. First, the user should not be forced to choose between signal-level and task-based interactions between Python and HDL. It should be possible to introduce task-based interactions to a testbench currently interacting at the signal level, or add a few signal-based interactions to a testbench that primarily interacts at the task level. Secondly, a task-based integration must support a range of simulator APIs. I had prototyped a DPI-based integration, which is supported by SystemVerilog simulators, supporting Verilog and VHDL simulators as well was clearly important. Finally, achieving good performance was a key requirement, since performance is the primary motivation for using a task-based interface in the first place.<br /><br /></div><ul><ul></ul></ul><div><b>Task-Based BFM Cocotb Architecture</b><br /><b><br /></b><br /><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-PKzRYWPDZHs/XeKur66lccI/AAAAAAAACwM/ZzO6MkL850ADBshxdjN_3sihafwWQMpWgCLcBGAsYHQ/s1600/OverallDiagram.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="589" data-original-width="1390" height="268" src="https://1.bp.blogspot.com/-PKzRYWPDZHs/XeKur66lccI/AAAAAAAACwM/ZzO6MkL850ADBshxdjN_3sihafwWQMpWgCLcBGAsYHQ/s640/OverallDiagram.png" width="640" /></a></div>From a system perspective, the diagram above captures how task-based BFMs integrate with Cocotb. Each BFM instance is represented in the HDL environment by an instance of an HDL module. This module is special, in that it knows how to accept and make task calls and convert between signal-level information and those task calls.<br /><br />Each BFM also knows how to register itself with a BFM Manager within Cocotb. When the HDL portion of a BFM registers with Cocotb, the BFM Manager creates an instance of a Python class that represents the BFM within the Python environment.<br /><br />The BFM Manager provides methods to allow the user's test code to query the available BFMs and obtain a handle to the BFM instances required by the test. From there, the user's test simply calls methods on the Python class object and/or receives callbacks.<br /><br /></div><div><b>Task-Based BFM Architecture</b></div><div><b><br /></b></div><div>Let's take a quick look at the work needed to support a task-based BFM. First off, the BFM author needs to a Python class to implement the Python side of the BFM. That class is decorated with a @cocotb.bfm decorator that associates HDL template files with the BFM class. Below is a BFM for a simple ready/valid protocol.</div><div><br /></div><div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">@cocotb.bfm(hdl={</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; cocotb.bfm_vlog : cocotb.bfm_hdl_path(__file__,&nbsp; &nbsp;"hdl/rv_data_out_bfm.v"),</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; cocotb.bfm_sv&nbsp; &nbsp;: cocotb.bfm_hdl_path(__file__, "hdl/rv_data_out_bfm.v")</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">})</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">class ReadyValidDataOutBFM():</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; # ...</span></div><div><br /></div></div><div><br /></div><div>Next, the BFM author must specify the low-level interaction API with the HDL BFM. All calls must be non-blocking, so most interactions with the HDL environment are implemented as a request/acknowledge pair of API calls.</div><div><br /></div><div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; @cocotb.bfm_import(cocotb.bfm_uint32_t)</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; def write_req(self, d):</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; pass</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp;&nbsp;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; @cocotb.bfm_export()</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; def write_ack(self):</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; self.ack_ev.set()</span></div></div><div><br /></div><div>Calling a class methods decorated with @cocotb.bfm_import will result in a task call in the HDL BFM. Class methods decorated with @cocotb.bfm_export can be called from the HDL BFM.</div><div><br /></div><div>Finally, on the Python side, the BFM author will likely provide a convenience API to simplify the testwriter's life:</div><div><br /></div><div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; @cocotb.coroutine</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; def write_c(self, data):</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; '''</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; Writes the specified data word to the interface</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; '''</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; yield self.busy.acquire()</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; self.write_req(data)</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><br /></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; # Wait for acknowledge of the transfer</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; yield self.ack_ev.wait()</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; self.ack_ev.clear()</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><br /></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">&nbsp; &nbsp; &nbsp; &nbsp; self.busy.release()</span></div></div><div><br /></div><div><br /></div><div>There's one piece left, and that's the HDL BFM. This is specified as a template:</div><div><br /></div><div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">module rv_data_out_bfm #(</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>parameter DATA_WIDTH = 8</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>) (</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>input<span style="white-space: pre;">    </span>clock,</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>input<span style="white-space: pre;">    </span>reset,</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>output reg[DATA_WIDTH-1:0]<span style="white-space: pre;"> </span>data,</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>output reg<span style="white-space: pre;">   </span>data_valid,</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>input<span style="white-space: pre;">    </span>data_ready</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>);</span></div><div><span style="white-space: pre;"><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"> </span></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;"> </span>reg[DATA_WIDTH-1:0]<span style="white-space: pre;">  </span>data_v = 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;"> </span>reg<span style="white-space: pre;">    </span>data_valid_v = 0;</span></div><div><span style="white-space: pre;"><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"> </span></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small; white-space: pre;"> </span><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">always @(posedge clock) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>if (reset) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>data_valid &lt;= 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>data &lt;= 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>end else begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>if (data_valid_v) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">    </span>data_valid &lt;= 1;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">    </span>data &lt;= data_v;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">    </span>data_valid_v = 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>end</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>if (data_valid &amp;&amp; data_ready) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">    </span>write_ack();</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><br /></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">    </span>if (!data_valid_v) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">     </span>data_valid &lt;= 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">    </span>end</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>end</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>end</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;"> </span>end</span></div><div><span style="white-space: pre;"><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"> </span></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;"> </span>task write_req(reg[63:0] d);</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>data_v = d;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">   </span>data_valid_v = 1;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;">  </span>end</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;"> </span>endtask</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><br /></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><span style="white-space: pre;"> </span>// Auto-generated code to implement the BFM API</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">${cocotb_bfm_api_impl}</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;"><br /></span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; font-size: x-small;">endmodule</span></div></div><div><br /></div><div>The BFM author must implement tasks that will be called from the Python class. Task proxies that will invoke Python methods are implemented by the Cocotb automation, and substituted into the template where the ${cocotb_bfm_api_impl} tag is specified.</div><div><br /></div><div><b>Current Integrations</b></div><div>Currently, task-based BFM integrations are implemented for Verilog via the VPI interface and for SystemVerilog via the DPI interface. A VHDL integration isn't currently supported, but that's on the roadmap. One complication with VHDL is that there are actually several interfaces that may need to be supported depending on the simulator -- VHPI, VHPI via VPI, Modelsim FLI. Here I could use some input from the community on priorities, so I'd definitely like to hear from you if you're using Cocotb with VHDL...</div><div><br /></div><div><b>Results</b></div><div>As I mentioned at the beginning of this post, performance is the primary reason for using task-based interaction between Python and a HDL environment. So, how much improvement can you expect? Well, that entirely depends on how frequently your tests interact with the HDL environment and, to a certain extent, on how long your tests are. If your testbench needs to interact with the testbench every clock cycle, then you're unlikely to see much benefit. If, however, your testbench spends quite a few cycles waiting for the design to respond, then you're likely to see pretty significant benefits.</div><div><br /></div><div>I'll use my <a href="https://github.com/mballance/fwrisc/tree/fwrisc-s-merge">FWRISC</a> (Featherweight RISC) RISCV core as an example. In this environment, the bulk of the test is actually compiled code that executes on the processor. The Python testbench is primarily responsible for checking results and providing debug information when needed.</div><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-TLz9jYIpD08/XeKzINNDMiI/AAAAAAAACwo/fb_Lij7dENwOe2K5U1QHcpJwmenH7DzQwCLcBGAsYHQ/s1600/fwrisc_testbench_diagram.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="675" data-original-width="675" height="400" src="https://1.bp.blogspot.com/-TLz9jYIpD08/XeKzINNDMiI/AAAAAAAACwo/fb_Lij7dENwOe2K5U1QHcpJwmenH7DzQwCLcBGAsYHQ/s400/fwrisc_testbench_diagram.png" width="400" /></a></div><div>A diagram of the simulation-based testbench is shown above. The Tracer BFM is responsible for monitoring execution of the FWRISC core and sending events up to the high-level testbench as needed. These events include:</div><ul><li>Instruction executed</li><li>Register written</li><li>Memory written</li></ul><div>I've created two Cocotb implementations of this BFM: one that interacts at the signal level, and one that interacts at the task level. To compare the performance, I'm running a <a href="https://www.zephyrproject.org/">Zephyr</a> test with <a href="http://iverilog.icarus.com/">Icarus Verilog</a> for 10ms of simulation time.</div><div><br /></div><div>Let's start with as close to a direct comparison as possible. Both the signal-level and task-based BFM will capture the same information and propagate it to the Python testbench.</div><ul><li><b>Signal-Level BFM: </b>85s (wallclock)</li><li><b>Task-Level BFM: </b>33s (wallclock)</li></ul><div>Okay, so already we're looking pretty good. This performance increase is simply because the task-based BFM doesn't need to call the Python environment every cycle.&nbsp;</div><div><br /></div><div>Another way we can benefit is to use a higher-performance simulator. Icarus Verilog is interpreted, and supports a full event-driven simulation environment. <a href="https://www.veripool.org/wiki/verilator">Verilator</a> has a much more restricted set of features (synthesizable Verilog only, limited signal-level access, etc), but is also much faster. It also doesn't currently support the signal-level access to the extent necessary to do a direct comparison between a task-based BFM and a signal-level BFM. So, how do we look here? I actually had to increase the simulation time to <b><i>100ms</i></b>&nbsp;(10x longer) to get a meaningful reading.</div><ul><li><b>Task-Level BFM: </b>18s (wallclock)</li></ul><div>So, coupling a fast execution platform with an efficient integration mechanism definitely brings benefits!</div><div><br /></div><div><b>Next Steps</b></div><div>So, where do we go from here? Well, please stay tuned for my next blog post to get more details on how create task-based BFMs using these features. I also have an active pull request (<a href="https://github.com/cocotb/cocotb/pull/1217">#1217</a>) to get this support merged into Cocotb directly. Until then, you can always access the code <a href="https://github.com/mballance/cocotb/tree/task_bfm">here</a>.&nbsp;</div><div><br /><br /><br /><div class="separator" style="clear: both;"><b><i>Disclaimer</i></b></div><div class="separator" style="clear: both;"><i>The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</i></div></div><div><br /></div>
+  </div>
+
+  
+  <div class="related">
+    <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        <li>
+          <h3>
+            <a href="/intro/2023/02/16/NewYearNewSpace.html">
+              New Year, New Space
+              <small>16 Feb 2023</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/08/21/simplifying-custom-template-generated.html">
+              Simplifying Custom Template-Generated Content
+              <small>21 Aug 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/07/17/pyucis-manipulating-coverage-data.html">
+              PyUCIS: Manipulating Coverage Data
+              <small>17 Jul 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+    </ul>
+  </div>
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

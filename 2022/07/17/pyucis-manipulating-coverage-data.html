@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      PyUCIS: Manipulating Coverage Data &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2022/07/17/pyucis-manipulating-coverage-data.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL">
+    
+        <li><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      PyUCIS: Manipulating Coverage Data &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2022/07/17/pyucis-manipulating-coverage-data.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+    
+
+  <div class="post">
+    <h1 class="post-title">PyUCIS: Manipulating Coverage Data</h1>
+    <span class="post-date">17 Jul 2022</span>
+    <p style="text-align: center;">&nbsp;<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhp1-_7rtBzwcTNYBtGBUsqaxugtgc8RIz3D1KHRhbTpqghM-oTZjXq_6-ngByPlwmSHZgnu6f5e8ptq6wLa5EZFkOuOHWmgYY0JLua-wLrlTw38FcWT_hMZuFzwOEnxYv1oEimFAAqnr4bcDEo2meEFEZQvH7YdDXMGUixfLzHC6KGfQ_iuXOgn48ogg/s540/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhp1-_7rtBzwcTNYBtGBUsqaxugtgc8RIz3D1KHRhbTpqghM-oTZjXq_6-ngByPlwmSHZgnu6f5e8ptq6wLa5EZFkOuOHWmgYY0JLua-wLrlTw38FcWT_hMZuFzwOEnxYv1oEimFAAqnr4bcDEo2meEFEZQvH7YdDXMGUixfLzHC6KGfQ_iuXOgn48ogg/s16000/splash.png" /></a><br /><br /></p><p>In a prior post, we looked at how to inspect coverage as a text report and export coverage data using the PyVSC API, and view coverage graphically using the PyUCIS-Viewer. Recent enhancements have enabled the PyUCIS library to provide even more ways to manipulate coverage data. Over the next couple of posts, we’ll look at those enhancements.&nbsp;</p><p><b>New ‘ucis’ Command</b></p><p>PyUCIS is a library for working with the Accellera UCIS data model. It started as a library for other applications and libraries, such as PyVSC and the PyUCIS Viewer, to use to read and write data using the UCIS data model. Recent enhancements have added standalone functionality which can meaningfully be accessed from the command line.&nbsp;</p><p>You can find documentation for the ucis command and sub-commands in the <a href="https://pyucis.readthedocs.io/en/latest/commands.html">PyUCIS documentation</a>. Fundamentally, there are four key operations:</p><p></p><ul style="text-align: left;"><li>Convert coverage data from one format to another</li><li>Merge coverage data from multiple databases into a single database</li><li>Produce coverage reports in various formats</li><li>Obtain information about available coverage data and report formats</li></ul><p></p><p>These commands are just a starting point. They will be enhanced over time, and more commands may be added as well. If you have suggestions for new commands and/or new capabilities for existing commands, feel free to add an enhancement request on the <a href="https://github.com/fvutils/pyucis/issues">PyUCIS GitHub page</a>.</p><p><b>Plug-in Framework</b></p><p>PyUCIS has added a plug-in framework with support for database formats and report formats. The goal is to make commands operating on coverage data extensible extensible from the beginning, as well as to enable the set of supported coverage-data formats and report formats to be easily extended without changing PyUCIS.&nbsp; I’ll devote a future post to the plug-in framework. For now, the ucis command supports listing the available coverage-data and report plug-ins. For example:</p><p><span style="font-family: courier;">% ucis list-db-formats</span></p><p><span style="font-family: courier;">libucis - Reads coverage data via an implementation of the UCIS C API</span></p><p><span style="font-family: courier;">xml&nbsp; &nbsp; &nbsp;- Supports reading and writing UCIS XML interchange</span></p><p><span style="font-family: courier;">yaml&nbsp; &nbsp; - Reads coverage data from a YAML file</span></p><p><br /></p><p><b>New Input Format</b></p><p>One often-requested PyUCIS feature is the ability to merge coverage data from several input coverage databases into a single resulting coverage database. One of the first challenges I faced in implementing this functionality was how to write tests. The UCIS API is written with applications in mind. I’ve found it to be a pretty-verbose API when it comes to writing tests. Consequently, tests written directly in terms of the API aren’t particularly easy to follow from a code perspective.</p><p>I decided to define a YAML format to make it simpler to capture coverage data in an easy-to -read way. Initially, this was just for testing. However, it may also be a useful interchange format that is less verbose and complex (also, quite possibly, more simplistic) that the XML interchange format defined by the UCIS standard.</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdaeXpmEYuvyXmWxluRALy-WLMci6JOtkxwHv8pizdR3AZyMLLDcKkbEzSkaj6fT7b9U4yxc06CLKMX1xy6Cc_VM2Ntgk0A7ri3epneWGF8BKVgzafT4-ks3BwSeZVIqKeUZFdxnVAc9AIiIC9gS75isWG5JSdGHqlobAPQSLcodmUBOHPA0lTrC6n9Q/s250/yaml_coverage_spec.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="237" data-original-width="250" height="237" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdaeXpmEYuvyXmWxluRALy-WLMci6JOtkxwHv8pizdR3AZyMLLDcKkbEzSkaj6fT7b9U4yxc06CLKMX1xy6Cc_VM2Ntgk0A7ri3epneWGF8BKVgzafT4-ks3BwSeZVIqKeUZFdxnVAc9AIiIC9gS75isWG5JSdGHqlobAPQSLcodmUBOHPA0lTrC6n9Q/s1600/yaml_coverage_spec.png" width="250" /></a></div><div><br /></div><div>A simple coverage specification is shown above. This coverage data describes a covergroup type (my_cvg) with a single instance (i1). A single coverpoint (cp1) has two bins (b1, b2) of which one has a single hit and one has no hits. While this coverage specification was created to make setting of test coverage data simpler for a human, I believe it may also be useful as a simple coverage-interchange format. If you find it useful, please let the community know via the <a href="https://github.com/fvutils/pyucis/discussions">Discussion forum</a> on the PyUCIS GitHub page.</div><div><br /></div><div>You can find more details on the <a href="https://pyucis.readthedocs.io/en/latest/reference/yaml_coverage.html">YAML Coverage Data Format reference documentation</a> page.&nbsp;</div><p><b>Merging Coverage Data</b></p><p>One consistently-requested feature for PyUCIS is the ability to merge multiple databases into a single unified coverage database. PyUCIS now supports basic merge functionality. Currently, PyUCIS performs a union merge where all unique coverage features found in all the input databases are propagated to the output database. I anticipate that more merge algorithms will need to be added over time, but hopefully this is a good start.</p><p><br /></p><p>Let’s take a look at a very simple case. Let’s say we have two coverage-data sets shown below:</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6vvu8qYu9EklhJd0IkaC4_Px0ZcCjPQZbFy1-TtgNviArsSrtHc-PN7rSRYJE2XpUo4uTHQ7YaBTY3D8_VcOjL3EuOsvVRKlwTvAQA6H9LRVLyL0bAtZdBSi3Wv51MQR4PzCk2WQj-EckBSwdhhcVylHWirWl36g7amzFFmC9jah_wc1YLYMtZmL9uA/s504/merge_input_data.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="245" data-original-width="504" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6vvu8qYu9EklhJd0IkaC4_Px0ZcCjPQZbFy1-TtgNviArsSrtHc-PN7rSRYJE2XpUo4uTHQ7YaBTY3D8_VcOjL3EuOsvVRKlwTvAQA6H9LRVLyL0bAtZdBSi3Wv51MQR4PzCk2WQj-EckBSwdhhcVylHWirWl36g7amzFFmC9jah_wc1YLYMtZmL9uA/s16000/merge_input_data.png" /></a></div><br /><p>The structure of these two coverage databases is the same (same covergroup type, instance, and coverpoint). Each coverage database has 50% coverage. Let’s merge these two databases and report the coverage.</p><p><span style="font-family: courier;">% ucis merge -if yaml -o merge.xml coverage_1.ycdb coverage_2.ycdb</span></p><p>We specify the two input databases, as well as their format (yaml). We specify the output database as merge.xml.</p><p>The resulting coverage report on the merged database will report 100% coverage, as expected:</p><p><span style="font-family: courier;">% ucis report merge.xml</span></p><p><span style="font-family: courier;">TYPE i1 : 100.000000%</span></p><p><span style="font-family: courier;">&nbsp; &nbsp; CVP cp1 : 100.000000%</span></p><p><b>Reporting Coverage Data</b></p><p>Reporting is a key activity when working with coverage data. We’ve looked at the ability to browse coverage data graphically using the PyUCIS-Viewer, but getting a textual report is every bit as important. In addition to presenting information concisely, textual reports can be processed programmatically to extract key pieces of data.&nbsp;</p><p>We can list the currently-available report plugins using the ucis command:</p><p><span style="font-family: courier;">% ucis list-rpt-formats</span></p><p><span style="font-family: courier;">json - Produces a machine-readable JSON coverage report</span></p><p><span style="font-family: courier;">txt&nbsp; - Produces a human-readable textual coverage report</span></p><p><br /></p><p>The default report is textual. Let’s create a textual report on the YAML coverage-data above:</p><p><span style="font-family: courier;">% ucis report -if yaml coverage.ycdb&nbsp;</span></p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifRBJaI9kmG0at2fuySwAQRHqOrow3uiP17zEjyQmj0dU-N0z3ZJNIuxebRKzImTChJgFqOt1GvsbhS967pQ1gR42WDsn5QPTlcLx3WsuTlhF8oTs6bpQZAUlFdUrda7VrP9CJJ2hBxGzeReERNEC9fnSc_b2P0A79M4AQx-kIl2MgdAEEywcZmgVFBw/s244/txt_coverage_report.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="85" data-original-width="244" height="85" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifRBJaI9kmG0at2fuySwAQRHqOrow3uiP17zEjyQmj0dU-N0z3ZJNIuxebRKzImTChJgFqOt1GvsbhS967pQ1gR42WDsn5QPTlcLx3WsuTlhF8oTs6bpQZAUlFdUrda7VrP9CJJ2hBxGzeReERNEC9fnSc_b2P0A79M4AQx-kIl2MgdAEEywcZmgVFBw/s1600/txt_coverage_report.png" width="244" /></a></div><br /><p>Note that we need to specify the format of the input data (yaml). The result is a simple human-readable report of the coverage data in the database.</p><p>What if we wanted to post-process the data using a script? We certainly could extract what we need by parsing the output above, but working with data in a machine-readable format is often much simpler. Let’s report our data in JSON format:</p><p><span style="font-family: courier;">% ucis report -if yaml -of json coverage.ycdb</span>&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi1LqtUHblxEwKju_-m9tESy3trKWjJi_-y-NkYK73HhoU-Etm9xdqIwqzkS7E_ASMnNmu86N6dYm2GfSb8-WeHZdspBEWi3oM4CLmnnLr_Fjok8prBX5rg0r3ip4QQ7Z8H0meu74yU3PbLxcuPHw41KAx42h2pHHpeClfVe4O6TJyMrEgWX4eiDrNxtg/s862/json_coverage_report.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="862" data-original-width="409" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi1LqtUHblxEwKju_-m9tESy3trKWjJi_-y-NkYK73HhoU-Etm9xdqIwqzkS7E_ASMnNmu86N6dYm2GfSb8-WeHZdspBEWi3oM4CLmnnLr_Fjok8prBX5rg0r3ip4QQ7Z8H0meu74yU3PbLxcuPHw41KAx42h2pHHpeClfVe4O6TJyMrEgWX4eiDrNxtg/s16000/json_coverage_report.png" /></a></div><div>Obviously, the data is less compact and more verbose. But, reading this into a Python script for further post-processing is incredibly simple! If you’re interested in the JSON report format, have a look at the schema documentation &lt;https://pyucis.readthedocs.io/en/latest/reference/coverage_report_json.html&gt;.</div><div><br /></div><div>So, for now, PyUCIS supports two textual report formats, and would benefit from more report formats. For example, a plain HTML report and a fancy interactive web-based report. If someone in the community has the skills and is interested, the project would definitely be interested!</div><p><b>Next Steps</b></p><p>PyUCIS continues to evolve, adding a more more hopefully-useful features at a time. Stay tuned for a future post on the plug-in interface, and the addition of more coverage-database and report formats.&nbsp;</p><p><br /></p><div style="text-align: center;">Copyright 2022 Matthew Ballance</div><div><p style="font-variant-east-asian: normal; font-variant-numeric: normal; line-height: 16px; margin-bottom: 0in;"><span style="color: #666666;"><span face="Trebuchet MS, Trebuchet, Verdana, sans-serif"><span style="font-size: 9pt;"><i><span style="background: rgb(255, 255, 255);">The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</span></i></span></span></span></p></div>
+  </div>
+
+  
+  <div class="related">
+    <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        <li>
+          <h3>
+            <a href="/intro/2023/02/16/NewYearNewSpace.html">
+              New Year, New Space
+              <small>16 Feb 2023</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/08/21/simplifying-custom-template-generated.html">
+              Simplifying Custom Template-Generated Content
+              <small>21 Aug 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">
+              Tools and Techniques to Improve YAML-File Usability
+              <small>27 Jun 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+    </ul>
+  </div>
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

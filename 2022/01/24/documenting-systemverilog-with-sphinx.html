@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Documenting SystemVerilog with Sphinx &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2022/01/24/documenting-systemverilog-with-sphinx.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL">
+    
+        <li><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Documenting SystemVerilog with Sphinx &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2022/01/24/documenting-systemverilog-with-sphinx.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+    
+
+  <div class="post">
+    <h1 class="post-title">Documenting SystemVerilog with Sphinx</h1>
+    <span class="post-date">24 Jan 2022</span>
+    <p></p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/a/AVvXsEiNWOsyFL5mQ67LxKR4FU9onpnBqZi9VdXXlN6f3v7jdhDpgpoT6JDNZI0xew3Vs7nw6Si5qG-aiOz9IymD_1j7kuh5n8wfSUthnYDrqTyq4gKhhYCFs62nlqZ0X0ll_DW2kMUjQXw3wnLXYAEWS__DyPdR1Xsq4jpUU9e_TU4u_q-fuMtJ6rnFdH4XCQ=s574" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="574" src="https://blogger.googleusercontent.com/img/a/AVvXsEiNWOsyFL5mQ67LxKR4FU9onpnBqZi9VdXXlN6f3v7jdhDpgpoT6JDNZI0xew3Vs7nw6Si5qG-aiOz9IymD_1j7kuh5n8wfSUthnYDrqTyq4gKhhYCFs62nlqZ0X0ll_DW2kMUjQXw3wnLXYAEWS__DyPdR1Xsq4jpUU9e_TU4u_q-fuMtJ6rnFdH4XCQ=s16000" /></a></div><br /><div class="separator" style="clear: both; text-align: center;"><br /></div>I've been digging into a project over the last few months whose value proposition is to simplify the process of connecting simulation-like environments and things like reference models, testbench languages, etc. I'll write more (likely much more) about this project in the future. This post, however, is about documentation and, specifically, documentation for SystemVerilog code.<p></p><p>As you can imagine, SystemVerilog support is critical for a project that connects into simulation environments. SystemVerilog and UVM currently are, after all, the most widely-deployed solution for block- and subsystem-level verification. But, support for other languages (C, C++, Python, etc) are important as well. Consequently, when it comes to documenting APIs, I need to cover a fair amount of ground.</p><p><br /></p><p><b>Sphinx for Documenting Code</b></p><p>I've been using <a href="https://www.sphinx-doc.org/en/master/">Sphinx Documentation Generator</a> for the last couple of years. Sphinx accepts input formatted with <a href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html">reStructuredText</a>&nbsp; mark-up and generates formatted output in HTML, PDF, and several other formats. Sphinx has a wide variety of plug-ins that help to make formatting different types of document content more productive. Sphinx was originally created for documenting Python code, and it shows. That said, its features support documenting far more than just Python code -- as we'll shortly see.</p><p><br /></p><p><b>Leveraging Code Comments</b></p><p>Tools that generate documentation from code comments have been around for a long time. My experience has been that they're a good way to quickly create somewhat-generic documentation, provided the doc-generation tool supports the right coding language and the codebase contains enough comments. My experience has also been that documentation created from API code comments is lacking key insights from the author on the code's architecture.&nbsp;</p><p>One thing that I've liked about Sphinx is that it supports referencing code-comment documentation, but relies on the document author to do so. This approach encourages the documentation author to incorporate API documentation alongside explanatory text (that could be awkward to include in a code comment) instead of having large fully auto-generated API-reference sections. This approach also gives the documentation author much more control over the document structure than fully-automated API-documentation tools can typically afford to provide.</p><p><br /></p><p><b>What About Non-Python Code?</b></p><p>As mentioned previously, Sphinx was originally a tool for documenting Python packages. As such, it provides built-in features for extracting documentation comments from Python code. The <a href="https://www.doxygen.nl/index.html">Doxygen </a>tool is one very popular way of documenting languages such as C and C++ from code comments. The <a href="https://breathe.readthedocs.io/en/latest/">Breathe</a> plug-in for Sphinx processes the XML output files from Doxygen, allowing Sphnix documents to bring in documentation code-comments from any language supported by Doxygen.</p><p>The good news is that Doxygen supports a wide range of languages. Using Doxygen to pull in doc comments from the C++ codebase of my project will work with relative ease. Unfortunately, though, Doxygen doesn't support SystemVerilog.</p><p>&nbsp;</p><p><b>Doxygen and Filters</b></p><p>Believe it or not, a commonly-recommended path to support a new language with Doxygen is to write a filter script that transforms the source language (that Doxygen doesn't support) into the form of a language that Doxygen does.&nbsp;</p><p>As luck would have it, there is a SystemVerilog filter for Doxygen: <a href="https://github.com/SeanOBoyle/DoxygenFilterSystemVerilog">DoxygenFilterSystemVerilog</a>. It's written in PERL and uses regular expressions to recognize SystemVerilog constructs and translate them into C++ equivalents that Doxygen can understand. Doxygen primarily cares about constructs like classes, class fields, and function declarations. This makes an approximate-translation strategy workable.</p><p><b>Dealing with Packages and Namespaces</b></p><p>There's just one small issue that we need to solve in order to have a complete flow. SystemVerilog class-based code relies heavily on the pre-processor to assemble a set of classes under the appropriate package. In C++, a namespace is just a 'tag' that gets applied to content. Any number of files may declare content inside the same namespace with no issues. SystemVerilog, conversely, requires that a given package be declared only once and that all content in that package be declared inside that single package scope. The end result is that users sensibly place different classes in different files and 'glue' the whole thing together using include directives and the pre-processor.</p><p>If we are only documenting code from a single package, this likely wouldn't cause a problem. We could simply run the Doxygen filter on each class file. When documenting a codebase with multiple packages, we need to ensure we stay consistent with the packages in which classes are declared. How do we do this? By pre-processing the code, of course!</p><p><br /></p><p><b>Putting it all Together</b></p><p>There really are two parts to our flow. The first is processing the SystemVerilog code to make it 'look' like C++.</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/a/AVvXsEjTMqFgnHsQjvDkklhPK7IsqsrdUTThcv4KmlMC3J1qPipseAoPTtFyP51x0MyoCBgZ7h5H22cZZQD5MbI6mCUfdjZdoXi1F41v-OLmXMrCR3cFQ5GSg4oDl9sPAS92JNqZnnwKvzLKI7lAFZRDCh3SC14y_uVZ6BGY_K5X2drvkJEXvMXfFQo6MgLjJQ=s912" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="250" data-original-width="912" height="175" src="https://blogger.googleusercontent.com/img/a/AVvXsEjTMqFgnHsQjvDkklhPK7IsqsrdUTThcv4KmlMC3J1qPipseAoPTtFyP51x0MyoCBgZ7h5H22cZZQD5MbI6mCUfdjZdoXi1F41v-OLmXMrCR3cFQ5GSg4oDl9sPAS92JNqZnnwKvzLKI7lAFZRDCh3SC14y_uVZ6BGY_K5X2drvkJEXvMXfFQo6MgLjJQ=w640-h175" width="640" /></a></div><br /><p>That part of the flow is shown above. In this portion of the flow I'm using <a href="https://github.com/verilator/verilator">Verilator</a> for the pre-processor <br />because of a very unique feature. Most pre-processors that I'm aware of strip out comments as part of preprocessing. Verilator allows the user to (optionally) retain comments. Since the vast majority of the 'interesting' content is found in documentation comments, this is a critical feature for this flow.</p><p><br /></p><p></p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/a/AVvXsEirdJh-jO91obP_OQyW5CrnT1y2GyZP4w6luiuBMp_o91e0TYK2byPTAI0VBTzCt6UAfz69wMpSjLEk6Vtjd5322mq5FnogyKKeMQFHtsUMl6_9qRWgEDcagdTaRgBQmC7NmLetOd4L0UNMPita_wW-9SYDQLkbFjUP8Lcv51xoyJ4GzldrvD4wE2terA=s865" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="384" data-original-width="865" height="285" src="https://blogger.googleusercontent.com/img/a/AVvXsEirdJh-jO91obP_OQyW5CrnT1y2GyZP4w6luiuBMp_o91e0TYK2byPTAI0VBTzCt6UAfz69wMpSjLEk6Vtjd5322mq5FnogyKKeMQFHtsUMl6_9qRWgEDcagdTaRgBQmC7NmLetOd4L0UNMPita_wW-9SYDQLkbFjUP8Lcv51xoyJ4GzldrvD4wE2terA=w640-h285" width="640" /></a></div><p></p><p>Once we have our "c++-ified" SystemVerilog, we can run that through Doxygen. This will result in some XML files containing the information and relationships Doxygen extracted from the XML code. These XML files are what the Breathe plug-in reads, and exposes to Sphinx.</p><p>As I mentioned earlier, Sphinx brings in documentation code-comment content on demand instead of automatically assembling it into a document or document section.&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/a/AVvXsEhZWM3-FBZzqoe7ks4iq2PQ-CcFsac1KN46H0GAup0GhvjvPpQPFGbd6uipsRNj_LBSfjinXF0ltdd5PYBTUkKWgnHN6dAA16zHFTtBz82eXE-ToHDXm5-7uAwFCb6bH2m1pU4HJkIdJpc-9C84Lfm6ngL0AhP-K6USUT9_4yBC5GxPCqHumu8N6YQ3eg=s320" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="79" data-original-width="320" src="https://blogger.googleusercontent.com/img/a/AVvXsEhZWM3-FBZzqoe7ks4iq2PQ-CcFsac1KN46H0GAup0GhvjvPpQPFGbd6uipsRNj_LBSfjinXF0ltdd5PYBTUkKWgnHN6dAA16zHFTtBz82eXE-ToHDXm5-7uAwFCb6bH2m1pU4HJkIdJpc-9C84Lfm6ngL0AhP-K6USUT9_4yBC5GxPCqHumu8N6YQ3eg=s16000" /></a></div><div><br /></div>The snippet above shows bringing in the code-comment documentation for all fields and methods within the specified class (in this case tblink_rpc::IEndpoint). The result in the document looks something like what is shown below:<div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/a/AVvXsEg_qUdw_b1UWVJd5O5nhIU2NzQhSkJILiiYcksQVPmKPHtYaF-LC6Ghelx60Gi1dpXIwwPpTK2V-vuWHFLKp0uNEmSa55ZsqrdlbfBrJ4pBxI3pCrtvRuo2ZKJzOP9e1bYu0dSEe0S97v2rmcgU0JZDAVLEhS8cCe0-tefGoNnhEF81uHhRDnNr_O8O6g=s712" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="391" data-original-width="712" src="https://blogger.googleusercontent.com/img/a/AVvXsEg_qUdw_b1UWVJd5O5nhIU2NzQhSkJILiiYcksQVPmKPHtYaF-LC6Ghelx60Gi1dpXIwwPpTK2V-vuWHFLKp0uNEmSa55ZsqrdlbfBrJ4pBxI3pCrtvRuo2ZKJzOP9e1bYu0dSEe0S97v2rmcgU0JZDAVLEhS8cCe0-tefGoNnhEF81uHhRDnNr_O8O6g=s16000" /></a></div><br /><div><div><br /></div><div>There are other Sphinx doc tags that allow referencing a single function, etc.<div><br /><p><br /></p><p><b>Looking Forward</b></p><p>In my current work, I'm focused on SystemVerilog classes. The approach above works well for documenting class structures, but doesn't work so well for document SystemVerilog modules and interfaces. My current thinking is to use the <a href="https://github.com/SymbiFlow/sphinx-verilog-domain">Sphinx Verilog Domain</a> plug-in to document modules, and continue to use the flow above for classes. Would a single tool be better? Yes. But having two complementary tools is just fine.</p><p>Now that I have a way to document SystemVerilog class code, I'm digging into that process. If you're curious about the commands/scripts I'm using, you can have a look at the <a href="https://github.com/tblink-rpc/tblink-rpc-docs/">tblink-rpc-docs</a> project and the <a href="https://github.com/tblink-rpc/tblink-rpc-docs/blob/main/Makefile">Makefile</a> in that project.</p><p>Hope you find this helpful, and feel free to comment back on your approach to documenting SystemVerilog classes.</p><p><br /></p></div></div></div>
+  </div>
+
+  
+  <div class="related">
+    <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        <li>
+          <h3>
+            <a href="/intro/2023/02/16/NewYearNewSpace.html">
+              New Year, New Space
+              <small>16 Feb 2023</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/08/21/simplifying-custom-template-generated.html">
+              Simplifying Custom Template-Generated Content
+              <small>21 Aug 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/07/17/pyucis-manipulating-coverage-data.html">
+              PyUCIS: Manipulating Coverage Data
+              <small>17 Jul 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+    </ul>
+  </div>
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

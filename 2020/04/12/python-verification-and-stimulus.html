@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Python Verification Stimulus and Coverage: Functional Coverage &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2020/04/12/python-verification-and-stimulus.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL">
+    
+        <li><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Python Verification Stimulus and Coverage: Functional Coverage &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2020/04/12/python-verification-and-stimulus.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+    
+
+  <div class="post">
+    <h1 class="post-title">Python Verification Stimulus and Coverage: Functional Coverage</h1>
+    <span class="post-date">12 Apr 2020</span>
+    <br /><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-ph8x-Zy9vU0/XpI3g_cV3XI/AAAAAAAAC5A/ucHyW0cm62Yhoj_u2D4rzWTrnIYi4ToDwCLcBGAsYHQ/s1600/pyvsc_coverage.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://1.bp.blogspot.com/-ph8x-Zy9vU0/XpI3g_cV3XI/AAAAAAAAC5A/ucHyW0cm62Yhoj_u2D4rzWTrnIYi4ToDwCLcBGAsYHQ/s1600/pyvsc_coverage.png" /></a></div><br />In my last two posts (<a href="https://bitsbytesgates.blogspot.com/2020/03/modeling-random-stimulus-and-functional.html">here</a> and <a href="https://bitsbytesgates.blogspot.com/2020/04/python-verification-stimulus-and.html">here</a>), I've been talking about modeling random stimulus, constraints, and functional coverage in Python. After looking at the fundamentals of capturing the specifics of data types such that they can be used for hardware verification last week, lets look at using those data types for modeling functional coverage.<br /><br />As I mentioned last week, I'm using this series of blog posts as a guide and as motivation to document the <a href="https://github.com/fvutils/pyvsc">PyVSC</a> package that implements the random stimulus and coverage that I'm describing. You can find documentation on the functional-coverage features in the <a href="https://py-vsc.readthedocs.io/en/latest/coverage.html#">Coverage</a> chapter of the <a href="https://py-vsc.readthedocs.io/en/latest/">documentation on readthedocs.org</a>.<br /><br /><h3>Covergroups</h3><div>SystemVerilog, as well as several other verification languages, groups functional coverage elements in a construct called a covergroup. A covergroup is a type (like a class) that can be instanced multiple times, and whose instances maintain a relationship back to the type.&nbsp;</div><div><br /></div><div>A PyVSC covergroup is a Python class with a special <i>covergroup</i>&nbsp;decorator.&nbsp;</div><div><br /></div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"> <span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">covergroup</span><br /> <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_covergroup</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />     <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">):</span><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">with_sample</span><span class="p" style="box-sizing: border-box;">(</span><br />             <span class="n" style="box-sizing: border-box;">a</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="n" style="box-sizing: border-box;">bit_t</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">)</span><br />             <span class="p" style="box-sizing: border-box;">)</span><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="p" style="box-sizing: border-box;">{</span><br />             <span class="s2" style="box-sizing: border-box; color: #4070a0;">"a"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">2</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">),</span><br />             <span class="s2" style="box-sizing: border-box; color: #4070a0;">"b"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">,</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">12</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">15</span><span class="p" style="box-sizing: border-box;">])</span><br />             <span class="p" style="box-sizing: border-box;">})</span><br /><br /><span class="n" style="box-sizing: border-box;">my_cg_1</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">my_covergroup</span><span class="p" style="box-sizing: border-box;">()</span><br /><span class="n" style="box-sizing: border-box;">my_cg_2</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">my_covergroup</span><span class="p" style="box-sizing: border-box;">()</span></pre></div><div><br /></div><div>The <i>covergroup</i>&nbsp;decorator ensures that core methods and attributes are present in the covergroup class without requiring the class to derive from a specific base class. The decorator also ensures that certain introspection and class-construction steps are performed after the user's constructor code runs and before returning to the caller. Fortunately, all these details are hidden so a PyVSC covergroup behaves like any other Python class. Creating an instance of a covergroup is as simple as creating an instance of the class, as shown above.</div><div><br /></div><h3>Coverpoints, Bins, and Crosses</h3><div>Once we have a covergroup type defined, we need to define the values, value ranges, and combinations of values we wish to observe during verification. These features are captured by <i>coverpoints</i>, <i>bins, </i>and <i>coverpoint crosses</i>.</div><div><br /></div><div>All of these features are captured by calling PyVSC methods.</div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">covergroup</span><br /> <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_covergroup</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />     <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">a</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">callable</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="p" style="box-sizing: border-box;">{</span><br />             <span class="s2" style="box-sizing: border-box; color: #4070a0;">"a"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">2</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">),</span><br />             <span class="s2" style="box-sizing: border-box; color: #4070a0;">"b"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">,</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">12</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">15</span><span class="p" style="box-sizing: border-box;">])</span><br />             <span class="p" style="box-sizing: border-box;">})</span></pre></div><div>For example, above we create a single coverpoint with two bins. The first bin ("a") will be considered covered if the coverpoint sees a value of 1, 2, or 4. The second will be considered covered if the coverpoint sees a value of 8, or 12..15.</div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">covergroup</span><br /> <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_covergroup</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />     <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">a</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">callable</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="p" style="box-sizing: border-box;">{</span><br />             <span class="s2" style="box-sizing: border-box; color: #4070a0;">"a"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([],</span> <span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">2</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">),</span><br />             <span class="s2" style="box-sizing: border-box; color: #4070a0;">"b"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([</span><span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">],</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">16</span><span class="p" style="box-sizing: border-box;">])</span><br />             <span class="p" style="box-sizing: border-box;">})</span></pre></div><div>Creating arrays of bins is also important, of course. In the example above, we create two arrays of bins. The bin array labeled "a" will consist of three individual bins that, respectively, monitor the values 1, 2, and 4. The second bin array ("b") will consist of four individual bins that monitor the values 8..16. In this case, each bin will monitor two coverpoint values (8..9, 9..10, etc). If you're familiar with SystemVerilog, these features -- and even the syntax -- should look very familiar.</div><div><br /></div><div>One question, of course, is how we associate a name with our coverpoints. If you've used verification frameworks that are embedded in C++ (eg SystemC, or SystemC SCV), you're probably used to specifying strings to name each element. One nice aspect of Python is that we're able to introspect the names of the variables to which features like coverpoints are assigned. So, part of the "magic" that our <i>coverpoint </i>decorator applies is to determine the names of coverpoints based on the class attributes to which coverpoints are assigned.</div><div><br /></div><div>We don't just care about individual variable values, of course. We often need to ensure that combinations of variable values are exercised as part of verification. That's where coverpoint crosses come into play.</div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">covergroup</span><br /><span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_covergroup</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />    <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">):</span><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">with_sample</span><span class="p" style="box-sizing: border-box;">(</span><br />            <span class="n" style="box-sizing: border-box;">a</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="n" style="box-sizing: border-box;">bit_t</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">),</span><br />            <span class="n" style="box-sizing: border-box;">b</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="n" style="box-sizing: border-box;">bit_t</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">)</span><br />        <span class="p" style="box-sizing: border-box;">)</span><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="p" style="box-sizing: border-box;">{</span><br />            <span class="s2" style="box-sizing: border-box; color: #4070a0;">"a"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([],</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">15</span><span class="p" style="box-sizing: border-box;">])</span><br />            <span class="p" style="box-sizing: border-box;">})</span><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp2</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="p" style="box-sizing: border-box;">{</span><br />            <span class="s2" style="box-sizing: border-box; color: #4070a0;">"a"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([],</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">15</span><span class="p" style="box-sizing: border-box;">])</span><br />            <span class="p" style="box-sizing: border-box;">})</span><br /><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1X2</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cross</span><span class="p" style="box-sizing: border-box;">([</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1</span><span class="p" style="box-sizing: border-box;">,</span> <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp2</span><span class="p" style="box-sizing: border-box;">])</span></pre></div><div>Using the <i>cross</i>&nbsp;method, we can create a cross between two existing coverpoints. In the example above, we have created a cross that has 225 cross bins.</div><div><br /></div><h3>Sampling Coverage Data</h3><div>One topic that we haven't yet looked at is how we will get the data to be sampled from the testbench to the covergroup for the PyVSC library to sample. PyVSC, like SystemVerilog, provides a <i>sample</i>&nbsp;method on the covergroup that is called by the testbench to cause the coverpoints and crosses to sample data.&nbsp;PyVSC provides two ways to channel data from the testbench to the covergroup to be sampled when the <i>sample</i>&nbsp;method is called.</div><div></div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">covergroup</span><br /><span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_covergroup</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />    <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">):</span><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">with_sample</span><span class="p" style="box-sizing: border-box;">(</span><br />            <span class="n" style="box-sizing: border-box;">a</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="n" style="box-sizing: border-box;">bit_t</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">)</span><br />            <span class="p" style="box-sizing: border-box;">)</span><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="p" style="box-sizing: border-box;">{</span><br />            <span class="s2" style="box-sizing: border-box; color: #4070a0;">"a"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">2</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">),</span><br />            <span class="s2" style="box-sizing: border-box; color: #4070a0;">"b"</span> <span class="p" style="box-sizing: border-box;">:</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">bin</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">,</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">12</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">15</span><span class="p" style="box-sizing: border-box;">])</span><br />            <span class="p" style="box-sizing: border-box;">})</span><br /><br /><span class="n" style="box-sizing: border-box;">cg</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">my_covergroup</span><span class="p" style="box-sizing: border-box;">()</span><br /><span class="n" style="box-sizing: border-box;">cg</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">sample</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">)</span><br /><span class="n" style="box-sizing: border-box;">cg</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">sample</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">12</span><span class="p" style="box-sizing: border-box;">)</span></pre></div><div>The first method for passing data to sample is to pass that data via the sample-method call. To use this method, your covergroup constructor must call the <i>with_sample()</i>&nbsp;method to specify the parameter names and types that will be accepted by the <i>sample</i>&nbsp;method. Note that the parameters need to be one of the PyVSC &nbsp;types that we discussed last week.&nbsp;</div><div><br /></div><div>In the example above, the <i>sample</i>&nbsp;method will accept one parameter that is a 4-bit unsigned integer. Note that calling the <i>with_sample() </i>method will create attributes in the covergroup class that can be passed to coverpoint(s) as the variable to sample.</div><div><br /></div><div>The second method for passing data for sampling to the covergroup is to specify the mapping when an instance of the covergroup class is created.&nbsp;</div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@covergroup</span><br /> <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_covergroup</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />     <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">b</span><span class="p" style="box-sizing: border-box;">):</span> <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Need to use lambda for non-reference values</span><br />         <span class="nb" style="box-sizing: border-box; color: #007020;">super</span><span class="p" style="box-sizing: border-box;">()</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="fm" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">()</span><br /><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp1</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span><br />             <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="nb" style="box-sizing: border-box; color: #007020;">dict</span><span class="p" style="box-sizing: border-box;">(</span><br />                 <span class="n" style="box-sizing: border-box;">a</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([],</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">15</span><span class="p" style="box-sizing: border-box;">])</span><br />             <span class="p" style="box-sizing: border-box;">))</span><br /><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cp2</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="n" style="box-sizing: border-box;">b</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="nb" style="box-sizing: border-box; color: #007020;">dict</span><span class="p" style="box-sizing: border-box;">(</span><br />             <span class="n" style="box-sizing: border-box;">b</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([],</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">15</span><span class="p" style="box-sizing: border-box;">])</span><br />             <span class="p" style="box-sizing: border-box;">))</span><br /><br /><br /> <span class="n" style="box-sizing: border-box;">a</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="mi" style="box-sizing: border-box; color: #208050;">0</span><span class="p" style="box-sizing: border-box;">;</span><br /> <span class="n" style="box-sizing: border-box;">b</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="mi" style="box-sizing: border-box; color: #208050;">0</span><span class="p" style="box-sizing: border-box;">;</span><br /><br /> <span class="n" style="box-sizing: border-box;">cg</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">my_covergroup</span><span class="p" style="box-sizing: border-box;">(</span><span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">lambda</span><span class="p" style="box-sizing: border-box;">:</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">lambda</span><span class="p" style="box-sizing: border-box;">:</span><span class="n" style="box-sizing: border-box;">b</span><span class="p" style="box-sizing: border-box;">)</span><br /><br /> <span class="n" style="box-sizing: border-box;">a</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><br /> <span class="n" style="box-sizing: border-box;">b</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><br /> <span class="n" style="box-sizing: border-box;">cg</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">sample</span><span class="p" style="box-sizing: border-box;">()</span> <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Hit the first bin of cp1 and cp2</span></pre></div><div><br /></div><div>This approach uses Python <i>lambda</i>&nbsp;expressions to allow the covergroup to query the current value of variables when the <i>sample</i>&nbsp;method is called.</div><div><br /></div><h3>Reporting</h3><div>Once we start collecting functional coverage data, we'll want to know which combinations have been covered and which have not been covered. PyVSC provides a couple of options for seeing what combinations have been covered and which have not. I'll cover a couple of the simple ones in this post, and we'll come back for the more-ambitious one in a future post.</div><div><br /></div><div>The simplest approaches to querying coverage are via APIs and as text reports. Each instance of a covergroup class provides a <i>get_coverage()&nbsp;</i>method that returns the percentage of coverage goals that have been achieved. In other words, when no combinations have been covered, this method will return 0, and will return 100 when all have been achieved.&nbsp;</div><div><br /></div><div>PyVSC also provides several methods for creating a coverage report as a Python object, a string, and displaying the coverage report in the transcript.&nbsp;</div><div><br /></div><div>A textual coverage report looks something like this:</div><div><br /></div><div><div>TYPE my_cg : 75.000000%</div><div>&nbsp; &nbsp; CVP a_cp : 75.000000%</div><div>&nbsp; &nbsp; Bins:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; a : 3</div><div>&nbsp; &nbsp; &nbsp; &nbsp; a : 3</div><div>&nbsp; &nbsp; &nbsp; &nbsp; a : 17</div><div>&nbsp; &nbsp; &nbsp; &nbsp; a : 0</div><div>&nbsp; &nbsp; INST my_cg : 75.000000%</div><div>&nbsp; &nbsp; &nbsp; &nbsp; CVP a_cp : 75.000000%</div><div>&nbsp; &nbsp; &nbsp; &nbsp; Bins:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 3</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 3</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 1</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 0</div><div>&nbsp; &nbsp; INST my_cg_1 : 100.000000%</div><div>&nbsp; &nbsp; &nbsp; &nbsp; CVP a_cp : 100.000000%</div><div>&nbsp; &nbsp; &nbsp; &nbsp; Bins:</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 3</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 3</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 3</div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a : 6</div></div><div><br /></div><div>The textual coverage report reports on each type of covergroup that is in use, and on every instance of that covergroup.</div><h3>Coming up Next</h3><div>If you're interested in investigating&nbsp; PyVSC a bit more, please see the <a href="https://py-vsc.readthedocs.io/en/latest/">documentation on readthedocs.org</a>. If you'd like to try out the library yourself, you can install it (Linux-only) for Python3 using <i>pip:</i></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">% pip install pyvsc</span></div><div><br /></div><div>The textual coverage report I showed above is interesting, but is a pretty simplistic way to look at coverage data. In my next post, I'll talk about how we can store our coverage data in a form that can be merged, reported, and displayed.&nbsp;</div><div><br /></div><div><br /></div><div><br /></div><div><pre style="box-sizing: border-box; color: #404040; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="p" style="box-sizing: border-box;"><div class="separator" style="clear: both; color: black; font-family: &quot;Times New Roman&quot;; font-size: medium; white-space: normal;"><br /><b><i>Disclaimer</i></b></div><br /><div class="separator" style="clear: both; color: black; font-family: &quot;Times New Roman&quot;; font-size: medium; white-space: normal;"><br /><i>The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</i></div><br /><div class="separator" style="clear: both; color: black; font-family: &quot;Times New Roman&quot;; font-size: medium; white-space: normal;"><br /><i><br /></i></div><br /></span></pre></div><div><br /></div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="p" style="box-sizing: border-box;"><div class="separator" style="clear: both; color: black; font-family: &quot;Times New Roman&quot;; font-size: medium; white-space: normal;"><br /></div><br /><div class="separator" style="clear: both; color: black; font-family: &quot;Times New Roman&quot;; font-size: medium; white-space: normal;"><br /><i><br /></i></div><br /></span></pre><br /><br />
+  </div>
+
+  
+  <div class="related">
+    <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        <li>
+          <h3>
+            <a href="/intro/2023/02/16/NewYearNewSpace.html">
+              New Year, New Space
+              <small>16 Feb 2023</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/08/21/simplifying-custom-template-generated.html">
+              Simplifying Custom Template-Generated Content
+              <small>21 Aug 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/07/17/pyucis-manipulating-coverage-data.html">
+              PyUCIS: Manipulating Coverage Data
+              <small>17 Jul 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+    </ul>
+  </div>
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      FWRISC: Creating a Unit-test Safety Net &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2018/12/15/fwrisc-creating-unit-test-safety-net.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL">
+    
+        <li><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      FWRISC: Creating a Unit-test Safety Net &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2018/12/15/fwrisc-creating-unit-test-safety-net.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+    
+
+  <div class="post">
+    <h1 class="post-title">FWRISC: Creating a Unit-test Safety Net</h1>
+    <span class="post-date">15 Dec 2018</span>
+    <div class="separator" style="clear: both; text-align: center;"><a href="https://4.bp.blogspot.com/-uBqMqLsjbVo/XBHorqeNAvI/AAAAAAAACbE/uQTszK6bfiIWVvQ8Ka5cppoEQP6P-vFIACLcBGAs/s1600/unit_test_splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://4.bp.blogspot.com/-uBqMqLsjbVo/XBHorqeNAvI/AAAAAAAACbE/uQTszK6bfiIWVvQ8Ka5cppoEQP6P-vFIACLcBGAs/s1600/unit_test_splash.png" /></a></div><br />When developing software, I've become very comfortable with test-driven development -- a methodology that calls for tests to be developed along with, or even before, functionality. It's quite common for me to develop a test first, which obviously fails initially, and implement functionality until the test passes.<br />I have typically approached hardware verification from a very different perspective. When doing verification, I've typically started with a hardware block that is largely functional, or at least is believed to be largely functional. My work then begins with test plan development and some detective work to ferret out the potentially-problematic areas of the design that require targeted tests.<br /><br /><div>When developing the FWRISC RISC-V core, I initially started off taking a verification approach. One of the requirements for the RISC-V contest was that cores must pass the <a href="https://github.com/riscv/riscv-compliance">RISC-V Compliance Tests</a>. So, I started off by attempting to run one of the compliance tests.&nbsp;I quickly realized that there were some challenges with this approach:</div><div><ul><li>Even for testing a simple feature, the RISC-V compliance tests are quite complicated. All involve exception instructions. All involve multiple instructions that are unrelated to the instruction that is ostensibly the target of the test. This isn't uncommon for verification, of course.</li><li>Taking a verification approach early in the development cycle means that debugging is incredibly painful. Tracking down a small issue with the core by looking at the test result of a test that consists of a hundred or so instructions is incredibly painful -- just see the waveform at the top of this blog post which comes from the test for the 'add' instruction.</li><li>In contrast, see the following waveform that shows the entire 'add' unit test. While it's longer than a single instruction, this test consists of a total of 6 instructions. This means that there's much less to look at when a problem needs to be debugged.</li></ul><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-Qn0B8hGdxwQ/XBHsrgPpEYI/AAAAAAAACbQ/7S37-sUlbtwPnfkWzoggfFpwHKQTFwIKwCLcBGAs/s1600/fwrisc_unit_test_add.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="600" data-original-width="1080" height="222" src="https://1.bp.blogspot.com/-Qn0B8hGdxwQ/XBHsrgPpEYI/AAAAAAAACbQ/7S37-sUlbtwPnfkWzoggfFpwHKQTFwIKwCLcBGAs/s400/fwrisc_unit_test_add.png" width="400" /></a></div><div><br /></div><div><br /></div><h2>Creating a Testbench</h2><div>My verification background is SystemVerilog and UVM, so one early complication I faced when developing tests for the Featherweight RISC core was that the RISC-V soft-core context explicitly required the use of&nbsp;<a href="https://www.veripool.org/wiki/verilator">Verilator</a>&nbsp;as a simulator. Verilator is, in some senses, a simulator for the synthesizable subset of SystemVerilog. In other senses, it's a Verilog to C++ translator that can be used as to create a C++ version of a synthesizable Verilog description to bind in to a C++ program. Compared to a simulator, think of it, not as a house, but as a pile of lumber, tools, and a blueprint from which you can build a house (which, by the way, is in no way an attempt to minimize the value of Verilator -- just point out some of the required legwork).&nbsp;</div><div><br /></div><div>The fact that Verilator produces a C++ model of the SystemVerilog RTL brought to mind the unit-testing library that I invariably use when testing C++ code. <a href="https://github.com/google/googletest">Googletest</a> is a very handy library for organizing and executing a suite of C++ unit tests:</div><div><ul><ul><ul><li>Collects and categorizes tests</li><li>Enables common functionality to be centralized across tests</li><li>Provides result-checking macros/assertions</li><li>Executes an entire test suite, a subset, or a single test</li><li>Reports test status</li></ul></ul></ul><div>In addition to using Googletest for standard C++ applications, I had used the Googletest framework to manage some early device firmware written in C when testing it against Verilog RTL being verified in a UVM testbench. This approach seemed close enough to what I was looking to do with Featherweight RISC and Verilator that I ended up extending that project (named <a href="https://github.com/mballance/googletest-hdl">googletest-hdl</a>) to support Verilator. While the contest required the use of Verilator, I wanted to setup my basic test suite such that it could run with other simulators. Since the googletest-hdl project already supported running with SystemVerilog and UVM, I was covered there.</div><div><br /></div><div>The Featherweight RISC testbench block diagram is shown below:</div><div><br /></div><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-QP6Xetq1188/XBMnd6yr5eI/AAAAAAAACbc/Z5VZqQzE7UUGrMgZCf5B9SAStShHY3IQgCLcBGAs/s1600/fwrisc_testbench_diagram.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="675" data-original-width="675" height="400" src="https://1.bp.blogspot.com/-QP6Xetq1188/XBMnd6yr5eI/AAAAAAAACbc/Z5VZqQzE7UUGrMgZCf5B9SAStShHY3IQgCLcBGAs/s400/fwrisc_testbench_diagram.png" width="400" /></a></div><div><br /></div><div>The design is instantiated in the HDL portion of the testbench. This testbench portion will run in Verilator or another Verilog simulator. The Googletest portion of the testbench contains the test suite and code needed to check test results. There are two points at which the environments communicate: the run-control path by which the Googletest environment instructs the HDL environment to run, and the tracer API path by which events are sent from the processor to the testbench environment.</div><div>The tracer API path is the key to checking test results. The following events are sent to the Googletest environment as SystemVerilog DPI calls:</div><div><ul><li>Instruction-execution event</li><li>Register-write event</li><li>Data-access event</li></ul></div><div>Now that we have this testbench structure, we can create some tests.</div><h2>Creating Tests</h2><div>When it comes to unit tests, I usually find that the initial test structure is successively refined as I discover more and more commonality between the tests. Frankly, the ideal unit test is almost-entirely data driven, and the Featherweight RISC tests are very close to this ideal.</div><div><br /></div><div>The unique aspects of the instruction unit tests are stored in the test files themselves. Here is test for the add instruction:</div><div><br /></div><div class="separator" style="clear: both; text-align: center;"><a href="https://3.bp.blogspot.com/-AhWeC4JjA58/XBM3rrXS_GI/AAAAAAAACbo/PL2H8MC5e3wwci_wWlVZv3DMD9cbrBRpQCLcBGAs/s1600/fwrisc_unit_test_add_S.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="205" data-original-width="227" src="https://3.bp.blogspot.com/-AhWeC4JjA58/XBM3rrXS_GI/AAAAAAAACbo/PL2H8MC5e3wwci_wWlVZv3DMD9cbrBRpQCLcBGAs/s1600/fwrisc_unit_test_add_S.png" /></a></div><div><br /></div><ul><li>Note the instruction sequence to load registers with literals and perform the 'add'. This is the actual test.</li><li>The data between 'start_expected' and 'end_expected' contains the registers that are expected to be written. The test harness will read this data from the compiled test.</li></ul><div>This data-driven test allows our test harness to be fairly simple and completely data driven, as shown below:</div><div class="separator" style="clear: both; text-align: center;"><a href="https://2.bp.blogspot.com/-WIRfInPdPAA/XBM43R8GvNI/AAAAAAAACbw/6KiPMmsdeMc5yMfgVSxVAXqmzQzuJf5cwCLcBGAs/s1600/unit_test_harness.PNG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="555" data-original-width="637" height="555" src="https://2.bp.blogspot.com/-WIRfInPdPAA/XBM43R8GvNI/AAAAAAAACbw/6KiPMmsdeMc5yMfgVSxVAXqmzQzuJf5cwCLcBGAs/s640/unit_test_harness.PNG" width="640" /></a></div><div><br /></div><ul><li>First, the test harness executes the simulation by calling GoogletestHdl::run()</li><li>Next, the test harness reads in the compiled test file, which has been specified with the +SW_IMAGE=&lt;path&gt; option</li><li>The start_expected..end_expected range is located and read in</li><li>Finally, the register contents are checked against the expected values specified in the test.</li></ul><h2>Results</h2></div><div>After getting the unit-test structure in place, I almost-literally went down the list of RISC-V RV32I instructions and created a test for each as I implemented the instruction. The completed tests provided a nice safety net for catching issues introduced as new instructions were implemented, and as bugs were corrected. More issues were found as the RISC-V compliance tests were brought up and these issues prompted creation of new unit tests.&nbsp;</div><div>The unit-test safety net has been incredibly helpful in quickly identifying regressions in the processor implementation, and helping to identify exactly which instructions are impacted. The unit-test experience also got me thinking about formal verification, and whether this could also be used as a form of unit-test suite. I'm getting ready to take another pass at shrinking the area required for the Featherweight RISC-V, and am thinking about creating a Formal unit-test suite to help in catching bugs introduced by that work. I'll talk about those experiments in a future post.</div><div>For now, I have a suite of 67 unit tests and 55 RISC-V compliance tests that provide a very good safety net to catch regressions in the Featherweight RISC implementation.</div><div><br /><div class="separator" style="clear: both;"><b><i>Disclaimer</i></b></div><br /><div></div><br /><div class="separator" style="-webkit-text-stroke-width: 0px; clear: both; color: black; font-family: &quot;Times New Roman&quot;; font-size: medium; font-style: normal; font-variant-caps: normal; font-variant-ligatures: normal; font-weight: 400; letter-spacing: normal; margin: 0px; orphans: 2; text-align: start; text-decoration-color: initial; text-decoration-style: initial; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;"><i>The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</i></div></div><ul><ul></ul></ul></div>
+  </div>
+
+  
+  <div class="related">
+    <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        <li>
+          <h3>
+            <a href="/intro/2023/02/16/NewYearNewSpace.html">
+              New Year, New Space
+              <small>16 Feb 2023</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/08/21/simplifying-custom-template-generated.html">
+              Simplifying Custom Template-Generated Content
+              <small>21 Aug 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/07/17/pyucis-manipulating-coverage-data.html">
+              PyUCIS: Manipulating Coverage Data
+              <small>17 Jul 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+    </ul>
+  </div>
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Py-HPI: A Procedural HDL/Python Integration &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2019/06/09/py-hpi-procedural-hdlpython-integration.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" checked>
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL">
+    
+        <li><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Py-HPI: A Procedural HDL/Python Integration &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/2019/06/09/py-hpi-procedural-hdlpython-integration.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+</head>
+
+
+  <body>
+    
+
+  <div class="post">
+    <h1 class="post-title">Py-HPI: A Procedural HDL/Python Integration</h1>
+    <span class="post-date">09 Jun 2019</span>
+    <div><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-hEeOagYDfLk/XPxNuGhOaUI/AAAAAAAAClM/sbguSr-QWLUfNyxFFR8RnViMLjxwhln9wCLcBGAs/s1600/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://1.bp.blogspot.com/-hEeOagYDfLk/XPxNuGhOaUI/AAAAAAAAClM/sbguSr-QWLUfNyxFFR8RnViMLjxwhln9wCLcBGAs/s1600/splash.png" /></a></div><br /><br /><div>As I mentioned in my <a href="https://bitsbytesgates.blogspot.com/2019/06/functional-verification-and-ecosystem.html">last post</a>, I've been looking at using Python for more tasks, including functional verification. My go-to languages for functional verification have traditionally been SystemVerilog for professional work, and C++ when I'm working on a personal project. I've started doing more of my small-application development in Python (often as an alternative to C++), and have wondered whether I could also migrate my testbench development from C++ to Python as well.</div><div><br /></div><div>This blog post provides an introduction to an integration I created between Python and an hardware descriptin language (HDL) simulation environment called <a href="https://github.com/fvutils/py-hpi">Py-HPI</a> (for Python HDL Procedural Interface). I'm far from the first to create an integration between Python and an HDL simulator (I'm aware of at least one formal project, and several others users that have written about their integration work), so what is different about <a href="https://github.com/fvutils/py-hpi/">Py-HPI</a>?</div><div><br /></div><div>Well, two things, really in my opinion:&nbsp;</div><div><ul><li>Py-HPI integrates at the procedural level, which means Python can directly call tasks in the HDL environment instead of interacting with signals in the HDL environment.&nbsp;</li><li>Py-HPI provides a high degree of automation for setting up this procedural-level integration.</li></ul><div>In this blog post, I will be describing the user experience in using Py-HPI. In future blog posts, I'll walk through how Py-HPI integrates on my <a href="https://github.com/mballance/fwrisc">go-to project for playing with verification technologies</a>, and I'll go more in-depth on how Bus Functional Models (BFMs) and testbench environments are developed for Py-HPI.</div></div><div><br /></div><h2>Py-HPI: The Big Picture</h2><div><br /></div><div style="text-align: center;"><img height="270" src="https://raw.githubusercontent.com/fvutils/py-hpi/master/docs/block_diagram.png" width="400" /></div><div style="text-align: left;">The structure of a Py-HPI enabled testbench is shown above. The key elements are described below</div><div style="text-align: left;"><ul><li><b>Testbench (Python)</b> -- This is Python code the user writes to interact with the design running within the HDL simulation environment</li><li><b>Simulator Support</b> -- This is C/C++ code generated by Py-HPI that implements the integration with a specific type of simulator. In general, this code is independent of the specific testbench</li><li><b>Testbench Wrapper</b> -- This is C code generated by Py-HPI that implements the testbench specifics of the integration between Python and the HDL environment</li><li><b>Bus Functional Models (BFMs)</b> -- BFMs written in HDL (eg SystemVerilog) implement the translation between task calls and signal activity and vice versa.</li></ul><div>Currently, Py-HPI supports standard SystemVerilog-DPI simulators (eg Modelsim) as well as Verilator. More integrations are planned, including support for Verilog simulators like Icarus Verilog.</div></div><h2>Py-HPI: A Small Example</h2><div style="text-align: center;"><img height="281" src="https://raw.githubusercontent.com/fvutils/py-hpi/master/docs/bfm_example_block_diagram.png" width="400" /></div><div style="text-align: left;"><br /></div><div style="text-align: left;">One easy way to get a sense for the user experience when using Py-HPI is to walk through the steps to run a very simple testbench environment. One of the <a href="https://github.com/fvutils/py-hpi/tree/master/ve/unit/bfm">Py-HPI examples</a> provides just such a testbench.</div><div style="text-align: left;">The structure of this testbench environment is shown above. The Python portion of the testbench drives the SystemVerilog HDL testbench via two bus functional models that are instanced in the SystemVerilog environment.</div><div style="text-align: left;"><br /></div><h3 style="text-align: left;">Python Testbench</h3><div>First, let's take a look at the Python testbench code, which you can find <a href="https://github.com/fvutils/py-hpi/blob/master/ve/unit/bfm/my_tb.py">here</a>:</div><div style="text-align: left;"><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; overflow-wrap: normal; overflow: auto; padding: 16px; word-break: normal;"><pre style="color: #333333; line-height: 16.25px;"><span style="color: #008800; font-weight: bold;">def</span> <span style="color: #0066bb; font-weight: bold;">thread_func_1</span>():<br />  <span style="color: #007020;">print</span>(<span style="background-color: #fff0f0;">"thread_func_1"</span>)<br />  my_bfm = hpi.rgy.bfm_list[<span style="color: #0000dd; font-weight: bold;">0</span>]<br />  <span style="color: #008800; font-weight: bold;">for</span> i <span style="color: black; font-weight: bold;">in</span> <span style="color: #007020;">range</span>(<span style="color: #0000dd; font-weight: bold;">1000</span>):<br />    my_bfm.xfer(i*<span style="color: #0000dd; font-weight: bold;">2</span>)<br /><br /><span style="color: #008800; font-weight: bold;">def</span> <span style="color: #0066bb; font-weight: bold;">thread_func_2</span>():<br />  <span style="color: #007020;">print</span>(<span style="background-color: #fff0f0;">"thread_func_2"</span>)<br />  my_bfm = hpi.rgy.bfm_list[<span style="color: #0000dd; font-weight: bold;">1</span>]<br />  <span style="color: #008800; font-weight: bold;">for</span> i <span style="color: black; font-weight: bold;">in</span> <span style="color: #007020;">range</span>(<span style="color: #0000dd; font-weight: bold;">1000</span>):<br />    my_bfm.xfer(i)<br /><br /><span style="color: #555555; font-weight: bold;">@hpi</span>.entry<br /><span style="color: #008800; font-weight: bold;">def</span> <span style="color: #0066bb; font-weight: bold;">run_my_tb</span>():<br />    <span style="color: #007020;">print</span>(<span style="background-color: #fff0f0;">"run_my_tb - bfms: "</span> + <span style="color: #007020;">str</span>(<span style="color: #007020;">len</span>(hpi.rgy.bfm_list)))<br /><br />    <span style="color: #008800; font-weight: bold;">with</span> hpi.fork() <span style="color: #008800; font-weight: bold;">as</span> f:<br />      f.task(<span style="color: #008800; font-weight: bold;">lambda</span>: thread_func_1());<br />      f.task(<span style="color: #008800; font-weight: bold;">lambda</span>: thread_func_2());<br /><br />    <span style="color: #007020;">print</span>(<span style="background-color: #fff0f0;">"end of run_my_tb"</span>);</pre></pre></div>Execution starts in the <i>run_my_tb()</i>method (which is marked by a special Python decorator <i>hpi.entry</i>, to identify it as a valid entry point) which starts two threads and waits for them to complete. Each of the thread methods (thread_func_1 and thread_func_2) obtain a handle to one of the BFM instances and call the BFM's API to perform data transfers in the SystemVerilog testbench environment.<br />In a way, it's almost identical to what I would write in either C++ or SystemVerilog. In a way, that's kind of the point from my perspective.<br /><br /><h3>Running the Testbench</h3><div>Okay, now that we know what the Python side of the testbench looks like, let's see the commands used to create and compile the files necessary to run a simulation. These commands are in the <a href="https://github.com/fvutils/py-hpi/blob/master/ve/unit/bfm/runit_vl.sh">runit_vl.sh</a> script inside the example directory. In this case, I'll show the commands required to run Py-HPI with the Verilator simulator. The example also provides a script (runit_ms.vl) that runs the same example with Modelsim.</div><div><br /></div><h4>Create the Simulation Support Files</h4><div>We first need to create the simulation-support files. Since we're targeting the Verilator simulator, we need to run the 'gen-launcher-vl' subcommand implemented by the Py-HPI library.</div><div><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; overflow-wrap: normal; overflow: auto; padding: 16px; word-break: normal;">python3 -m hpi gen-launcher-vl top -clk clk=1ns</pre></div><div>Verilator is a bit of an outlier, in that the simulation-support files are specific to the HDL design being simulated. Consequently, we need to specify the name of the top Verilog module and the clock name and period.</div><div><br /><h4>Create the Testbench Wrapper</h4></div><div>Now, we need to create the Testbench wrapper file that will support the specific BFMs instantiated inside the testbench.&nbsp;</div><div><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; overflow-wrap: normal; overflow: auto; padding: 16px; word-break: normal;">python3 -m hpi -m my_tb gen-bfm-wrapper simple_bfm -type sv-dpi<br />python3 -m hpi -m my_tb gen-dpi</pre></div><h4><span style="font-weight: 400;">Because the Verilator simulator supports DPI, we generate a DPI-based testbench wrapper for our testbench that uses a single BFM. The resulting testbench wrapper is implemented in C and provides the connection between SystemVerilog and Python for our BFM.</span></h4><h4><b>Compile Everything</b></h4><div>This step is very specific to the simulator being used.&nbsp;</div><div><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; overflow-wrap: normal; overflow: auto; padding: 16px; word-break: normal;"><span class="pl-c" style="box-sizing: border-box; color: #6a737d;"><span class="pl-c" style="box-sizing: border-box;">#</span> Query required compilation/linker flags from Python</span><br />CFLAGS=<span class="pl-s" style="box-sizing: border-box; color: #032f62;"><span class="pl-pds" style="box-sizing: border-box;">"</span><span class="pl-smi" style="box-sizing: border-box; color: #24292e;">${CFLAGS}</span> <span class="pl-s" style="box-sizing: border-box;"><span class="pl-pds" style="box-sizing: border-box;">`</span>python3-config --cflags<span class="pl-pds" style="box-sizing: border-box;">`</span></span><span class="pl-pds" style="box-sizing: border-box;">"</span></span><br />LDFLAGS=<span class="pl-s" style="box-sizing: border-box; color: #032f62;"><span class="pl-pds" style="box-sizing: border-box;">"</span><span class="pl-smi" style="box-sizing: border-box; color: #24292e;">${LDFLAGS}</span> <span class="pl-s" style="box-sizing: border-box;"><span class="pl-pds" style="box-sizing: border-box;">`</span>python3-config --ldflags<span class="pl-pds" style="box-sizing: border-box;">`</span></span><span class="pl-pds" style="box-sizing: border-box;">"</span></span><br /><br />verilator --cc --exe -Wno-fatal --trace \<br /> top.sv simple_bfm.sv \<br /> launcher_vl.cpp pyhpi_dpi.c \<br /> -CFLAGS <span class="pl-s" style="box-sizing: border-box; color: #032f62;"><span class="pl-pds" style="box-sizing: border-box;">"</span><span class="pl-smi" style="box-sizing: border-box; color: #24292e;">${CFLAGS}</span><span class="pl-pds" style="box-sizing: border-box;">"</span></span> -LDFLAGS <span class="pl-s" style="box-sizing: border-box; color: #032f62;"><span class="pl-pds" style="box-sizing: border-box;">"</span><span class="pl-smi" style="box-sizing: border-box; color: #24292e;">${LDFLAGS}</span><span class="pl-pds" style="box-sizing: border-box;">"</span></span><br /><br />make -C obj_dir -f Vtop.mk</pre></div><div>Since we're using Verilator, we need to run Verilator to compile the HDL files and the simulator-support and testbench wrapper C/C++ files. Verilator generates C++ source and a Makefile to build the final simulator image. Our last step is to build the Verilator simulation image using the Verilator-created Makefile.</div><div><br /></div><h4>Run it!</h4><div>Finally, we can run our simulation.</div><div><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; overflow-wrap: normal; overflow: auto; padding: 16px; word-break: normal;">./obj_dir/Vtop +hpi.load=my_tb +vl.timeout=1ms +vl.trace</pre>We pass a few additional plusargs to enable specific behavior:<br /><br /><ul><li>The +hpi.load=my_tb specifies the Python module to load</li><li>The +vl.timeout=1ms specifies that the simulation should run for a maximum of 1ms. Other simulators will, of course, provide different mechanisms for doing this</li><li>The +vl.trace argument specifies that waveforms should be created. Other simulators will provide different ways of turning on tracing.</li></ul><div>So, all in all, Py-HPI makes it quite easy to connect a Python testbench to an HDL simulator at the procedural level.</div></div><h2>Conclusion</h2></div><div>In this blog post, I introduced <a href="https://github.com/fvutils/py-hpi">Py-HPI</a>, a procedural interface between Python and an HDL testbench environment along with an overview of the user experience when creating and running a testbench with Py-HPI. In my next post, I'll look at a Py-HPI testbench for my FWRISC RISC-V core and compare the new Python testbench with the existing C++ testbench. Until then, feel free to check out the Py-HPI library on GitHub (<a href="https://github.com/fvutils/py-hpi">https://github.com/fvutils/py-hpi</a>) and I'd be interested to hear your experiences in using Python for functional verification.</div><div><br /></div><div><br /></div><div><div class="separator" style="clear: both;"><b><i>Disclaimer</i></b></div><div class="separator" style="clear: both;"><i>The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</i></div><div class="separator" style="clear: both;"><br /></div><div class="separator" style="clear: both;"><br /></div></div>
+  </div>
+
+  
+  <div class="related">
+    <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        <li>
+          <h3>
+            <a href="/intro/2023/02/16/NewYearNewSpace.html">
+              New Year, New Space
+              <small>16 Feb 2023</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/08/21/simplifying-custom-template-generated.html">
+              Simplifying Custom Template-Generated Content
+              <small>21 Aug 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/07/17/pyucis-manipulating-coverage-data.html">
+              PyUCIS: Manipulating Coverage Data
+              <small>17 Jul 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+    </ul>
+  </div>
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>
