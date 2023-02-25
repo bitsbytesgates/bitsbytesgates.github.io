@@ -31,7 +31,8 @@ for (i = 0; i < toggler.length; i++) {
   });
 }
 
-// var sidebar_checkbox = document.getElementById("sidebar-checkbox")
+var sidebar_checkbox = document.getElementById("sidebar-checkbox")
+sidebar_checkbox.removeAttribute("checked");
 // if (sidebar_checkbox != null) {
 //     if (detectMob()) {
 //         sidebar_checkbox.removeAttribute("checked");
