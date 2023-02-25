@@ -31,11 +31,11 @@ for (i = 0; i < toggler.length; i++) {
   });
 }
 
-var sidebar_checkbox = document.getElementById("sidebar-checkbox")
-if (sidebar_checkbox != null) {
-    if (detectMob()) {
-        sidebar_checkbox.removeAttribute("checked");
-    } else {
-        sidebar_checkbox.setAttribute("checked", "checked");
-    }
-}
+// var sidebar_checkbox = document.getElementById("sidebar-checkbox")
+// if (sidebar_checkbox != null) {
+//     if (detectMob()) {
+//         sidebar_checkbox.removeAttribute("checked");
+//     } else {
+//         sidebar_checkbox.setAttribute("checked", "checked");
+//     }
+// }
