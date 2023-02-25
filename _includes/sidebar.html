@@ -23,17 +23,17 @@
     <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/index.html' | absolute_url }}">Home</a>
     <a class="sidebar-nav-item{% if page.title == 'Archive' %} active{% endif %}" href="{{ '/archive.html' | absolute_url }}">Archive</a>
     {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
-    <ul class="BlogPostTreeUL">
+    <ul class="BlogPostTreeUL" list-style-type="none">
     {% for year in postsByYear %}
-        <li><span class="caret">{{ year.name }}</span>
+        <li list-style-type="none"><span class="caret">{{ year.name }}</span>
         <!--
         <a class="sidebar-nav-item active" href="{{ year.url | absolute_url }}">{{ year.name }}</a>
           -->
-        <ul class="nested">
+        <ul class="nested" list-style-type="none">
         {% assign postsByMonth = year.items | group_by_exp: "post", "post.date | date: '%b'" %}
         {% for month in postsByMonth %}
         <li><span class="caret">{{ month.name }}</span>
-        <ul class="nested">
+        <ul class="nested" list-style-type="none">
         {% for post in month.items %}
         <li><a href="{{ post.url }}">{{ post.title }}</a></li>
         {% endfor %}
