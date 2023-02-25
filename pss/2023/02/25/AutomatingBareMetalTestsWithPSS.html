@@ -10,12 +10,12 @@
   <title>
     
     
-      EDAPack: Simplifying Development-Tool Management &middot; Bits, Bytes, and Gates
+      Automating Bare-Metal Tests with PSS &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2019/01/14/edapack-simplifying-development-tool.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -512,12 +512,12 @@
   <title>
     
     
-      EDAPack: Simplifying Development-Tool Management &middot; Bits, Bytes, and Gates
+      Automating Bare-Metal Tests with PSS &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2019/01/14/edapack-simplifying-development-tool.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -538,24 +538,218 @@
     
 
   <div class="post">
-    <h1 class="post-title">EDAPack: Simplifying Development-Tool Management</h1>
-    <span class="post-date">14 Jan 2019</span>
-    <div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/--njzrHQyvJI/XDuhIZ-ON6I/AAAAAAAACeg/x7K7gEJfY9wu1TOnIukV9JlxQ7zi7nImwCLcBGAs/s1600/edapack-splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://1.bp.blogspot.com/--njzrHQyvJI/XDuhIZ-ON6I/AAAAAAAACeg/x7K7gEJfY9wu1TOnIukV9JlxQ7zi7nImwCLcBGAs/s1600/edapack-splash.png" /></a></div><div class="separator" style="clear: both; text-align: center;"><br /></div><div class="separator" style="clear: both; text-align: center;"></div><div class="separator" style="clear: both; text-align: center;"><br /></div>One of my first "real" engineering courses during my college days centered around scripting and working with Unix, and the professor really emphasized that any repetitive task was a candidate for automation. It's a point that resonated with me at the time, and I continue to question whether any mind-numbing and multi-step process I face should be automated.<br /><div><br /></div><div><b><u>Challenges of Managing EDA Tools</u></b></div><div>One of those mind-numbing processes I've been facing recently is managing my installations of development tools -- specifically, the electronic design automation (EDA) tools that I use to simulate and synthesize Verilog hardware descriptions and develop the embedded software that runs on those devices.</div><div>In my experience, EDA tools are a bit different than the standard software that might be installed by default on your Linux workstation:</div><ul><li>EDA software is enough of a niche market that builds will either just not be available for your Linux distribution, or will be an older version of the software.</li><li>I often need to install EDA software on machines where I don't have root access, so it wouldn't help me much if the Linux distribution provided a pre-built version of the software</li><li>I often don't have control over the Linux distribution and version that I have to use. CentOS/RHEL 6, released in 2011, is still quite common and will likely continue to be common since support is offered through 2020.</li><li>It's often necessary to have several versions of EDA software installed at a given time. Projects often have a dependency on a specific version -- at least until a newer version is validated, so multiple versions must coexist</li></ul><div>These challenges, in and of themselves, make maintaining a collection of EDA tools time-consuming.</div><div><br /></div><div><b><u>Challenges of Managing OSS EDA Tools</u></b></div><div>When it comes to working with open-source EDA tools, there is another level of complexity. These tools are often provided in source form, so they must be installed by the end user. EDA software, like any other, can be complex and can have dependencies on additional software packages. Compiling <a href="https://symbiyosys.readthedocs.io/en/latest/">SymbiYosys</a>, the open-source formal-analysis tool, requires that the source for seven other packages be fetched, compiled, and installed. This is complex enough when the user has administrator access to the machine and can install needed development libraries. Without administrator access, this process becomes incredibly complex. And, of course, when a new version of one of the packages is released, the whole process must be repeated.</div><div><br /></div><div><b><u>Introducing EDAPack</u></b></div><div>I created <a href="https://github.com/edapack">EDAPack</a>, which I consider to be in an Alpha state, to address the challenges I describe above. You can think of EDAPack has having two main components, as shown in the diagram below:</div><div><br /></div><div class="separator" style="clear: both; text-align: center;"></div><br /><div class="separator" style="clear: both; text-align: center;"><a href="https://2.bp.blogspot.com/-mHnyi80IJ5M/XDvtzUQzq2I/AAAAAAAACfM/mGuwBfXr7Ps0ArY4CAkLdPMJmD9uBh6UwCLcBGAs/s1600/EDAPackDiagram_2.PNG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="509" data-original-width="947" height="343" src="https://2.bp.blogspot.com/-mHnyi80IJ5M/XDvtzUQzq2I/AAAAAAAACfM/mGuwBfXr7Ps0ArY4CAkLdPMJmD9uBh6UwCLcBGAs/s640/EDAPackDiagram_2.PNG" width="640" /></a></div><div><br /></div><div>First off is the base set of tools, shown in the bottom box. EDAPack contains an installation of <a href="http://modules.sourceforge.net/">Environment Modules</a>, which is a software package that is somewhat-widely used to manage configuring the environment for different software tools. Modules makes it easy to configure the environment with the right mix of tool versions with a minimum of fuss. EDAPack also contains an installation of Python3, a software package that is increasingly required to run open-source software tools, but is somewhat difficult to get correctly-installed on older Linux distributions. Finally, EDAPack contains scripts to manage installation of tools into the EDAPack tree.</div><div><br /></div><div>The second part of EDAPack is most significant for those of you that are using open-source tools, such as a GCC cross-compiler or one of the open-source Verilog simulators. A key aspect of EDAPack's mission is to provide pre-compiled versions of these packages that can simply be installed and used, skipping all the complexities of installing development libraries and compiling required dependencies. Right now, just a few packages are setup to be used in this way, but the goal is to expand that set based on user demand.</div><div><br /></div><div>Now, providing pre-compiled software is always an interesting proposition in a Linux environment. Different distributions provide different versions of tool and libraries, making it difficult to deliver software that will run on a variety of distributions. EDAPack compiles packages on CentOS 6, then tests the software on a variety of Linux distributions (courtesy of <a href="https://www.docker.com/">Docker</a>), ensuring that the software will run correctly on a wide variety of Linux distributions.</div><div><br /></div><div><b><u>How does it Work?</u></b></div><div>Getting started is actually pretty simple (and that's by design): just download EDAPack from the <a href="https://github.com/EDAPack/edapack/releases">GitHub release</a> page. After installing EDAPack, you'll want to source a setup script in the EDAPack 'etc' directory (&lt;edapack&gt;/etc/edapack.sh) in order to configure some initial paths.</div><div><br /></div><div>From there, you'll probably want to install some software. This can be done using the <span style="font-family: Courier New, Courier, monospace;">edapack avail</span>&nbsp;command to list software that is available to install:</div><div><br /></div><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-P3N3XEHWRlA/XDvy3lQNRaI/AAAAAAAACfY/gcB4othuXEUq-bPD__iZ7JRRUOZTKGTwACLcBGAs/s1600/edapack_avail.PNG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="97" data-original-width="486" src="https://1.bp.blogspot.com/-P3N3XEHWRlA/XDvy3lQNRaI/AAAAAAAACfY/gcB4othuXEUq-bPD__iZ7JRRUOZTKGTwACLcBGAs/s1600/edapack_avail.PNG" /></a></div><div><br /></div><div>Once you know which software you'd like to install, the <span style="font-family: Courier New, Courier, monospace;">edapack install</span> command is used to&nbsp; fetch and install the software into the EDAPack tree. For example, <span style="font-family: Courier New, Courier, monospace;">edapack install verilator</span>&nbsp;fetches a pre-built version of Verilator from the release area on GitHub and installs it into the EDAPack tree.</div><div><br /></div><div>Before using software from the EDAPack tree, you will use the <i>module</i>&nbsp;tool (provided by <a href="http://modules.sourceforge.net/">Environment Modules</a>) to list the installed packages and load tools into your environment. Here's the output from <span style="font-family: Courier New, Courier, monospace;">module avail</span>, which lists the installed tools.&nbsp;</div><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-7wMyjYW6dSc/XDvzMF_7l2I/AAAAAAAACfg/95Ve7_SxfCczmB0r95scXQyys7nKHxGZQCLcBGAs/s1600/module_avail.PNG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="57" data-original-width="485" src="https://1.bp.blogspot.com/-7wMyjYW6dSc/XDvzMF_7l2I/AAAAAAAACfg/95Ve7_SxfCczmB0r95scXQyys7nKHxGZQCLcBGAs/s1600/module_avail.PNG" /></a></div><div><br /></div><div>We can see that <i>symbiyosys</i> and <i>verilator</i>&nbsp;are installed. We can load a specific version of these tools, or specify the 'latest' version to get the newest installed version.</div><div><br /></div><div>In other words, simply issuing the command <span style="font-family: Courier New, Courier, monospace;">module load verilator/latest</span> will setup our environment to use the latest-installed version of <a href="https://www.veripool.org/wiki/verilator">Verilator</a>.</div><div><b><u><br /></u></b></div><div><b><u>Current Status and Call to Action</u></b></div><div><br /></div><div>Currently, EDAPack is newly-released, provides a bare minimum of packages (Verilator, Icarus Verilog, and SymbiYosys), and provides support for Linux only. EDAPack is useful to me, and I'll continue to evolve it to meet my needs. However, I'm very interested in whether EDAPack could be useful to you as well.</div><div><br /></div><div>Are you an EDA user? What tools would you like to see delivered in this way? What OS (Linux distro or other) do you use, and would like to ensure is supported?</div><div><br /></div><div>Are you an author of open-source engineering software? Would you like to have your software made available to users in this way?</div><div><br /></div><div>Do you have other ideas of what might be possible with a framework like this?</div><div><br /></div><div>EDAPack is designed to enable hardware and embedded-software developers focus on developing their designs, not on compiling their development tools. I'm interested in your input on whether you feel EDAPack is a useful concept and, if so, what could make it even more useful to you. Feel free to comment on the blog, or file requests on GitHub. What tools are in your pack?</div><div><br /></div><div><br /></div><ul><ul></ul></ul><div></div>
+    <h1 class="post-title">Automating Bare-Metal Tests with PSS</h1>
+    <span class="post-date">25 Feb 2023</span>
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/AutomatingBareMetalSoCTestsWithPSS_splash.png" /> 
+</p>
+<p>As a technologist, it’s tempting to focus on what is new 
+(at least, new to me) – especially when choosing what to write about.
+I’m periodically reminded that there is immense value in returning
+to topics. Returning to a topic might raise awareness with a different
+set of readers, but it’s also highly likely that I’ll learn something
+new about the topic, or that my perspective on the topic will evolve 
+in the process.</p>
+
+<p>This post marks the beginning of just such a “back to basics” series
+that focuses on the <a href="https://www.accellera.org/downloads/standards/portable-stimulus">Accellera Portable Test and Stimulus</a> 
+(PSS) language. PSS is a specification language for modeling behavior 
+to test. It specifically focuses on providing features that help 
+in creating bare-metal software-driven system-level tests. Consequently,
+this ‘Intro to PSS’ series will focus on the task of the bare-metal
+software-driven test writer, and the value PSS provides.</p>
+
+<h2 id="programming-languages-categories">Programming Languages Categories</h2>
+<p>When it comes to programming languages, there are two big 
+categories: general-purpose programming languages and domain-specific
+programming languages. General-purpose programming languages such
+as C/C++, Java, Python, and Rust are designed to be able to 
+implement any algorithm or behavior. The “any…” part comes 
+with a caveat, of course: any algorithm or behavior given sufficient
+expertise and time.</p>
+
+<p>There are classes of problems that have such
+well-defined expert solutions that it’s considered wasteful
+to actually apply large amounts of expert-programmer 
+resource to create a bespoke solution each time they arise. This is where 
+domain-specific languages (DSL) come into play. A domain-specific language 
+provides a way to capture a problem in a way that a domain expert finds 
+familiar, along with enough information to enable a synthesis tool to 
+produce an optimal implementation in a general-purpose language.</p>
+
+<h2 id="cases-where-dsls-shine">Cases where DSLs shine</h2>
+<p>As you may have guessed, PSS is a domain-specific language. In this case,
+one targeted at capturing system-level test behavior in terms 
+familiar to a domain expert.
+Let’s take a look at another very popular application for domain-specific
+languages to better understand the value and tradeoffs that they provide.</p>
+
+<p>An excellent example of an application of domain-specific languages 
+is building lexical analyzers (lexers) and parsers.  People that 
+define languages think in terms of language grammars – typically
+captured in <a href="https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form">Backus-Naur Form</a> 
+(BNF). For example, here is a snippet of BNF grammar from the PSS 
+language-reference manual.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action_body_item ::=
+ activity_declaration
+ | override_declaration
+ | constraint_declaration
+ | action_field_declaration
+</code></pre></div></div>
+
+<p>Coding a parser by hand from this description involves a fair amount of 
+analysis to, for example, identify the keywords that would cause a parser
+to proceed down one branch vs another, and how many tokens of
+‘lookahead’ are needed in each case to disambiguate choices. While these
+are critical implementation decisions, they’re difficult for a human to
+make by hand since they often involve ‘global’ thinking about the whole
+of a sizable language grammar. In other words, not areas of thinking that
+to which the untrained human mind lends itself.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action_body_item:
+ activity_declaration
+ | override_declaration
+ | constraint_declaration
+ | action_field_declaration
+ ;
+</code></pre></div></div>
+
+<p>Re-expressing the BNF in the terms of a domain-specific language is an
+almost-trivial exercise for a domain expert in language design. The 
+code snippet above is in <a href="https://www.antlr.org/">ANTLR4</a> format. There 
+are a few small changes in format, and a few things that are conveyed 
+typographically in a printed language grammar are conveyed differently
+to support programmatic processing, but overall the DSL description
+is easy to learn for a domain expert.</p>
+
+<p>By capturing our language grammar in a domain-specific language format,
+we’re able to make use of a parser/lexer builder tool to derive an 
+efficient implementation of a language parser for this language. The 
+parser-builder tool is able to easily and quickly make high-quality
+global optimizations that would have been very time consuming and 
+error-prone for a human to make. And, if we change the grammar at 
+some point, we only need to re-run the the parser-builder tool to derive
+a new (and still optimal) parser implementation.</p>
+
+<p>Looking at a few domain-specific languages, they tend to shine when:</p>
+<ul>
+  <li>There exists a natural (innate or acquired) way for a domain expert to 
+capture a domain problem.</li>
+  <li>Deterministic, automated methods exist to derive an optimized 
+implementation from the domain-specific description</li>
+  <li>There is a significant difference between the best way to describe a 
+problem and the best way to implement it in a general-purpose 
+programming language</li>
+  <li>Achieving a good implementation requires global and/or concurrent 
+optimization.</li>
+</ul>
+
+<h2 id="where-does-bare-metal-testing-fit">Where does Bare-Metal Testing fit?</h2>
+<p>With that in mind, let’s look back at our target application for PSS:
+creation of bare-metal software-driven tests. In a typical 
+system-development flow, development and verification of hardware and
+software proceed on different paths up to a point. Of course, there 
+can be some cross-over in the process, but the time when software
+really starts to run on the hardware for which it is intended is
+once the hardware system is assembled and verified.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/Hw_Sw_VDiagram_640.png" /> 
+</p>
+
+<p>Once a stable hardware-like representation of the hardware system 
+exists, the integration team can really get started on completing
+software for the system. Note that I said “hardware-like”. In many
+cases, this representation of the hardware system will be a hardware
+emulator, or an FPGA prototype. The key is that the representation
+has sufficient stability and performance to support 
+software-development efforts.</p>
+
+<p>Two key factors to a successful hardware/software integration process are 
+maximizing the stability of the hardware platform and having an efficient
+path to reproduce and produce minimized testcases for any bugs found
+by the integration team. The quality, quantity, and flexibility of the
+bare-metal tests used to verify the system-level hardware platform has
+a huge impact on success here.</p>
+
+<h2 id="what-are-bare-metal-tests">What are Bare-Metal Tests?</h2>
+<p>In order to appreciate some of the key benefits that PSS has to offer 
+in creating bare-metal software-driven tests, it’s useful to understand
+a bit more about about the characteristics of bare-metal software tests.</p>
+
+<p>As their name suggests, bare-metal software tests run directly on the
+processor cores of a design. Unlike production software, they don’t 
+run on top of an operating system or real-time operating system (RTOS),
+and consequently don’t have access to services that operating systems
+provide, such as:</p>
+<ul>
+  <li>Dynamic memory allocation</li>
+  <li>Threads and processes</li>
+  <li>Multi-processor scheduling infrastructure</li>
+  <li>Device-driver infrastructure</li>
+</ul>
+
+<p>There are very good reasons that bare-metal tests opt to run directly
+on the hardware and forego the use of an operating system.</p>
+
+<p>Early software-driven integration testing is performed using a hardware
+simulator to provide maximum debug visibility. Simulating a full system
+at RTL is a slow process. Even simple operating systems run a 
+not-insignificant amount of code prior to execution of the application,
+all of which is running very very slowly on a simulated RTL model of 
+a processor. Running bare-metal tests enables running more actual test
+code.</p>
+
+<p>The code that an operating system runs on start-up assumes that a the
+hardware platform is stable. For example, for proper operation, it 
+will require that memory accesses to different regions, and very possibly
+atomic operations, are working. It will require that exceptions and 
+interrupts are stable. Instability in the hardware platform is likely
+to manifest itself in kernel panic, “blue screen of death”, or other 
+generic error signal that is unlikely to point the developer to the
+root cause with any accuracy. We can create much more focused tests
+for ensuring stability in various aspects of the platform that can
+produce much more accurate failure signatures, allowing the developer
+to zero in on the root cause much more quickly.</p>
+
+<p>Finally, writing bare-metal tests gives us much more fine-grained
+control over the hardware. The goal of an OS is to produce an 
+optimal balance between overall throughput, scheduling fairness,
+and other factors such as power consumption. The bare-metal testers
+goal is often to hit corner cases that such a ‘balanced’ approach
+to running code doesn’t lend itself to.</p>
+
+<h2 id="so-how-does-pss-help">So, how does PSS Help?</h2>
+<p>So, we have good reasons for writing our early software-driven 
+tests as bare-metal software. But this doesn’t really make them
+any easier to write. Over the next few posts we will explore how
+the PSS domain-specific language helps to boost test-writing
+productivity, while still enabling us to derive lean and mean
+bare-metal software-driven tests. We will see how PSS processing
+tools bridge the abstraction gap between a PSS-level description
+and good bare-metal implementation code. We will see how a PSS
+description enables PSS processing tools to make good global
+optimizations that are difficult and error-prone for humans. It
+remains to be seen whether PSS is considered to provide a natural 
+(innate or acquired) way to capture system-level tests. I hope 
+you’ll have the information to assess this for yourself by the
+end of this series.</p>
+
+
   </div>
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
 
   
   <div class="related">
     <h2>Related posts</h2>
     <ul class="related-posts">
-      
-        <li>
-          <h3>
-            <a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">
-              Automating Bare-Metal Tests with PSS
-              <small>25 Feb 2023</small>
-            </a>
-          </h3>
-        </li>
       
         <li>
           <h3>
@@ -571,6 +765,15 @@
             <a href="/2022/08/21/simplifying-custom-template-generated.html">
               Simplifying Custom Template-Generated Content
               <small>21 Aug 2022</small>
+            </a>
+          </h3>
+        </li>
+      
+        <li>
+          <h3>
+            <a href="/2022/07/17/pyucis-manipulating-coverage-data.html">
+              PyUCIS: Manipulating Coverage Data
+              <small>17 Jul 2022</small>
             </a>
           </h3>
         </li>
