@@ -28,10 +28,19 @@ url: "https://bitsbytesgates.com" # the base hostname & protocol for your site, 
 twitter_username: jekyllrb
 github_username:  jekyll
 
+#markdown: kramdown
+
+#kramdown:
+#  input: GFM
+#  syntax_highlighter: rouge
+
 # Build settings
 #theme: minima
 plugins:
   - jekyll-feed
+
+include:
+  - _series/
 
 # Exclude from processing.
 # The following items will not be processed, by default.

@@ -1,0 +1,13 @@
+
+package:
+  name: bitsbytesgates.github.io
+
+  dep-sets:
+  - name: default
+    deps: []
+  
+  - name: default-dev
+    deps:
+    - name: rouge
+      url: https://github.com/mballance/rouge.git
+      branch: pss

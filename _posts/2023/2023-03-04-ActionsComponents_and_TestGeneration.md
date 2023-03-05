@@ -3,6 +3,7 @@ layout: post
 title: "PSS Fundamentals: Actions, Components, and Test Generation"
 date: 2023-03-03
 categories: PSS
+series: "Intro to PSS"
 ---
 <p align="center">
 <img src="{{ '/imgs/2023/PSSFundamentals_ActionsComponents_splash.png' | absolute_url }}"/> 
@@ -78,7 +79,7 @@ realization layer because they can contain both modeling and realization
 aspects. In all cases, actions group the data, constraints, and implementation 
 for a given behavior. 
 
-```
+```pss
 action check_reg_reset_vals {
     list<bit[32]> reset_vals = {0x0000_0000, 0x0180_2FFF, 0x8000_0000};
     rand bit[8] start;
@@ -137,7 +138,7 @@ construct fills this requirement for a persistent, static entity to model
 physical entities, the resources they contain, and the operations that 
 can be performed on them.
 
-```
+```pss
 component dma_c {
     action mem2mem_a {
         // ...
