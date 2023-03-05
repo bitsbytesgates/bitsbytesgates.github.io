@@ -1,0 +1,26 @@
+
+/**
+ * The dma_c component describes a simple DMA engine
+ */
+component dma_c {
+    action mem2mem_a {
+
+        exec body C = """
+        // This is a target-template exec block
+        """;
+    }
+}
+
+//
+// pss_top is where the magic happens
+//
+component pss_top {
+    dma_c       dma0;
+    dma_c       dma1;
+
+    action Entry {
+        activity {
+            do dma_c::mem2mem_a
+        }
+    }
+}

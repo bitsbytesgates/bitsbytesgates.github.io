@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2023-03-05T03:21:51+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">PSS Fundamentals: Actions, Components, and Test Generation</title><link href="https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration.html" rel="alternate" type="text/html" title="PSS Fundamentals: Actions, Components, and Test Generation" /><published>2023-03-03T00:00:00+00:00</published><updated>2023-03-03T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2023-03-05T23:36:13+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">PSS Fundamentals: Actions, Components, and Test Generation</title><link href="https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration.html" rel="alternate" type="text/html" title="PSS Fundamentals: Actions, Components, and Test Generation" /><published>2023-03-03T00:00:00+00:00</published><updated>2023-03-03T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2023/PSSFundamentals_ActionsComponents_splash.png" /> 
 </p>
 
@@ -71,26 +71,26 @@ realization layer because they can contain both modeling and realization
 aspects. In all cases, actions group the data, constraints, and implementation 
 for a given behavior.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action check_reg_reset_vals {
-    list&lt;bit[32]&gt; reset_vals = {0x0000_0000, 0x0180_2FFF, 0x8000_0000};
-    rand bit[8] start;
+<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">action</span> <span class="nc">check_reg_reset_vals</span> <span class="p">{</span>
+    <span class="kt">list</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span> <span class="n">reset_vals</span> <span class="o">=</span> <span class="p">{</span><span class="mh">0x0000_0000</span><span class="p">,</span> <span class="mh">0x0180_2FFF</span><span class="p">,</span> <span class="mh">0x8000_0000</span><span class="p">};</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="n">start</span><span class="p">;</span>
 
-    constraint start in [0..reset_vals.size()-1];
+    <span class="k">constraint</span> <span class="n">start</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">reset_vals</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
 
-    exec body {
-        bit[32] off, addr, val;
-        repeat (i : reset_vals.size()) {
-            off = ((start + i)%reset_vals.size());
-            addr = 0x1000_0000 + 4*off;
-            val = read32(addr);
+    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+        <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">off</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">val</span><span class="p">;</span>
+        <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">reset_vals</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">off</span> <span class="o">=</span> <span class="p">((</span><span class="n">start</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span><span class="o">%</span><span class="n">reset_vals</span><span class="o">.</span><span class="n">size</span><span class="p">());</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">off</span><span class="p">;</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
 
-            if (val != reset_vals[off]) {
-                error("Failed to read register at 0x%08x: read 0x%08x ; expected %08x",
-                    addr, val, reset_vals[off]);
-            }
-        }
-    }
-}
+            <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="n">reset_vals</span><span class="p">[</span><span class="n">off</span><span class="p">])</span> <span class="p">{</span>
+                <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
+                    <span class="n">addr</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">reset_vals</span><span class="p">[</span><span class="n">off</span><span class="p">]);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <p>The example above is an action that checks the reset value of registers in the
@@ -131,20 +131,20 @@ construct fills this requirement for a persistent, static entity to model
 physical entities, the resources they contain, and the operations that 
 can be performed on them.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>component dma_c {
-    action mem2mem_a {
-        // ...
-    }
+<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">dma_c</span> <span class="p">{</span>
+    <span class="kd">action</span> <span class="nc">mem2mem_a</span> <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
 
-    // ...
-}
+    <span class="c1">// ...</span>
+<span class="p">}</span>
 
-component subsys_c {
-    dma_c           dma0;
-    dma_c           dma1;
+<span class="kd">component</span> <span class="nc">subsys_c</span> <span class="p">{</span>
+    <span class="n">dma_c</span>           <span class="n">dma0</span><span class="p">;</span>
+    <span class="n">dma_c</span>           <span class="n">dma1</span><span class="p">;</span>
 
-    // ...
-}
+    <span class="c1">// ...</span>
+<span class="p">}</span>
 </code></pre></div></div>
 
 <p>Components may be composed hierarchically, much as designs are. So, if your
