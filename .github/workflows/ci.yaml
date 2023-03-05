@@ -19,7 +19,7 @@ jobs:
             python3 -m pip install ivpm
         - name: Install Dependencies
           run: |
-            python3 -m ivpm update
+            python3 -m ivpm update -a
             bundler set path vendor
             bundler install
         - name: Install and build
