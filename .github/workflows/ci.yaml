@@ -20,8 +20,8 @@ jobs:
         - name: Install Dependencies
           run: |
             python3 -m ivpm update -a
-            bundler set path vendor
-            bundler install
+            bundle config set path vendor
+            bundle install
         - name: Install and build
           run: |
             bundle exec jekyll build -d web
