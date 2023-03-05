@@ -60,6 +60,16 @@
         <ul class="nested" list-style-type="none">
         
         
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
         <li><span class="caret">Feb</span>
         <ul class="nested" list-style-type="none">
         
@@ -509,208 +519,258 @@
 </h1>
 
   <h1 class="entry-title">
-    <a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a>
+    <a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a>
   </h1>      
 
 <div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/AutomatingBareMetalSoCTestsWithPSS_splash.png" /> 
+<img src="https://bitsbytesgates.com/imgs/2023/PSSFundamentals_ActionsComponents_splash.png" /> 
 </p>
-<p>As a technologist, it’s tempting to focus on what is new 
-(at least, new to me) – especially when choosing what to write about.
-I’m periodically reminded that there is immense value in returning
-to topics. Returning to a topic might raise awareness with a different
-set of readers, but it’s also highly likely that I’ll learn something
-new about the topic, or that my perspective on the topic will evolve 
-in the process.</p>
 
-<p>This post marks the beginning of just such a “back to basics” series
-that focuses on the <a href="https://www.accellera.org/downloads/standards/portable-stimulus">Accellera Portable Test and Stimulus</a> 
-(PSS) language. PSS is a specification language for modeling behavior 
-to test. It specifically focuses on providing features that help 
-in creating bare-metal software-driven system-level tests. Consequently,
-this ‘Intro to PSS’ series will focus on the task of the bare-metal
-software-driven test writer, and the value PSS provides.</p>
-
-<h2 id="programming-languages-categories">Programming Languages Categories</h2>
-<p>When it comes to programming languages, there are two big 
-categories: general-purpose programming languages and domain-specific
-programming languages. General-purpose programming languages such
-as C/C++, Java, Python, and Rust are designed to be able to 
-implement any algorithm or behavior. The “any…” part comes 
-with a caveat, of course: any algorithm or behavior given sufficient
-expertise and time.</p>
-
-<p>There are classes of problems that have such
-well-defined expert solutions that it’s considered wasteful
-to actually apply large amounts of expert-programmer 
-resource to create a bespoke solution each time they arise. This is where 
-domain-specific languages (DSL) come into play. A domain-specific language 
-provides a way to capture a problem in a way that a domain expert finds 
-familiar, along with enough information to enable a synthesis tool to 
-produce an optimal implementation in a general-purpose language.</p>
-
-<h2 id="cases-where-dsls-shine">Cases where DSLs shine</h2>
-<p>As you may have guessed, PSS is a domain-specific language. In this case,
-one targeted at capturing system-level test behavior in terms 
-familiar to a domain expert.
-Let’s take a look at another very popular application for domain-specific
-languages to better understand the value and tradeoffs that they provide.</p>
-
-<p>An excellent example of an application of domain-specific languages 
-is building lexical analyzers (lexers) and parsers.  People that 
-define languages think in terms of language grammars – typically
-captured in <a href="https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form">Backus-Naur Form</a> 
-(BNF). For example, here is a snippet of BNF grammar from the PSS 
-language-reference manual.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action_body_item ::=
- activity_declaration
- | override_declaration
- | constraint_declaration
- | action_field_declaration
-</code></pre></div></div>
-
-<p>Coding a parser by hand from this description involves a fair amount of 
-analysis to, for example, identify the keywords that would cause a parser
-to proceed down one branch vs another, and how many tokens of
-‘lookahead’ are needed in each case to disambiguate choices. While these
-are critical implementation decisions, they’re difficult for a human to
-make by hand since they often involve ‘global’ thinking about the whole
-of a sizable language grammar. In other words, not areas of thinking that
-to which the untrained human mind lends itself.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action_body_item:
- activity_declaration
- | override_declaration
- | constraint_declaration
- | action_field_declaration
- ;
-</code></pre></div></div>
-
-<p>Re-expressing the BNF in the terms of a domain-specific language is an
-almost-trivial exercise for a domain expert in language design. The 
-code snippet above is in <a href="https://www.antlr.org/">ANTLR4</a> format. There 
-are a few small changes in format, and a few things that are conveyed 
-typographically in a printed language grammar are conveyed differently
-to support programmatic processing, but overall the DSL description
-is easy to learn for a domain expert.</p>
-
-<p>By capturing our language grammar in a domain-specific language format,
-we’re able to make use of a parser/lexer builder tool to derive an 
-efficient implementation of a language parser for this language. The 
-parser-builder tool is able to easily and quickly make high-quality
-global optimizations that would have been very time consuming and 
-error-prone for a human to make. And, if we change the grammar at 
-some point, we only need to re-run the the parser-builder tool to derive
-a new (and still optimal) parser implementation.</p>
-
-<p>Looking at a few domain-specific languages, they tend to shine when:</p>
-<ul>
-  <li>There exists a natural (innate or acquired) way for a domain expert to 
-capture a domain problem.</li>
-  <li>Deterministic, automated methods exist to derive an optimized 
-implementation from the domain-specific description</li>
-  <li>There is a significant difference between the best way to describe a 
-problem and the best way to implement it in a general-purpose 
-programming language</li>
-  <li>Achieving a good implementation requires global and/or concurrent 
-optimization.</li>
-</ul>
-
-<h2 id="where-does-bare-metal-testing-fit">Where does Bare-Metal Testing fit?</h2>
-<p>With that in mind, let’s look back at our target application for PSS:
-creation of bare-metal software-driven tests. In a typical 
-system-development flow, development and verification of hardware and
-software proceed on different paths up to a point. Of course, there 
-can be some cross-over in the process, but the time when software
-really starts to run on the hardware for which it is intended is
-once the hardware system is assembled and verified.</p>
+<p>Complex engineering endeavors require complex calculations. It’s open to 
+debate as to when the first engineering project that required complex 
+calculations occurred. What we do know is that those 
+calculations would have been done by hand. And this 
+state largely remained until the broad availability of the electronic 
+calculator in the 1950s and 1960s, even as engineering projects 
+and the technology we used to accomplish them become more ambitious.</p>
 
 <p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/Hw_Sw_VDiagram_640.png" /> 
+<img src="https://bitsbytesgates.com/imgs/2023/US-Veterans-Bureau-Computing-Division-1924.jpg" height="480" />
+<em><figcaption>Computing Division of the US Veterans Bureau, 1924. Image Courtesy of the Computer History Museum.</figcaption></em>
 </p>
 
-<p>Once a stable hardware-like representation of the hardware system 
-exists, the integration team can really get started on completing
-software for the system. Note that I said “hardware-like”. In many
-cases, this representation of the hardware system will be a hardware
-emulator, or an FPGA prototype. The key is that the representation
-has sufficient stability and performance to support 
-software-development efforts.</p>
+<p>But this doesn’t mean that “computers” (those individuals performing
+computations with pen and ink or simple mechanical machines) were left 
+to compute everything from the ground up. Fortunately, books were published 
+containing mathematical tables that provided the pre-computed results of 
+standard trigonometric 
+functions for various input values. The data in these books of 
+mathematical tables would, of course, have been produced
+laboriously by some other “computer” or “computers” working with pen 
+and paper. But, they were invaluable at increasing the speed with 
+which complex calculations could be completed by hand.</p>
 
-<p>Two key factors to a successful hardware/software integration process are 
-maximizing the stability of the hardware platform and having an efficient
-path to reproduce and produce minimized testcases for any bugs found
-by the integration team. The quality, quantity, and flexibility of the
-bare-metal tests used to verify the system-level hardware platform has
-a huge impact on success here.</p>
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/LogTrigTablesBook.jpg" height="320" />
+<em><figcaption>Logarithmic and Trigonometric Tables Book. Image courtesy of the Smithsonian.</figcaption></em>
+</p>
 
-<h2 id="what-are-bare-metal-tests">What are Bare-Metal Tests?</h2>
-<p>In order to appreciate some of the key benefits that PSS has to offer 
-in creating bare-metal software-driven tests, it’s useful to understand
-a bit more about about the characteristics of bare-metal software tests.</p>
+<p>What does this have to do with Portable Test and Stimulus (PSS)? 
+PSS is specifically designed to enable PSS processing tools to 
+pre-compute the result of complex test scenario relationships in order
+to make the best use of instructions running at a few Hertz on a simulated 
+RTL model of the design processor. But, before we get to how PSS creates tests, 
+we need to learn about two fundamental PSS concepts: Actions and Components</p>
 
-<p>As their name suggests, bare-metal software tests run directly on the
-processor cores of a design. Unlike production software, they don’t 
-run on top of an operating system or real-time operating system (RTOS),
-and consequently don’t have access to services that operating systems
-provide, such as:</p>
+<h2 id="actions-and-layered-test-modeling">Actions and Layered Test Modeling</h2>
+<p>Our next key topic is the Action. As it so happens, several languages
+and description formats use the notion of <em>Action</em>. After all, it 
+is a very intuitive term to capture an element that is all about
+describing and encapsulating behavior. Before digging into actions,
+it is helpful to understand how PSS divides a description of test 
+behavior into two portions.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/ModelingRealizationLayers.png" />
+<em><figcaption>PSS Modeling and Realization Layers.</figcaption></em>
+</p>
+
+<p>The upper portion, called the Modeling Layer, contains the constraintt-driven 
+features for modeling test scenarios, and is responsible for capturing the 
+space of interesting and useful behaviors.</p>
+
+<p>In contrast, the realization layer is more-or-less 
+intended to carry out the instructions of the modeling layer, and 
+contains familiar procedural statements such as appear in other 
+programming languages like C, Java, and Python. The realization layer
+is also where we’ll find constructs for reading and writing registers
+and memory. While the realization layer makes local decisions, often
+related to handshaking with the device it controls, the modeling layer
+is intended to make the big-picture decisions about how the system
+is exercised.</p>
+
+<h3 id="connecting-modeling-and-realization-layers">Connecting Modeling and Realization Layers</h3>
+<p>As the diagram suggests, <em>Actions</em> bridge the boundary between modeling and 
+realization layer because they can contain both modeling and realization 
+aspects. In all cases, actions group the data, constraints, and implementation 
+for a given behavior.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action check_reg_reset_vals {
+    list&lt;bit[32]&gt; reset_vals = {0x0000_0000, 0x0180_2FFF, 0x8000_0000};
+    rand bit[8] start;
+
+    constraint start in [0..reset_vals.size()-1];
+
+    exec body {
+        bit[32] off, addr, val;
+        repeat (i : reset_vals.size()) {
+            off = ((start + i)%reset_vals.size());
+            addr = 0x1000_0000 + 4*off;
+            val = read32(addr);
+
+            if (val != reset_vals[off]) {
+                error("Failed to read register at 0x%08x: read 0x%08x ; expected %08x",
+                    addr, val, reset_vals[off]);
+            }
+        }
+    }
+}
+</code></pre></div></div>
+
+<p>The example above is an action that checks the reset value of registers in the
+design. It contains a list of register expected values, and a random variable
+that will specify the order in which the action checks the reset values – 
+just to be sure that the order in which we access registers doesn’t change
+behaviors. This is our modeling layer.</p>
+
+<p>The realization layer of the example is contained in the <code class="language-plaintext highlighter-rouge">body</code> block. This
+is the code that carries out the ‘higher-level’ decisions made by the 
+modeling layer. In this case, we:</p>
 <ul>
-  <li>Dynamic memory allocation</li>
-  <li>Threads and processes</li>
-  <li>Multi-processor scheduling infrastructure</li>
-  <li>Device-driver infrastructure</li>
+  <li>Loop over the set of registers we need to check</li>
+  <li>Compute the offset and address of the selected register which are 
+relative to a random starting point.</li>
+  <li>Read it, check against the expected value, and report any mismatches.</li>
 </ul>
 
-<p>There are very good reasons that bare-metal tests opt to run directly
-on the hardware and forego the use of an operating system.</p>
+<p>Even this tiny action begins to show some of the value of modeling scenarios
+with PSS. Our code is similar to what we might write in C and, if anything, is
+a bit more compact. Let’s come back to this example to see how PSS can help
+us with generating test variants.</p>
 
-<p>Early software-driven integration testing is performed using a hardware
-simulator to provide maximum debug visibility. Simulating a full system
-at RTL is a slow process. Even simple operating systems run a 
-not-insignificant amount of code prior to execution of the application,
-all of which is running very very slowly on a simulated RTL model of 
-a processor. Running bare-metal tests enables running more actual test
-code.</p>
+<p>One other thing that we’ll come back to are activities. The action above is
+called an <code class="language-plaintext highlighter-rouge">atomic</code> action. An atomic action is a leaf-level action that
+is implemented in terms of procedural code. We can also implement the 
+behavior of an action in terms of other actions. This so-called <code class="language-plaintext highlighter-rouge">activity</code>
+provides us an expanded set of modeling features.</p>
 
-<p>The code that an operating system runs on start-up assumes that a the
-hardware platform is stable. For example, for proper operation, it 
-will require that memory accesses to different regions, and very possibly
-atomic operations, are working. It will require that exceptions and 
-interrupts are stable. Instability in the hardware platform is likely
-to manifest itself in kernel panic, “blue screen of death”, or other 
-generic error signal that is unlikely to point the developer to the
-root cause with any accuracy. We can create much more focused tests
-for ensuring stability in various aspects of the platform that can
-produce much more accurate failure signatures, allowing the developer
-to zero in on the root cause much more quickly.</p>
+<h2 id="components">Components</h2>
+<p><code class="language-plaintext highlighter-rouge">Components</code> are the other key PSS fundamentals construct for this post. The 
+requirement for <code class="language-plaintext highlighter-rouge">components</code> stems from the observation that actions in
+a system <code class="language-plaintext highlighter-rouge">act on</code> a specific context. A DMA transfer action must <code class="language-plaintext highlighter-rouge">act on</code> 
+a <em>specific</em> DMA controller, because there are likely to
+be several in a system. A DMA transfer action needs to know things like
+what the base address is for the DMA controller registers. The PSS <code class="language-plaintext highlighter-rouge">Component</code> 
+construct fills this requirement for a persistent, static entity to model
+physical entities, the resources they contain, and the operations that 
+can be performed on them.</p>
 
-<p>Finally, writing bare-metal tests gives us much more fine-grained
-control over the hardware. The goal of an OS is to produce an 
-optimal balance between overall throughput, scheduling fairness,
-and other factors such as power consumption. The bare-metal testers
-goal is often to hit corner cases that such a ‘balanced’ approach
-to running code doesn’t lend itself to.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>component dma_c {
+    action mem2mem_a {
+        // ...
+    }
 
-<h2 id="so-how-does-pss-help">So, how does PSS Help?</h2>
-<p>So, we have good reasons for writing our early software-driven 
-tests as bare-metal software. But this doesn’t really make them
-any easier to write. Over the next few posts we will explore how
-the PSS domain-specific language helps to boost test-writing
-productivity, while still enabling us to derive lean and mean
-bare-metal software-driven tests. We will see how PSS processing
-tools bridge the abstraction gap between a PSS-level description
-and good bare-metal implementation code. We will see how a PSS
-description enables PSS processing tools to make good global
-optimizations that are difficult and error-prone for humans. It
-remains to be seen whether PSS is considered to provide a natural 
-(innate or acquired) way to capture system-level tests. I hope 
-you’ll have the information to assess this for yourself by the
-end of this series.</p>
+    // ...
+}
+
+component subsys_c {
+    dma_c           dma0;
+    dma_c           dma1;
+
+    // ...
+}
+</code></pre></div></div>
+
+<p>Components may be composed hierarchically, much as designs are. So, if your
+subsystem design contains two instances of a DMA controller IP, your
+PSS component that represents the subsystem from a test perspective will
+as well.</p>
+
+<p>Components is another topic that we will revisit in greater depth in a 
+future post. For now, their fundamental attributes are:</p>
+<ul>
+  <li>The component tree remains constant for the lifetime of the test</li>
+  <li>A component type groups the supported behaviors and resources required by 
+those behaviors</li>
+  <li>Each action execution is associated with a corresponding instance of
+a component</li>
+</ul>
+
+<h2 id="test-creation-flow">Test Creation Flow</h2>
+<p>PSS breaks the execution of a PSS model into two large phases:</p>
+<ul>
+  <li>Solve  – Constraints are solved, random variable values are assigned, etc</li>
+  <li>Target – Behavior executes on the target platform</li>
+</ul>
+
+<p>The goal is to enable separating or combining these phases depending 
+on the characteristics of the environment.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/PSSTestGenFlow.png" />
+<em><figcaption>PSS Pre-Gen Test Generation Flow.</figcaption></em>
+</p>
+
+<p>The figure above shows a typical <em>pre-generation</em> flow targeted at 
+producing bare-metal test software for SoC integration verification.
+In this case, simplifying computations performed on the target 
+platform is a key goal, since the simulated RTL processor model runs
+at a very low effective clock speed.</p>
+
+<p>Looking back at our ‘register reset test’ action, the implementation
+code might look like the following:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">uint32_t</span> <span class="n">val</span><span class="p">;</span>
+  <span class="kt">uint32_t</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x10000004</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="mh">0x01802FFF</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
+         <span class="mh">0x10000004</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mh">0x01802FFF</span><span class="p">);</span>
+    <span class="n">ret</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x10000008</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="mh">0x80000000</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
+        <span class="mh">0x10000008</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mh">0x80000000</span><span class="p">);</span>
+    <span class="n">ret</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x10000000</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="mh">0x00000000</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
+        <span class="mh">0x10000000</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mh">0x00000000</span><span class="p">);</span>
+    <span class="n">ret</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Note that, in this case, the PSS processing tool has pre-computed the random 
+starting index, unrolled the loop, and pre-computed addresses in order to minimize 
+instructions executed on the target platform. It could also have locally-computed
+a random value between 0 and 2 for the starting index. Due to the abstraction
+level at which the test behavior is defined, the PSS processing tool has many
+implementations options that can be traded off against the requirements of the
+implementation platform.</p>
+
+<p>Much as mathematical tables helped human
+computers to maximize the results they were able to produce by hand, the PSS
+semantics that enable pre-computation of results help PSS-created tests maximize
+test throughput on simulated hardware platforms.</p>
+
+<h2 id="looking-forward">Looking Forward</h2>
+<p>In this post, we have learned about two key PSS constructs: <em>actions</em> and <em>components</em>. 
+<em>Actions</em> describe model-level behavior and connect that high-level behavior to 
+test realization implementation via exec blocks. <em>Components</em> describe structure,
+and group behaviors (actions) with the resources they require. From now on, every
+example will be built from <em>Actions</em> and <em>Components</em>, and we will add new ways
+that PSS enables actions and components to interact.</p>
+
+<p>In the next post, we will begin to look in more detail at the declarative basis
+of the PSS language. Being, first and foremost, declarative makes PSS a bit 
+different as languages go, but also enables many of its most impressive capabilities.</p>
 
 </div>
 
 </div>
+
+<div />
+
+<center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+<p><em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em></p>
 
       </div>
     </div>
