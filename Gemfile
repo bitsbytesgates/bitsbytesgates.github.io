@@ -8,4 +8,4 @@ gem 'jekyll'
 gem 'jekyll-feed'
 gem 'jekyll-theme-tactile'
 gem 'jekyll-paginate'
-
+gem 'jekyll-mermaid'

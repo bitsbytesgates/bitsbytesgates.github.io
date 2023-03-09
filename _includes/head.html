@@ -27,6 +27,15 @@
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ '/atom.xml' | absolute_url }}">
 
+  {% if page.mermaid %}
+      {% include mermaid.html %}
+  {% endif %}
+  <!--
+  <script type="module">
+    import mermaid from "{{ 'public/js/mermaid.esm.min.mjs' | absolute_url }}";
+  </script>
+    -->
+
   {% if site.google_analytics_id %}
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

@@ -28,6 +28,7 @@ url: "https://bitsbytesgates.com" # the base hostname & protocol for your site, 
 twitter_username: jekyllrb
 github_username:  jekyll
 
+
 #markdown: kramdown
 
 #kramdown:
@@ -38,6 +39,13 @@ github_username:  jekyll
 #theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-mermaid
+
+# The mermaid plug-in expects a .js to include above each diagram. We take
+# care of loading elsewhere, so this is just a stub to keep the plug-in happy
+mermaid:
+  src: "public/js/stub.js"
+#  src: "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
 
 include:
   - _series/

@@ -5,6 +5,7 @@
 #layout: home
 layout: default
 #title: Home
+mermaid: true
 ---
 
 <div class="blog-index">  
