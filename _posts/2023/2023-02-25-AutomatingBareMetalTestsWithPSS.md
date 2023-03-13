@@ -3,6 +3,7 @@ layout: post
 title: Automating Bare-Metal Tests with PSS
 date: 2023-02-25
 categories: PSS
+series: "Intro to PSS"
 ---
 <p align="center">
 <img src="{{ '/imgs/2023/AutomatingBareMetalSoCTestsWithPSS_splash.png' | absolute_url }}"/> 

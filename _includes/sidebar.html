@@ -18,6 +18,11 @@
     {% endcomment %}
 
     <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/index.html' | absolute_url }}">Home</a>
+    <!--
+    <a class="sidebar-nav-item{% if page.title == 'Series' %} active{% endif %}" href="{{ '/series.html' | absolute_url }}">Archive</a>
+      -->
+    {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+
     <a class="sidebar-nav-item{% if page.title == 'Archive' %} active{% endif %}" href="{{ '/archive.html' | absolute_url }}">Archive</a>
     {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
     <ul class="BlogPostTreeUL" list-style-type="none">

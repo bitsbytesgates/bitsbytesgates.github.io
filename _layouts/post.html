@@ -5,35 +5,17 @@ layout: default
 
   {% include head.html %}
 
+
   <body>
-    {% comment %}
-    {% include sidebar.html %}
-    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
-    <script src='{{ site.baseurl }}/public/js/script.js'></script>
 
-    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
-         content to avoid any CSS collisions with our real content. -->
-    <div class="wrap">
-      <div class="masthead">
-        <div class="container">
-          <h3 class="masthead-title">
-            <a href="{{ site.baseurl }}/" title="Home">{{ site.title }}</a>
-            <small>{{ site.tagline }}</small>
-          </h3>
-        </div>
-      </div>
-
-      <div class="container content">
-        {{ content }}
-      </div>
-    </div>
-    {% endcomment %}
 
   <div class="post">
     <h1 class="post-title">{{ page.title }}</h1>
     <span class="post-date">{{ page.date | date_to_string }}</span>
+
     {{ content }}
   </div>
+
 
   <div/>
   <center>
@@ -42,6 +24,25 @@ layout: default
   <em>The views and opinions expressed above are solely those of the author and do not 
       represent those of my employer or any other party.</em>
 
+    {% if page.series %}
+    <br/>
+    <br/>
+      {% assign seriesPosts = site.posts | sort: "date" | where_exp: "post", "post.series == page.series" %}
+      {% if seriesPosts.size >= 1 %}
+      <h2>Posts in the series "{{ page.series }}"</h2>
+      <ul>
+        {% for post in seriesPosts %}
+        {% if post.title != page.title %}
+        <li><a href="{{ post.url }}">{{post.title}}</a></li>
+        {% else %}
+        <li>{{post.title}}</li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% endif %}
+
+  {% comment %}
   {% if site.related_posts.size >= 1 %}
   <div class="related">
     <h2>Related posts</h2>
@@ -59,6 +60,7 @@ layout: default
     </ul>
   </div>
   {% endif %}
+  {% endcomment %}
 
   </body>
 </html>
