@@ -24,6 +24,7 @@ jobs:
             bundle install
         - name: Install and build
           run: |
+            export JEKYLL_ENV=production
             bundle exec jekyll build -d web
             touch web/.nojekyll
 
