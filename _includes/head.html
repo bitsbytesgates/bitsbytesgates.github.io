@@ -36,7 +36,15 @@
   </script>
     -->
 <!-- Google tag (gtag.js) -->
-{% if jekyll.environment != "development" %}
+
+<!--
+Pre-env
+{{ jekyll.environment }}
+Post-env
+-->
+
+{% if jekyll.environment == "development" %}
+{% else %}
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
