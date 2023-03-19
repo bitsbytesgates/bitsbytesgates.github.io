@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+       &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/code_html/2023/03/memtest_buffer.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+       &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/code_html/2023/03/memtest_buffer.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/****************************************************************************
+ * memtest_buffer.pss
+ *
+ * Copyright 2023 Matthew Ballance and Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may 
+ * not use this file except in compliance with the License.  
+ * You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ *
+ * Created on:
+ *     Author: 
+ ****************************************************************************/</span>
+<span class="k">import</span> <span class="nn">addr_reg_pkg</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+<span class="k">import</span> <span class="nn">executor_pkg</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="kd">struct</span> <span class="nc">core_s</span> <span class="p">:</span> <span class="n">executor_trait_s</span> <span class="p">{</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>     <span class="n">id</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">buffer</span> <span class="nc">mem_b</span> <span class="p">{</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
+    <span class="n">addr_handle_t</span>       <span class="n">base_addr</span><span class="p">;</span>
+
+    <span class="c1">// Binding the mem_b pool to all actions enables</span>
+    <span class="c1">// all actions to communicate via mem_b objects</span>
+    <span class="k">pool</span> <span class="n">mem_b</span> <span class="n">mem_b_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_b_p</span> <span class="o">*</span><span class="p">;</span>
+
+    <span class="kd">action</span> <span class="nc">Write</span> <span class="p">{</span>
+        <span class="k">output</span> <span class="n">mem_b</span>                  <span class="n">dat_o</span><span class="p">;</span>
+        <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
+
+        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+            <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">write32</span><span class="p">(</span>
+                    <span class="n">make_handle_from_handle</span><span class="p">(</span>
+                        <span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Copy</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">mem_b</span>                     <span class="n">dat_i</span><span class="p">;</span>
+        <span class="k">output</span> <span class="n">mem_b</span>                    <span class="n">dat_o</span><span class="p">;</span>
+        <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span>   <span class="n">core</span><span class="p">;</span>
+
+        <span class="c1">// Ensure we copy the same number of words</span>
+        <span class="k">constraint</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
+
+        <span class="c1">// Ensure that src/dst regions d not overlap</span>
+        <span class="k">constraint</span> <span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="o">||</span>
+            <span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span> <span class="o">&gt;</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
+
+        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+            <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
+            <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
+                    <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span>
+                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
+                <span class="n">write32</span><span class="p">(</span>
+                    <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span>
+                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">tmp</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Check</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">mem_b</span>                     <span class="n">dat_i</span><span class="p">;</span>
+        <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span>   <span class="n">core</span><span class="p">;</span>
+
+        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+            <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
+            <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
+                    <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span>
+                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">!=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">error</span><span class="p">(</span><span class="s">"0x%08x: expect %d ; receive %d"</span><span class="p">,</span>
+                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
+        <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
+        <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
+        <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
+
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="n">write</span><span class="p">;</span>
+            <span class="n">copy</span><span class="p">;</span>
+            <span class="n">check</span><span class="p">;</span>
+            <span class="k">bind</span> <span class="n">write</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+            <span class="k">bind</span> <span class="n">copy</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">check</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Write2xCopyCheck</span> <span class="p">{</span>
+        <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
+        <span class="n">Copy</span>              <span class="n">copy1</span><span class="p">,</span> <span class="n">copy2</span><span class="p">;</span>
+        <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
+
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="n">write</span><span class="p">;</span>
+            <span class="n">copy1</span><span class="p">;</span>
+            <span class="n">copy2</span><span class="p">;</span>
+            <span class="n">check</span><span class="p">;</span>
+            <span class="k">bind</span> <span class="n">write</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy1</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+            <span class="k">bind</span> <span class="n">copy1</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy2</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+            <span class="k">bind</span> <span class="n">copy2</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">check</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">executor_c</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span>         <span class="n">core</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+    <span class="n">executor_group_c</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span>   <span class="n">cores</span><span class="p">;</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span> <span class="n">aspace</span><span class="p">;</span>
+    <span class="n">memtest_c</span>                  <span class="n">memtest</span><span class="p">;</span>
+
+    <span class="k">pool</span> <span class="n">mem_b</span> <span class="n">mem_b_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_b_p</span> <span class="o">*</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init</span> <span class="p">{</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="n">core</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+            <span class="n">core</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+            <span class="n">cores</span><span class="o">.</span><span class="n">add_executor</span><span class="p">(</span><span class="n">core</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// Define a memory region</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span> <span class="n">region</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">memtest</span><span class="o">.</span><span class="n">base_addr</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Copy_0_1_0</span> <span class="p">{</span>
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="k">do</span> <span class="nn">memtest_c</span><span class="p">::</span><span class="n">WriteCopyCheck</span> <span class="k">with</span> <span class="p">{</span>
+                <span class="n">write</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="n">copy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="n">check</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Copy_check_diff_core</span> <span class="p">{</span>
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="k">do</span> <span class="nn">memtest_c</span><span class="p">::</span><span class="n">WriteCopyCheck</span> <span class="k">with</span> <span class="p">{</span>
+                <span class="n">write</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">check</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Copy_same_core</span> <span class="p">{</span>
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="k">do</span> <span class="nn">memtest_c</span><span class="p">::</span><span class="n">WriteCopyCheck</span> <span class="k">with</span> <span class="p">{</span>
+                <span class="n">write</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">copy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
+                <span class="n">copy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Copy2x</span> <span class="p">{</span>
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="k">do</span> <span class="nn">memtest_c</span><span class="p">::</span><span class="n">Write2xCopyCheck</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+  </body>
+</html>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

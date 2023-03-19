@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Relating Actions with Dataflow &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/03/18/RelatingActionsWithDataflow.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Relating Actions with Dataflow &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/03/18/RelatingActionsWithDataflow.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+
+  <body>
+
+
+  <div class="post">
+    <h1 class="post-title">Relating Actions with Dataflow</h1>
+    <span class="post-date">18 Mar 2023</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/03/RelatingActionsWithDataflow_splash.png" /> 
+</p>
+
+<p>Modularity and reuse are key concerns when it comes to programming
+languages. While languages without many modularity and reuse features may be
+quick and easy to write – think shell scripts – they ultimately fail to scale. 
+PSS provides a wealth of mechanisms for structuring test content for reuse
+that are familiar to users of object-oriented languages. That said, PSS provides
+unique approaches to modularity and reuse as well. The PSS <code class="language-plaintext highlighter-rouge">modeling layer</code> 
+is strongly declarative,
+and this has significant implications on the approach that PSS takes to 
+provide reuse features for composing declarative behaviors.</p>
+
+<p>In this post, we will start to look at declarative data relationships via the
+PSS <code class="language-plaintext highlighter-rouge">buffer</code> construct.</p>
+
+<h1 id="rewinding-a-bit">Rewinding a Bit…</h1>
+<p>Recall that, in the last post, we were creating very simple multi-core
+read/write tests, such as what is shown in the diagram below:</p>
+
+<div class="mermaid" align="center">
+graph TD;
+    A[Core0\nWrite]--&gt;B[Core1\nCopy];
+    B--&gt;C[Core0\nCheck];
+</div>
+
+<p>In order for our test to make sense, we needed a few relationships to hold:</p>
+<ul>
+  <li>The source address for our <em>Copy</em> address needed to be the same as the
+destination address of the <em>Write</em></li>
+  <li>The source address for the <em>Check</em> action needed to be same as the
+destination address of the <em>Copy</em></li>
+  <li>The source and destination addresses of the <em>Copy</em> needed to be 
+different. We didn’t want to clobber our previously-written data until
+we’ve had a chance to check it, after all.</li>
+</ul>
+
+<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
+
+    <span class="c1">// ...</span>
+
+    <span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
+        <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
+        <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
+        <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
+
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="n">write</span><span class="p">;</span>
+            <span class="n">copy</span><span class="p">;</span>
+            <span class="n">check</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">constraint</span> <span class="p">{</span>
+            <span class="c1">// Copy reads from same location that Write populated</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span> 
+            <span class="c1">// Check reads from the same location that Copy populated</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span>
+            <span class="c1">// All actions write the same number of words</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
+
+            <span class="c1">// Ensure that src/dst regions do not overlap</span>
+            <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span> <span class="o">||</span>
+            <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">&gt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the last post, we took a bit of a shortcut and modeled all of these 
+relationships as data constraints in a <em>compound action</em>. While the code above
+is perfectly legal and valid in PSS (hopefully you had a chance to try out
+the example code with a PSS tool), it doesn’t lend itself to reuse. The specific
+problem is that the <em>Check</em> action has some required data relationships that are not 
+expressed as part of the action. And, the fact that that we’ve built these 
+actions without expressing how they can be related by data means that users
+will need to dig into the code to understand the internal variables and 
+constraints – clearly not what we expect from modular code.</p>
+
+<h1 id="from-data-to-temporal-declarative-relationships">From Data to Temporal Declarative Relationships</h1>
+
+<p>If you’re coming from a SystemVerilog background, data constraints are most
+likely the declarative programming feature that you’re most familiar with. 
+SystemVerilog supports declarative descriptions with respect to data, but
+not with respect to time (temporally declarative).</p>
+
+<p>What does this mean?</p>
+
+<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">class</span> <span class="n">my_vseq</span> <span class="k">extends</span> <span class="n">uvm_sequence</span><span class="p">;</span>
+    <span class="k">task</span> <span class="n">body</span><span class="p">();</span>
+        <span class="n">my_subseq</span> <span class="n">seq1</span> <span class="o">=</span> <span class="n">my_subseq</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
+        <span class="n">my_subseq</span> <span class="n">seq2</span> <span class="o">=</span> <span class="n">my_subseq</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
+
+        <span class="n">seq1</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">m_subsqr</span><span class="p">);</span>
+        <span class="n">seq2</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">m_subsqr</span><span class="p">);</span>
+    <span class="k">endtask</span>
+<span class="k">endclass</span>
+</code></pre></div></div>
+
+<p>The UVM sequence shows two sub-sequences being run sequentially. SystemVerilog
+doesn’t provide any features that allow us to directly relate these two 
+sequences declaratively (ie using constraints) while retaining their temporal
+relationship. If we need a data relationship to hold across  <code class="language-plaintext highlighter-rouge">seq1</code> and 
+<code class="language-plaintext highlighter-rouge">seq2</code>, then we need to group our two classes together in a larger class,
+express the data relationship as a constraint in the containing class, 
+solve the two sequences together, then deal with selectively executing each
+of the sub-sequences in the desired temporal relationship.</p>
+
+<p>It’s certainly not impossible, but can force us into some awkward design patterns 
+of collecting lots of otherwise-unrelated classes such that they can be solved 
+together before separating them to run over time.</p>
+
+<h1 id="toward-a-declarative-api">Toward a Declarative API</h1>
+<p>The cross-action constraints that we used in the previous post are one 
+temporally-declarative feature that PSS provides. PSS allows us to express how 
+action execution is 
+related temporally, add constraints on top, and let the PSS tool worry about how to
+group data and constraints such that both the data and temporal relationships
+hold over time.</p>
+
+<p>But, PSS goes beyond that as well. PSS provides specific data types for 
+expressing the way that data that is shared or passed between temporally-related 
+actions, and specific ways for actions to note when they input (require) 
+data from other actions and when they output (produce) data for other actions. 
+We’ll see more details on how this I/O <code class="language-plaintext highlighter-rouge">contract</code> for actions helps in the future. 
+For now, it’s a great feature to assist in making PSS descriptions more modular 
+and reusable.</p>
+
+<h1 id="updating-the-memory-test-actions">Updating the Memory-Test Actions</h1>
+
+<p>All of the data relationships in our memory test are between 
+sequentially-executing actions. PSS provides the <code class="language-plaintext highlighter-rouge">buffer</code> data type to express
+passing data sequentially between actions. The semantics of a <code class="language-plaintext highlighter-rouge">buffer</code> object
+match our intuition based on the dictionary definition: it’s a place to store
+data produced by one action before being consumed by some other action.</p>
+
+<p>A <code class="language-plaintext highlighter-rouge">buffer</code> is a built-in data type in PSS that is a compound data structure.
+In other words, it’s like a <code class="language-plaintext highlighter-rouge">struct</code> in C/C++ or Rust, and like a class 
+(but without the methods) in some other languages.</p>
+
+<p>In our application, there are two pieces of data that the actions need agree 
+on: address offset and number of words being copied.</p>
+
+<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">buffer</span> <span class="nc">mem_b</span> <span class="p">{</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We declare these fields inside a data type of kind <code class="language-plaintext highlighter-rouge">buffer</code> to declare our
+flow object. Note that these fields are declared <code class="language-plaintext highlighter-rouge">rand</code> because the represent
+relationships between the producing and consuming actions, and because 
+we intend to constrain them. We will use that <code class="language-plaintext highlighter-rouge">mem_b</code> type 
+across our <code class="language-plaintext highlighter-rouge">Write</code>, <code class="language-plaintext highlighter-rouge">Copy</code>, and <code class="language-plaintext highlighter-rouge">Check</code> actions to represent data-flow
+relationships. When we update our <em>Write</em>
+action to use the buffer, we’ll replace the local <em>offset</em> and <em>words</em> 
+fields with references into the buffer field.</p>
+
+<p>Now, let’s compare the old and new versions of the <em>Write</em> action to see
+the difference.</p>
+
+<p><strong>Old</strong></p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Write</span> <span class="p">{</span>
+  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
+  <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
+  <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
+
+  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">write32</span><span class="p">(</span>
+        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span> 
+          <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><strong>New</strong></p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Write</span> <span class="p">{</span>
+  <span class="k">output</span> <span class="n">mem_b</span> <span class="n">dat_o</span><span class="p">;</span>
+  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
+
+  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">write32</span><span class="p">(</span>
+        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span> 
+          <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Note that we’ve added an output to the action, and replaced use of the local
+variables <em>offset</em> and <em>words</em> with references to the fields of the buffer
+object output. While remaining functionally the same as before, our <em>Write</em>
+action is now much more specific about its participation in the scenario.</p>
+
+<p>When we depict PSS elements graphically, we show an action’s buffer inputs and 
+outputs as shown below. Note that the output buffer is shown sequentially
+<em>after</em> the <em>Write</em> action, since it is only available after the <em>Write</em> action
+is complete.</p>
+
+<div class="mermaid" align="center">
+flowchart TD;
+    write(Write)--&gt;mem_b([mem_b])
+</div>
+
+<p>Okay, let’s update the <em>Copy</em> and <em>Check</em> actions as well. Note that we
+have moved the constraints that ensure that the source and destination 
+areas do not overlap into the action. This, in addition to using flow objects
+to relate the actions, helps to keep things modular and encapsulated.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Copy</span> <span class="p">{</span>
+  <span class="k">input</span> <span class="n">mem_b</span>  <span class="n">dat_i</span><span class="p">;</span>
+  <span class="k">output</span> <span class="n">mem_b</span> <span class="n">dat_o</span><span class="p">;</span>
+  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
+
+  <span class="c1">// Ensure we copy the same number of words</span>
+  <span class="k">constraint</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
+
+  <span class="c1">// Ensure that src/dst regions do not overlap</span>
+  <span class="k">constraint</span> <span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="o">||</span>
+            <span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span> <span class="o">&gt;</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
+
+  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
+    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
+        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span>     
+          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
+      <span class="n">write32</span><span class="p">(</span>
+        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> 
+          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span>
+        <span class="n">tmp</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Our updated <em>Copy</em> action will look like this when we show it in a 
+diagram:</p>
+
+<div class="mermaid" align="center">
+flowchart TD;
+    mem_b_i([mem_b]) --&gt; copy(Copy) --&gt; mem_b_o([mem_b])
+</div>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Check</span> <span class="p">{</span>
+  <span class="k">input</span> <span class="n">mem_b</span> <span class="n">dat_i</span><span class="p">;</span>
+  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
+
+  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
+    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
+        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> 
+          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">!=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">error</span><span class="p">(</span><span class="s">"0x%08x: expect %d ; receive %d"</span><span class="p">,</span> 
+          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h1 id="updating-the-memory-test-scenario">Updating the Memory-Test Scenario</h1>
+<p>Now that our actions are updated to capture the data they require and produce,
+we can turn our attention to assembling a scenario. Recall that our original
+scenario looked like this, with constraints enforcing all relationships:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
+  <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
+  <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
+  <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
+
+  <span class="k">activity</span> <span class="p">{</span>
+    <span class="n">write</span><span class="p">;</span>
+    <span class="n">copy</span><span class="p">;</span>
+    <span class="n">check</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">constraint</span> <span class="p">{</span>
+    <span class="c1">// Copy reads from same location that Write populated</span>
+    <span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span> 
+    <span class="c1">// Check reads from the same location that Copy populated</span>
+    <span class="n">copy</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span>
+    <span class="c1">// All actions write the same number of words</span>
+    <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
+    <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
+
+    <span class="c1">// Ensure that src/dst regions do not overlap</span>
+    <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span> <span class="o">||</span>
+     <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">&gt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Instead of using constraints, we will connect the input and
+output buffers on the action together. How to do we form those
+connections? The <code class="language-plaintext highlighter-rouge">bind</code> statement.</p>
+
+<h2 id="the-activity-bind-statement">The Activity Bind Statement</h2>
+<p>The activity <code class="language-plaintext highlighter-rouge">bind</code> statement is used to connect action I/O
+ports together. In its simplest form, a <code class="language-plaintext highlighter-rouge">bind</code> statement 
+connects a single input and output. For example:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
+  <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
+  <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
+  <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
+
+  <span class="k">activity</span> <span class="p">{</span>
+    <span class="n">write</span><span class="p">;</span>
+    <span class="n">copy</span><span class="p">;</span>
+    <span class="n">check</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">write</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">copy</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">check</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+  <span class="p">}</span>
+
+<span class="p">}</span></code></pre></figure>
+
+<p>In this case, we are specifying that the output of the <code class="language-plaintext highlighter-rouge">Write</code>
+action and input of the <code class="language-plaintext highlighter-rouge">Copy</code> action are connected, and the
+output of the <code class="language-plaintext highlighter-rouge">Copy</code> action and input of the <code class="language-plaintext highlighter-rouge">Check</code> action 
+are connected.</p>
+
+<p>We might visualize this as follows.</p>
+
+<div class="mermaid" align="center">
+flowchart TB;
+
+  write-.-&gt;mem_b_1
+  mem_b_1-.-&gt;copy
+  copy-.-&gt;mem_b_2
+  mem_b_2-.-&gt;check
+
+  subgraph Dataflow
+    mem_b_1([mem_b])
+    mem_b_2([mem_b])
+  end
+  subgraph Procedure
+    write(Write)--&gt;copy(Copy)--&gt;check(Check)
+  end
+</div>
+
+<p>We have two views of the scenario. In the <em>Procedure</em> portion we have 
+the temporal relationship between actions (write, copy, check). In the
+<em>Dataflow</em> portion, we can see the data objects relating various 
+actions.</p>
+
+<h1 id="extending-the-scenario">Extending the Scenario</h1>
+<p>As mentioned in the beginning of the post, the <code class="language-plaintext highlighter-rouge">buffer</code> construct
+is a feature that enables encapsulation and reuse.
+Let’s leverage that reusability to extend our scenario to see how 
+this works in practice. Let’s 
+say that we want to perform two copies back to back instead of a
+single one. All we need to do is add in the second <code class="language-plaintext highlighter-rouge">copy</code> action
+and connect it into the scenario with <code class="language-plaintext highlighter-rouge">binds</code>.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Write2xCopyCheck</span> <span class="p">{</span>
+  <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
+  <span class="n">Copy</span>              <span class="n">copy1</span><span class="p">;</span>
+  <span class="n">Copy</span>              <span class="n">copy2</span><span class="p">;</span>
+  <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
+
+  <span class="k">activity</span> <span class="p">{</span>
+    <span class="n">write</span><span class="p">;</span>
+    <span class="n">copy1</span><span class="p">;</span>
+    <span class="n">copy2</span><span class="p">;</span>
+    <span class="n">check</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">write</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy1</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">copy1</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy2</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">copy2</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">check</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<div class="mermaid" align="center">
+flowchart LR
+
+  write-.-&gt;mem_b_1
+  mem_b_1-.-&gt;copy1
+  copy1-.-&gt;mem_b_2
+  mem_b_2-.-&gt;copy2
+  copy2--&gt;mem_b_3
+  mem_b_3-.-&gt;check
+
+  subgraph Dataflow
+    mem_b_1([mem_b])
+    mem_b_2([mem_b])
+    mem_b_3([mem_b])
+  end
+  subgraph Procedure
+    write(Write)--&gt;copy1(Copy)--&gt;copy2(Copy)--&gt;check(Check)
+  end
+</div>
+
+<p>First off, there is a reduction in the number of lines of code required
+to setup this scenario compared to what would have been required if we
+used plain data constraints. Secondly, input/output ports on actions express the 
+<code class="language-plaintext highlighter-rouge">interface</code> of an action to the outside world. It’s a way for a 
+library developer (or, just my colleague who wrote some actions) to 
+express where I should focus as an end user of the action.</p>
+
+<h1 id="flow-object-pools-and-binding">Flow-Object Pools and Binding</h1>
+<p>There is one final thing to be aware of with PSS flow objects, and that
+is the <code class="language-plaintext highlighter-rouge">pool</code> construct. We’ll largely gloss over it until we hit
+cases where we really need to use pools. For now, it’s important to 
+understand that actions need to be connected to the same pool in 
+order to be connected via a flow object like a buffer. You’ll often
+see code like what is shown below to create a pool for a flow object
+type and connect all action I/O references of that flow-object 
+type to the pool.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">mem_b</span> <span class="p">{</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
+    <span class="k">pool</span> <span class="n">mem_b</span>      <span class="n">mem_b_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_b_p</span> <span class="o">*</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<h1 id="wrapping-up-and-looking-forward">Wrapping up and Looking Forward</h1>
+<p>In this post, we looked at the <code class="language-plaintext highlighter-rouge">buffer</code> declarative data-flow construct. 
+We’ve seen how this can help to make our actions more reusable and 
+better encapsulated. The <code class="language-plaintext highlighter-rouge">buffer</code> construct provides a way to relate
+actions via sequential data transfer. As you might guess, PSS also 
+provides similar constructs for enabling actions to be related by
+data in other ways. We’ll look at those mechanisms in future posts.</p>
+
+<p>For now, feel free to look at the full code listing and run it 
+through your favorite PSS processing tool. Try adding new constraints
+on sub-actions within the scenario and try further-expanding the scenario.</p>
+
+<p>If you’re interested in reading more about buffers, pools, and other flow
+objects, have a look at section 5.1 in the LRM referenced below ([1])</p>
+
+<p>I’m a big proponent of using real-world examples to introduce concepts in a
+practical context. In the next post, I’ll introduce an example that we will
+use as a vehicle to introduce the next series of PSS modeling topics.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li>[1] <a href="https://www.accellera.org/downloads/standards/portable-stimulus">PSS LRM</a></li>
+  <li>[2] <a href="https://bitsbytesgates.com/code_html/2023/03/memtest_buffer.html">MemTest PSS Code (Viewing)</a></li>
+  <li>[3] <a href="https://bitsbytesgates.com/code/2023/03/memtest_buffer.pss">MemTest PSS Code (Raw Text)</a></li>
+</ul>
+
+
+  </div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+    <br/>
+    <br/>
+      
+      
+      <h2>Posts in the series "Intro to PSS"</h2>
+      <ul>
+        
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        
+        
+        <li>Relating Actions with Dataflow</li>
+        
+        
+      </ul>
+      
+    
+
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>
