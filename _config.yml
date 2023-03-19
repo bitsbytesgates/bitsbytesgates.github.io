@@ -41,6 +41,8 @@ plugins:
   - jekyll-feed
   - jekyll-mermaid
 
+highlighter: rouge
+
 # The mermaid plug-in expects a .js to include above each diagram. We take
 # care of loading elsewhere, so this is just a stub to keep the plug-in happy
 mermaid:
