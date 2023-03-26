@@ -10,12 +10,12 @@
   <title>
     
     
-      About &middot; Bits, Bytes, and Gates
+       &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/about.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_1.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -515,7 +515,7 @@ Post-env
     </ul>
 
     
-    <a class="sidebar-nav-item active" href="https://bitsbytesgates.com/about.html">About</a>
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
 
     <!--
     <a class="sidebar-nav-item" href="">GitHub</a>
@@ -546,30 +546,123 @@ Post-env
       </div>
 
       <div class="container content">
-        <div class="page">
-  <h1 class="page-title">About</h1>
-  <p>I’m Matthew Ballance, the Portland, Oregon-based author of the Bits, Bytes, Gates
-blog.</p>
+        <html lang="en-us">
 
-<p>I have a deep interest in functional verification methodologies and techniques, 
-especially where they involve both hardware and software or firmware. I’m very
-interested in finding ways for open source software and techniques to contribute
-to a vibrant ecosystem, and contribute to several open source projects in this domain.
-Professionally, I work as a verification methodolgy and automation engineer at AMD. 
-Over the previous 20 years in the EDA industry, I’ve worked in product development,
-marketing, and management roles in the areas of hardware/software co-verification,
-transaction-level modeling, IP encapsulation and reuse, and Portable Test and Stimulus.</p>
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-<p>All views expressed here are mine.</p>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-<p>You can find me in the following places:</p>
-<ul>
-  <li><a href="https://github.com/mballance">GitHub</a></li>
-  <li><a href="https://www.linkedin.com/in/matthew-ballance">LinkedIn</a></li>
-</ul>
+  <title>
+    
+    
+       &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_1.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
 
 
-</div>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/****************************************************************************
+ * memtest_buffer.pss
+ *
+ * Copyright 2023 Matthew Ballance and Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may 
+ * not use this file except in compliance with the License.  
+ * You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ *
+ * Created on:
+ *     Author: 
+ ****************************************************************************/</span>
+
+<span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Dev</span> <span class="p">{</span>
+        <span class="c1">// TODO: fill in later</span>
+
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Dev2Mem</span> <span class="p">{</span>
+        <span class="c1">// TODO: fill in later</span>
+
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+  </body>
+</html>
 
       </div>
     </div>

@@ -100,6 +100,8 @@ Post-env
         <li><span class="caret">Mar</span>
         <ul class="nested" list-style-type="none">
         
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
         <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
         
         <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
@@ -560,459 +562,266 @@ Post-env
 </h1>
 
   <h1 class="entry-title">
-    <a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a>
+    <a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a>
   </h1>      
 
 <div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/03/RelatingActionsWithDataflow_splash.png" /> 
+<img src="https://bitsbytesgates.com/imgs/2023/03/ModelingTestScenariosForDMA_1_splash.png" /> 
 </p>
 
-<p>Modularity and reuse are key concerns when it comes to programming
-languages. While languages without many modularity and reuse features may be
-quick and easy to write – think shell scripts – they ultimately fail to scale. 
-PSS provides a wealth of mechanisms for structuring test content for reuse
-that are familiar to users of object-oriented languages. That said, PSS provides
-unique approaches to modularity and reuse as well. The PSS <code class="language-plaintext highlighter-rouge">modeling layer</code> 
-is strongly declarative,
-and this has significant implications on the approach that PSS takes to 
-provide reuse features for composing declarative behaviors.</p>
+<p>If you’ve been following the blog for any length of time, you’ve likely noticed
+that I like to work with examples and applications when it comes to 
+learning and understanding technology. I certainly like the tendency of
+applications to take knowledge out of the theoretical realm and into the 
+practical, helping to answer the ‘why’ and ‘how’ questions about a technology.</p>
 
-<p>In this post, we will start to look at declarative data relationships via the
-PSS <code class="language-plaintext highlighter-rouge">buffer</code> construct.</p>
-
-<h1 id="rewinding-a-bit">Rewinding a Bit…</h1>
-<p>Recall that, in the last post, we were creating very simple multi-core
-read/write tests, such as what is shown in the diagram below:</p>
-
-<div class="mermaid" align="center">
-graph TD;
-    A[Core0\nWrite]--&gt;B[Core1\nCopy];
-    B--&gt;C[Core0\nCheck];
-</div>
-
-<p>In order for our test to make sense, we needed a few relationships to hold:</p>
+<p>We’ve used a simple multi-core memory test example to illustrate the first 
+few PSS concepts:</p>
 <ul>
-  <li>The source address for our <em>Copy</em> address needed to be the same as the
-destination address of the <em>Write</em></li>
-  <li>The source address for the <em>Check</em> action needed to be same as the
-destination address of the <em>Copy</em></li>
-  <li>The source and destination addresses of the <em>Copy</em> needed to be 
-different. We didn’t want to clobber our previously-written data until
-we’ve had a chance to check it, after all.</li>
+  <li>Actions and Components</li>
+  <li>Modeling multi-core tests (and automating test creation)</li>
+  <li>Specifying declarative communication relationships between actions</li>
 </ul>
 
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
-
-    <span class="c1">// ...</span>
-
-    <span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
-        <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
-        <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
-        <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
-
-        <span class="k">activity</span> <span class="p">{</span>
-            <span class="n">write</span><span class="p">;</span>
-            <span class="n">copy</span><span class="p">;</span>
-            <span class="n">check</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="k">constraint</span> <span class="p">{</span>
-            <span class="c1">// Copy reads from same location that Write populated</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span> 
-            <span class="c1">// Check reads from the same location that Copy populated</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span>
-            <span class="c1">// All actions write the same number of words</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
-
-            <span class="c1">// Ensure that src/dst regions do not overlap</span>
-            <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span> <span class="o">||</span>
-            <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">&gt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>In the last post, we took a bit of a shortcut and modeled all of these 
-relationships as data constraints in a <em>compound action</em>. While the code above
-is perfectly legal and valid in PSS (hopefully you had a chance to try out
-the example code with a PSS tool), it doesn’t lend itself to reuse. The specific
-problem is that the <em>Check</em> action has some required data relationships that are not 
-expressed as part of the action. And, the fact that that we’ve built these 
-actions without expressing how they can be related by data means that users
-will need to dig into the code to understand the internal variables and 
-constraints – clearly not what we expect from modular code.</p>
-
-<h1 id="from-data-to-temporal-declarative-relationships">From Data to Temporal Declarative Relationships</h1>
-
-<p>If you’re coming from a SystemVerilog background, data constraints are most
-likely the declarative programming feature that you’re most familiar with. 
-SystemVerilog supports declarative descriptions with respect to data, but
-not with respect to time (temporally declarative).</p>
-
-<p>What does this mean?</p>
-
-<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">class</span> <span class="n">my_vseq</span> <span class="k">extends</span> <span class="n">uvm_sequence</span><span class="p">;</span>
-    <span class="k">task</span> <span class="n">body</span><span class="p">();</span>
-        <span class="n">my_subseq</span> <span class="n">seq1</span> <span class="o">=</span> <span class="n">my_subseq</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
-        <span class="n">my_subseq</span> <span class="n">seq2</span> <span class="o">=</span> <span class="n">my_subseq</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
-
-        <span class="n">seq1</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">m_subsqr</span><span class="p">);</span>
-        <span class="n">seq2</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">m_subsqr</span><span class="p">);</span>
-    <span class="k">endtask</span>
-<span class="k">endclass</span>
-</code></pre></div></div>
-
-<p>The UVM sequence shows two sub-sequences being run sequentially. SystemVerilog
-doesn’t provide any features that allow us to directly relate these two 
-sequences declaratively (ie using constraints) while retaining their temporal
-relationship. If we need a data relationship to hold across  <code class="language-plaintext highlighter-rouge">seq1</code> and 
-<code class="language-plaintext highlighter-rouge">seq2</code>, then we need to group our two classes together in a larger class,
-express the data relationship as a constraint in the containing class, 
-solve the two sequences together, then deal with selectively executing each
-of the sub-sequences in the desired temporal relationship.</p>
-
-<p>It’s certainly not impossible, but can force us into some awkward design patterns 
-of collecting lots of otherwise-unrelated classes such that they can be solved 
-together before separating them to run over time.</p>
-
-<h1 id="toward-a-declarative-api">Toward a Declarative API</h1>
-<p>The cross-action constraints that we used in the previous post are one 
-temporally-declarative feature that PSS provides. PSS allows us to express how 
-action execution is 
-related temporally, add constraints on top, and let the PSS tool worry about how to
-group data and constraints such that both the data and temporal relationships
-hold over time.</p>
-
-<p>But, PSS goes beyond that as well. PSS provides specific data types for 
-expressing the way that data that is shared or passed between temporally-related 
-actions, and specific ways for actions to note when they input (require) 
-data from other actions and when they output (produce) data for other actions. 
-We’ll see more details on how this I/O <code class="language-plaintext highlighter-rouge">contract</code> for actions helps in the future. 
-For now, it’s a great feature to assist in making PSS descriptions more modular 
-and reusable.</p>
-
-<h1 id="updating-the-memory-test-actions">Updating the Memory-Test Actions</h1>
-
-<p>All of the data relationships in our memory test are between 
-sequentially-executing actions. PSS provides the <code class="language-plaintext highlighter-rouge">buffer</code> data type to express
-passing data sequentially between actions. The semantics of a <code class="language-plaintext highlighter-rouge">buffer</code> object
-match our intuition based on the dictionary definition: it’s a place to store
-data produced by one action before being consumed by some other action.</p>
-
-<p>A <code class="language-plaintext highlighter-rouge">buffer</code> is a built-in data type in PSS that is a compound data structure.
-In other words, it’s like a <code class="language-plaintext highlighter-rouge">struct</code> in C/C++ or Rust, and like a class 
-(but without the methods) in some other languages.</p>
-
-<p>In our application, there are two pieces of data that the actions need agree 
-on: address offset and number of words being copied.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">buffer</span> <span class="nc">mem_b</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>We declare these fields inside a data type of kind <code class="language-plaintext highlighter-rouge">buffer</code> to declare our
-flow object. Note that these fields are declared <code class="language-plaintext highlighter-rouge">rand</code> because the represent
-relationships between the producing and consuming actions, and because 
-we intend to constrain them. We will use that <code class="language-plaintext highlighter-rouge">mem_b</code> type 
-across our <code class="language-plaintext highlighter-rouge">Write</code>, <code class="language-plaintext highlighter-rouge">Copy</code>, and <code class="language-plaintext highlighter-rouge">Check</code> actions to represent data-flow
-relationships. When we update our <em>Write</em>
-action to use the buffer, we’ll replace the local <em>offset</em> and <em>words</em> 
-fields with references into the buffer field.</p>
-
-<p>Now, let’s compare the old and new versions of the <em>Write</em> action to see
-the difference.</p>
-
-<p><strong>Old</strong></p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Write</span> <span class="p">{</span>
-  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
-  <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
-  <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
-
-  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">words</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">write32</span><span class="p">(</span>
-        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span> 
-          <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p><strong>New</strong></p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Write</span> <span class="p">{</span>
-  <span class="k">output</span> <span class="n">mem_b</span> <span class="n">dat_o</span><span class="p">;</span>
-  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
-
-  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">write32</span><span class="p">(</span>
-        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span> 
-          <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Note that we’ve added an output to the action, and replaced use of the local
-variables <em>offset</em> and <em>words</em> with references to the fields of the buffer
-object output. While remaining functionally the same as before, our <em>Write</em>
-action is now much more specific about its participation in the scenario.</p>
-
-<p>When we depict PSS elements graphically, we show an action’s buffer inputs and 
-outputs as shown below. Note that the output buffer is shown sequentially
-<em>after</em> the <em>Write</em> action, since it is only available after the <em>Write</em> action
-is complete.</p>
-
-<div class="mermaid" align="center">
-flowchart TD;
-    write(Write)--&gt;mem_b([mem_b])
-</div>
-
-<p>Okay, let’s update the <em>Copy</em> and <em>Check</em> actions as well. Note that we
-have moved the constraints that ensure that the source and destination 
-areas do not overlap into the action. This, in addition to using flow objects
-to relate the actions, helps to keep things modular and encapsulated.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Copy</span> <span class="p">{</span>
-  <span class="k">input</span> <span class="n">mem_b</span>  <span class="n">dat_i</span><span class="p">;</span>
-  <span class="k">output</span> <span class="n">mem_b</span> <span class="n">dat_o</span><span class="p">;</span>
-  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
-
-  <span class="c1">// Ensure we copy the same number of words</span>
-  <span class="k">constraint</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
-
-  <span class="c1">// Ensure that src/dst regions do not overlap</span>
-  <span class="k">constraint</span> <span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="o">||</span>
-            <span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span> <span class="o">&gt;</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
-
-  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
-    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_o</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
-        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span>     
-          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
-      <span class="n">write32</span><span class="p">(</span>
-        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> 
-          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_o</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span>
-        <span class="n">tmp</span><span class="p">);</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Our updated <em>Copy</em> action will look like this when we show it in a 
-diagram:</p>
-
-<div class="mermaid" align="center">
-flowchart TD;
-    mem_b_i([mem_b]) --&gt; copy(Copy) --&gt; mem_b_o([mem_b])
-</div>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Check</span> <span class="p">{</span>
-  <span class="k">input</span> <span class="n">mem_b</span> <span class="n">dat_i</span><span class="p">;</span>
-  <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
-
-  <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
-    <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="p">{</span>
-      <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
-        <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> 
-          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">!=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">error</span><span class="p">(</span><span class="s">"0x%08x: expect %d ; receive %d"</span><span class="p">,</span> 
-          <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dat_i</span><span class="o">.</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<h1 id="updating-the-memory-test-scenario">Updating the Memory-Test Scenario</h1>
-<p>Now that our actions are updated to capture the data they require and produce,
-we can turn our attention to assembling a scenario. Recall that our original
-scenario looked like this, with constraints enforcing all relationships:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
-  <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
-  <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
-  <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
-
-  <span class="k">activity</span> <span class="p">{</span>
-    <span class="n">write</span><span class="p">;</span>
-    <span class="n">copy</span><span class="p">;</span>
-    <span class="n">check</span><span class="p">;</span>
-  <span class="p">}</span>
-
-  <span class="k">constraint</span> <span class="p">{</span>
-    <span class="c1">// Copy reads from same location that Write populated</span>
-    <span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span> 
-    <span class="c1">// Check reads from the same location that Copy populated</span>
-    <span class="n">copy</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span>
-    <span class="c1">// All actions write the same number of words</span>
-    <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
-    <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
-
-    <span class="c1">// Ensure that src/dst regions do not overlap</span>
-    <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span> <span class="o">||</span>
-     <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">&gt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Instead of using constraints, we will connect the input and
-output buffers on the action together. How to do we form those
-connections? The <code class="language-plaintext highlighter-rouge">bind</code> statement.</p>
-
-<h2 id="the-activity-bind-statement">The Activity Bind Statement</h2>
-<p>The activity <code class="language-plaintext highlighter-rouge">bind</code> statement is used to connect action I/O
-ports together. In its simplest form, a <code class="language-plaintext highlighter-rouge">bind</code> statement 
-connects a single input and output. For example:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
-  <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
-  <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
-  <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
-
-  <span class="k">activity</span> <span class="p">{</span>
-    <span class="n">write</span><span class="p">;</span>
-    <span class="n">copy</span><span class="p">;</span>
-    <span class="n">check</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">write</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">copy</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">check</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
-  <span class="p">}</span>
-
-<span class="p">}</span></code></pre></figure>
-
-<p>In this case, we are specifying that the output of the <code class="language-plaintext highlighter-rouge">Write</code>
-action and input of the <code class="language-plaintext highlighter-rouge">Copy</code> action are connected, and the
-output of the <code class="language-plaintext highlighter-rouge">Copy</code> action and input of the <code class="language-plaintext highlighter-rouge">Check</code> action 
-are connected.</p>
-
-<p>We might visualize this as follows.</p>
-
-<div class="mermaid" align="center">
-flowchart TB;
-
-  write-.-&gt;mem_b_1
-  mem_b_1-.-&gt;copy
-  copy-.-&gt;mem_b_2
-  mem_b_2-.-&gt;check
-
-  subgraph Dataflow
-    mem_b_1([mem_b])
-    mem_b_2([mem_b])
-  end
-  subgraph Procedure
-    write(Write)--&gt;copy(Copy)--&gt;check(Check)
-  end
-</div>
-
-<p>We have two views of the scenario. In the <em>Procedure</em> portion we have 
-the temporal relationship between actions (write, copy, check). In the
-<em>Dataflow</em> portion, we can see the data objects relating various 
-actions.</p>
-
-<h1 id="extending-the-scenario">Extending the Scenario</h1>
-<p>As mentioned in the beginning of the post, the <code class="language-plaintext highlighter-rouge">buffer</code> construct
-is a feature that enables encapsulation and reuse.
-Let’s leverage that reusability to extend our scenario to see how 
-this works in practice. Let’s 
-say that we want to perform two copies back to back instead of a
-single one. All we need to do is add in the second <code class="language-plaintext highlighter-rouge">copy</code> action
-and connect it into the scenario with <code class="language-plaintext highlighter-rouge">binds</code>.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Write2xCopyCheck</span> <span class="p">{</span>
-  <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
-  <span class="n">Copy</span>              <span class="n">copy1</span><span class="p">;</span>
-  <span class="n">Copy</span>              <span class="n">copy2</span><span class="p">;</span>
-  <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
-
-  <span class="k">activity</span> <span class="p">{</span>
-    <span class="n">write</span><span class="p">;</span>
-    <span class="n">copy1</span><span class="p">;</span>
-    <span class="n">copy2</span><span class="p">;</span>
-    <span class="n">check</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">write</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy1</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">copy1</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">copy2</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">copy2</span><span class="o">.</span><span class="n">dat_o</span> <span class="n">check</span><span class="o">.</span><span class="n">dat_i</span><span class="p">;</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<div class="mermaid" align="center">
-flowchart LR
-
-  write-.-&gt;mem_b_1
-  mem_b_1-.-&gt;copy1
-  copy1-.-&gt;mem_b_2
-  mem_b_2-.-&gt;copy2
-  copy2--&gt;mem_b_3
-  mem_b_3-.-&gt;check
-
-  subgraph Dataflow
-    mem_b_1([mem_b])
-    mem_b_2([mem_b])
-    mem_b_3([mem_b])
-  end
-  subgraph Procedure
-    write(Write)--&gt;copy1(Copy)--&gt;copy2(Copy)--&gt;check(Check)
-  end
-</div>
-
-<p>First off, there is a reduction in the number of lines of code required
-to setup this scenario compared to what would have been required if we
-used plain data constraints. Secondly, input/output ports on actions express the 
-<code class="language-plaintext highlighter-rouge">interface</code> of an action to the outside world. It’s a way for a 
-library developer (or, just my colleague who wrote some actions) to 
-express where I should focus as an end user of the action.</p>
-
-<h1 id="flow-object-pools-and-binding">Flow-Object Pools and Binding</h1>
-<p>There is one final thing to be aware of with PSS flow objects, and that
-is the <code class="language-plaintext highlighter-rouge">pool</code> construct. We’ll largely gloss over it until we hit
-cases where we really need to use pools. For now, it’s important to 
-understand that actions need to be connected to the same pool in 
-order to be connected via a flow object like a buffer. You’ll often
-see code like what is shown below to create a pool for a flow object
-type and connect all action I/O references of that flow-object 
-type to the pool.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">mem_b</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
-    <span class="k">pool</span> <span class="n">mem_b</span>      <span class="n">mem_b_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">mem_b_p</span> <span class="o">*</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<h1 id="wrapping-up-and-looking-forward">Wrapping up and Looking Forward</h1>
-<p>In this post, we looked at the <code class="language-plaintext highlighter-rouge">buffer</code> declarative data-flow construct. 
-We’ve seen how this can help to make our actions more reusable and 
-better encapsulated. The <code class="language-plaintext highlighter-rouge">buffer</code> construct provides a way to relate
-actions via sequential data transfer. As you might guess, PSS also 
-provides similar constructs for enabling actions to be related by
-data in other ways. We’ll look at those mechanisms in future posts.</p>
-
-<p>For now, feel free to look at the full code listing and run it 
-through your favorite PSS processing tool. Try adding new constraints
-on sub-actions within the scenario and try further-expanding the scenario.</p>
-
-<p>If you’re interested in reading more about buffers, pools, and other flow
-objects, have a look at section 5.1 in the LRM referenced below ([1])</p>
-
-<p>I’m a big proponent of using real-world examples to introduce concepts in a
-practical context. In the next post, I’ll introduce an example that we will
-use as a vehicle to introduce the next series of PSS modeling topics.</p>
-
-<h2 id="references">References</h2>
+<p>We could likely continue on with this example to illustrate a few more PSS
+concepts, but let’s move on and use a new example. In addition to showing
+off a few new PSS concepts, my hope is to start talking about the PSS
+modeling process in the context of this example.</p>
+
+<p>To that end, we’ll spend a bit more time talking about the example design
+itself before digging into the PSS that we’ll use to create tests for it.</p>
+
+<h1 id="wishbone-dma-engine">Wishbone DMA Engine</h1>
+
+<p>Our next example design will be the 
+<a href="https://opencores.org/projects/wb_dma">Wishbone DMA Core</a>. While this 
+design has been around for quite some time, and certainly isn’t the most 
+complex, I have found that it acts as a great proxy for various hardware 
+accelerators, autonomous communication IP, and data movers that exist 
+in moderately-complex systems.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/03/DMA_block_diagram.png" />
+</p>
+
+<p>The DMA engine has a configurable number of channels up to 31. Any
+channel can perform memory-to-memory transfers using the two initiator
+interfaces. The DMA engine also provides a per-channel control interface 
+that allows devices without an internal DMA engine to request data 
+transfers.</p>
+
+<p>DMA transfers are setup via the register interface. Simple transfers
+are configured via registers in the IP, while more-complex chained
+transfers are configured via an in-memory lists of descriptors.</p>
+
+<p>Transfer termination can be signalled via an interrupt, and also polled 
+by reading the channel status registers.</p>
+
+<p>We’ll use this example to look at PSS features such as:</p>
 <ul>
-  <li>[1] <a href="https://www.accellera.org/downloads/standards/portable-stimulus">PSS LRM</a></li>
-  <li>[2] <a href="https://bitsbytesgates.com/code_html/2023/03/memtest_buffer.html">MemTest PSS Code (Viewing)</a></li>
-  <li>[3] <a href="https://bitsbytesgates.com/code/2023/03/memtest_buffer.pss">MemTest PSS Code (Raw Text)</a></li>
+  <li>Memory management in tests</li>
+  <li>Modeling and managing contended resources</li>
+  <li>Implementing test scenarios down to the register level</li>
+</ul>
+
+<h1 id="first-steps-in-pss-modeling">First Steps in PSS Modeling</h1>
+
+<p>Getting started is often the hardest part of any task, and creating a
+PSS scenario model is no different. I often advise that the best 
+approach is to take some step, any step, since it’s easy to subsequently
+revise and fix the inevitable mistakes. In this way, creating a PSS 
+scenario is very different from craft and construction projects where 
+“measure twice cut once” remains the mantra.</p>
+
+<p>There are several ways to approach the initial PSS scenario model. The
+best is often guided by what details stand out from the description 
+of the device to be tested:</p>
+<ul>
+  <li>The behaviors that need to be exercised via PSS scenarios</li>
+  <li>The restrictions imposed by the device that must be obeyed by the scenario</li>
+  <li>Interesting relationships between behaviors</li>
+  <li>Interesting relationships between the device and others in the system</li>
+</ul>
+
+<p>My fallback approach is to start with the individual behaviors supported
+by the device. The other details can always be layered on later.</p>
+
+<h1 id="core-dma-behaviors">Core DMA Behaviors</h1>
+
+<p>At the core, our DMA engine supports three operations:</p>
+<ul>
+  <li>Copy memory from a source region to a destination region</li>
+  <li>Read data from a device (eg a USB controller) and write it to a memory region</li>
+  <li>Read data from a memory region and send it to a device</li>
+</ul>
+
+<p>Each of these core operations has two variations based on whether the description
+of the transfer is stored in DMA channel registers or in an in-memory descriptor
+chain. But, let’s also worry about in-memory descriptors later. For now, 
+let’s figure out what our three behaviors look like in PSS.</p>
+
+<h2 id="component">Component</h2>
+
+<p>One thing that we always need when creating a new PSS scenario model is a 
+component to put everything in. It’s generally a good practice to name
+this component after the target of the scenario model. In our case, we
+might name our component <code class="language-plaintext highlighter-rouge">WbDma</code> since that’s the name of the device
+that we’re targeting.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+    <span class="c1">// ... </span>
+<span class="p">}</span></code></pre></figure>
+
+<p>While we could do our initial development of actions inside <code class="language-plaintext highlighter-rouge">pss_top</code>, 
+eventually we will need to move our content to a container that is 
+reusable. Might as well start that way instead.</p>
+
+<h2 id="memory-copy-action">Memory Copy Action</h2>
+
+<p>Let’s think a bit about our memory copy operation – specifically 
+what its <code class="language-plaintext highlighter-rouge">pre-conditions</code> and <code class="language-plaintext highlighter-rouge">post-conditions</code> are. For normal 
+operation, our copy action needs an initialized region of memory
+from which to copy. While the DMA controller doesn’t care whether
+the source region of memory is initialized, we’ll have difficulty
+telling whether the operation was properly carried out unless we
+can compare the result against known values.</p>
+
+<p>When the DMA runs, it will copy data from the source region to 
+a destination region of memory. We could encapsulate all of the
+behavior to setup test the DMA copy operation into a single
+action that:</p>
+<ul>
+  <li>Selects and initializes a block of memory (source)</li>
+  <li>Selects a block of memory to copy data to (destination)</li>
+  <li>Programs the DMA to carry out the transfer</li>
+  <li>Checks that the result is correct</li>
+</ul>
+
+<p>But, this wouldn’t be terribly reusable. And, one great rule of
+thumb to use with PSS is to always think about how the actions
+you create today might be combined with those created by 
+someone else for a different device and used to create 
+a larger test scenario.</p>
+
+<p>So, let’s think about our copy operation in terms of <code class="language-plaintext highlighter-rouge">pre-conditions</code>
+and <code class="language-plaintext highlighter-rouge">post-conditions</code>:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">pre-condition</code> In order for DMA Copy to run, it needs an initialized 
+source region of memory, a region of memory to copy to, and a DMA 
+channel on which to run. For now, let’s focus on the memory region bit. 
+We’ll get to the DMA channel aspect in a future post.</li>
+  <li><code class="language-plaintext highlighter-rouge">post-condition</code> Once the DMA Copy has run, a new region of initialized
+memory is available that other devices could use.</li>
+</ul>
+
+<p>The source and destination memory aspect of pre-conditions and 
+post-conditions matches the semantics of the PSS <code class="language-plaintext highlighter-rouge">buffer</code> object, so we
+can model this aspect by having our DMA copy operation input and
+output buffer objects.</p>
+
+<p>Here is what our memory-copy operation will look like as a diagram:</p>
+
+<div class="mermaid" align="center">
+flowchart TD;
+    mem_b_i([MemBuf]) --&gt; mem2mem(Mem2Mem) --&gt; mem_b_o([MemBuf])
+</div>
+
+<p>And, here is the code:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kd">component</span> <span class="nc">WbDMA</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>      <span class="n">src_i</span><span class="p">;</span>
+        <span class="k">output</span> <span class="n">MemBuf</span>     <span class="n">dst_o</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We’ll figure out the contents of the <code class="language-plaintext highlighter-rouge">MemBuf</code> and how the DMA
+transfer is implemented later. For now, though, this action
+captures the <code class="language-plaintext highlighter-rouge">pre-conditions</code> and <code class="language-plaintext highlighter-rouge">post-conditions</code> that we
+listed above.</p>
+
+<h2 id="copy-tofrom-device">Copy To/From Device</h2>
+
+<p>The role of a DMA engine in copying data to/from a device is
+a bit interesting. While the DMA engine may implement the
+mechanics of data transfer from the device (eg a UART) to
+memory, we think of the device itself as having produced the data.
+The DMA was just a helper to make that happen more efficiently.</p>
+
+<p>We’ll come back to how, exactly, the DMA portion
+of our behavior coordinates with the <code class="language-plaintext highlighter-rouge">device</code> portion of 
+our behavior, and introduce the PSS construct that enables this. 
+For now, let’s give ourselves place holders
+for the actions that copy data to and from a device. In
+PSS, as in other programming languages, creating an outline
+marked with <em>TODO: Fill in Later</em> is a perfectly acceptable
+way to make forward progress.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="c1">// ...</span>
+
+<span class="kd">component</span> <span class="nc">WbDMA</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>      <span class="n">src_i</span><span class="p">;</span>
+        <span class="k">output</span> <span class="n">MemBuf</span>     <span class="n">dst_o</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Dev</span> <span class="p">{</span>
+        <span class="c1">// TODO: fill in later</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">Dev2Mem</span> <span class="p">{</span>
+        <span class="c1">// TODO: fill in later</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="playing-with-scenarios">Playing with Scenarios</h2>
+
+<p>Even in this early state, we can start to arrange our actions to see if 
+we’ll be able to form the test scenarios that we might be interested in.</p>
+
+<p>Can we chain DMA operations together? Yes, we can.</p>
+
+<p>Can we have data produced by another block be the source of the DMA copy?
+Yes, so long as the <code class="language-plaintext highlighter-rouge">buffer</code> data types are the same.</p>
+
+<p>Can we have data produced as a result of the DMA copy be the source for
+another block? Again, yes, as long as the <code class="language-plaintext highlighter-rouge">buffer</code> data types are the same.</p>
+
+<p>With very little work, we can start to build confidence that we’ll be able
+to create the tests that we want.</p>
+
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+
+<p>Taking the first step with a new programming language and new modeling 
+approach can seem intimidating, but it needn’t be with PSS. With PSS,
+there are several ways to approach creating a scenario model based on
+a behavioral description of a device, and it’s easy to sketch up 
+something quickly.</p>
+
+<p>Over the next few posts, we’ll continue to refine our initial PSS 
+scenario model for the Wishbone DMA engine and fill in the missing 
+details by learning about new PSS constructs.</p>
+
+<p>Next up: modeling memory with PSS.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li>[1] Wishbone DMA Core <a href="https://opencores.org/projects/wb_dma">project page</a></li>
+  <li>[2] Wishbone DMA Core <a href="https://bitsbytesgates.com/imgs/2023/03/dma_doc.pdf">manual</a></li>
+  <li>[3] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_1.html">DMA PSS Code (Viewing)</a></li>
+  <li>[4] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_1.pss">DMA PSS Code (Raw Text)</a></li>
 </ul>
 
 </div>
