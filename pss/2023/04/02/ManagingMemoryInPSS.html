@@ -10,12 +10,12 @@
   <title>
     
     
-      Simplifying Custom Template-Generated Content &middot; Bits, Bytes, and Gates
+      PSS Memory Management Fundamentals &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/04/02/ManagingMemoryInPSS.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -27,6 +27,14 @@
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -567,12 +575,12 @@ Post-env
   <title>
     
     
-      Simplifying Custom Template-Generated Content &middot; Bits, Bytes, and Gates
+      PSS Memory Management Fundamentals &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/04/02/ManagingMemoryInPSS.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -584,6 +592,14 @@ Post-env
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -613,49 +629,328 @@ Post-env
 </head>
 
 
+
   <body>
-    
+
 
   <div class="post">
-    <h1 class="post-title">Simplifying Custom Template-Generated Content</h1>
-    <span class="post-date">21 Aug 2022</span>
-    <p style="text-align: center;">&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjW6ygOoIw0lvUu7rGQcU-QVVwfR0SFtT6zCJtRzOilSOqHR8OwMnyDjG3C32-arWwoRRP0mKzGieAzgnyEPWk5fFsnzWNezMqZgDFNOUQy9MCRdodg9cWa3ghlBgKJgxJmXLOAXXCkMJI7tdm-fvXLQZIVvYFCXSXc7yHXz5NjDUt3SRbvhit25z52PQ/s540/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjW6ygOoIw0lvUu7rGQcU-QVVwfR0SFtT6zCJtRzOilSOqHR8OwMnyDjG3C32-arWwoRRP0mKzGieAzgnyEPWk5fFsnzWNezMqZgDFNOUQy9MCRdodg9cWa3ghlBgKJgxJmXLOAXXCkMJI7tdm-fvXLQZIVvYFCXSXc7yHXz5NjDUt3SRbvhit25z52PQ/s16000/splash.png" /></a></div><br /><p></p><p>As a verification engineer, it's quite common to work with data and code that follow a regular pattern. Having an efficient way to create this repetitive code is a significant productivity boost. While there certainly are places in the code where 'your critical generation or checking algorithm' goes, much of the structure of an agent, a test environment, etc remain the same. The same goes for other parts of the flow, such as project meta-data, test lists, etc. There are two things that keep us from just making copies of a set of 'golden' files to create the basis for a new UVM agent, project, etc: some or all of the files need to have some data substituted or changed. For example, we want to substitute the name of the new UVM agent we're creating into most of the new SystemVerilog source code.</p><p>Custom code generators have been developed for some of these tasks. These often focus on providing a domain-specific way to capture input data, such as the structure of a UVM testbench or the layout of registers in a design. But there are many more opportunities to generate template-driven code that cannot justify the investment to create a focused solution.</p><p>A few years ago, I created the <a href="https://github.com/fvutils/vte/">Verification Template Engine (VTE)</a> to serve my needs for generating template-driven content. I developed VTE with three user-experience requirements in mind:</p><p></p><ul style="text-align: left;"><li>Creating a new template should be very easy, but have access to powerful generation features</li><li>Managing the available templates should be simple for a user.&nbsp;</li><li>The core tools should be generic, and make few or no assumptions about what is being generated</li></ul><div>VTE focuses on organizing and discovering template content, but leverages the <a href="https://palletsprojects.com/p/jinja/">Jinja2 template engine</a> to do the heavy lifting of template expansion. In some sense, you can think of VTE as providing a user interface to the Jinaj2 library.</div><div><br /></div><div>I've been using VTE since developing it, but am just getting back to create proper documentation, which you can find here: <a href="https://fvutils.github.io/vte/">https://fvutils.github.io/vte/</a>. As part of that work, I created a quickstart guide which is both in the documentation, and forms the remainder of this post.&nbsp;</div><div><br /></div><p></p><div><div><b>Installing VTE</b></div><div>The easiest way to install VTE is from PyPi.</div><div><br /></div><div><span style="font-family: courier;">% python3 -m pip install --user vte</span></div><div>Test that you can run VTE by running the command (vte) and/or invoking the module:</div><div><br /></div><div><span style="font-family: courier;">% vte --help</span></div><div><span style="font-family: courier;">% python3 -m vte --help</span></div><div><br /></div><div><b>Creating a Template</b></div><div>VTE discovers templates by searching directories on the VTE_TEMPLATE_PATH environment variable. VTE uses a marker file named .vte to identify the root of a template. All files and directories in and below a template directory are considered to be part of the template. The template identifier is composed from the directory names between the directory listed in VTE_TEMPLATE_PATH and the directory containing the .vte marker file.</div><div><br /></div><div>Let’s look at an example to illustrate the rules.</div><div><br /></div><div><span style="font-family: courier;">templates</span></div><div><span style="font-family: courier;">&nbsp; uvm</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; agent</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; component</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; doc</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; blog_post</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; readme</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><br /></div><div>Let’s assume we add the templates directory to VTE_TEMPLATE_PATH. VTE will find four templates:</div><div><br /></div><div><span style="font-family: courier;">uvm.agent</span></div><div><span style="font-family: courier;">uvm.component</span></div><div><span style="font-family: courier;">doc.blog_post</span></div><div><span style="font-family: courier;">doc.readme</span></div><div><br /></div><div>All files in and below the directory containing the .vte marker will be rendered when the template is used.</div><div><br /></div><div><b>Creating the Template Structure</b></div><div>Let’s create a very simple template structure. Create the following directory structure:</div><div><br /></div><div><span style="font-family: courier;">templates</span></div><div><span style="font-family: courier;">&nbsp; doc</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; readme</span></div><div><br /></div><div>Change directory to templates/doc/readme and run the quickstart command:</div><div><br /></div><div><span style="font-family: courier;">% vte quickstart</span></div><div><span style="font-family: courier;">Verification Template Engine Quickstart</span></div><div><span style="font-family: courier;">Template directory: templates/doc/readme</span></div><div><span style="font-family: courier;">Template Description []? Create a simple README</span></div><div><br /></div><div>This command will prompt for a description to use for the template. Enter a description and press ENTER. This will create the .vte marker file.</div><div><br /></div><div>View the .vte file. You’ll see that the initial version is quite simple. For now, this is all we need.</div><div><br /></div><div><span style="font-family: courier;">template:</span></div><div><span style="font-family: courier;">&nbsp; description: Create a simple README</span></div><div><span style="font-family: courier;">&nbsp; parameters: []</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp;- name: param_name</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp; &nbsp;description: param_desc</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp; &nbsp;default: param_default</span></div><div><br /></div><div><b>Creating the Template File</b></div><div>Now, let’s create the template file that will be processed when we render the template. Our readme template only has one file: README.md.</div><div><br /></div><div>Create a file named README.md containing the following content in the templates/doc/readme directory:</div><div><br /></div><div><span style="font-family: courier;"># README for {{name}}</span></div><div><span style="font-family: courier;">TODO: put in some content of interest</span></div><div><br /></div><div>VTE supports defining and using multiple parameters, but defines one built-in parameter that must be supplied for all templates: name. Our template file references name using Jinja2 syntax for variable references.</div><div><br /></div><div>We have now created a simple template for creating README.md files.</div><div><br /></div><div><b>Rendering a Template</b></div><div>In order to render templates, VTE must first be able to discover them. Add the templates directory to the VTE_TEMPLATE_PATH environment variable.</div><div><br /></div><div><span style="font-family: courier;">% export VTE_TEMPLATE_PATH=&lt;path&gt;/templates # Bourne shell</span></div><div><span style="font-family: courier;">% setenv VTE_TEMPLATE_PATH &lt;path&gt;/templates # csh/tsh</span></div><div>Let’s test this out by running the vte list command:</div><div><br /></div><div><span style="font-family: courier;">% vte list</span></div><div><span style="font-family: courier;">doc.readme - Create a simple README</span></div><div><br /></div><div>If you see the doc.readme line above, VTE has successfully discovered the template.</div><div><br /></div><div>Now, let’s actually generate something. Let’s create a new directory parallel to the templates directory in which to try this out</div><div><br /></div><div><span style="font-family: courier;">% mkdir scratch</span></div><div><span style="font-family: courier;">% cd scratch</span></div><div><br /></div><div>Finally, let’s run the generate command:</div><div><br /></div><div><span style="font-family: courier;">% vte generate doc.readme my_project</span></div><div><span style="font-family: courier;">Note: processing template README.md</span></div><div><br /></div><div>VTE prints a line for each template file is processes. The output above confirms that is processed the template README.md file.</div><div><br /></div><div>Let’s have a look at the result. View the README.md file in the scratch directory.</div><div><br /></div><div><span style="font-family: courier;"># README for my_project</span></div><div><span style="font-family: courier;">TODO: put in some content of interest</span></div><div><br /></div><div>Node that the {{name}} reference was replaced by the name (my_project) that we specified.</div><div><br /></div><div>You have now created your first VTE template!</div><div><br /></div></div><p><b>Conclusion</b></p><p>As the tutorial above illustrates, creating a new template for use with VTE is no more effort than making a few name substitutions. If you use the template more than once, you will already have received a positive return on the effort invested. While templates can be simple, you have the full power of the <a href="https://palletsprojects.com/p/jinja/">Jinja2</a> template engine when you need to do something more complex. I encourage you to check out the <a href="https://fvutils.github.io/vte/">VTE documentation</a> and look for opportunities where using template-driven content generation can make your life easier and make you more productive.</p><p><br /></p><div style="text-align: center;">Copyright 2022 Matthew Ballance</div><div><p style="font-variant-east-asian: normal; font-variant-numeric: normal; line-height: 16px; margin-bottom: 0in;"><span style="color: #666666;"><span face="Trebuchet MS, Trebuchet, Verdana, sans-serif"><span style="font-size: 9pt;"><i><span style="background: rgb(255, 255, 255);">The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</span></i></span></span></span></p></div>
+    <h1 class="post-title">PSS Memory Management Fundamentals</h1>
+    <span class="post-date">02 Apr 2023</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/MemoryManagement_splash.png" /> 
+</p>
+
+<p>Storage (memory) is right in the middle of all the work with do with
+computer architecture. We have different kinds of memory that each have different
+trade-offs around performance (latency / throughput), cost per unit,
+and power consumption. We arrange memories into hierarchies with 
+the goal of keeping frequently-used data in the upper 
+(faster, but limited) layers, while pushing infrequently-accessed data 
+to the lower (slower, but more expansive) layers.</p>
+
+<p>Given the large amount of time time designers spend thinking about 
+memory needs, it’s no surprise that creating good and capable tests 
+to exercise those designs depends on being able to acquire the right 
+type of memory at the right time in order to fully-exercise the 
+capabilities and characteristics of the system.</p>
+
+<p>Remember, though, that we’re writing bare-metal tests. Consequently, we need 
+to allocate memory for our test behaviors ahead of time in order to not waste valuable
+simulation or emulation time running the ‘malloc’ and ‘free’ algorithm. 
+When done by hand, static allocation can limit how reusable code is and
+remove the majority of variability (ie randomness) from test scenarios. Fortunately, 
+PSS provides some easy to use features that allow actions to manage memory that 
+they require in a way that enables static allocation while not limiting 
+variability or reuse. Let’s dig in!</p>
+
+<h1 id="test-requirements-for-memory-management">Test Requirements for Memory Management</h1>
+<p>System-level tests have three core requirements when it comes to 
+memory management:</p>
+<ul>
+  <li>Ensure that behaviors needing distinct blocks of memory are provided non-overlapping
+blocks of memory</li>
+  <li>Ensure behaviors that need to share data see the same memory</li>
+  <li>Ensure that a test is able to explicitly specify the general
+location in memory (eg SRAM, DDR, etc) where a memory block
+comes from.</li>
+</ul>
+
+<p>One of the biggest challenges with hand-written bare-metal
+tests is implementing these three characteristics in a distributed
+and modular way.</p>
+
+<p>There are two parts of the PSS memory management approach:</p>
+<ul>
+  <li>Specification of available memory resource</li>
+  <li>Specification of claims on those resources, and how the claimed data is used.</li>
+</ul>
+
+<h1 id="using-memory-in-behaviors">Using Memory in Behaviors</h1>
+<p>Let’s start with the second point – how we claim memory – since we can see 
+immediately how that fits into our DMA example.</p>
+
+<p>In PSS, an action claims memory by having one or more random fields of type
+<em>addr_claim_s</em>. The action can control how much memory is being requested,
+and its alignment, by constraining the fields of the claim.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>    <span class="n">size</span><span class="p">;</span> <span class="c1">// Size of the data</span>
+    <span class="n">addr_handle_t</span>   <span class="n">addr_h</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
+        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
+
+        <span class="c1">// Input and output size must be the same</span>
+        <span class="k">constraint</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">src_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
+
+        <span class="c1">// DMA only transfers words</span>
+        <span class="k">constraint</span> <span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span> 
+
+        <span class="c1">// Specify size/alignment for allocation</span>
+        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
+        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">alignment</span> <span class="o">==</span> <span class="mi">4</span><span class="p">;</span>
+
+        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
+            <span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span> <span class="o">=</span> <span class="n">make_handle_from_claim</span><span class="p">(</span><span class="n">dst_claim</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+            <span class="c1">// ...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Okay, we’ve added a few things to the skeleton Mem2Mem action that
+we created in the last post:</p>
+<ul>
+  <li>Added a <code class="language-plaintext highlighter-rouge">size</code> field to <code class="language-plaintext highlighter-rouge">MemBuf</code> to ensure that producers and consumers
+of this type agree on the data size.</li>
+  <li>Added an ‘addr_h’ field to <code class="language-plaintext highlighter-rouge">MemBuf</code> that will hold a handle to the allocated
+memory block.</li>
+  <li>Add a claim field (<code class="language-plaintext highlighter-rouge">dst_claim</code>) to the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action that will cause 
+memory to be allocated for the DMA destination memory</li>
+  <li>Add constraints to:
+    <ul>
+      <li>Relate the source and destination buffer objects.</li>
+      <li>Relate the source and destination buffer objects.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>One new thing is that we assign the address handle to a field in the output 
+buffer within the <code class="language-plaintext highlighter-rouge">post_solve</code> exec block inside the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action. 
+This is done in order to make the address available to the consumer of the 
+buffer. Why does this work? 
+PSS specifies that two actions that are connected by a buffer object 
+both have a handle to exactly the same object. That means that when the 
+outputting action assigns a value to a field, it is assigning to the 
+exact field that the inputting action will read.</p>
+
+<h2 id="specifying-memory-claim-lifetimes">Specifying Memory Claim Lifetimes</h2>
+
+<p>By default, the lifetime of a memory claim is the same as the action containing
+it.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
+        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In the context of our example, that means that <code class="language-plaintext highlighter-rouge">dst_claim</code> would be released
+as soon as the DMA transfer completes. Clearly, that’s not what we want since we
+are claiming <code class="language-plaintext highlighter-rouge">dst_claim</code> in order to provide data to another action.</p>
+
+<p>The solution is to <em>extend</em> the lifetime of the memory claim by attaching 
+it to something with a longer lifetime. In this case, that thing with a 
+longer lifetime is, very naturally, the output buffer, since we intend the 
+lifetime of the buffer and the lifetime of our memory claim to match.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
+        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+
+        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
+            <span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span> <span class="o">=</span> <span class="n">make_handle_from_claim</span><span class="p">(</span><span class="n">dst_claim</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// ...</span>
+        
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Now, when the memory we’ve claimed is passed to another action via a buffer,
+the memory claim lives at least until the receiving action is complete.</p>
+
+<div class="mermaid" align="center">
+flowchart TD;
+  mem_b_1 -.-&gt; mem2mem_1
+  mem2mem_1 -.-&gt; mem_b_2
+  mem_b_2 -.-&gt; mem2mem_2
+  mem2mem_2 -.-&gt; mem_b_3
+  subgraph Execution
+    mem2mem_1("Mem2Mem[1]") --&gt; mem2mem_2("Mem2Mem[2]")
+  end
+  subgraph Dataflow
+    mem_b_1(["MemBuf\nsize: 64\naddr_h=0x80000000"])
+    mem_b_2(["MemBuf\nsize: 64\naddr_h=0x80001000"])
+    mem_b_3(["MemBuf\nsize: 64\naddr_h=0x80002000"])
+  end
+</div>
+
+<h1 id="describing-memory-resources">Describing Memory Resources</h1>
+<p>In addition to claiming memory, we also need to capture the memory available
+to us in the system. This is done by defining an address space with one or
+more memory regions, from which memory will be allocated.</p>
+
+<p>Address spaces are instanced in the component tree. Recall from the post about
+actions and components that each action execution occurs in the context of
+a component instance.</p>
+
+<p>The address space used by a given claim is located by searching hierarchically
+up the component tree from the action’s context component instance until an 
+address space with the same <code class="language-plaintext highlighter-rouge">trait</code> type as the claim is found.</p>
+
+<p>This resolution scheme means that we need to exercise care in where we place
+our address space. Memory is most commonly a system property. 
+If we instance our DMA Engine in two different systems, we could reasonably
+expect the available memory to be different. The amount of memory is likely
+to be different, as are the base addresses of key memory regions.</p>
+
+<div class="mermaid" align="center">
+flowchart TD
+  subgraph PssTop["pss_top"]
+    aspace[["aspace : transparen_address_space_c&lt;&gt;"]]
+    mem2mem-. claim .-&gt;aspace
+    subgraph WbDma["dma : WbDma"]
+      mem2mem["Mem2Mem"]
+    end
+  end
+</div>
+
+<h2 id="capturing-available-memory">Capturing Available Memory</h2>
+<p>In our simple example, we will capture the address space for our DMA
+engine to use in <code class="language-plaintext highlighter-rouge">pss_top</code>.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="c1">// ...</span>
+
+<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>           <span class="n">aspace</span><span class="p">;</span>
+
+    <span class="n">WbDma</span>                                <span class="n">dma</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>      <span class="n">region</span><span class="p">;</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x0000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The available memory regions within the address space are specified in the 
+<code class="language-plaintext highlighter-rouge">init_down</code> exec block. Here, we register two regions of memory – one at
+0x8000_0000 and one at 0x0000_0000.</p>
+
+<h1 id="putting-it-all-together">Putting it all together</h1>
+<p>We’ve completed the basic updates to our PSS model that enable our DMA actions
+to sensibly management memory.</p>
+<ul>
+  <li>We have added a memory claim to the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action to claim memory
+for the destination buffer.</li>
+  <li>We have added a handle to the the <code class="language-plaintext highlighter-rouge">MemBuf</code> buffer type that enables
+us to properly manage the lifetime of that claimed memory.</li>
+  <li>We have specified an address space with available regions of memory for 
+the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action to use.</li>
+</ul>
+
+<p>At this point, the Mem2Mem action will randomly allocate memory regions from 
+the two registered regions. For now, this is likely just fine. In the future,
+we will need to take finer-grain control over where our memory claims are 
+satisfied. Fortunately, PSS provides features to support that requirement
+as well.</p>
+
+<p>In this post, we’ve seen the steps necessarily to make use of the core 
+memory-management features that PSS provides. Now that we know how to
+manage memory as a test-scenario resource, we can turn our attention to
+managing another type of resource: the DMA channels within the engine.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li>[1] <a href="https://www.accellera.org/downloads/standards/portable-stimulus">PSS LRM</a></li>
+  <li>[2] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_2.html">DMA PSS Code (Viewing)</a></li>
+  <li>[3] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_2.pss">DMA PSS Code (Raw Text)</a></li>
+</ul>
+
+
   </div>
 
-  
-  <div class="related">
-    <h2>Related posts</h2>
-    <ul class="related-posts">
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+    <br/>
+    <br/>
       
-        <li>
-          <h3>
-            <a href="/pss/2023/04/02/ManagingMemoryInPSS.html">
-              PSS Memory Management Fundamentals
-              <small>02 Apr 2023</small>
-            </a>
-          </h3>
-        </li>
       
-        <li>
-          <h3>
-            <a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">
-              Modeling DMA Test Scenarios with PSS
-              <small>25 Mar 2023</small>
-            </a>
-          </h3>
-        </li>
+      <h2>Posts in the series "Intro to PSS"</h2>
+      <ul>
+        
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        
+        
+        <li>PSS Memory Management Fundamentals</li>
+        
+        
+      </ul>
       
-        <li>
-          <h3>
-            <a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">
-              Relating Actions with Dataflow
-              <small>18 Mar 2023</small>
-            </a>
-          </h3>
-        </li>
-      
-    </ul>
-  </div>
+    
+
   
 
   </body>

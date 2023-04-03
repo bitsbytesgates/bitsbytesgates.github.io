@@ -1,5 +1,5 @@
 /****************************************************************************
- * memtest_buffer.pss
+ * wb_dma_2.pss
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -18,12 +18,17 @@
  * Created on:
  *     Author: 
  ****************************************************************************/
+import addr_reg_pkg::*;
 
 buffer MemBuf {
-    rand bit[32] size; // Size of the data
+    rand bit[32]        size; // Size of the data
+    addr_handle_t       addr_h;
 }
 
 component WbDma {
+
+    pool MemBuf     mem_buf_p;
+    bind mem_buf_p  *;
 
     action Mem2Mem {
         input MemBuf            src_i;
@@ -40,6 +45,9 @@ component WbDma {
         constraint dst_claim.size == dst_o.size;
         constraint dst_claim.alignment == 4;
 
+        exec post_solve {
+            dst_o.addr_h = make_handle_from_claim(dst_claim);
+        }
 
     }
 
@@ -53,4 +61,22 @@ component WbDma {
 
     }
 
+}
+
+component pss_top {
+    transparent_addr_space_c<>               aspace;
+    
+    WbDma                                    dma;
+
+    exec init_down {
+        transparent_addr_region_s<>          region;
+
+        region.addr = 0x8000_0000;
+        region.size = 0x1000_0000;
+        aspace.add_region(region);
+
+        region.addr = 0x0000_0000;
+        region.size = 0x1000_0000;
+        aspace.add_region(region);
+    }
 }
