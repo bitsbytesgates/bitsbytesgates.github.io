@@ -20,3 +20,21 @@ mermaid: true
   </center>
   <em>The views and opinions expressed above are solely those of the author and do not 
       represent those of my employer or any other party.</em>
+
+{% if site.posts.first.series %}
+<br/>
+<br/>
+{% assign seriesPosts = site.posts | sort: "date" | where_exp: "post", "post.series == site.posts.first.series" %}
+{% if seriesPosts.size >= 1 %}
+<h2>Posts in the series "{{ site.posts.first.series }}"</h2>
+<ul>
+    {% for post in seriesPosts %}
+        {% if post.title != site.posts.first.title %}
+            <li><a href="{{ post.url }}">{{post.title}}</a></li>
+        {% else %}
+            <li>{{post.title}}</li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endif %}
