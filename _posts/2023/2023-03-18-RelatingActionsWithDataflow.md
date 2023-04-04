@@ -5,11 +5,11 @@ date: 2023-03-18
 categories: PSS
 series: "Intro to PSS"
 mermaid: true
+excerpt_separator: <!--more-->
 ---
 <p align="center">
 <img src="{{ '/imgs/2023/03/RelatingActionsWithDataflow_splash.png' | absolute_url }}"/> 
 </p>
-
 Modularity and reuse are key concerns when it comes to programming
 languages. While languages without many modularity and reuse features may be
 quick and easy to write -- think shell scripts -- they ultimately fail to scale. 
@@ -22,6 +22,8 @@ provide reuse features for composing declarative behaviors.
 
 In this post, we will start to look at declarative data relationships via the
 PSS `buffer` construct.
+
+<!--more-->
 
 # Rewinding a Bit...
 Recall that, in the last post, we were creating very simple multi-core

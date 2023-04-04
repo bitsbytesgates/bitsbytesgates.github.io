@@ -3,6 +3,7 @@ layout: post
 title:  "New Year, New Space"
 date:   2023-02-16
 categories: Intro
+excerpt_separator: <!--more-->
 ---
 
 We've more than gotten started on the new year. In fact, DVCon -- reliably
@@ -13,6 +14,8 @@ first post of the year out.
 Getting a late start on blog posts this year isn't for lack of interesting
 ideas and projects to, though. Here are a few things you can look forward 
 to in the coming Blog year.
+
+<!--more-->
 
 # New Space
 First, about the new space... For many years, I hosted the bitsbytesgates 

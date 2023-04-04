@@ -4,6 +4,7 @@ title: Automating Bare-Metal Tests with PSS
 date: 2023-02-25
 categories: PSS
 series: "Intro to PSS"
+excerpt_separator: <!--more-->
 ---
 <p align="center">
 <img src="{{ '/imgs/2023/AutomatingBareMetalSoCTestsWithPSS_splash.png' | absolute_url }}"/> 
@@ -23,6 +24,8 @@ to test. It specifically focuses on providing features that help
 in creating bare-metal software-driven system-level tests. Consequently,
 this 'Intro to PSS' series will focus on the task of the bare-metal
 software-driven test writer, and the value PSS provides.
+
+<!--more-->
 
 ## Programming Languages Categories
 When it comes to programming languages, there are two big 

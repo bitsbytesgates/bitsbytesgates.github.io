@@ -5,6 +5,7 @@ date: 2023-03-11
 categories: PSS
 series: "Intro to PSS"
 mermaid: true
+excerpt_separator: <!--more-->
 ---
 <p align="center">
 <img src="{{ '/imgs/2023/03/PSSMultiCoreTests_splash.png' | absolute_url }}"/> 
@@ -33,6 +34,8 @@ It's this last point that, I think, really stresses our multi-tasking ability.
 Not only do we need to envision what is happening in the context of one
 thread, but need to simultaneously envision the set of possible actions the
 other threads may be taking.
+
+<!--more-->
 
 ## Specific Bare-Metal Multi-Core Test Challenges
 

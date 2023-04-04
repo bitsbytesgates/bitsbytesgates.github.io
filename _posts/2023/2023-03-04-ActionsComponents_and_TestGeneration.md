@@ -4,11 +4,11 @@ title: "PSS Fundamentals: Actions, Components, and Test Generation"
 date: 2023-03-03
 categories: PSS
 series: "Intro to PSS"
+excerpt_separator: <!--more-->
 ---
 <p align="center">
 <img src="{{ '/imgs/2023/PSSFundamentals_ActionsComponents_splash.png' | absolute_url }}"/> 
 </p>
-
 Complex engineering endeavors require complex calculations. It's open to 
 debate as to when the first engineering project that required complex 
 calculations occurred. What we do know is that those 
@@ -33,6 +33,8 @@ mathematical tables would, of course, have been produced
 laboriously by some other "computer" or "computers" working with pen 
 and paper. But, they were invaluable at increasing the speed with 
 which complex calculations could be completed by hand.
+
+<!--more-->
 
 <p align="center">
 <img src="{{ '/imgs/2023/LogTrigTablesBook.jpg' | absolute_url }}" height="320"/>

@@ -5,6 +5,7 @@ date: 2023-03-25
 categories: PSS
 series: "Intro to PSS"
 mermaid: true
+excerpt_separator: <!--more-->
 ---
 
 <p align="center">
@@ -30,6 +31,8 @@ modeling process in the context of this example.
 
 To that end, we'll spend a bit more time talking about the example design
 itself before digging into the PSS that we'll use to create tests for it.
+
+<!--more-->
 
 # Wishbone DMA Engine
 

@@ -5,6 +5,7 @@ date: 2023-04-02
 categories: PSS
 series: "Intro to PSS"
 mermaid: true
+excerpt_separator: <!--more-->
 ---
 
 <p align="center">
@@ -24,6 +25,8 @@ memory needs, it's no surprise that creating good and capable tests
 to exercise those designs depends on being able to acquire the right 
 type of memory at the right time in order to fully-exercise the 
 capabilities and characteristics of the system.
+
+<!--more-->
 
 Remember, though, that we're writing bare-metal tests. Consequently, we need 
 to allocate memory for our test behaviors ahead of time in order to not waste valuable
