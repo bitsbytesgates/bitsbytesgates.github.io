@@ -10,12 +10,12 @@
   <title>
     
     
-      TbLink-RPC: Simplifying the Multi-Language Testbench &middot; Bits, Bytes, and Gates
+      PSS Concurrency and Resources &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2022/03/27/tblink-rpc-simplifying-multi-language.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -27,6 +27,14 @@
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -578,12 +586,12 @@ Post-env
   <title>
     
     
-      TbLink-RPC: Simplifying the Multi-Language Testbench &middot; Bits, Bytes, and Gates
+      PSS Concurrency and Resources &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2022/03/27/tblink-rpc-simplifying-multi-language.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -595,6 +603,14 @@ Post-env
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -624,49 +640,305 @@ Post-env
 </head>
 
 
+
   <body>
-    
+
 
   <div class="post">
-    <h1 class="post-title">TbLink-RPC: Simplifying the Multi-Language Testbench</h1>
-    <span class="post-date">27 Mar 2022</span>
-    <div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRHKdkXm_YqfEF4nahvthmhcSyVkvuROeDoDcR-M25X1Gi4KFoG15drTEl7t3H1HOyImflxhYPzMa1pYxQ0wNDNpekQqWBkJA3JjecSNMlZkG8wTEczhFu-1mfHq0PQggd8LWdgvuRiPGEqjRhulETC-0LC-JRH3L7p0ZUDQBepfWBgn6wtw5cznPjhg/s540/MultiLanguageTestbench_splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRHKdkXm_YqfEF4nahvthmhcSyVkvuROeDoDcR-M25X1Gi4KFoG15drTEl7t3H1HOyImflxhYPzMa1pYxQ0wNDNpekQqWBkJA3JjecSNMlZkG8wTEczhFu-1mfHq0PQggd8LWdgvuRiPGEqjRhulETC-0LC-JRH3L7p0ZUDQBepfWBgn6wtw5cznPjhg/s16000/MultiLanguageTestbench_splash.png" /></a></div><br /><p></p><p>SystemVerilog/UVM is, by far, the most widely-used language and methodology for block and subsystem-level verification environments today. The simplicity of that statement overlooks the fact that it’s often very common to have other bits of non-SystemVerilog code connected. Maybe it’s some C/C++ code that implements a reference algorithm used by the scoreboard. Maybe it’s an instruction-set simulation model used to implement software behavior. Maybe it’s infrastructure that allows early firmware code to drive behavior in the simulation. Either way, integrating non-SystemVerilog code is a non-trival development and maintenance task, despite the fact that SystemVerilog defines a standard API (the Direct Procedure Interface – DPI).</p><p>This is the first in a series of posts describing a project that I’ve been working with a goal of simplifying this situation. The TbLink-RPC (roughly Testbench Link Remote Procedure Call) provides infrastructure that dramatically reduces the code a testbench developer needs to create in order to integrate code with a simulation environment.&nbsp;</p><p>Two primary experience brought me to working on the TbLink-RPC project. The first was a somewhat long history of feeling like I had to reinvent the wheel every time I needed to integrate non-SystemVerilog code into a testbench environment. The second was my interest in ‘alternative’ testbench languages and my experience using Python as a verification language.</p><p>Back in the 2017/2018 timeframe, I started to get re-involved with open-source hardware design targeting, primarily, FPGAs. When you’re designing gateware (frankly, any software-like thing), it’s imperative to have a good test environment. I did a bit of exploration, trying out bespoke C++ testbench environments and a few other things, before landing on Python and cocotb as my test framework. A lot of this was motivated by open-source tool capabilities and community. I was committed to using open-source tools as much as possible for my open-source gateware, and open-source simulators (eg Icarus and Verilator) didn’t support sufficient SystemVerilog features to be able to use SV-UVM. After looking around a bit, cocotb seemed to have the largest community around it making it the obvious choice.</p><p>I found a lot to like about Python and cocotb for developing testbench environments. Python has a large collection of libraries, and the ability to easily incorporate these in a testbench boosted my productivity. I find the Python language easy to write and use – especially for smaller projects. Having a pure-Python testbench worked for me as a hobbyist. In many ways, that is because I create all my testbench environments from the ground up and don’t use commercial Verification IP (VIP/UVCs).&nbsp;</p><p>This same approach doesn’t work in most commercial environments. Testbench environments must reuse existing VIPs/UVCs (either commercial or developed in-house), and it’s common for a testbench architecture to remain mostly-unchanged across multiple design cycles. Doing a wholesale conversion to Python (or any other ‘alternative’ language) doesn’t make sense. Furthermore, bringing in small amounts of a different language has a high development and maintenance cost.</p><p>What I concluded I really wanted was a framework that would simplify the process of integrating some amount of testbench code written in any language (more precisely, any non-SystemVerilog language since the simulator already supports SystemVerilog) into a simulation environment.</p><p><b>Concept</b></p><p>I’ll get into more detail about the TbLink-RPC architecture in a future post. Fundamentally, though, the idea is to form a point-to-point connection between two environments through which pairs of objects can communicate via method calls.&nbsp;</p><p></p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnNyy_ASmMS639E9gPwbBIMGmmP5wCblEc5CTH-LsMynJ2QRwyJ-CyQvan5OdxKEb8IrAJviaEOw8FVQfExXzvwi-3TKbAWff45bEPh1J_Uut8-kz7n7JVNwKRXp_vRQMhI6oKzWBRbUVRu3ISqhRo31ikIDUG7TDtZB9QlEa8YNDa0qYR1GQEZpBozg/s932/concept_diagram.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="384" data-original-width="932" height="165" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnNyy_ASmMS639E9gPwbBIMGmmP5wCblEc5CTH-LsMynJ2QRwyJ-CyQvan5OdxKEb8IrAJviaEOw8FVQfExXzvwi-3TKbAWff45bEPh1J_Uut8-kz7n7JVNwKRXp_vRQMhI6oKzWBRbUVRu3ISqhRo31ikIDUG7TDtZB9QlEa8YNDa0qYR1GQEZpBozg/w400-h165/concept_diagram.png" width="400" /></a></div><br /><p></p><p>There are a few things that make TbLink-RPC different from other remote-procedure-call solutions. The first is that TbLink-RPC is simulation centric. Or, rather, it is designed to work with environments that maintain a local “simulated” notion of time. To that end, TbLink-RPC supports both blocking (time-consuming) and non-blocking functions, and defines a protocol to ensure that time advances at the intended time.</p><p>TbLink-RPC is designed to support both single OS process and multi OS-process integration. Single-process integration (where both environments run in the same OS process) provide higher performance.&nbsp; &nbsp; But, single-process integration isn’t always feasible. For example, one environment might be an instruction-set simulator (eg QEMU) that must run in its own process in order to manage memory in its own highly-specialized way.&nbsp;</p><p>TbLink-RPC emphasizes automation and modularity. Code-generation automation is used to create the boilerplate code, minimizing user effort to integrate new APIs. The entire system is designed such that integrations created independently can be easily combined. Even better, this is done in such a way that SystemVerilog users don’t need to deal with generated DPI integration code.</p><p><br /></p><p><b>Example</b></p><p>An example is often the simplest way to get across a concept, and I have a very simple one here. For now, I’ll just show the key elements of a typical use case: connecting a Python reference model to a UVM testbench environment.&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjR0Ce9JX3-2lmnyV1vKc13y4QZLFNOWk4pLts4jkI95i_MbQDBCXWqbKAf42gUX5wJWbbInFlBPJlRw-tg69wLKkAzULM-l8aDiHQlgOG36Vs-WMNQpsSy-uhSzDXNk5NcbyEafwMED33RrrAIwjPrTiaLWkjELNmHSEeFl4SRQAFoY3fb-lvB-ylevw/s408/UVM_tb_diagram.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="336" data-original-width="408" height="264" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjR0Ce9JX3-2lmnyV1vKc13y4QZLFNOWk4pLts4jkI95i_MbQDBCXWqbKAf42gUX5wJWbbInFlBPJlRw-tg69wLKkAzULM-l8aDiHQlgOG36Vs-WMNQpsSy-uhSzDXNk5NcbyEafwMED33RrrAIwjPrTiaLWkjELNmHSEeFl4SRQAFoY3fb-lvB-ylevw/s320/UVM_tb_diagram.png" width="320" /></a></div><br /><p>Now, in this case our DUT isn’t that exciting. It’s just an adder, so our reference model is correspondingly trivial.&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6uJXRt5gO1iGAxSMHaHA5XGbuWTVq9QI_plx5v0ErXbeQKM4cippRZZzvM1tu_tffUnafRuJ3BTm9b8ZSpG2kc8mdYA9_cKVCh5Fgi2gxPZQnGMSNOSKmferC2OpWpfnZTwLv92Uvfk3VZ6MHEw0J8Vpkfdeo0wRi2dJj0PxT5AxzvkoUgZkOutbPbg/s646/python_class.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="179" data-original-width="646" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6uJXRt5gO1iGAxSMHaHA5XGbuWTVq9QI_plx5v0ErXbeQKM4cippRZZzvM1tu_tffUnafRuJ3BTm9b8ZSpG2kc8mdYA9_cKVCh5Fgi2gxPZQnGMSNOSKmferC2OpWpfnZTwLv92Uvfk3VZ6MHEw0J8Vpkfdeo0wRi2dJj0PxT5AxzvkoUgZkOutbPbg/s16000/python_class.png" /></a></div><br /><p>Our reference-model class contains a method named ‘add’ that returns the sum of two parameters passed to it. Note that we apply a decorator (tblink_rpc.iftype) to the class. This registers the class with the TbLink-RPC infrastructure. Note, also, that we apply a decorator to the ‘add’ method and specify typing annotations for the parameters and return type. Together, these register the method with TbLink-RPC and specify the parameter types to be used.</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBMcPcMsk5zKpVnNvI3n7ucOU0Er2mEZXdvzsYTnzYbnpH1wWd158FalAlz2jPER6yxqb0GZ38xnlszVf8F7hDGasqmIdh5N4Uc-fRLdGsuvVKKYTkpMtfcPjDT3Bnrv71auuftoD_THlwWekKrETqoyQ5TgHpApOObjeUZTEvVuHFqmoGB8XwWXeS7Q/s529/sv_object_class.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="275" data-original-width="529" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBMcPcMsk5zKpVnNvI3n7ucOU0Er2mEZXdvzsYTnzYbnpH1wWd158FalAlz2jPER6yxqb0GZ38xnlszVf8F7hDGasqmIdh5N4Uc-fRLdGsuvVKKYTkpMtfcPjDT3Bnrv71auuftoD_THlwWekKrETqoyQ5TgHpApOObjeUZTEvVuHFqmoGB8XwWXeS7Q/s16000/sv_object_class.png" /></a></div><br /><p>In order to call our Python class from SystemVerilog, we will need a SV class to call. That class is shown above, and combines a class from the TbLink-RPC library (TbLinkLaunchUvmObj) with some generated implementation classes created from the API definition that in Python. If our class contained methods implemented in SystemVerilog that could be called from Python, then this class would contain the implementation. Since that’s not the case, there isn’t anything to implement here.</p><p>From a UVM testbench perspective, using our Python class involves two steps:</p><p></p><ul style="text-align: left;"><li>Launch an instance of the class in Python connected with the SV class</li><li>Call the API</li></ul><p></p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjXGIxM1M5fLJWbtYtnT6xs3t-cJm7qeHzmum5xqxPlYB9Pb2V-_vLjIuTgYgSSgYGwZeDflywQKqhzK9TH7x0-bLzJZg42Dkfw1CR0hyVE7y7gkIxngndkQAW5AamvgM943snUyd8ELt-umJVGpONImT5xDQXbPl6xVTb5LOWZXS5sT0qChz596pKCJw/s599/launch_remote_obj.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="216" data-original-width="599" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjXGIxM1M5fLJWbtYtnT6xs3t-cJm7qeHzmum5xqxPlYB9Pb2V-_vLjIuTgYgSSgYGwZeDflywQKqhzK9TH7x0-bLzJZg42Dkfw1CR0hyVE7y7gkIxngndkQAW5AamvgM943snUyd8ELt-umJVGpONImT5xDQXbPl6xVTb5LOWZXS5sT0qChz596pKCJw/s16000/launch_remote_obj.png" /></a></div>The first step, launching, is shown above. The TbLink-RPC library class (TbLinkLaunchUvmObj) that our class inherits from implements the details of starting up and communicating with an embedded or remote environment. We just have to specify the details of how to do this via the configuration object. In this case, and in most cases, we will use a factory method to fill in common details. Because we are starting a Python environment, we must specify the Python module (uvm_python_obj) that contains the Python class we wish to call.<div><br /></div><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhBp3tOO2_5c-WzCUf_VbKSgN1UPwUw4zVeKRrv-jlMnB3cqaOCVkPR5JEpsWBkrOU9i19VZS4Tv9KYwIFgqCjoRiY8KVyiovD90wEY69gOc9fK-xaxtjFZKrMBBu2t7nOYRrAwlq8QQCXYvEsyYJ7Z4HrRgZiBPahTZyxGadnhGOgKq5q1BIc0ZLmpzQ/s653/call_remote_obj.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="201" data-original-width="653" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhBp3tOO2_5c-WzCUf_VbKSgN1UPwUw4zVeKRrv-jlMnB3cqaOCVkPR5JEpsWBkrOU9i19VZS4Tv9KYwIFgqCjoRiY8KVyiovD90wEY69gOc9fK-xaxtjFZKrMBBu2t7nOYRrAwlq8QQCXYvEsyYJ7Z4HrRgZiBPahTZyxGadnhGOgKq5q1BIc0ZLmpzQ/s16000/call_remote_obj.png" /></a></div><br /><div>Finally, we need to call our reference model. Our scoreboard contains a method that accepts operand data from the agent driving the ALU, and a result from the agent monitoring the ALU output. We call the reference model by making a SV class-method call to obtain the expected result from the Python reference model.</div><div><br /></div><div><b>Next Steps</b></div><div><p>TbLink-RPC is designed to simplify integrating code into simulation environment. In the context of a SystemVerilog environment, this makes it much easier and simpler to bring in external models written in non-SystemVerilog. Over the course of the next few posts, I’ll go into a bit more detail on TbLink-RPC architecture and the nuts and bolts of the integration process.</p><p><br /></p><p><b>References</b></p><p></p><ul style="text-align: left;"><li>TbLink-RPC (under construction) -&nbsp;<a href="https://tblink-rpc.github.io/">https://tblink-rpc.github.io/</a></li><li>cocotb -&nbsp;<a href="https://docs.cocotb.org/en/stable/">https://docs.cocotb.org/en/stable/</a></li></ul><div><br /></div><div style="text-align: center;">Copyright 2022 Matthew Ballance</div><div style="text-align: left;"><p style="font-variant-east-asian: normal; font-variant-numeric: normal; line-height: 100%; margin-bottom: 0in;"><span style="color: #666666;"><span style="font-family: Trebuchet MS, Trebuchet, Verdana, sans-serif;"><span style="font-size: 9pt;"><i><span style="background: #ffffff;">The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</span></i></span></span></span></p></div><div><br /></div><p></p></div>
+    <h1 class="post-title">PSS Concurrency and Resources</h1>
+    <span class="post-date">09 Apr 2023</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/DMAModelingResourcesWithPSS_splash.png" /> 
+</p>
+
+<p>Resource contention is a challenge that arises any time concurrency and 
+shared resources (data, hardware accelerators, etc) are involved. It’s one
+of the big challenges, and source of bugs, in implementing code that takes
+advantage of parallelism. 
+When it comes to hardware resources, safe access to shared resources is 
+generally managed in production by the operating system. There are two big 
+reasons that using this same approach for bare-metal tests isn’t a good solution:</p>
+<ul>
+  <li>First, and most obvious, is that our bare-metal tests don’t have an
+operating system to use in managing access to shared devices</li>
+  <li>Second, and more interesting, is that our tests are constraint 
+guided and seek to exercise as many unique corner cases as possible.
+In contrast, the OS can focus simply on providing correct results, and
+doesn’t need t be as concerned with being able to produce interesting
+and unique corner cases.</li>
+</ul>
+
+<p>The good news, as you might guess, is that PSS provides constructs for modeling
+available resources and how actions can make use of them without 
+conflicts – whether the actions are executing sequentially or 
+concurrently. Let’s dig in and learn more.</p>
+
+<!--more-->
+
+<h1 id="resources-and-the-dma-example">Resources and the DMA Example</h1>
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/03/DMA_block_diagram.png" />
+</p>
+
+<p>In the DMA example, the most obvious features that must be managed
+as a resource are the channels. Channels can execute memory
+transfers in parallel – an important usecase for the IP. Eventually,
+the OS driver for the DMA will manage satisfying requests for a 
+DMA channel. But, for now, our test will need to manage allocating
+channels itself.</p>
+
+<h1 id="pss-resource-management-in-three-parts">PSS Resource Management in Three Parts</h1>
+
+<p>There are three key parts to managing resources in PSS.</p>
+<ul>
+  <li>A data type to encapsulate data related to the resource kind</li>
+  <li>A pool of a given resource kind that specifies the number of
+available resources</li>
+  <li>A resource claim on an action to acquire a resource with 
+specific characteristics</li>
+</ul>
+
+<h2 id="resource-type">Resource Type</h2>
+
+<p>A <em>resource</em> data type is declared using the <code class="language-plaintext highlighter-rouge">resource</code> keyword.
+A resource type is very similar to a struct, in that it can
+contain random and non-random data fields and constraints.</p>
+
+<p>A <em>resource</em> data type has one built-in field named
+<code class="language-plaintext highlighter-rouge">instance_id</code>. The <code class="language-plaintext highlighter-rouge">instance_id</code> field is a simple but effective
+way to uniquely identify a resource instance.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>        <span class="n">size</span><span class="p">;</span> <span class="c1">// Size of the data</span>
+    <span class="n">addr_handle_t</span>       <span class="n">addr_h</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">resource</span> <span class="nc">Channel</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In the case of the DMA engine, the key thing we need to know is
+to which DMA channel an action is assigned. Consequently, our
+resource type <code class="language-plaintext highlighter-rouge">Channel</code> doesn’t contain any custom fields.</p>
+
+<h2 id="resource-pool">Resource Pool</h2>
+
+<p>In prior posts, we’ve hand-waved a bit about where <code class="language-plaintext highlighter-rouge">buffer</code> pools
+are placed, and how they are statically bound to actions.
+Now that we have resources, we need to be a bit more mindful of 
+pools, where they are placed, and how actions are bound to them.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
+
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The bind directive connects a pool to a set of actions that 
+reference that <code class="language-plaintext highlighter-rouge">flow-object</code> type. In our case, we have 
+placed the resource pool inside the <code class="language-plaintext highlighter-rouge">WbDma</code> component and
+bound it to all actions that claim a <code class="language-plaintext highlighter-rouge">Channel</code> resource because
+channels are a property of a specific DMA engine instance. Actions
+running on that instance of a DMA engine IP have access to the
+available channels. Actions running on a different instance have
+access to a different set of channels.</p>
+
+<p>Note that a <code class="language-plaintext highlighter-rouge">resource</code> pool always has a size, unlike<br />
+<code class="language-plaintext highlighter-rouge">buffer</code> pools that are unsized. The specified size
+states exactly how many resources exist in the pool.</p>
+
+<p>As in previous posts, our <code class="language-plaintext highlighter-rouge">WbDma</code> component is instantiated inside the
+top component in the componet tree, <code class="language-plaintext highlighter-rouge">pss_top</code>.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Let’s say we add another instance of the DMA engine:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma_1</span><span class="p">;</span>
+    <span class="n">WbDma</span>                                    <span class="n">dma_2</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Everything will work as we expect with the <code class="language-plaintext highlighter-rouge">resource</code> pool 
+local to each DMA component, and resource claims on actions 
+within the DMA Component bound to that local pool. When an
+action runs on the <code class="language-plaintext highlighter-rouge">dma_1</code> instance, it will contend with
+other actions running on that component for the
+available 16 channels. Likewise, for an action running 
+on the <code class="language-plaintext highlighter-rouge">dma_2</code> instance.</p>
+
+<p>What would be different if we moved the resource pool up
+a level?</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>                        <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma_1</span><span class="p">;</span>
+    <span class="n">WbDma</span>                                    <span class="n">dma_2</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Now, all actions that run on either <code class="language-plaintext highlighter-rouge">dma_1</code> or <code class="language-plaintext highlighter-rouge">dma_2</code>
+contend for the same set of shared channel resources 
+because all actions are bound to the same resource pool.</p>
+
+<p>Doing things this way doesn’t make sense for our DMA 
+example, but certainly makes sense in other cases. For example,
+consider a case where we have a family of algorithm 
+accelerators - each with their own distinct actions - that all need to use
+some shared resource such as a shared DMA engine. In that 
+case, having all actions share the same resource pool would 
+make sense.</p>
+
+<h2 id="resource-claim">Resource Claim</h2>
+
+<p>Finally, we reach the point where we can have our DMA actions
+claim a resource. Actions claim resources using a special 
+<code class="language-plaintext highlighter-rouge">lock</code> or <code class="language-plaintext highlighter-rouge">share</code> field within the action. Much like the 
+<code class="language-plaintext highlighter-rouge">input</code> and <code class="language-plaintext highlighter-rouge">output</code> fields used with buffers, declaring
+a resource lock or share field causes the PSS tool to make
+the field point to a resource that matches any criteria
+the user has specified for the resource.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+    <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
+    <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
+    <span class="k">lock</span> <span class="n">Channel</span>            <span class="n">channel</span><span class="p">;</span>
+
+    <span class="c1">// Input and output size must be the same</span>
+    <span class="k">constraint</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">src_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In the case above, the only criteria the action places on the
+resource is that it needs to have exclusive (lock) access to
+it. No other action can use the channel at the same time.</p>
+
+<p>It’s also possible to use constraints to add more criteria
+on selection of a resource. Take the example test below:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">extend</span> <span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="kd">action</span> <span class="nc">TestParallelXfer</span> <span class="p">{</span>
+
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="k">parallel</span> <span class="p">{</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In this case, we are very specific about which channels two of 
+the three transfers should run on. Perhaps that is because we 
+want to exercise some aspect of the arbitration scheme. 
+For the third parallel transfer, we request a channel less than 8. 
+The PSS tool will randomly select an appropriate channel, while not 
+selecting channels 0 or 1.</p>
+
+<h1 id="locking-vs-sharing-a-resource">Locking vs Sharing a Resource</h1>
+<p>In the case of the DMA example, acquiring exclusive access to a DMA channel
+(locking it) is the appropriate choice. In fact, locking resources is 
+probably the most common use case. However, there are certainly valid
+cases where we need to allow multiple actions to access the same resource.</p>
+
+<p>The most straightforward case for shared access to a resource is when a
+resource provides some useful information that can be read by multiple
+actions. In this case, actions that wish to read the information should
+acquire the resource as a <code class="language-plaintext highlighter-rouge">share(d)</code> resource. Actions wishing to write
+the information should acquire the resource as a <code class="language-plaintext highlighter-rouge">lock(ed)</code> resource. 
+Doing this will enable multiple actions to read information from the
+resource-protected element, while ensuring that no action is 
+simultaneously trying to change the stored information.</p>
+
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+<p>In this post, we’ve seen how PSS enables the definition of resources
+that can only be used in certain ways by certain actions over time, 
+and have seen how PSS resources can be applied to describe restrictions
+on how DMA channels can be used over time by concurrent behavior.</p>
+
+<p>In the next post, we’ll look at using PSS <code class="language-plaintext highlighter-rouge">registers</code> to connect the 
+actions in our PSS model to the registers within the DMA engine.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li>[1] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_3.html">DMA PSS Code (Viewing)</a></li>
+  <li>[2] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_3.pss">DMA PSS Code (Raw Text)</a></li>
+</ul>
+
   </div>
 
-  
-  <div class="related">
-    <h2>Related posts</h2>
-    <ul class="related-posts">
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+    <br/>
+    <br/>
       
-        <li>
-          <h3>
-            <a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">
-              PSS Concurrency and Resources
-              <small>09 Apr 2023</small>
-            </a>
-          </h3>
-        </li>
       
-        <li>
-          <h3>
-            <a href="/pss/2023/04/02/ManagingMemoryInPSS.html">
-              PSS Memory Management Fundamentals
-              <small>02 Apr 2023</small>
-            </a>
-          </h3>
-        </li>
+      <h2>Posts in the series "Intro to PSS"</h2>
+      <ul>
+        
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        
+        
+        <li>PSS Concurrency and Resources</li>
+        
+        
+      </ul>
       
-        <li>
-          <h3>
-            <a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">
-              Modeling DMA Test Scenarios with PSS
-              <small>25 Mar 2023</small>
-            </a>
-          </h3>
-        </li>
-      
-    </ul>
-  </div>
+    
+
   
 
   </body>

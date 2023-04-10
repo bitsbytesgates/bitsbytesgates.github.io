@@ -100,6 +100,8 @@ Post-env
         <li><span class="caret">Apr</span>
         <ul class="nested" list-style-type="none">
         
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
         <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
         
         <!--
@@ -542,6 +544,15 @@ Post-env
   </nav>
 
   <div class="sidebar-item">
+    <!--
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd782FXbA8DRhlHx2RdH-rAJ5ikUbK965emwbTIYDiMbx4-1w/viewform?embedded=true" width="300" height="439" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+      <form name="myForm" 
+        action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSd782FXbA8DRhlHx2RdH-rAJ5ikUbK965emwbTIYDiMbx4-1w/formResponse" 
+        onsubmit="return validateForm()" method="post">
+        Name: <input type="text" name="fname">
+        <input type="submit" value="Submit">
+      </form>
+      -->
     <p>
       &copy; 2014-2023 Matthew Ballance. 
       <br/>
@@ -572,278 +583,249 @@ Post-env
 </h1>
 
   <h1 class="entry-title">
-    <a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a>
+    <a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a>
   </h1>      
 
 <div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/04/MemoryManagement_splash.png" /> 
+<img src="https://bitsbytesgates.com/imgs/2023/04/DMAModelingResourcesWithPSS_splash.png" /> 
 </p>
 
-<p>Storage (memory) is right in the middle of all the work with do with
-computer architecture. We have different kinds of memory that each have different
-trade-offs around performance (latency / throughput), cost per unit,
-and power consumption. We arrange memories into hierarchies with 
-the goal of keeping frequently-used data in the upper 
-(faster, but limited) layers, while pushing infrequently-accessed data 
-to the lower (slower, but more expansive) layers.</p>
+<p>Resource contention is a challenge that arises any time concurrency and 
+shared resources (data, hardware accelerators, etc) are involved. It’s one
+of the big challenges, and source of bugs, in implementing code that takes
+advantage of parallelism. 
+When it comes to hardware resources, safe access to shared resources is 
+generally managed in production by the operating system. There are two big 
+reasons that using this same approach for bare-metal tests isn’t a good solution:</p>
+<ul>
+  <li>First, and most obvious, is that our bare-metal tests don’t have an
+operating system to use in managing access to shared devices</li>
+  <li>Second, and more interesting, is that our tests are constraint 
+guided and seek to exercise as many unique corner cases as possible.
+In contrast, the OS can focus simply on providing correct results, and
+doesn’t need t be as concerned with being able to produce interesting
+and unique corner cases.</li>
+</ul>
 
-<p>Given the large amount of time time designers spend thinking about 
-memory needs, it’s no surprise that creating good and capable tests 
-to exercise those designs depends on being able to acquire the right 
-type of memory at the right time in order to fully-exercise the 
-capabilities and characteristics of the system.</p>
+<p>The good news, as you might guess, is that PSS provides constructs for modeling
+available resources and how actions can make use of them without 
+conflicts – whether the actions are executing sequentially or 
+concurrently. Let’s dig in and learn more.</p>
 
 <!--more-->
 
-<p>Remember, though, that we’re writing bare-metal tests. Consequently, we need 
-to allocate memory for our test behaviors ahead of time in order to not waste valuable
-simulation or emulation time running the ‘malloc’ and ‘free’ algorithm. 
-When done by hand, static allocation can limit how reusable code is and
-remove the majority of variability (ie randomness) from test scenarios. Fortunately, 
-PSS provides some easy to use features that allow actions to manage memory that 
-they require in a way that enables static allocation while not limiting 
-variability or reuse. Let’s dig in!</p>
+<h1 id="resources-and-the-dma-example">Resources and the DMA Example</h1>
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/03/DMA_block_diagram.png" />
+</p>
 
-<h1 id="test-requirements-for-memory-management">Test Requirements for Memory Management</h1>
-<p>System-level tests have three core requirements when it comes to 
-memory management:</p>
+<p>In the DMA example, the most obvious features that must be managed
+as a resource are the channels. Channels can execute memory
+transfers in parallel – an important usecase for the IP. Eventually,
+the OS driver for the DMA will manage satisfying requests for a 
+DMA channel. But, for now, our test will need to manage allocating
+channels itself.</p>
+
+<h1 id="pss-resource-management-in-three-parts">PSS Resource Management in Three Parts</h1>
+
+<p>There are three key parts to managing resources in PSS.</p>
 <ul>
-  <li>Ensure that behaviors needing distinct blocks of memory are provided non-overlapping
-blocks of memory</li>
-  <li>Ensure behaviors that need to share data see the same memory</li>
-  <li>Ensure that a test is able to explicitly specify the general
-location in memory (eg SRAM, DDR, etc) where a memory block
-comes from.</li>
+  <li>A data type to encapsulate data related to the resource kind</li>
+  <li>A pool of a given resource kind that specifies the number of
+available resources</li>
+  <li>A resource claim on an action to acquire a resource with 
+specific characteristics</li>
 </ul>
 
-<p>One of the biggest challenges with hand-written bare-metal
-tests is implementing these three characteristics in a distributed
-and modular way.</p>
+<h2 id="resource-type">Resource Type</h2>
 
-<p>There are two parts of the PSS memory management approach:</p>
-<ul>
-  <li>Specification of available memory resource</li>
-  <li>Specification of claims on those resources, and how the claimed data is used.</li>
-</ul>
+<p>A <em>resource</em> data type is declared using the <code class="language-plaintext highlighter-rouge">resource</code> keyword.
+A resource type is very similar to a struct, in that it can
+contain random and non-random data fields and constraints.</p>
 
-<h1 id="using-memory-in-behaviors">Using Memory in Behaviors</h1>
-<p>Let’s start with the second point – how we claim memory – since we can see 
-immediately how that fits into our DMA example.</p>
-
-<p>In PSS, an action claims memory by having one or more random fields of type
-<em>addr_claim_s</em>. The action can control how much memory is being requested,
-and its alignment, by constraining the fields of the claim.</p>
+<p>A <em>resource</em> data type has one built-in field named
+<code class="language-plaintext highlighter-rouge">instance_id</code>. The <code class="language-plaintext highlighter-rouge">instance_id</code> field is a simple but effective
+way to uniquely identify a resource instance.</p>
 
 <figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>    <span class="n">size</span><span class="p">;</span> <span class="c1">// Size of the data</span>
-    <span class="n">addr_handle_t</span>   <span class="n">addr_h</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>        <span class="n">size</span><span class="p">;</span> <span class="c1">// Size of the data</span>
+    <span class="n">addr_handle_t</span>       <span class="n">addr_h</span><span class="p">;</span>
 <span class="p">}</span>
 
+<span class="kd">resource</span> <span class="nc">Channel</span> <span class="p">{</span> <span class="p">}</span>
+
 <span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
 
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
+<p>In the case of the DMA engine, the key thing we need to know is
+to which DMA channel an action is assigned. Consequently, our
+resource type <code class="language-plaintext highlighter-rouge">Channel</code> doesn’t contain any custom fields.</p>
 
-        <span class="c1">// Input and output size must be the same</span>
-        <span class="k">constraint</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">src_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
+<h2 id="resource-pool">Resource Pool</h2>
 
-        <span class="c1">// DMA only transfers words</span>
-        <span class="k">constraint</span> <span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span> 
+<p>In prior posts, we’ve hand-waved a bit about where <code class="language-plaintext highlighter-rouge">buffer</code> pools
+are placed, and how they are statically bound to actions.
+Now that we have resources, we need to be a bit more mindful of 
+pools, where they are placed, and how actions are bound to them.</p>
 
-        <span class="c1">// Specify size/alignment for allocation</span>
-        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
-        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">alignment</span> <span class="o">==</span> <span class="mi">4</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
 
-        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
-            <span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span> <span class="o">=</span> <span class="n">make_handle_from_claim</span><span class="p">(</span><span class="n">dst_claim</span><span class="p">);</span>
-        <span class="p">}</span>
+    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
 
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="c1">// ...</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The bind directive connects a pool to a set of actions that 
+reference that <code class="language-plaintext highlighter-rouge">flow-object</code> type. In our case, we have 
+placed the resource pool inside the <code class="language-plaintext highlighter-rouge">WbDma</code> component and
+bound it to all actions that claim a <code class="language-plaintext highlighter-rouge">Channel</code> resource because
+channels are a property of a specific DMA engine instance. Actions
+running on that instance of a DMA engine IP have access to the
+available channels. Actions running on a different instance have
+access to a different set of channels.</p>
+
+<p>Note that a <code class="language-plaintext highlighter-rouge">resource</code> pool always has a size, unlike<br />
+<code class="language-plaintext highlighter-rouge">buffer</code> pools that are unsized. The specified size
+states exactly how many resources exist in the pool.</p>
+
+<p>As in previous posts, our <code class="language-plaintext highlighter-rouge">WbDma</code> component is instantiated inside the
+top component in the componet tree, <code class="language-plaintext highlighter-rouge">pss_top</code>.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
 
     <span class="c1">// ...</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>Okay, we’ve added a few things to the skeleton Mem2Mem action that
-we created in the last post:</p>
-<ul>
-  <li>Added a <code class="language-plaintext highlighter-rouge">size</code> field to <code class="language-plaintext highlighter-rouge">MemBuf</code> to ensure that producers and consumers
-of this type agree on the data size.</li>
-  <li>Added an ‘addr_h’ field to <code class="language-plaintext highlighter-rouge">MemBuf</code> that will hold a handle to the allocated
-memory block.</li>
-  <li>Add a claim field (<code class="language-plaintext highlighter-rouge">dst_claim</code>) to the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action that will cause 
-memory to be allocated for the DMA destination memory</li>
-  <li>Add constraints to:
-    <ul>
-      <li>Relate the source and destination buffer objects.</li>
-      <li>Relate the source and destination buffer objects.</li>
-    </ul>
-  </li>
-</ul>
+<p>Let’s say we add another instance of the DMA engine:</p>
 
-<p>One new thing is that we assign the address handle to a field in the output 
-buffer within the <code class="language-plaintext highlighter-rouge">post_solve</code> exec block inside the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action. 
-This is done in order to make the address available to the consumer of the 
-buffer. Why does this work? 
-PSS specifies that two actions that are connected by a buffer object 
-both have a handle to exactly the same object. That means that when the 
-outputting action assigns a value to a field, it is assigning to the 
-exact field that the inputting action will read.</p>
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma_1</span><span class="p">;</span>
+    <span class="n">WbDma</span>                                    <span class="n">dma_2</span><span class="p">;</span>
 
-<h2 id="specifying-memory-claim-lifetimes">Specifying Memory Claim Lifetimes</h2>
-
-<p>By default, the lifetime of a memory claim is the same as the action containing
-it.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
-
-        <span class="c1">// ...</span>
-    <span class="p">}</span>
+    <span class="c1">// ...</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>In the context of our example, that means that <code class="language-plaintext highlighter-rouge">dst_claim</code> would be released
-as soon as the DMA transfer completes. Clearly, that’s not what we want since we
-are claiming <code class="language-plaintext highlighter-rouge">dst_claim</code> in order to provide data to another action.</p>
+<p>Everything will work as we expect with the <code class="language-plaintext highlighter-rouge">resource</code> pool 
+local to each DMA component, and resource claims on actions 
+within the DMA Component bound to that local pool. When an
+action runs on the <code class="language-plaintext highlighter-rouge">dma_1</code> instance, it will contend with
+other actions running on that component for the
+available 16 channels. Likewise, for an action running 
+on the <code class="language-plaintext highlighter-rouge">dma_2</code> instance.</p>
 
-<p>The solution is to <em>extend</em> the lifetime of the memory claim by attaching 
-it to something with a longer lifetime. In this case, that thing with a 
-longer lifetime is, very naturally, the output buffer, since we intend the 
-lifetime of the buffer and the lifetime of our memory claim to match.</p>
+<p>What would be different if we moved the resource pool up
+a level?</p>
 
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>                        <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma_1</span><span class="p">;</span>
+    <span class="n">WbDma</span>                                    <span class="n">dma_2</span><span class="p">;</span>
 
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
 
-        <span class="c1">// ...</span>
+<p>Now, all actions that run on either <code class="language-plaintext highlighter-rouge">dma_1</code> or <code class="language-plaintext highlighter-rouge">dma_2</code>
+contend for the same set of shared channel resources 
+because all actions are bound to the same resource pool.</p>
 
-        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
-            <span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span> <span class="o">=</span> <span class="n">make_handle_from_claim</span><span class="p">(</span><span class="n">dst_claim</span><span class="p">);</span>
+<p>Doing things this way doesn’t make sense for our DMA 
+example, but certainly makes sense in other cases. For example,
+consider a case where we have a family of algorithm 
+accelerators - each with their own distinct actions - that all need to use
+some shared resource such as a shared DMA engine. In that 
+case, having all actions share the same resource pool would 
+make sense.</p>
+
+<h2 id="resource-claim">Resource Claim</h2>
+
+<p>Finally, we reach the point where we can have our DMA actions
+claim a resource. Actions claim resources using a special 
+<code class="language-plaintext highlighter-rouge">lock</code> or <code class="language-plaintext highlighter-rouge">share</code> field within the action. Much like the 
+<code class="language-plaintext highlighter-rouge">input</code> and <code class="language-plaintext highlighter-rouge">output</code> fields used with buffers, declaring
+a resource lock or share field causes the PSS tool to make
+the field point to a resource that matches any criteria
+the user has specified for the resource.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+    <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
+    <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
+    <span class="k">lock</span> <span class="n">Channel</span>            <span class="n">channel</span><span class="p">;</span>
+
+    <span class="c1">// Input and output size must be the same</span>
+    <span class="k">constraint</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">src_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In the case above, the only criteria the action places on the
+resource is that it needs to have exclusive (lock) access to
+it. No other action can use the channel at the same time.</p>
+
+<p>It’s also possible to use constraints to add more criteria
+on selection of a resource. Take the example test below:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">extend</span> <span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="kd">action</span> <span class="nc">TestParallelXfer</span> <span class="p">{</span>
+
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="k">parallel</span> <span class="p">{</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span>
+            <span class="p">}</span>
         <span class="p">}</span>
 
-        <span class="c1">// ...</span>
-        
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>Now, when the memory we’ve claimed is passed to another action via a buffer,
-the memory claim lives at least until the receiving action is complete.</p>
+<p>In this case, we are very specific about which channels two of 
+the three transfers should run on. Perhaps that is because we 
+want to exercise some aspect of the arbitration scheme. 
+For the third parallel transfer, we request a channel less than 8. 
+The PSS tool will randomly select an appropriate channel, while not 
+selecting channels 0 or 1.</p>
 
-<div class="mermaid" align="center">
-flowchart TD;
-  mem_b_1 -.-&gt; mem2mem_1
-  mem2mem_1 -.-&gt; mem_b_2
-  mem_b_2 -.-&gt; mem2mem_2
-  mem2mem_2 -.-&gt; mem_b_3
-  subgraph Execution
-    mem2mem_1("Mem2Mem[1]") --&gt; mem2mem_2("Mem2Mem[2]")
-  end
-  subgraph Dataflow
-    mem_b_1(["MemBuf\nsize: 64\naddr_h=0x80000000"])
-    mem_b_2(["MemBuf\nsize: 64\naddr_h=0x80001000"])
-    mem_b_3(["MemBuf\nsize: 64\naddr_h=0x80002000"])
-  end
-</div>
+<h1 id="locking-vs-sharing-a-resource">Locking vs Sharing a Resource</h1>
+<p>In the case of the DMA example, acquiring exclusive access to a DMA channel
+(locking it) is the appropriate choice. In fact, locking resources is 
+probably the most common use case. However, there are certainly valid
+cases where we need to allow multiple actions to access the same resource.</p>
 
-<h1 id="describing-memory-resources">Describing Memory Resources</h1>
-<p>In addition to claiming memory, we also need to capture the memory available
-to us in the system. This is done by defining an address space with one or
-more memory regions, from which memory will be allocated.</p>
+<p>The most straightforward case for shared access to a resource is when a
+resource provides some useful information that can be read by multiple
+actions. In this case, actions that wish to read the information should
+acquire the resource as a <code class="language-plaintext highlighter-rouge">share(d)</code> resource. Actions wishing to write
+the information should acquire the resource as a <code class="language-plaintext highlighter-rouge">lock(ed)</code> resource. 
+Doing this will enable multiple actions to read information from the
+resource-protected element, while ensuring that no action is 
+simultaneously trying to change the stored information.</p>
 
-<p>Address spaces are instanced in the component tree. Recall from the post about
-actions and components that each action execution occurs in the context of
-a component instance.</p>
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+<p>In this post, we’ve seen how PSS enables the definition of resources
+that can only be used in certain ways by certain actions over time, 
+and have seen how PSS resources can be applied to describe restrictions
+on how DMA channels can be used over time by concurrent behavior.</p>
 
-<p>The address space used by a given claim is located by searching hierarchically
-up the component tree from the action’s context component instance until an 
-address space with the same <code class="language-plaintext highlighter-rouge">trait</code> type as the claim is found.</p>
-
-<p>This resolution scheme means that we need to exercise care in where we place
-our address space. Memory is most commonly a system property. 
-If we instance our DMA Engine in two different systems, we could reasonably
-expect the available memory to be different. The amount of memory is likely
-to be different, as are the base addresses of key memory regions.</p>
-
-<div class="mermaid" align="center">
-flowchart TD
-  subgraph PssTop["pss_top"]
-    aspace[["aspace : transparen_address_space_c&lt;&gt;"]]
-    mem2mem-. claim .-&gt;aspace
-    subgraph WbDma["dma : WbDma"]
-      mem2mem["Mem2Mem"]
-    end
-  end
-</div>
-
-<h2 id="capturing-available-memory">Capturing Available Memory</h2>
-<p>In our simple example, we will capture the address space for our DMA
-engine to use in <code class="language-plaintext highlighter-rouge">pss_top</code>.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="c1">// ...</span>
-
-<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>           <span class="n">aspace</span><span class="p">;</span>
-
-    <span class="n">WbDma</span>                                <span class="n">dma</span><span class="p">;</span>
-
-    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
-        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>      <span class="n">region</span><span class="p">;</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x0000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>The available memory regions within the address space are specified in the 
-<code class="language-plaintext highlighter-rouge">init_down</code> exec block. Here, we register two regions of memory – one at
-0x8000_0000 and one at 0x0000_0000.</p>
-
-<h1 id="putting-it-all-together">Putting it all together</h1>
-<p>We’ve completed the basic updates to our PSS model that enable our DMA actions
-to sensibly management memory.</p>
-<ul>
-  <li>We have added a memory claim to the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action to claim memory
-for the destination buffer.</li>
-  <li>We have added a handle to the the <code class="language-plaintext highlighter-rouge">MemBuf</code> buffer type that enables
-us to properly manage the lifetime of that claimed memory.</li>
-  <li>We have specified an address space with available regions of memory for 
-the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action to use.</li>
-</ul>
-
-<p>At this point, the Mem2Mem action will randomly allocate memory regions from 
-the two registered regions. For now, this is likely just fine. In the future,
-we will need to take finer-grain control over where our memory claims are 
-satisfied. Fortunately, PSS provides features to support that requirement
-as well.</p>
-
-<p>In this post, we’ve seen the steps necessarily to make use of the core 
-memory-management features that PSS provides. Now that we know how to
-manage memory as a test-scenario resource, we can turn our attention to
-managing another type of resource: the DMA channels within the engine.</p>
+<p>In the next post, we’ll look at using PSS <code class="language-plaintext highlighter-rouge">registers</code> to connect the 
+actions in our PSS model to the registers within the DMA engine.</p>
 
 <h1 id="resources">Resources</h1>
 <ul>
-  <li>[1] <a href="https://www.accellera.org/downloads/standards/portable-stimulus">PSS LRM</a></li>
-  <li>[2] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_2.html">DMA PSS Code (Viewing)</a></li>
-  <li>[3] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_2.pss">DMA PSS Code (Raw Text)</a></li>
+  <li>[1] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_3.html">DMA PSS Code (Viewing)</a></li>
+  <li>[2] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_3.pss">DMA PSS Code (Raw Text)</a></li>
 </ul>
-
 </div>
 
 </div>
@@ -883,11 +865,18 @@ managing another type of resource: the DMA channels within the engine.</p>
         
     
         
-            <li>PSS Memory Management Fundamentals</li>
+            <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+    
+        
+            <li>PSS Concurrency and Resources</li>
         
     
     </ul>
 
+<!--
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd782FXbA8DRhlHx2RdH-rAJ5ikUbK965emwbTIYDiMbx4-1w/viewform?embedded=true" width="640" height="480" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+  -->
 
       </div>
     </div>
