@@ -1,4 +1,480 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2023-04-13T23:45:18+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">PSS Concurrency and Resources</title><link href="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html" rel="alternate" type="text/html" title="PSS Concurrency and Resources" /><published>2023-04-09T00:00:00+00:00</published><updated>2023-04-09T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2023-04-19T04:16:46+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Interacting with Devices via PSS Registers</title><link href="https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters.html" rel="alternate" type="text/html" title="Interacting with Devices via PSS Registers" /><published>2023-04-18T00:00:00+00:00</published><updated>2023-04-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters.html"><![CDATA[<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/InteractingWithDevicesViaPssRegisters_splash.png" /> 
+</p>
+<p>We’ve been looking at properly modeling the types of behaviors that we want
+to exercise on our DMA IP for the last few posts. Of course, until we can 
+actually start programming the DMA registers, all of our modeling won’t
+actually <em>do</em> anything.</p>
+
+<p>PSS provides two primary ways to connect the model of test behavior we 
+want to exercise to the device on which we will exercise that behavior:</p>
+<ul>
+  <li>Calling functions that are implemented in the target environment</li>
+  <li>Using PSS features to read/write registers and memory</li>
+</ul>
+
+<p>Both of these approaches have benefits and drawbacks. If functions
+already exist to program IP registers, leveraging these from PSS
+helps to get tests up and running more quickly. However, functions
+are typically only implemented in a single language. Greater 
+portability is achieved by directly describing the interactions
+between PSS model and device registers in PSS.</p>
+
+<p>This post will look at describing the register interface 
+using the PSS register model.</p>
+
+<!--more-->
+
+<h1 id="registers-in-different-contexts">Registers in Different Contexts</h1>
+
+<p>Looking across the various contexts in which registers appear, it 
+quickly becomes clear that the critical capabilities are
+quite different.</p>
+
+<ul>
+  <li>Within the RTL implementation of an IP, registers communicate
+control values set by firmware to the implementing logic and
+feed back status data from hardware to firmware. In addition,
+some degree of change event may be useful (eg register written).
+In other words, data storage and the structure of that data
+are the key care-abouts here.</li>
+  <li>In a UVM block-level verification environment, there are a
+significant number of overlapping requirements. A UVM register
+model captures the structure of data within registers (eg 
+named fields), and layout of registers within memory. A
+UVM register model enables a shadow copy of register 
+contents to be maintained for debug and analysis purposes.
+Since access to registers is typically via a memory-mapped
+address space, the register model supports mapping between
+high-level changes to register values and writes to the
+addresses of those modified registers. All in all, the UVM
+register model may be the most complex that we work with.</li>
+  <li>At system level, we interact with the registers in our
+IP blocks and subsystems using firmware. When we’re 
+writing this firmware by hand, it’s typical to have a 
+set of C ‘#define’ macros that help to calculate the 
+address of registers, and that extract and set the value
+of register fields. At this level, there’s little to 
+no value in caching a copy of the last known value of
+a device register.</li>
+</ul>
+
+<p>Because PSS has a system-level focus, it’s probably no surprise 
+that it focuses on the key capabilities required at system
+level: being able to efficiently model how registers fit into
+the address space space of a device, and efficiently read and
+write them. Unlike the UVM register model, the PSS register
+model doesn’t maintain a copy of the data stored in registers.</p>
+
+<h1 id="the-pss-register-model">The PSS Register Model</h1>
+<p>The PSS register model focuses on capturing the field layout
+of each register, the layout of device registers in the
+memory map, and on providing efficient mechanisms for
+reading and writing to the device registers.</p>
+
+<p>The key elements to be aware of are:</p>
+<ul>
+  <li>Register group component that collects registers and sub-groups of registers together</li>
+  <li>Register component that describes a single register – often in-line</li>
+  <li>Register definition struct that describes the fields of a register</li>
+</ul>
+
+<p>Both the register group and register components are pre-defined components
+defined by the PSS <em>Core Library</em>. While they are not built-in constructs
+in the language, they are special types that tools are expected to 
+implement specially.</p>
+
+<h2 id="register-group">Register Group</h2>
+
+<p>We define a register group to contain the top-level registers and register
+groups of a device (eg our DMA engine). Or, any time we collections of 
+registers that we want to use mulitple times.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/WB_DMA_TopLevel_Channel_Regs.png" />
+</p>
+
+<p>Let’s look at the first part of the DMA Engine registers (shown above). We have
+some control registers that are common across all of the DMA channels. Then, 
+groups of registers that are replicated for each channel.</p>
+
+<p>We will create a register group for the full set of DMA engine registers
+and a register group for the per-channel registers. The full DMA engine
+register group will contain both the individual registers and an array
+of the per-channel register groups.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaChannelRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="n">WbDmaChannelRegs</span>        <span class="n">channels</span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="register-definition-struct-and-component">Register Definition Struct and Component</h2>
+
+<p>Each register is composed of some number of fields. When these fields have
+special meaning, we define a <code class="language-plaintext highlighter-rouge">packed struct</code> to capture the field layout.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/WB_DMA_Channel_SZ_Reg.png" />
+</p>
+
+<p>The image above shows the layout of the <em>size</em> register within the block
+of per-channel registers. We declare the struct below to capture the 
+layout of the fields in the register. Note that the start of the first 
+field in the struct corresponds to the lowest bit in the register.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">struct</span> <span class="nc">WbDmaChannelSz</span> <span class="p">:</span> <span class="n">packed_s</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span>           <span class="n">TOT_SZ</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>            <span class="n">RESERVED_1</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>            <span class="n">CHK_SZ</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>            <span class="n">RESERVED_2</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The struct shown above just defines the layout of data within a
+register.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaChannelRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelSZ</span><span class="o">&gt;</span>          <span class="n">SZ</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddr</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddrMask</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddr</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddrMask</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">LinkListPtr</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SwPtr</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>When declaring a register within a register group, we add a field
+of type <code class="language-plaintext highlighter-rouge">reg_c</code> that is parameterized with the data type 
+that describes the register. This core data type could be a packed
+struct as is shown above. It could also be an integer in cases where
+giving names to all the fields isn’t so important.</p>
+
+<p>For example, we use packed structs to define the layout of the CSR
+and SZ fields. Address and address-mask fields are defined using
+plain integer data types.</p>
+
+<p>From this point on, we simply build up. We define a register struct
+for any register whose field layout we care about. We add a 
+type-parameterized <code class="language-plaintext highlighter-rouge">reg_c</code> field for each register to its containing
+register group, and fields of <code class="language-plaintext highlighter-rouge">reg_group_c</code> type for instances
+of register groups.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_A</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_B</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_A</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_B</span><span class="p">;</span>
+
+    <span class="n">WbDmaChannelRegs</span>        <span class="n">channels</span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>For the DMA engine, this process results in a top-level register block
+for the IP such as the one shown above. In this case, we have a few
+individual registers and an array of channel register groups.</p>
+
+<h1 id="the-pss-register-model-in-the-real-world">The PSS Register Model in the Real World</h1>
+
+<p>In the prior sections, we manually created a PSS register model.
+In practice this is quite rare because, in a production environment,<br />
+all of the various register descriptions 
+(RTL, UVM, firmware, documentation, etc)
+are derived automatically from a single description. That 
+central description might be captured in a spreadsheet or
+CSV file, IP-XACT document [3], or a SystemRDL description [1].</p>
+
+<p>Personally, I’m very interested in SystemRDL. My feeling is that
+it’s easier to create and modify than IP-XACT, and I just learned
+about an open source toolchain named 
+<a href="https://github.com/orgs/SystemRDL">PeakRDL</a> that can be used to 
+derive various outputs from it.</p>
+
+<p>As you begin to look at applying PSS in your environment, it’s
+a good idea to understand what single representation your
+organization uses for register information, and what 
+facilities exist for adding new automatically-derived
+output formats.</p>
+
+<h1 id="instantiating-and-connecting-the-register-model">Instantiating and Connecting the Register Model</h1>
+
+<p>Our PSS register model is simply a mechanism for associating
+the addresses and bit patterns of memory-mapped registers
+with symbolic representations. Consequently, we need to 
+connect our register model to an address space before we
+can actually use it for reading and writing registers.</p>
+
+<h2 id="connecting-to-register-space">Connecting to Register Space</h2>
+<p>Registers are always mapped at some location within the 
+address space. In order to determine the correct address
+to use when accessing a register, we need to know where
+its containing register model is located in memory.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x0000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The code above shows defining a region within the memory
+map that is defined as non-allocatable. In other words,
+we cannot use <code class="language-plaintext highlighter-rouge">addr_claim_s</code> fields within actions to
+claim memory from this region. Note that 
+<code class="language-plaintext highlighter-rouge">add_nonallocatable_region</code> returns an address handle that we save.
+We will use this handle to specify where the register block 
+is located.</p>
+
+<h2 id="connecting">Connecting</h2>
+<p>In this little example, the register model that we’re focusing on
+is the one and only register model. This is not the case most 
+of the time. It’s much more frequently the case that the register
+model for our IP is just one part of much larger system-level
+register model.</p>
+
+<p>Generally speaking, PSS provides two different strategies for
+associating a component with the register model it should use,
+and associating the register model with the base address it 
+must use:</p>
+<ul>
+  <li>We can create a large register model that has a base address
+and distribute references to register sub-models to components</li>
+  <li>We can create a register model per consumer component and 
+calculate a base address to associate with each.</li>
+</ul>
+
+<h3 id="large-register-model--distribute-refs">Large Register Model ; Distribute Refs</h3>
+
+<p>In this scheme, our DMA component has a reference to the 
+register model, not an instance:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
+
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+
+    <span class="c1">// Handle to the register model</span>
+    <span class="kd">ref</span> <span class="n">WbDmaRegs</span>           <span class="n">regs</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The code that uses the register model doesn’t care whether it is
+using a reference or an instance of a register model. Either way,
+registers get written and read.</p>
+
+<p>The register for all instances of our DMA engine are included in
+the top-level register model, as shown below.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">SysRegModel</span> <span class="p">:</span> <span class="n">reg_group_c</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="n">WbDmaRegs</span>           <span class="n">dma0</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Finally, our system-level register model is instanced at the top
+level of the component tree.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
+
+    <span class="n">SysRegModel</span>                              <span class="n">regs</span><span class="p">;</span>
+
+    <span class="n">WbDma</span>                                    <span class="n">dma0</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">regs</span><span class="o">.</span><span class="n">set_handle</span><span class="p">(</span><span class="n">mmio_h</span><span class="p">);</span>
+
+        <span class="n">dma</span><span class="o">.</span><span class="n">regs</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">dma0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>A few things are going on here:</p>
+<ul>
+  <li>After obtaining a handle to the root of the memory-mapped I/O
+space, we configure this as the base address of the system
+register map by calling the <code class="language-plaintext highlighter-rouge">set_handle</code> function on the system
+register model.</li>
+  <li>Next, we hook set the register-model reference field in the 
+dma0 component instance to point to its instance of the 
+register in the system register model.</li>
+</ul>
+
+<p>And, with that we’re done. The advantages of this approach are that
+we’re only concerned with the base address of the full register
+space and it might be easier to construct this ‘super’ register
+model using automation tools. We also have the option to directly
+reach down through the register model to access registers. 
+The biggest downside is a loss of some degree of modularity.</p>
+
+<h3 id="individual-register-models--distribute-base-addresses">Individual Register Models ; Distribute Base Addresses</h3>
+
+<p>This approach is nearly mirror image of the previous approach. 
+In this approach, each component with registers “owns” its 
+register block and we distribute base-address handles.</p>
+
+<p>So, here’s the DMA component:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
+
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+
+    <span class="c1">// DMA register model</span>
+    <span class="n">WbDmaRegs</span>           <span class="n">regs</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Note that we have full register model instance here, instead of
+just a reference.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
+
+    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">dma</span><span class="o">.</span><span class="n">regs</span><span class="o">.</span><span class="n">set_handle</span><span class="p">(</span><span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">mmio_h</span><span class="p">,</span> <span class="mh">0x1000</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>At the top level, things are a bit different as well. There is not
+unified top-level register model. Instead of setting the DMA 
+register-model handle within the DMA component, we set the base address
+handle on the register-model instance within the DMA component. Note
+that we need to compute the proper offset to create the correct address
+handle for the DMA registers.</p>
+
+<h1 id="using-the-register-model">Using the Register Model</h1>
+<p>Now that we have our register model integrated and connected, we can
+write PSS test realization code to program a DMA channel to perform
+a transfer.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+        <span class="c1">// Setup the transfer size</span>
+        <span class="n">WbDmaChannelSZ</span> <span class="n">sz</span><span class="p">;</span>
+        <span class="n">sz</span><span class="o">.</span><span class="n">CHK_SZ</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
+        <span class="n">sz</span><span class="o">.</span><span class="n">TOT_SZ</span> <span class="o">=</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">;</span> <span class="c1">// We always work in words</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sz</span><span class="p">);</span>
+
+        <span class="c1">// Configure source and destination addresses</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">INT_SRC_A</span><span class="o">.</span><span class="n">write_val</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">src_i</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">INT_DST_A</span><span class="o">.</span><span class="n">write_val</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
+
+        <span class="c1">// Enable the channel</span>
+        <span class="n">WbDmaChannelCSR</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
+        <span class="n">csr</span><span class="o">.</span><span class="n">CH_EN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">csr</span><span class="p">);</span>
+
+        <span class="c1">// Wait for the transfer to complete</span>
+        <span class="k">repeat</span> <span class="p">{</span>
+            <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
+            <span class="c1">// ...</span>
+        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">DONE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>First, we’ll want to configure a couple of details about the 
+size of the transfer. For this, we use the WbDmaChannelSZ packed struct to 
+properly format data to write to the register.</p>
+
+<p>Next, we’ll setup the source and destination addresses. For these, we will
+use the <code class="language-plaintext highlighter-rouge">write_val</code> function to just write the address value to the register.</p>
+
+<p>We need to enable the channel before the transfer will start. To do this, 
+we want to modify a bit within the configuration and status register while
+leaving the other fields as-is. To do this, we can read the value of the
+CSR into a register struct, set the <code class="language-plaintext highlighter-rouge">CH_EN</code> bit, then write it back 
+to the register.</p>
+
+<p>At this point, the DMA engine will begin transferring memory. Finally, we
+need to wait until the channel’s <code class="language-plaintext highlighter-rouge">DONE</code> bit is set. This signals that the
+transfer is complete. Here, again, we use the register struct to make it
+easy to extract the bits that we care about.</p>
+
+<p>This code is concise and easy to write – generally much more so than
+the equivalent hand-coded bare-metal C code. The great thing, of course,
+is that the resulting implementation is just as efficient as if it 
+were hand-coded in C.</p>
+
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+
+<p>We have now worked through all the key topics in exercising the 
+memory to memory copy functionality of our DMA engine. We’ve looked
+at:</p>
+<ul>
+  <li>Buffers to represent data transfer between sequential actions</li>
+  <li>Memory management to remove complexity from our tests</li>
+  <li>Resource management to ensure concurrent test behavior doesn’t
+collide over resource usage like DMA channels</li>
+  <li>And finally, using the PSS register model to capture the layout
+of registers and register blocks, and access device registers.</li>
+</ul>
+
+<p>But, if you remember, there is one other key part of the DMA
+engine’s functionality: supporting DMA transfer for peripheral
+devices without their own internal DMA engines. Modeling this
+type of behavior brings unique challenges. Especially so when 
+we want to be able to exercise that behavior with multiple different 
+devices at the system. In the next post, we’ll look at approaches
+for modeling this with PSS.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li>[1] <a href="https://www.accellera.org/images/downloads/standards/systemrdl/SystemRDL_2.0_Jan2018.pdf">SystemRDL 2.0 LRM</a></li>
+  <li>[2] <a href="https://github.com/orgs/SystemRDL">PeakRDL</a></li>
+  <li>[3] <a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a></li>
+  <li>[4] <a href="https://bitsbytesgates.com/code_html/2023/04/wb_dma_4_registers.html">DMA Example (Viewing)</a></li>
+  <li>[5] <a href="https://bitsbytesgates.com/code/2023/04/wb_dma_4_registers.pss">DMA Example (Raw Text)</a></li>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[We’ve been looking at properly modeling the types of behaviors that we want to exercise on our DMA IP for the last few posts. Of course, until we can actually start programming the DMA registers, all of our modeling won’t actually do anything. PSS provides two primary ways to connect the model of test behavior we want to exercise to the device on which we will exercise that behavior: Calling functions that are implemented in the target environment Using PSS features to read/write registers and memory Both of these approaches have benefits and drawbacks. If functions already exist to program IP registers, leveraging these from PSS helps to get tests up and running more quickly. However, functions are typically only implemented in a single language. Greater portability is achieved by directly describing the interactions between PSS model and device registers in PSS. This post will look at describing the register interface using the PSS register model.]]></summary></entry><entry><title type="html">PSS Concurrency and Resources</title><link href="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html" rel="alternate" type="text/html" title="PSS Concurrency and Resources" /><published>2023-04-09T00:00:00+00:00</published><updated>2023-04-09T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2023/04/DMAModelingResourcesWithPSS_splash.png" /> 
 </p>
 
@@ -2156,4 +2632,4 @@ the coming year.</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>With that, welcome to the new blog space, and to a new year of posts. And,
 if you happen to be attending DVCon 2023 in San Jose, I hope we get a
-chance to interact live and in person!</p>]]></content><author><name></name></author><category term="Intro" /><summary type="html"><![CDATA[We’ve more than gotten started on the new year. In fact, DVCon – reliably and predictably held during the last few days of February and initial few of March is right around the corner. And, here I am just getting the first post of the year out. Getting a late start on blog posts this year isn’t for lack of interesting ideas and projects to, though. Here are a few things you can look forward to in the coming Blog year.]]></summary></entry><entry><title type="html">Simplifying Custom Template-Generated Content</title><link href="https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated.html" rel="alternate" type="text/html" title="Simplifying Custom Template-Generated Content" /><published>2022-08-21T17:18:00+00:00</published><updated>2022-08-21T17:18:00+00:00</updated><id>https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated</id><content type="html" xml:base="https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated.html"><![CDATA[<p style="text-align: center;">&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjW6ygOoIw0lvUu7rGQcU-QVVwfR0SFtT6zCJtRzOilSOqHR8OwMnyDjG3C32-arWwoRRP0mKzGieAzgnyEPWk5fFsnzWNezMqZgDFNOUQy9MCRdodg9cWa3ghlBgKJgxJmXLOAXXCkMJI7tdm-fvXLQZIVvYFCXSXc7yHXz5NjDUt3SRbvhit25z52PQ/s540/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjW6ygOoIw0lvUu7rGQcU-QVVwfR0SFtT6zCJtRzOilSOqHR8OwMnyDjG3C32-arWwoRRP0mKzGieAzgnyEPWk5fFsnzWNezMqZgDFNOUQy9MCRdodg9cWa3ghlBgKJgxJmXLOAXXCkMJI7tdm-fvXLQZIVvYFCXSXc7yHXz5NjDUt3SRbvhit25z52PQ/s16000/splash.png" /></a></div><br /><p></p><p>As a verification engineer, it's quite common to work with data and code that follow a regular pattern. Having an efficient way to create this repetitive code is a significant productivity boost. While there certainly are places in the code where 'your critical generation or checking algorithm' goes, much of the structure of an agent, a test environment, etc remain the same. The same goes for other parts of the flow, such as project meta-data, test lists, etc. There are two things that keep us from just making copies of a set of 'golden' files to create the basis for a new UVM agent, project, etc: some or all of the files need to have some data substituted or changed. For example, we want to substitute the name of the new UVM agent we're creating into most of the new SystemVerilog source code.</p><p>Custom code generators have been developed for some of these tasks. These often focus on providing a domain-specific way to capture input data, such as the structure of a UVM testbench or the layout of registers in a design. But there are many more opportunities to generate template-driven code that cannot justify the investment to create a focused solution.</p><p>A few years ago, I created the <a href="https://github.com/fvutils/vte/">Verification Template Engine (VTE)</a> to serve my needs for generating template-driven content. I developed VTE with three user-experience requirements in mind:</p><p></p><ul style="text-align: left;"><li>Creating a new template should be very easy, but have access to powerful generation features</li><li>Managing the available templates should be simple for a user.&nbsp;</li><li>The core tools should be generic, and make few or no assumptions about what is being generated</li></ul><div>VTE focuses on organizing and discovering template content, but leverages the <a href="https://palletsprojects.com/p/jinja/">Jinja2 template engine</a> to do the heavy lifting of template expansion. In some sense, you can think of VTE as providing a user interface to the Jinaj2 library.</div><div><br /></div><div>I've been using VTE since developing it, but am just getting back to create proper documentation, which you can find here: <a href="https://fvutils.github.io/vte/">https://fvutils.github.io/vte/</a>. As part of that work, I created a quickstart guide which is both in the documentation, and forms the remainder of this post.&nbsp;</div><div><br /></div><p></p><div><div><b>Installing VTE</b></div><div>The easiest way to install VTE is from PyPi.</div><div><br /></div><div><span style="font-family: courier;">% python3 -m pip install --user vte</span></div><div>Test that you can run VTE by running the command (vte) and/or invoking the module:</div><div><br /></div><div><span style="font-family: courier;">% vte --help</span></div><div><span style="font-family: courier;">% python3 -m vte --help</span></div><div><br /></div><div><b>Creating a Template</b></div><div>VTE discovers templates by searching directories on the VTE_TEMPLATE_PATH environment variable. VTE uses a marker file named .vte to identify the root of a template. All files and directories in and below a template directory are considered to be part of the template. The template identifier is composed from the directory names between the directory listed in VTE_TEMPLATE_PATH and the directory containing the .vte marker file.</div><div><br /></div><div>Let’s look at an example to illustrate the rules.</div><div><br /></div><div><span style="font-family: courier;">templates</span></div><div><span style="font-family: courier;">&nbsp; uvm</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; agent</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; component</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; doc</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; blog_post</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; readme</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><br /></div><div>Let’s assume we add the templates directory to VTE_TEMPLATE_PATH. VTE will find four templates:</div><div><br /></div><div><span style="font-family: courier;">uvm.agent</span></div><div><span style="font-family: courier;">uvm.component</span></div><div><span style="font-family: courier;">doc.blog_post</span></div><div><span style="font-family: courier;">doc.readme</span></div><div><br /></div><div>All files in and below the directory containing the .vte marker will be rendered when the template is used.</div><div><br /></div><div><b>Creating the Template Structure</b></div><div>Let’s create a very simple template structure. Create the following directory structure:</div><div><br /></div><div><span style="font-family: courier;">templates</span></div><div><span style="font-family: courier;">&nbsp; doc</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; readme</span></div><div><br /></div><div>Change directory to templates/doc/readme and run the quickstart command:</div><div><br /></div><div><span style="font-family: courier;">% vte quickstart</span></div><div><span style="font-family: courier;">Verification Template Engine Quickstart</span></div><div><span style="font-family: courier;">Template directory: templates/doc/readme</span></div><div><span style="font-family: courier;">Template Description []? Create a simple README</span></div><div><br /></div><div>This command will prompt for a description to use for the template. Enter a description and press ENTER. This will create the .vte marker file.</div><div><br /></div><div>View the .vte file. You’ll see that the initial version is quite simple. For now, this is all we need.</div><div><br /></div><div><span style="font-family: courier;">template:</span></div><div><span style="font-family: courier;">&nbsp; description: Create a simple README</span></div><div><span style="font-family: courier;">&nbsp; parameters: []</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp;- name: param_name</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp; &nbsp;description: param_desc</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp; &nbsp;default: param_default</span></div><div><br /></div><div><b>Creating the Template File</b></div><div>Now, let’s create the template file that will be processed when we render the template. Our readme template only has one file: README.md.</div><div><br /></div><div>Create a file named README.md containing the following content in the templates/doc/readme directory:</div><div><br /></div><div><span style="font-family: courier;"># README for {{name}}</span></div><div><span style="font-family: courier;">TODO: put in some content of interest</span></div><div><br /></div><div>VTE supports defining and using multiple parameters, but defines one built-in parameter that must be supplied for all templates: name. Our template file references name using Jinja2 syntax for variable references.</div><div><br /></div><div>We have now created a simple template for creating README.md files.</div><div><br /></div><div><b>Rendering a Template</b></div><div>In order to render templates, VTE must first be able to discover them. Add the templates directory to the VTE_TEMPLATE_PATH environment variable.</div><div><br /></div><div><span style="font-family: courier;">% export VTE_TEMPLATE_PATH=&lt;path&gt;/templates # Bourne shell</span></div><div><span style="font-family: courier;">% setenv VTE_TEMPLATE_PATH &lt;path&gt;/templates # csh/tsh</span></div><div>Let’s test this out by running the vte list command:</div><div><br /></div><div><span style="font-family: courier;">% vte list</span></div><div><span style="font-family: courier;">doc.readme - Create a simple README</span></div><div><br /></div><div>If you see the doc.readme line above, VTE has successfully discovered the template.</div><div><br /></div><div>Now, let’s actually generate something. Let’s create a new directory parallel to the templates directory in which to try this out</div><div><br /></div><div><span style="font-family: courier;">% mkdir scratch</span></div><div><span style="font-family: courier;">% cd scratch</span></div><div><br /></div><div>Finally, let’s run the generate command:</div><div><br /></div><div><span style="font-family: courier;">% vte generate doc.readme my_project</span></div><div><span style="font-family: courier;">Note: processing template README.md</span></div><div><br /></div><div>VTE prints a line for each template file is processes. The output above confirms that is processed the template README.md file.</div><div><br /></div><div>Let’s have a look at the result. View the README.md file in the scratch directory.</div><div><br /></div><div><span style="font-family: courier;"># README for my_project</span></div><div><span style="font-family: courier;">TODO: put in some content of interest</span></div><div><br /></div><div>Node that the {{name}} reference was replaced by the name (my_project) that we specified.</div><div><br /></div><div>You have now created your first VTE template!</div><div><br /></div></div><p><b>Conclusion</b></p><p>As the tutorial above illustrates, creating a new template for use with VTE is no more effort than making a few name substitutions. If you use the template more than once, you will already have received a positive return on the effort invested. While templates can be simple, you have the full power of the <a href="https://palletsprojects.com/p/jinja/">Jinja2</a> template engine when you need to do something more complex. I encourage you to check out the <a href="https://fvutils.github.io/vte/">VTE documentation</a> and look for opportunities where using template-driven content generation can make your life easier and make you more productive.</p><p><br /></p><div style="text-align: center;">Copyright 2022 Matthew Ballance</div><div><p style="font-variant-east-asian: normal; font-variant-numeric: normal; line-height: 16px; margin-bottom: 0in;"><span style="color: #666666;"><span face="Trebuchet MS, Trebuchet, Verdana, sans-serif"><span style="font-size: 9pt;"><i><span style="background: rgb(255, 255, 255);">The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</span></i></span></span></span></p></div>]]></content><author><name>Matthew Ballance</name></author><category term="Jinja2" /><category term="Code Generation" /><category term="Templates" /><category term="Python" /><category term="Functional Verification" /><summary type="html"><![CDATA[&nbsp;As a verification engineer, it's quite common to work with data and code that follow a regular pattern. Having an efficient way to create this repetitive code is a significant productivity boost. While there certainly are places in the code where 'your critical generation or checking algorithm' goes, much of the structure of an agent, a test environment, etc remain the same. The same goes for other parts of the flow, such as project meta-data, test lists, etc. There are two things that keep us from just making copies of a set of 'golden' files to create the basis for a new UVM agent, project, etc: some or all of the files need to have some data substituted or changed. For example, we want to substitute the name of the new UVM agent we're creating into most of the new SystemVerilog source code.Custom code generators have been developed for some of these tasks. These often focus on providing a domain-specific way to capture input data, such as the structure of a UVM testbench or the layout of registers in a design. But there are many more opportunities to generate template-driven code that cannot justify the investment to create a focused solution.A few years ago, I created the Verification Template Engine (VTE) to serve my needs for generating template-driven content. I developed VTE with three user-experience requirements in mind:Creating a new template should be very easy, but have access to powerful generation featuresManaging the available templates should be simple for a user.&nbsp;The core tools should be generic, and make few or no assumptions about what is being generatedVTE focuses on organizing and discovering template content, but leverages the Jinja2 template engine to do the heavy lifting of template expansion. In some sense, you can think of VTE as providing a user interface to the Jinaj2 library.I've been using VTE since developing it, but am just getting back to create proper documentation, which you can find here: https://fvutils.github.io/vte/. As part of that work, I created a quickstart guide which is both in the documentation, and forms the remainder of this post.&nbsp;Installing VTEThe easiest way to install VTE is from PyPi.% python3 -m pip install --user vteTest that you can run VTE by running the command (vte) and/or invoking the module:% vte --help% python3 -m vte --helpCreating a TemplateVTE discovers templates by searching directories on the VTE_TEMPLATE_PATH environment variable. VTE uses a marker file named .vte to identify the root of a template. All files and directories in and below a template directory are considered to be part of the template. The template identifier is composed from the directory names between the directory listed in VTE_TEMPLATE_PATH and the directory containing the .vte marker file.Let’s look at an example to illustrate the rules.templates&nbsp; uvm&nbsp; &nbsp; agent&nbsp; &nbsp; &nbsp; .vte&nbsp; &nbsp; component&nbsp; &nbsp; &nbsp; .vte&nbsp; doc&nbsp; &nbsp; blog_post&nbsp; &nbsp; &nbsp; .vte&nbsp; &nbsp; readme&nbsp; &nbsp; &nbsp; .vteLet’s assume we add the templates directory to VTE_TEMPLATE_PATH. VTE will find four templates:uvm.agentuvm.componentdoc.blog_postdoc.readmeAll files in and below the directory containing the .vte marker will be rendered when the template is used.Creating the Template StructureLet’s create a very simple template structure. Create the following directory structure:templates&nbsp; doc&nbsp; &nbsp; readmeChange directory to templates/doc/readme and run the quickstart command:% vte quickstartVerification Template Engine QuickstartTemplate directory: templates/doc/readmeTemplate Description []? Create a simple READMEThis command will prompt for a description to use for the template. Enter a description and press ENTER. This will create the .vte marker file.View the .vte file. You’ll see that the initial version is quite simple. For now, this is all we need.template:&nbsp; description: Create a simple README&nbsp; parameters: []#&nbsp; &nbsp;- name: param_name#&nbsp; &nbsp; &nbsp;description: param_desc#&nbsp; &nbsp; &nbsp;default: param_defaultCreating the Template FileNow, let’s create the template file that will be processed when we render the template. Our readme template only has one file: README.md.Create a file named README.md containing the following content in the templates/doc/readme directory:# README for {{name}}TODO: put in some content of interestVTE supports defining and using multiple parameters, but defines one built-in parameter that must be supplied for all templates: name. Our template file references name using Jinja2 syntax for variable references.We have now created a simple template for creating README.md files.Rendering a TemplateIn order to render templates, VTE must first be able to discover them. Add the templates directory to the VTE_TEMPLATE_PATH environment variable.% export VTE_TEMPLATE_PATH=&lt;path&gt;/templates # Bourne shell% setenv VTE_TEMPLATE_PATH &lt;path&gt;/templates # csh/tshLet’s test this out by running the vte list command:% vte listdoc.readme - Create a simple READMEIf you see the doc.readme line above, VTE has successfully discovered the template.Now, let’s actually generate something. Let’s create a new directory parallel to the templates directory in which to try this out% mkdir scratch% cd scratchFinally, let’s run the generate command:% vte generate doc.readme my_projectNote: processing template README.mdVTE prints a line for each template file is processes. The output above confirms that is processed the template README.md file.Let’s have a look at the result. View the README.md file in the scratch directory.# README for my_projectTODO: put in some content of interestNode that the {{name}} reference was replaced by the name (my_project) that we specified.You have now created your first VTE template!ConclusionAs the tutorial above illustrates, creating a new template for use with VTE is no more effort than making a few name substitutions. If you use the template more than once, you will already have received a positive return on the effort invested. While templates can be simple, you have the full power of the Jinja2 template engine when you need to do something more complex. I encourage you to check out the VTE documentation and look for opportunities where using template-driven content generation can make your life easier and make you more productive.Copyright 2022 Matthew BallanceThe views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.]]></summary></entry><entry><title type="html">PyUCIS: Manipulating Coverage Data</title><link href="https://bitsbytesgates.com/2022/07/17/pyucis-manipulating-coverage-data.html" rel="alternate" type="text/html" title="PyUCIS: Manipulating Coverage Data" /><published>2022-07-17T20:37:00+00:00</published><updated>2022-07-17T20:37:00+00:00</updated><id>https://bitsbytesgates.com/2022/07/17/pyucis-manipulating-coverage-data</id><content type="html" xml:base="https://bitsbytesgates.com/2022/07/17/pyucis-manipulating-coverage-data.html"><![CDATA[<p style="text-align: center;">&nbsp;<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhp1-_7rtBzwcTNYBtGBUsqaxugtgc8RIz3D1KHRhbTpqghM-oTZjXq_6-ngByPlwmSHZgnu6f5e8ptq6wLa5EZFkOuOHWmgYY0JLua-wLrlTw38FcWT_hMZuFzwOEnxYv1oEimFAAqnr4bcDEo2meEFEZQvH7YdDXMGUixfLzHC6KGfQ_iuXOgn48ogg/s540/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhp1-_7rtBzwcTNYBtGBUsqaxugtgc8RIz3D1KHRhbTpqghM-oTZjXq_6-ngByPlwmSHZgnu6f5e8ptq6wLa5EZFkOuOHWmgYY0JLua-wLrlTw38FcWT_hMZuFzwOEnxYv1oEimFAAqnr4bcDEo2meEFEZQvH7YdDXMGUixfLzHC6KGfQ_iuXOgn48ogg/s16000/splash.png" /></a><br /><br /></p><p>In a prior post, we looked at how to inspect coverage as a text report and export coverage data using the PyVSC API, and view coverage graphically using the PyUCIS-Viewer. Recent enhancements have enabled the PyUCIS library to provide even more ways to manipulate coverage data. Over the next couple of posts, we’ll look at those enhancements.&nbsp;</p><p><b>New ‘ucis’ Command</b></p><p>PyUCIS is a library for working with the Accellera UCIS data model. It started as a library for other applications and libraries, such as PyVSC and the PyUCIS Viewer, to use to read and write data using the UCIS data model. Recent enhancements have added standalone functionality which can meaningfully be accessed from the command line.&nbsp;</p><p>You can find documentation for the ucis command and sub-commands in the <a href="https://pyucis.readthedocs.io/en/latest/commands.html">PyUCIS documentation</a>. Fundamentally, there are four key operations:</p><p></p><ul style="text-align: left;"><li>Convert coverage data from one format to another</li><li>Merge coverage data from multiple databases into a single database</li><li>Produce coverage reports in various formats</li><li>Obtain information about available coverage data and report formats</li></ul><p></p><p>These commands are just a starting point. They will be enhanced over time, and more commands may be added as well. If you have suggestions for new commands and/or new capabilities for existing commands, feel free to add an enhancement request on the <a href="https://github.com/fvutils/pyucis/issues">PyUCIS GitHub page</a>.</p><p><b>Plug-in Framework</b></p><p>PyUCIS has added a plug-in framework with support for database formats and report formats. The goal is to make commands operating on coverage data extensible extensible from the beginning, as well as to enable the set of supported coverage-data formats and report formats to be easily extended without changing PyUCIS.&nbsp; I’ll devote a future post to the plug-in framework. For now, the ucis command supports listing the available coverage-data and report plug-ins. For example:</p><p><span style="font-family: courier;">% ucis list-db-formats</span></p><p><span style="font-family: courier;">libucis - Reads coverage data via an implementation of the UCIS C API</span></p><p><span style="font-family: courier;">xml&nbsp; &nbsp; &nbsp;- Supports reading and writing UCIS XML interchange</span></p><p><span style="font-family: courier;">yaml&nbsp; &nbsp; - Reads coverage data from a YAML file</span></p><p><br /></p><p><b>New Input Format</b></p><p>One often-requested PyUCIS feature is the ability to merge coverage data from several input coverage databases into a single resulting coverage database. One of the first challenges I faced in implementing this functionality was how to write tests. The UCIS API is written with applications in mind. I’ve found it to be a pretty-verbose API when it comes to writing tests. Consequently, tests written directly in terms of the API aren’t particularly easy to follow from a code perspective.</p><p>I decided to define a YAML format to make it simpler to capture coverage data in an easy-to -read way. Initially, this was just for testing. However, it may also be a useful interchange format that is less verbose and complex (also, quite possibly, more simplistic) that the XML interchange format defined by the UCIS standard.</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdaeXpmEYuvyXmWxluRALy-WLMci6JOtkxwHv8pizdR3AZyMLLDcKkbEzSkaj6fT7b9U4yxc06CLKMX1xy6Cc_VM2Ntgk0A7ri3epneWGF8BKVgzafT4-ks3BwSeZVIqKeUZFdxnVAc9AIiIC9gS75isWG5JSdGHqlobAPQSLcodmUBOHPA0lTrC6n9Q/s250/yaml_coverage_spec.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="237" data-original-width="250" height="237" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdaeXpmEYuvyXmWxluRALy-WLMci6JOtkxwHv8pizdR3AZyMLLDcKkbEzSkaj6fT7b9U4yxc06CLKMX1xy6Cc_VM2Ntgk0A7ri3epneWGF8BKVgzafT4-ks3BwSeZVIqKeUZFdxnVAc9AIiIC9gS75isWG5JSdGHqlobAPQSLcodmUBOHPA0lTrC6n9Q/s1600/yaml_coverage_spec.png" width="250" /></a></div><div><br /></div><div>A simple coverage specification is shown above. This coverage data describes a covergroup type (my_cvg) with a single instance (i1). A single coverpoint (cp1) has two bins (b1, b2) of which one has a single hit and one has no hits. While this coverage specification was created to make setting of test coverage data simpler for a human, I believe it may also be useful as a simple coverage-interchange format. If you find it useful, please let the community know via the <a href="https://github.com/fvutils/pyucis/discussions">Discussion forum</a> on the PyUCIS GitHub page.</div><div><br /></div><div>You can find more details on the <a href="https://pyucis.readthedocs.io/en/latest/reference/yaml_coverage.html">YAML Coverage Data Format reference documentation</a> page.&nbsp;</div><p><b>Merging Coverage Data</b></p><p>One consistently-requested feature for PyUCIS is the ability to merge multiple databases into a single unified coverage database. PyUCIS now supports basic merge functionality. Currently, PyUCIS performs a union merge where all unique coverage features found in all the input databases are propagated to the output database. I anticipate that more merge algorithms will need to be added over time, but hopefully this is a good start.</p><p><br /></p><p>Let’s take a look at a very simple case. Let’s say we have two coverage-data sets shown below:</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6vvu8qYu9EklhJd0IkaC4_Px0ZcCjPQZbFy1-TtgNviArsSrtHc-PN7rSRYJE2XpUo4uTHQ7YaBTY3D8_VcOjL3EuOsvVRKlwTvAQA6H9LRVLyL0bAtZdBSi3Wv51MQR4PzCk2WQj-EckBSwdhhcVylHWirWl36g7amzFFmC9jah_wc1YLYMtZmL9uA/s504/merge_input_data.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="245" data-original-width="504" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6vvu8qYu9EklhJd0IkaC4_Px0ZcCjPQZbFy1-TtgNviArsSrtHc-PN7rSRYJE2XpUo4uTHQ7YaBTY3D8_VcOjL3EuOsvVRKlwTvAQA6H9LRVLyL0bAtZdBSi3Wv51MQR4PzCk2WQj-EckBSwdhhcVylHWirWl36g7amzFFmC9jah_wc1YLYMtZmL9uA/s16000/merge_input_data.png" /></a></div><br /><p>The structure of these two coverage databases is the same (same covergroup type, instance, and coverpoint). Each coverage database has 50% coverage. Let’s merge these two databases and report the coverage.</p><p><span style="font-family: courier;">% ucis merge -if yaml -o merge.xml coverage_1.ycdb coverage_2.ycdb</span></p><p>We specify the two input databases, as well as their format (yaml). We specify the output database as merge.xml.</p><p>The resulting coverage report on the merged database will report 100% coverage, as expected:</p><p><span style="font-family: courier;">% ucis report merge.xml</span></p><p><span style="font-family: courier;">TYPE i1 : 100.000000%</span></p><p><span style="font-family: courier;">&nbsp; &nbsp; CVP cp1 : 100.000000%</span></p><p><b>Reporting Coverage Data</b></p><p>Reporting is a key activity when working with coverage data. We’ve looked at the ability to browse coverage data graphically using the PyUCIS-Viewer, but getting a textual report is every bit as important. In addition to presenting information concisely, textual reports can be processed programmatically to extract key pieces of data.&nbsp;</p><p>We can list the currently-available report plugins using the ucis command:</p><p><span style="font-family: courier;">% ucis list-rpt-formats</span></p><p><span style="font-family: courier;">json - Produces a machine-readable JSON coverage report</span></p><p><span style="font-family: courier;">txt&nbsp; - Produces a human-readable textual coverage report</span></p><p><br /></p><p>The default report is textual. Let’s create a textual report on the YAML coverage-data above:</p><p><span style="font-family: courier;">% ucis report -if yaml coverage.ycdb&nbsp;</span></p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifRBJaI9kmG0at2fuySwAQRHqOrow3uiP17zEjyQmj0dU-N0z3ZJNIuxebRKzImTChJgFqOt1GvsbhS967pQ1gR42WDsn5QPTlcLx3WsuTlhF8oTs6bpQZAUlFdUrda7VrP9CJJ2hBxGzeReERNEC9fnSc_b2P0A79M4AQx-kIl2MgdAEEywcZmgVFBw/s244/txt_coverage_report.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="85" data-original-width="244" height="85" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifRBJaI9kmG0at2fuySwAQRHqOrow3uiP17zEjyQmj0dU-N0z3ZJNIuxebRKzImTChJgFqOt1GvsbhS967pQ1gR42WDsn5QPTlcLx3WsuTlhF8oTs6bpQZAUlFdUrda7VrP9CJJ2hBxGzeReERNEC9fnSc_b2P0A79M4AQx-kIl2MgdAEEywcZmgVFBw/s1600/txt_coverage_report.png" width="244" /></a></div><br /><p>Note that we need to specify the format of the input data (yaml). The result is a simple human-readable report of the coverage data in the database.</p><p>What if we wanted to post-process the data using a script? We certainly could extract what we need by parsing the output above, but working with data in a machine-readable format is often much simpler. Let’s report our data in JSON format:</p><p><span style="font-family: courier;">% ucis report -if yaml -of json coverage.ycdb</span>&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi1LqtUHblxEwKju_-m9tESy3trKWjJi_-y-NkYK73HhoU-Etm9xdqIwqzkS7E_ASMnNmu86N6dYm2GfSb8-WeHZdspBEWi3oM4CLmnnLr_Fjok8prBX5rg0r3ip4QQ7Z8H0meu74yU3PbLxcuPHw41KAx42h2pHHpeClfVe4O6TJyMrEgWX4eiDrNxtg/s862/json_coverage_report.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="862" data-original-width="409" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi1LqtUHblxEwKju_-m9tESy3trKWjJi_-y-NkYK73HhoU-Etm9xdqIwqzkS7E_ASMnNmu86N6dYm2GfSb8-WeHZdspBEWi3oM4CLmnnLr_Fjok8prBX5rg0r3ip4QQ7Z8H0meu74yU3PbLxcuPHw41KAx42h2pHHpeClfVe4O6TJyMrEgWX4eiDrNxtg/s16000/json_coverage_report.png" /></a></div><div>Obviously, the data is less compact and more verbose. But, reading this into a Python script for further post-processing is incredibly simple! If you’re interested in the JSON report format, have a look at the schema documentation &lt;https://pyucis.readthedocs.io/en/latest/reference/coverage_report_json.html&gt;.</div><div><br /></div><div>So, for now, PyUCIS supports two textual report formats, and would benefit from more report formats. For example, a plain HTML report and a fancy interactive web-based report. If someone in the community has the skills and is interested, the project would definitely be interested!</div><p><b>Next Steps</b></p><p>PyUCIS continues to evolve, adding a more more hopefully-useful features at a time. Stay tuned for a future post on the plug-in interface, and the addition of more coverage-database and report formats.&nbsp;</p><p><br /></p><div style="text-align: center;">Copyright 2022 Matthew Ballance</div><div><p style="font-variant-east-asian: normal; font-variant-numeric: normal; line-height: 16px; margin-bottom: 0in;"><span style="color: #666666;"><span face="Trebuchet MS, Trebuchet, Verdana, sans-serif"><span style="font-size: 9pt;"><i><span style="background: rgb(255, 255, 255);">The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</span></i></span></span></span></p></div>]]></content><author><name>Matthew Ballance</name></author><category term="functional coverage" /><category term="Python" /><category term="Altera" /><category term="UCIS" /><category term="Accellera" /><summary type="html"><![CDATA[&nbsp;In a prior post, we looked at how to inspect coverage as a text report and export coverage data using the PyVSC API, and view coverage graphically using the PyUCIS-Viewer. Recent enhancements have enabled the PyUCIS library to provide even more ways to manipulate coverage data. Over the next couple of posts, we’ll look at those enhancements.&nbsp;New ‘ucis’ CommandPyUCIS is a library for working with the Accellera UCIS data model. It started as a library for other applications and libraries, such as PyVSC and the PyUCIS Viewer, to use to read and write data using the UCIS data model. Recent enhancements have added standalone functionality which can meaningfully be accessed from the command line.&nbsp;You can find documentation for the ucis command and sub-commands in the PyUCIS documentation. Fundamentally, there are four key operations:Convert coverage data from one format to anotherMerge coverage data from multiple databases into a single databaseProduce coverage reports in various formatsObtain information about available coverage data and report formatsThese commands are just a starting point. They will be enhanced over time, and more commands may be added as well. If you have suggestions for new commands and/or new capabilities for existing commands, feel free to add an enhancement request on the PyUCIS GitHub page.Plug-in FrameworkPyUCIS has added a plug-in framework with support for database formats and report formats. The goal is to make commands operating on coverage data extensible extensible from the beginning, as well as to enable the set of supported coverage-data formats and report formats to be easily extended without changing PyUCIS.&nbsp; I’ll devote a future post to the plug-in framework. For now, the ucis command supports listing the available coverage-data and report plug-ins. For example:% ucis list-db-formatslibucis - Reads coverage data via an implementation of the UCIS C APIxml&nbsp; &nbsp; &nbsp;- Supports reading and writing UCIS XML interchangeyaml&nbsp; &nbsp; - Reads coverage data from a YAML fileNew Input FormatOne often-requested PyUCIS feature is the ability to merge coverage data from several input coverage databases into a single resulting coverage database. One of the first challenges I faced in implementing this functionality was how to write tests. The UCIS API is written with applications in mind. I’ve found it to be a pretty-verbose API when it comes to writing tests. Consequently, tests written directly in terms of the API aren’t particularly easy to follow from a code perspective.I decided to define a YAML format to make it simpler to capture coverage data in an easy-to -read way. Initially, this was just for testing. However, it may also be a useful interchange format that is less verbose and complex (also, quite possibly, more simplistic) that the XML interchange format defined by the UCIS standard.A simple coverage specification is shown above. This coverage data describes a covergroup type (my_cvg) with a single instance (i1). A single coverpoint (cp1) has two bins (b1, b2) of which one has a single hit and one has no hits. While this coverage specification was created to make setting of test coverage data simpler for a human, I believe it may also be useful as a simple coverage-interchange format. If you find it useful, please let the community know via the Discussion forum on the PyUCIS GitHub page.You can find more details on the YAML Coverage Data Format reference documentation page.&nbsp;Merging Coverage DataOne consistently-requested feature for PyUCIS is the ability to merge multiple databases into a single unified coverage database. PyUCIS now supports basic merge functionality. Currently, PyUCIS performs a union merge where all unique coverage features found in all the input databases are propagated to the output database. I anticipate that more merge algorithms will need to be added over time, but hopefully this is a good start.Let’s take a look at a very simple case. Let’s say we have two coverage-data sets shown below:The structure of these two coverage databases is the same (same covergroup type, instance, and coverpoint). Each coverage database has 50% coverage. Let’s merge these two databases and report the coverage.% ucis merge -if yaml -o merge.xml coverage_1.ycdb coverage_2.ycdbWe specify the two input databases, as well as their format (yaml). We specify the output database as merge.xml.The resulting coverage report on the merged database will report 100% coverage, as expected:% ucis report merge.xmlTYPE i1 : 100.000000%&nbsp; &nbsp; CVP cp1 : 100.000000%Reporting Coverage DataReporting is a key activity when working with coverage data. We’ve looked at the ability to browse coverage data graphically using the PyUCIS-Viewer, but getting a textual report is every bit as important. In addition to presenting information concisely, textual reports can be processed programmatically to extract key pieces of data.&nbsp;We can list the currently-available report plugins using the ucis command:% ucis list-rpt-formatsjson - Produces a machine-readable JSON coverage reporttxt&nbsp; - Produces a human-readable textual coverage reportThe default report is textual. Let’s create a textual report on the YAML coverage-data above:% ucis report -if yaml coverage.ycdb&nbsp;Note that we need to specify the format of the input data (yaml). The result is a simple human-readable report of the coverage data in the database.What if we wanted to post-process the data using a script? We certainly could extract what we need by parsing the output above, but working with data in a machine-readable format is often much simpler. Let’s report our data in JSON format:% ucis report -if yaml -of json coverage.ycdb&nbsp;Obviously, the data is less compact and more verbose. But, reading this into a Python script for further post-processing is incredibly simple! If you’re interested in the JSON report format, have a look at the schema documentation &lt;https://pyucis.readthedocs.io/en/latest/reference/coverage_report_json.html&gt;.So, for now, PyUCIS supports two textual report formats, and would benefit from more report formats. For example, a plain HTML report and a fancy interactive web-based report. If someone in the community has the skills and is interested, the project would definitely be interested!Next StepsPyUCIS continues to evolve, adding a more more hopefully-useful features at a time. Stay tuned for a future post on the plug-in interface, and the addition of more coverage-database and report formats.&nbsp;Copyright 2022 Matthew BallanceThe views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.]]></summary></entry></feed>
+chance to interact live and in person!</p>]]></content><author><name></name></author><category term="Intro" /><summary type="html"><![CDATA[We’ve more than gotten started on the new year. In fact, DVCon – reliably and predictably held during the last few days of February and initial few of March is right around the corner. And, here I am just getting the first post of the year out. Getting a late start on blog posts this year isn’t for lack of interesting ideas and projects to, though. Here are a few things you can look forward to in the coming Blog year.]]></summary></entry><entry><title type="html">Simplifying Custom Template-Generated Content</title><link href="https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated.html" rel="alternate" type="text/html" title="Simplifying Custom Template-Generated Content" /><published>2022-08-21T17:18:00+00:00</published><updated>2022-08-21T17:18:00+00:00</updated><id>https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated</id><content type="html" xml:base="https://bitsbytesgates.com/2022/08/21/simplifying-custom-template-generated.html"><![CDATA[<p style="text-align: center;">&nbsp;</p><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjW6ygOoIw0lvUu7rGQcU-QVVwfR0SFtT6zCJtRzOilSOqHR8OwMnyDjG3C32-arWwoRRP0mKzGieAzgnyEPWk5fFsnzWNezMqZgDFNOUQy9MCRdodg9cWa3ghlBgKJgxJmXLOAXXCkMJI7tdm-fvXLQZIVvYFCXSXc7yHXz5NjDUt3SRbvhit25z52PQ/s540/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjW6ygOoIw0lvUu7rGQcU-QVVwfR0SFtT6zCJtRzOilSOqHR8OwMnyDjG3C32-arWwoRRP0mKzGieAzgnyEPWk5fFsnzWNezMqZgDFNOUQy9MCRdodg9cWa3ghlBgKJgxJmXLOAXXCkMJI7tdm-fvXLQZIVvYFCXSXc7yHXz5NjDUt3SRbvhit25z52PQ/s16000/splash.png" /></a></div><br /><p></p><p>As a verification engineer, it's quite common to work with data and code that follow a regular pattern. Having an efficient way to create this repetitive code is a significant productivity boost. While there certainly are places in the code where 'your critical generation or checking algorithm' goes, much of the structure of an agent, a test environment, etc remain the same. The same goes for other parts of the flow, such as project meta-data, test lists, etc. There are two things that keep us from just making copies of a set of 'golden' files to create the basis for a new UVM agent, project, etc: some or all of the files need to have some data substituted or changed. For example, we want to substitute the name of the new UVM agent we're creating into most of the new SystemVerilog source code.</p><p>Custom code generators have been developed for some of these tasks. These often focus on providing a domain-specific way to capture input data, such as the structure of a UVM testbench or the layout of registers in a design. But there are many more opportunities to generate template-driven code that cannot justify the investment to create a focused solution.</p><p>A few years ago, I created the <a href="https://github.com/fvutils/vte/">Verification Template Engine (VTE)</a> to serve my needs for generating template-driven content. I developed VTE with three user-experience requirements in mind:</p><p></p><ul style="text-align: left;"><li>Creating a new template should be very easy, but have access to powerful generation features</li><li>Managing the available templates should be simple for a user.&nbsp;</li><li>The core tools should be generic, and make few or no assumptions about what is being generated</li></ul><div>VTE focuses on organizing and discovering template content, but leverages the <a href="https://palletsprojects.com/p/jinja/">Jinja2 template engine</a> to do the heavy lifting of template expansion. In some sense, you can think of VTE as providing a user interface to the Jinaj2 library.</div><div><br /></div><div>I've been using VTE since developing it, but am just getting back to create proper documentation, which you can find here: <a href="https://fvutils.github.io/vte/">https://fvutils.github.io/vte/</a>. As part of that work, I created a quickstart guide which is both in the documentation, and forms the remainder of this post.&nbsp;</div><div><br /></div><p></p><div><div><b>Installing VTE</b></div><div>The easiest way to install VTE is from PyPi.</div><div><br /></div><div><span style="font-family: courier;">% python3 -m pip install --user vte</span></div><div>Test that you can run VTE by running the command (vte) and/or invoking the module:</div><div><br /></div><div><span style="font-family: courier;">% vte --help</span></div><div><span style="font-family: courier;">% python3 -m vte --help</span></div><div><br /></div><div><b>Creating a Template</b></div><div>VTE discovers templates by searching directories on the VTE_TEMPLATE_PATH environment variable. VTE uses a marker file named .vte to identify the root of a template. All files and directories in and below a template directory are considered to be part of the template. The template identifier is composed from the directory names between the directory listed in VTE_TEMPLATE_PATH and the directory containing the .vte marker file.</div><div><br /></div><div>Let’s look at an example to illustrate the rules.</div><div><br /></div><div><span style="font-family: courier;">templates</span></div><div><span style="font-family: courier;">&nbsp; uvm</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; agent</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; component</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; doc</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; blog_post</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; readme</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; &nbsp; .vte</span></div><div><br /></div><div>Let’s assume we add the templates directory to VTE_TEMPLATE_PATH. VTE will find four templates:</div><div><br /></div><div><span style="font-family: courier;">uvm.agent</span></div><div><span style="font-family: courier;">uvm.component</span></div><div><span style="font-family: courier;">doc.blog_post</span></div><div><span style="font-family: courier;">doc.readme</span></div><div><br /></div><div>All files in and below the directory containing the .vte marker will be rendered when the template is used.</div><div><br /></div><div><b>Creating the Template Structure</b></div><div>Let’s create a very simple template structure. Create the following directory structure:</div><div><br /></div><div><span style="font-family: courier;">templates</span></div><div><span style="font-family: courier;">&nbsp; doc</span></div><div><span style="font-family: courier;">&nbsp; &nbsp; readme</span></div><div><br /></div><div>Change directory to templates/doc/readme and run the quickstart command:</div><div><br /></div><div><span style="font-family: courier;">% vte quickstart</span></div><div><span style="font-family: courier;">Verification Template Engine Quickstart</span></div><div><span style="font-family: courier;">Template directory: templates/doc/readme</span></div><div><span style="font-family: courier;">Template Description []? Create a simple README</span></div><div><br /></div><div>This command will prompt for a description to use for the template. Enter a description and press ENTER. This will create the .vte marker file.</div><div><br /></div><div>View the .vte file. You’ll see that the initial version is quite simple. For now, this is all we need.</div><div><br /></div><div><span style="font-family: courier;">template:</span></div><div><span style="font-family: courier;">&nbsp; description: Create a simple README</span></div><div><span style="font-family: courier;">&nbsp; parameters: []</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp;- name: param_name</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp; &nbsp;description: param_desc</span></div><div><span style="font-family: courier;">#&nbsp; &nbsp; &nbsp;default: param_default</span></div><div><br /></div><div><b>Creating the Template File</b></div><div>Now, let’s create the template file that will be processed when we render the template. Our readme template only has one file: README.md.</div><div><br /></div><div>Create a file named README.md containing the following content in the templates/doc/readme directory:</div><div><br /></div><div><span style="font-family: courier;"># README for {{name}}</span></div><div><span style="font-family: courier;">TODO: put in some content of interest</span></div><div><br /></div><div>VTE supports defining and using multiple parameters, but defines one built-in parameter that must be supplied for all templates: name. Our template file references name using Jinja2 syntax for variable references.</div><div><br /></div><div>We have now created a simple template for creating README.md files.</div><div><br /></div><div><b>Rendering a Template</b></div><div>In order to render templates, VTE must first be able to discover them. Add the templates directory to the VTE_TEMPLATE_PATH environment variable.</div><div><br /></div><div><span style="font-family: courier;">% export VTE_TEMPLATE_PATH=&lt;path&gt;/templates # Bourne shell</span></div><div><span style="font-family: courier;">% setenv VTE_TEMPLATE_PATH &lt;path&gt;/templates # csh/tsh</span></div><div>Let’s test this out by running the vte list command:</div><div><br /></div><div><span style="font-family: courier;">% vte list</span></div><div><span style="font-family: courier;">doc.readme - Create a simple README</span></div><div><br /></div><div>If you see the doc.readme line above, VTE has successfully discovered the template.</div><div><br /></div><div>Now, let’s actually generate something. Let’s create a new directory parallel to the templates directory in which to try this out</div><div><br /></div><div><span style="font-family: courier;">% mkdir scratch</span></div><div><span style="font-family: courier;">% cd scratch</span></div><div><br /></div><div>Finally, let’s run the generate command:</div><div><br /></div><div><span style="font-family: courier;">% vte generate doc.readme my_project</span></div><div><span style="font-family: courier;">Note: processing template README.md</span></div><div><br /></div><div>VTE prints a line for each template file is processes. The output above confirms that is processed the template README.md file.</div><div><br /></div><div>Let’s have a look at the result. View the README.md file in the scratch directory.</div><div><br /></div><div><span style="font-family: courier;"># README for my_project</span></div><div><span style="font-family: courier;">TODO: put in some content of interest</span></div><div><br /></div><div>Node that the {{name}} reference was replaced by the name (my_project) that we specified.</div><div><br /></div><div>You have now created your first VTE template!</div><div><br /></div></div><p><b>Conclusion</b></p><p>As the tutorial above illustrates, creating a new template for use with VTE is no more effort than making a few name substitutions. If you use the template more than once, you will already have received a positive return on the effort invested. While templates can be simple, you have the full power of the <a href="https://palletsprojects.com/p/jinja/">Jinja2</a> template engine when you need to do something more complex. I encourage you to check out the <a href="https://fvutils.github.io/vte/">VTE documentation</a> and look for opportunities where using template-driven content generation can make your life easier and make you more productive.</p><p><br /></p><div style="text-align: center;">Copyright 2022 Matthew Ballance</div><div><p style="font-variant-east-asian: normal; font-variant-numeric: normal; line-height: 16px; margin-bottom: 0in;"><span style="color: #666666;"><span face="Trebuchet MS, Trebuchet, Verdana, sans-serif"><span style="font-size: 9pt;"><i><span style="background: rgb(255, 255, 255);">The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</span></i></span></span></span></p></div>]]></content><author><name>Matthew Ballance</name></author><category term="Jinja2" /><category term="Code Generation" /><category term="Templates" /><category term="Python" /><category term="Functional Verification" /><summary type="html"><![CDATA[&nbsp;As a verification engineer, it's quite common to work with data and code that follow a regular pattern. Having an efficient way to create this repetitive code is a significant productivity boost. While there certainly are places in the code where 'your critical generation or checking algorithm' goes, much of the structure of an agent, a test environment, etc remain the same. The same goes for other parts of the flow, such as project meta-data, test lists, etc. There are two things that keep us from just making copies of a set of 'golden' files to create the basis for a new UVM agent, project, etc: some or all of the files need to have some data substituted or changed. For example, we want to substitute the name of the new UVM agent we're creating into most of the new SystemVerilog source code.Custom code generators have been developed for some of these tasks. These often focus on providing a domain-specific way to capture input data, such as the structure of a UVM testbench or the layout of registers in a design. But there are many more opportunities to generate template-driven code that cannot justify the investment to create a focused solution.A few years ago, I created the Verification Template Engine (VTE) to serve my needs for generating template-driven content. I developed VTE with three user-experience requirements in mind:Creating a new template should be very easy, but have access to powerful generation featuresManaging the available templates should be simple for a user.&nbsp;The core tools should be generic, and make few or no assumptions about what is being generatedVTE focuses on organizing and discovering template content, but leverages the Jinja2 template engine to do the heavy lifting of template expansion. In some sense, you can think of VTE as providing a user interface to the Jinaj2 library.I've been using VTE since developing it, but am just getting back to create proper documentation, which you can find here: https://fvutils.github.io/vte/. As part of that work, I created a quickstart guide which is both in the documentation, and forms the remainder of this post.&nbsp;Installing VTEThe easiest way to install VTE is from PyPi.% python3 -m pip install --user vteTest that you can run VTE by running the command (vte) and/or invoking the module:% vte --help% python3 -m vte --helpCreating a TemplateVTE discovers templates by searching directories on the VTE_TEMPLATE_PATH environment variable. VTE uses a marker file named .vte to identify the root of a template. All files and directories in and below a template directory are considered to be part of the template. The template identifier is composed from the directory names between the directory listed in VTE_TEMPLATE_PATH and the directory containing the .vte marker file.Let’s look at an example to illustrate the rules.templates&nbsp; uvm&nbsp; &nbsp; agent&nbsp; &nbsp; &nbsp; .vte&nbsp; &nbsp; component&nbsp; &nbsp; &nbsp; .vte&nbsp; doc&nbsp; &nbsp; blog_post&nbsp; &nbsp; &nbsp; .vte&nbsp; &nbsp; readme&nbsp; &nbsp; &nbsp; .vteLet’s assume we add the templates directory to VTE_TEMPLATE_PATH. VTE will find four templates:uvm.agentuvm.componentdoc.blog_postdoc.readmeAll files in and below the directory containing the .vte marker will be rendered when the template is used.Creating the Template StructureLet’s create a very simple template structure. Create the following directory structure:templates&nbsp; doc&nbsp; &nbsp; readmeChange directory to templates/doc/readme and run the quickstart command:% vte quickstartVerification Template Engine QuickstartTemplate directory: templates/doc/readmeTemplate Description []? Create a simple READMEThis command will prompt for a description to use for the template. Enter a description and press ENTER. This will create the .vte marker file.View the .vte file. You’ll see that the initial version is quite simple. For now, this is all we need.template:&nbsp; description: Create a simple README&nbsp; parameters: []#&nbsp; &nbsp;- name: param_name#&nbsp; &nbsp; &nbsp;description: param_desc#&nbsp; &nbsp; &nbsp;default: param_defaultCreating the Template FileNow, let’s create the template file that will be processed when we render the template. Our readme template only has one file: README.md.Create a file named README.md containing the following content in the templates/doc/readme directory:# README for {{name}}TODO: put in some content of interestVTE supports defining and using multiple parameters, but defines one built-in parameter that must be supplied for all templates: name. Our template file references name using Jinja2 syntax for variable references.We have now created a simple template for creating README.md files.Rendering a TemplateIn order to render templates, VTE must first be able to discover them. Add the templates directory to the VTE_TEMPLATE_PATH environment variable.% export VTE_TEMPLATE_PATH=&lt;path&gt;/templates # Bourne shell% setenv VTE_TEMPLATE_PATH &lt;path&gt;/templates # csh/tshLet’s test this out by running the vte list command:% vte listdoc.readme - Create a simple READMEIf you see the doc.readme line above, VTE has successfully discovered the template.Now, let’s actually generate something. Let’s create a new directory parallel to the templates directory in which to try this out% mkdir scratch% cd scratchFinally, let’s run the generate command:% vte generate doc.readme my_projectNote: processing template README.mdVTE prints a line for each template file is processes. The output above confirms that is processed the template README.md file.Let’s have a look at the result. View the README.md file in the scratch directory.# README for my_projectTODO: put in some content of interestNode that the {{name}} reference was replaced by the name (my_project) that we specified.You have now created your first VTE template!ConclusionAs the tutorial above illustrates, creating a new template for use with VTE is no more effort than making a few name substitutions. If you use the template more than once, you will already have received a positive return on the effort invested. While templates can be simple, you have the full power of the Jinja2 template engine when you need to do something more complex. I encourage you to check out the VTE documentation and look for opportunities where using template-driven content generation can make your life easier and make you more productive.Copyright 2022 Matthew BallanceThe views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.]]></summary></entry></feed>
