@@ -1,0 +1,183 @@
+---
+layout: code
+---
+```pss
+/****************************************************************************
+ * wb_dma_4_registers.pss
+ *
+ * Copyright 2023 Matthew Ballance and Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may 
+ * not use this file except in compliance with the License.  
+ * You may obtain a copy of the License at:
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
+ * See the License for the specific language governing permissions and 
+ * limitations under the License.
+ *
+ * Created on:
+ *     Author: 
+ ****************************************************************************/
+import addr_reg_pkg::*;
+
+buffer MemBuf {
+    rand bit[32]        size; // Size of the data
+    addr_handle_t       addr_h;
+}
+
+resource Channel { }
+
+struct WbDmaChannelCSR : packed_s<> {
+    bit               CH_EN;
+    bit               DST_SEL;
+    bit               SRC_SEL;
+    bit               INC_DST;
+    bit               INC_SRC;
+    bit               MODE;
+    bit               ARS;
+    bit               USE_ED;
+    bit               SZ_WB;
+    bit               STOP;
+    bit               BUSY;
+    bit               DONE;
+    bit               ERR;
+    bit[3]            PRI;
+    bit               REST_EN;
+    bit               INE_ERR;
+    bit               INE_DONE;
+    bit               INE_CHK_DONE;
+    bit               INT_ERROR;
+    bit               INT_DONE;
+    bit               INT_CHK_SZ;
+    bit[9]            RESERVED;
+}
+struct WbDmaChannelSZ : packed_s<> {
+    bit[12]           TOT_SZ;
+    bit[4]            RESERVED_1;
+    bit[9]            CHK_SZ;
+    bit[7]            RESERVED_2;
+}
+
+pure component WbDmaChannelRegs : reg_group_c {
+    reg_c<WbDmaChannelCSR>         CSR;
+    reg_c<WbDmaChannelSZ>          SZ;
+    reg_c<bit[32]>                 SrcAddr;
+    reg_c<bit[32]>                 SrcAddrMask;
+    reg_c<bit[32]>                 DstAddr;
+    reg_c<bit[32]>                 DstAddrMask;
+    reg_c<bit[32]>                 LinkListPtr;
+    reg_c<bit[32]>                 SwPtr;
+}
+
+struct WbDmaCSR : packed_s<> {
+    bit                            PAUSE;
+    bit[31]                        RESERVED;
+}
+
+pure component WbDmaRegs : reg_group_c {
+    reg_c<WbDmaCSR>         CSR;
+    reg_c<bit[32]>          INT_MSK_A;
+    reg_c<bit[32]>          INT_MSK_B;
+    reg_c<bit[32]>          INT_SRC_A;
+    reg_c<bit[32]>          INT_SRC_B;
+
+    WbDmaChannelRegs        channels[31];
+}
+
+component WbDma {
+
+    pool MemBuf     mem_buf_p;
+    bind mem_buf_p  *;
+
+    pool [16] Channel    channels_p;
+    bind channels_p *;
+
+    // DMA register model
+    WbDmaRegs                   regs;
+
+    action Mem2Mem {
+        input MemBuf            src_i;
+        input MemBuf            dst_o;
+        rand addr_claim_s<>     dst_claim;
+        lock Channel            channel;
+
+        // Input and output size must be the same
+        constraint dst_o.size == src_i.size;
+
+        // DMA only transfers words
+        constraint (dst_o.size % 4) == 0; 
+
+        // Specify size/alignment for allocation
+        constraint dst_claim.size == dst_o.size;
+        constraint dst_claim.alignment == 4;
+
+        exec post_solve {
+            dst_o.addr_h = make_handle_from_claim(dst_claim);
+        }
+
+        exec body {
+            // Setup the transfer size
+            WbDmaChannelSZ sz;
+            sz.CHK_SZ = 16;
+            sz.TOT_SZ = dst_o.size / 4; // We always work in words
+            regs.SZ.write(sz);
+
+            // Configure source and destination addresses
+            regs.INT_SRC_A.write(addr_value(src_i.addr_h));
+            regs.INT_DST_A.write(addr_value(dst_o.addr_h));
+
+            // Enable the channel
+            WbDmaChannelCSR csr = regs.CSR.read();
+            csr.CH_EN = 1;
+            regs.CSR.write(csr);
+
+            // Wait for the transfer to complete
+            repeat {
+                csr = regs.CSR.read();
+                // ...
+            } while (csr.DONE == 0);
+        }
+    }
+
+    action Mem2Dev {
+        // TODO: fill in later
+
+    }
+
+    action Dev2Mem {
+        // TODO: fill in later
+
+    }
+
+}
+
+component pss_top {
+    transparent_addr_space_c<>               aspace;
+    addr_handle_t                            mmio_h;
+
+    WbDma                                    dma;
+
+    exec init_down {
+        transparent_addr_region_s<>          region;
+
+        region.addr = 0x8000_0000;
+        region.size = 0x1000_0000;
+        aspace.add_region(region);
+
+        region.addr = 0x0000_0000;
+        region.size = 0x1000_0000;
+        aspace.add_region(region);
+
+        region.addr = 0x1000_0000;
+        region.size = 0x1000_0000;
+        mmio_h = aspace.add_nonallocatable_region(region);
+
+        dma.regs.set_handle(make_handle_from_handle(mmio_h, 0x0));
+    }
+}
+
+```
