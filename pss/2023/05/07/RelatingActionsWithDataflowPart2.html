@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Relating Actions with Dataflow Part2 -- Parallelism &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">Relating Actions with Dataflow Part2 -- Parallelism</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">Interacting with Devices via PSS Registers</a></li>
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+        Subscribe to Bits, Bytes, and Gates
+    </p>
+    
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Relating Actions with Dataflow Part2 -- Parallelism &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/atom.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+
+  <body>
+
+
+  <div class="post">
+    <h1 class="post-title">Relating Actions with Dataflow Part2 -- Parallelism</h1>
+    <span class="post-date">07 May 2023</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/05/RelatingActionsPart2_splash.png" />
+</p>
+
+<p>A few posts back (<a href="https://bitsbytesgates.com/_posts/2023-03-18-RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a>), 
+we talked about using <code class="language-plaintext highlighter-rouge">buffer</code> objects to form a relationship 
+between actions that execute sequentially. Because the actions 
+execute sequentially, this
+relationship looks a lot like function call or the transfer of a 
+transaction. What is actually happening is actually a bit more 
+involved and much more powerful. Let’s use the DMA engine’s 
+‘peripheral interface’ as a vehicle to explore this declarative 
+data exchange aspect of the PSS language.</p>
+
+<!--more-->
+
+<h1 id="dma-as-a-service">DMA as a Service</h1>
+<p>Many high-speed devices have a built-in DMA engine to offload the
+system processor from managing data transfers, and maximize 
+overall system performance. For other devices, whether to use
+DMA comes down to the characteristics of the system. Some systems
+may need the extra throughput that DMA provides, while others
+may need the area savings that using a processor to manage
+data transfers brings. For this type of device, our DMA Engine’s
+peripheral interface provides a compromise approach: devices
+can be designed such they can optionally use the channel of
+an external DMA engine. This way, whether to use DMA or not
+is up to the system architect and not up to the individual
+IP designer.</p>
+
+<p>This capability of our DMA engine means that we need to test it
+as a feature of the DMA IP using PSS. If we purely focus on 
+this, our life is (relatively) straightforward. 
+However, because we want our PSS
+content to be reusable, we also need to think about how the
+PSS test content we create for the DMA engine will interact
+with PSS test content created for DMA-optional devices. We will
+definitely want these two aspects to easily work together
+when testing a system where the architect has provisioned
+a device with an external DMA engine channel!</p>
+
+<h1 id="dma-as-a-service-theory-of-operations">DMA as a Service: Theory of Operations</h1>
+
+<p>The DMA engine that we’re working with has a fairly simple 
+interface when it comes to supporting external devices.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/05/DMA_HandshakeOperation.png" />
+</p>
+
+<p>As shown in the diagram above from the DMA manual, the
+peripheral interface involves two signals. The peripheral
+device asserts the <em>req</em> line when it wants attention from 
+the DMA channel. Once the channel associated with the 
+peripheral device is prioritized, the DMA engine 
+transfers a burst (1-N) of data to the destination
+address and toggles the <em>ack</em> signal.</p>
+
+<p>Over the course of transferring a block of data, a 
+peripheral device and the DMA engine are likely to
+interact many times.</p>
+
+<h2 id="key-takeaways--and-pss-rules">Key takeaways – and PSS Rules</h2>
+
+<p>Now that we understand a bit more about how the DMA engine
+provides “DMA as a service”, it’s time to start organizing
+what we know into a set of ‘rules’ that we can use with PSS.
+As you’ve likely identified already, a fair portion of a 
+PSS model involves ‘rules’ about data relationships 
+(constraints), ‘rules’ about what how resources are 
+allocated, etc.</p>
+
+<p>Here’s what we know thus far:</p>
+<ul>
+  <li>A peripheral device and DMA channel have a 1:1 relationship.
+We must ensure that the correct channel is used for a given device</li>
+  <li>The DMA engine must be told about the external device’s address.</li>
+  <li>The channel resource for the DMA channel to which the peripheral
+device is connected must be held for the duration of the transfer.</li>
+  <li>The action representing the DMA transfer activity must run in 
+parallel with the action representing the peripheral device activity.</li>
+</ul>
+
+<p>Okay, so this is a bit different from operations we’ve previously
+modeled with PSS. The overall data transfer operation between
+memory and the device occurs at the same time as the device is
+formatting that data and sending it to the world outside 
+our system. This certainly means that we can’t use the 
+<code class="language-plaintext highlighter-rouge">buffer</code> that we previously used to relate two actions because
+the actions are not evaluated sequentially.  Fortunately, PSS 
+provides a <code class="language-plaintext highlighter-rouge">stream</code> data type for specifying a data 
+relationship between two actions that are run in parallel.</p>
+
+<h2 id="data-to-agree-on">Data to Agree On</h2>
+
+<p>Much like a <code class="language-plaintext highlighter-rouge">buffer</code> type, a <code class="language-plaintext highlighter-rouge">stream</code> type is a struct-like type that
+holds user-defined fields. while a <code class="language-plaintext highlighter-rouge">buffer</code> object is used to form
+a relationship between two actions that execute sequentially, a 
+<code class="language-plaintext highlighter-rouge">stream</code> object is used to form a relationship between two actions
+that execute in parallel.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">stream</span> <span class="nc">PeriphDmaStream</span> <span class="p">{</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>        <span class="n">channel</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span>             <span class="n">periph_addr</span><span class="p">;</span>
+    <span class="n">addr_handle_t</span>       <span class="n">mem_h</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>        <span class="n">xfer_sz</span><span class="p">;</span>
+    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>        <span class="n">xfer_cnt</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The definition above is for a PSS <code class="language-plaintext highlighter-rouge">stream</code> type that captures the
+data that the peripheral device action and the DMA transfer action
+must agree on. As you might note, this aligns quite nicely with the
+list that we already assembled:</p>
+<ul>
+  <li>The two actions must agree on the DMA channel to use</li>
+  <li>They must agree on the address of the peripheral device, as well
+as where data is stored in memory.</li>
+  <li>They must agree on how data will be transferred.</li>
+</ul>
+
+<h2 id="actions-to-match">Actions to Match</h2>
+
+<p>Now that we’ve captured the data to be shared, let’s sketch out 
+the actions that will actually participate in this two-part
+transfer. Bear in mind that our goal is that another team can
+implement a ‘peripheral’ action for their IP in order to make
+use of our DMA controller.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="kd">action</span> <span class="nc">Mem2Dev</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">PeriphDmaStream</span>       <span class="n">ctrl_i</span><span class="p">;</span>
+        <span class="k">lock</span> <span class="n">Channel</span>                <span class="n">channel</span><span class="p">;</span>
+
+        <span class="c1">// Acquire the requested channel</span>
+        <span class="k">constraint</span> <span class="n">channel</span><span class="o">.</span><span class="n">instance_id</span> <span class="o">==</span> <span class="n">ctrl_i</span><span class="o">.</span><span class="n">channel</span><span class="p">;</span>
+
+        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+            <span class="c1">// Configure the DMA channel in peripheral mode</span>
+            <span class="c1">// Program parameters</span>
+            <span class="c1">// ...</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Now, here is the matching peripheral-device action:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">Uart</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="c1">// Configured during component-tree construction</span>
+    <span class="kt">int</span>        <span class="n">dma_channel</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span>    <span class="n">xmit_addr</span><span class="p">;</span>
+
+    <span class="kd">action</span> <span class="nc">SendMsgDma</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>           <span class="n">dat_i</span><span class="p">;</span>
+        <span class="k">output</span> <span class="n">PeriphDmaStream</span> <span class="n">ctrl_o</span><span class="p">;</span>
+
+        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
+            <span class="n">ctrl_o</span><span class="o">.</span><span class="n">channel</span>     <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">dma_channel</span><span class="p">;</span>
+            <span class="n">ctrl_o</span><span class="o">.</span><span class="n">periph_addr</span> <span class="o">=</span> <span class="n">comp</span><span class="o">.</span><span class="n">xmit_addr</span><span class="p">;</span>
+            <span class="n">ctrl_o</span><span class="o">.</span><span class="n">mem_h</span>       <span class="o">=</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">addr_h</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">constraint</span> <span class="p">{</span>
+            <span class="n">ctrl_o</span><span class="o">.</span><span class="n">xfer_cnt</span> <span class="o">==</span> <span class="n">dat_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
+            <span class="n">ctrl_o</span><span class="o">.</span><span class="n">xfer_sz</span> <span class="o">==</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Remember that the DMA engine acts as an assistant in this case.
+Consequently, the UART action takes in the data buffer representing
+memory to be transmitted. The corresponding receive action would
+produce the buffer of memory created from the received data. 
+In contrast, the DMA action only accepts instructions on 
+how to setup and manage the transfer.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">Uart</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="c1">// Configured during component-tree construction</span>
+    <span class="kt">int</span>        <span class="n">dma_channel</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span>    <span class="n">xmit_addr</span><span class="p">;</span>
+
+    <span class="kd">action</span> <span class="nc">SendMsgDma</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>           <span class="n">dat_i</span><span class="p">;</span>
+        <span class="k">output</span> <span class="n">PeriphDmaStream</span> <span class="n">ctrl_o</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+
+    <span class="kd">action</span> <span class="nc">SendMsgPio</span> <span class="p">{</span>
+        <span class="k">input</span> <span class="n">MemBuf</span>           <span class="n">dat_i</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+    <span class="p">}</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In addition to making intuitive sense, this modeling approach has
+the big benefit of ensuring that the dataflow for UART actions 
+is the same whether or not DMA is being used (see above).</p>
+
+<h2 id="creating-scenarios">Creating Scenarios</h2>
+
+<p>Let’s create a small scenario that combines the PSS model for our
+DMA engine with the PSS model for our UART to create a scenario
+where we use the DMA to automate the data transfer process.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">WbDma</span>              <span class="n">dma</span><span class="p">;</span>
+    <span class="n">Uart</span>               <span class="n">uart</span><span class="p">;</span>
+
+    <span class="kd">action</span> <span class="nc">Scenario</span> <span class="p">{</span>
+        <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Dev</span>   <span class="n">uart_tx_dma</span><span class="p">;</span>
+        <span class="nn">Uart</span><span class="p">::</span><span class="n">SendMsgDma</span> <span class="n">uart_dma_tx</span><span class="p">;</span>
+
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="c1">// ... Create data to transmit</span>
+
+            <span class="c1">// Bind control I/O together</span>
+            <span class="k">bind</span> <span class="n">uart_tx_dma</span><span class="o">.</span><span class="n">ctrl_o</span> <span class="n">uart_dma_tx</span><span class="o">.</span><span class="n">ctrl_i</span><span class="p">;</span>
+            <span class="k">parallel</span> <span class="p">{</span>
+                <span class="n">uart_tx_dma</span><span class="p">;</span>
+                <span class="n">uart_dma_tx</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In the example above, we bind the control input/output of the
+two actions together and traverse them in parallel. Because the
+two actions are connected, they will ‘agree’ on the parameters
+of the DMA transfer – specifically, which channel to use,
+what the source and destination addresses are, etc.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">WbDma</span>              <span class="n">dma</span><span class="p">;</span>
+    <span class="n">Uart</span>               <span class="n">uart</span><span class="p">;</span>
+
+    <span class="kd">action</span> <span class="nc">Scenario</span> <span class="p">{</span>
+        <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Dev</span>   <span class="n">uart_tx_dma</span><span class="p">;</span>
+        <span class="nn">Uart</span><span class="p">::</span><span class="n">SendMsgDma</span> <span class="n">uart_dma_tx</span><span class="p">;</span>
+        <span class="nn">WbDma</span><span class="p">::</span><span class="n">Dev2Mem</span>   <span class="n">uart_rx_dma</span><span class="p">;</span>
+        <span class="nn">Uart</span><span class="p">::</span><span class="n">RecvMsgDma</span> <span class="n">uart_dma_rx</span><span class="p">;</span>
+
+        <span class="k">activity</span> <span class="p">{</span>
+            <span class="c1">// ... Create data to transmit</span>
+
+            <span class="k">bind</span> <span class="n">uart_tx_dma</span><span class="o">.</span><span class="n">ctrl_o</span> <span class="n">uart_dma_tx</span><span class="o">.</span><span class="n">ctrl_i</span><span class="p">;</span>
+            <span class="k">bind</span> <span class="n">uart_rx_dma</span><span class="o">.</span><span class="n">ctrl_o</span> <span class="n">uart_dma_rx</span><span class="o">.</span><span class="n">ctrl_i</span><span class="p">;</span>
+            <span class="k">parallel</span> <span class="p">{</span>
+                <span class="k">parallel</span> <span class="p">{</span><span class="n">uart_tx_dma</span><span class="p">;</span> <span class="n">uart_dma_tx</span><span class="p">;</span> <span class="p">}</span>
+                <span class="k">parallel</span> <span class="p">{</span><span class="n">uart_rx_dma</span><span class="p">;</span> <span class="n">uart_dma_rx</span><span class="p">;</span> <span class="p">}</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span><span class="p">;</span>
+                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+
+<p>Buffers and Streams – the PSS mechanism for relating sequential-
+and parallel-executing actions act as APIs that allow actions
+to interact and cooperate, despite the fact that they may have 
+been created by multiple teams for different projects.</p>
+
+<p>Using these <em>action APIs</em> also allows us to easily
+scale up our test scenarios while maintaining the validity of the
+test. We can build our test-specific rules on top of the rules 
+that are built-in to the scenario because of the actions we include
+and their relationships. Combined with the automation provided by
+random generation, being able to build on top of a well-defined
+set of existing scenario rules significantly boosts our 
+scenario creation productivity.</p>
+
+<p>Over the past few posts, we’ve looked at some key aspects of the
+Accellera Portable Test and Stimulus (PSS) language:</p>
+<ul>
+  <li>How PSS helps in creating bare-metal SoC tests</li>
+  <li>Key elements of the PSS language: actions, components, flow objects, and resources</li>
+  <li>Creating multi-core tests with PSS</li>
+  <li>Managing memory and accessing registers with PSS</li>
+  <li>Modeling random scenarios using rules action relationship rules</li>
+</ul>
+
+<p>I hope this has provided a more in-depth view of the PSS language, 
+its goals, and its capabilities. As you might guess, though, this intro
+to PSS has really only scratched the surface in terms of PSS language
+features and modeling approaches. The good news is that there are a 
+plethora of open-source hardware designs out there that we can use
+to explore these topics!</p>
+
+<h1 id="references">References</h1>
+<ul>
+  <li>[1] Wishbone DMA Core <a href="https://opencores.org/projects/wb_dma">project page</a></li>
+  <li>[2] Wishbone DMA Core <a href="https://bitsbytesgates.com/imgs/2023/03/dma_doc.pdf">manual</a></li>
+</ul>
+
+
+  </div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+    <br/>
+    <br/>
+      
+      
+      <h2>Posts in the series "Intro to PSS"</h2>
+      <ul>
+        
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">Interacting with Devices via PSS Registers</a></li>
+        
+        
+        
+        <li>Relating Actions with Dataflow Part2 -- Parallelism</li>
+        
+        
+      </ul>
+      
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
+  
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>
