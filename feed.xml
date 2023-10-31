@@ -1,4 +1,210 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2023-10-23T03:32:08+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Relating Actions with Dataflow Part2 – Parallelism</title><link href="https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2.html" rel="alternate" type="text/html" title="Relating Actions with Dataflow Part2 – Parallelism" /><published>2023-05-07T00:00:00+00:00</published><updated>2023-05-07T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2023-10-31T23:55:37+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Of Register Models and Standards</title><link href="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html" rel="alternate" type="text/html" title="Of Register Models and Standards" /><published>2023-10-31T00:00:00+00:00</published><updated>2023-10-31T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html"><![CDATA[<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/10/OfRegistersAndStandards_splash.png" />
+</p>
+
+<p>Memory-mapped registers play an integral part in configuring and driving
+the operation of the vast majority of digital designs today. As a 
+consequence, it’s not surprising that each language and methodology 
+involved in the design, verification, and documentation of digital
+designs has its own way of interacting with registers. Fortunately,
+standard languages and descriptions exist that allow these language-
+and methodology-specific formats to be created from a single central
+description.</p>
+
+<p>This post focuses on the results of a weekend project that allows 
+a Portable Test and Stimlus (PSS) register access layer to be created 
+from SystemRDL input.</p>
+
+<!--more-->
+
+<h1 id="why-so-many-rals">Why so Many RALs?</h1>
+<p>Nearly every design and verification environment defines a way to access
+and manipulate registers. UVM provides a set of classes for capturing
+the definition of register fields, register banks, and address maps. It’s
+common when writing low-level firmware or tests in C to have either 
+pre-processor defines or C ‘structs’ that specify the layout of fields
+within registers and registers within the device memory map. PSS, as well,
+defines a set of data structures to use in specifying the layout of 
+registers.</p>
+
+<p>Why go to this effort? The simple answer is that it makes code much easier
+to create and understand, which makes mistakes much less likely.</p>
+
+<p>Consider the following register, which captures two aspects of how a DMA
+transfer is carried out.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/10/WB_DMA_Channel_SZ_Reg.png" />
+</p>
+
+<p>Let’s assume that we want to configure the 
+DMA engine to transfer a total of 128 words, with a chunk size of
+4 words.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c">  <span class="kt">uint32_t</span> <span class="n">tot_chk_sz_v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">tot_chk_sz_v</span> <span class="o">|=</span> <span class="mi">128</span><span class="p">;</span> <span class="c1">// set total size</span>
+  <span class="n">tok_chk_sz_v</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">);</span>
+  <span class="n">write32</span><span class="p">(</span><span class="n">chk_sz_reg</span><span class="p">,</span> <span class="n">tot_chk_sz_v</span><span class="p">);</span></code></pre></figure>
+
+<p>This code certainly accomplishes the job. It will result in the 
+intended values being written into the register. However, other than comments, 
+there is nothing in this code to provide meaning to the constants that are used.
+If you’re like me, revisiting this code after a few months will have you
+reaching for the DMA Engine’s programmers’ guide to remember what all
+those numbers mean.</p>
+
+<p>Using a register-access layer makes our code more readable. For example,
+here is that same code in C using a struct-based register access layer:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c">  <span class="n">fwperiph_dma_ch_sz</span> <span class="n">tot_chk_sz_v</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+  <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">tot_sz</span> <span class="o">=</span> <span class="mi">128</span><span class="p">;</span>
+  <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">chk_sz</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="n">write32</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dma</span><span class="o">-&gt;</span><span class="n">ch_sz</span><span class="p">,</span> <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">value</span><span class="p">);</span></code></pre></figure>
+
+<p>Even without going into detail on exactly what is happening here, the
+code conveys a much better picture of what is happening. And, we don’t
+need to worry about shifting and masking our data to cause it to be 
+placed in the right bit positions.</p>
+
+<h1 id="register-description-standards">Register-description Standards</h1>
+<p>This is great, but across a project we’re likely to need to have 
+register access layers for UVM, C, and (just maybe) PSS. Clearly, 
+environment-specific register-access layers helps us be productive. But, 
+having to create each by hand has a high cost. Fortunately, there exist
+a couple of standard description language for capturing the layout of 
+registers. This allows us to capture the register layout once, and 
+use automation tools to generate the specific 
+register-access layers that we need.</p>
+
+<h2 id="ip-xact--registers-and-more-in-xml">IP-XACT – Registers (and more) in XML</h2>
+<p><a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a> has been 
+around in one flavor or another since around 2004. Its purpose is 
+to document the external and programming interfaces of IPs
+in a machine readable format. While this mission is much more expansive
+than just capturing registers, IP-XACT also supports capturing 
+register definitions.</p>
+
+<p>In IP-XACT, our DMA transfer-size register description looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">    <span class="nt">&lt;ipxact:register&gt;</span>
+        <span class="nt">&lt;ipxact:name&gt;</span>SZ<span class="nt">&lt;/ipxact:name&gt;</span>
+        <span class="nt">&lt;ipxact:addressOffset&gt;</span>'h4<span class="nt">&lt;/ipxact:addressOffset&gt;</span>
+        <span class="nt">&lt;ipxact:size&gt;</span>32<span class="nt">&lt;/ipxact:size&gt;</span>
+        <span class="nt">&lt;ipxact:field&gt;</span>
+          <span class="nt">&lt;ipxact:name&gt;</span>tot_sz<span class="nt">&lt;/ipxact:name&gt;</span>
+          <span class="nt">&lt;ipxact:description&gt;</span>Total transfer size (in words)<span class="nt">&lt;/ipxact:description&gt;</span>
+          <span class="nt">&lt;ipxact:bitOffset&gt;</span>0<span class="nt">&lt;/ipxact:bitOffset&gt;</span>
+          <span class="nt">&lt;ipxact:bitWidth&gt;</span>12<span class="nt">&lt;/ipxact:bitWidth&gt;</span>
+          <span class="nt">&lt;ipxact:volatile&gt;</span>true<span class="nt">&lt;/ipxact:volatile&gt;</span>
+          <span class="nt">&lt;ipxact:access&gt;</span>read-write<span class="nt">&lt;/ipxact:access&gt;</span>
+        <span class="nt">&lt;/ipxact:field&gt;</span>
+        <span class="nt">&lt;ipxact:field&gt;</span>
+          <span class="nt">&lt;ipxact:name&gt;</span>chk_sz<span class="nt">&lt;/ipxact:name&gt;</span>
+          <span class="nt">&lt;ipxact:description&gt;</span>Chunk size<span class="nt">&lt;/ipxact:description&gt;</span>
+          <span class="nt">&lt;ipxact:bitOffset&gt;</span>16<span class="nt">&lt;/ipxact:bitOffset&gt;</span>
+          <span class="nt">&lt;ipxact:bitWidth&gt;</span>9<span class="nt">&lt;/ipxact:bitWidth&gt;</span>
+          <span class="nt">&lt;ipxact:volatile&gt;</span>true<span class="nt">&lt;/ipxact:volatile&gt;</span>
+          <span class="nt">&lt;ipxact:access&gt;</span>read-write<span class="nt">&lt;/ipxact:access&gt;</span>
+        <span class="nt">&lt;/ipxact:field&gt;</span>
+    <span class="nt">&lt;/ipxact:register&gt;</span></code></pre></figure>
+
+<p>IP-XACT captures all the data we need, and provides a great interchange
+format between tools. The one thing it’s (subjectively) not good at is
+providing a human-friently description. XML, after all, is quite 
+verbose.</p>
+
+<h2 id="systemrdl--a-language-for-describing-registers">SystemRDL – A language for describing registers</h2>
+<p>That brings us to 
+<a href="https://www.accellera.org/downloads/standards/systemrdl">SystemRDL</a>. 
+SystemRDL is a domain-specific language (DSL) specifically designed for 
+capturing the structure and layout of registers.</p>
+
+<p>In SystemRDL, our DMA transfer-size register description looks like 
+this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>reg fwperiph_dma_channel_sz {
+    field {
+        desc = "Total transfer size (in words)";
+        hw = rw;
+        sw = rw;
+    } tot_sz[11:0];
+    field {
+        desc = "Chunk size";
+        hw = rw;
+        sw = rw;
+    } chk_sz[24:16];
+};
+</code></pre></div></div>
+
+<p>While the code above captures the same information as the previous 
+IP-XACT snippet, the SystemRDL description is shorter and (arguably) 
+much easier for a human to capture. Ease of use is generally the benefit 
+of using a domain-specific language. The cost is the 
+expense (dollars, development time, etc) of tools to support
+a domain-specific language.</p>
+
+<h1 id="peakrdl--tools-for-processing-systemrdl">PeakRDL – Tools for processing SystemRDL</h1>
+<p>That brings me to <a href="https://www-archive.fossi-foundation.org/latchup/">Latch-Up</a> – 
+the excellent FOSSi Foundation conference that acts as the US version of 
+<a href="https://orconf.org/">ORConf</a>. I was fortunate to be able to attend this year 
+and, as always, learned a great deal about developments in the open-source 
+hardware development space.</p>
+
+<p>It was at Latch-Up that I first became aware of 
+<a href="https://github.com/SystemRDL/PeakRDL">PeakRDL</a>.
+PeakRDL is a collection of tools focused on the SystemRDL language.</p>
+
+<p>In addition to tools for parsing and transforming SystemRDL descriptions
+into various output formats, PeakRDL provides a 
+<a href="https://code.visualstudio.com/">VSCode</a> extension that supports syntax
+highlighting for SystemRDL files.</p>
+
+<h1 id="peakrdl-pss---connecting-systemrdl-to-pss">PeakRDL-pss - Connecting SystemRDL to PSS</h1>
+<p>Ever since I saw PeakRDL at Latch-Up in April, my TODO list has contained
+an item dedicated to adding support for the PSS register-access layer.
+Fortunately, PeakRDL has a well-defined extension mechanism that allows 
+new input formats and output formats to be supported without touching the
+core of the tool.</p>
+
+<p>Last weekend, I was starting to hand-write yet another PSS register 
+description when I thought “why not tackle that TODO-list item and
+actually create the PSS exporter? How hard could it really be?”.</p>
+
+<p>And, the great news is that it was really straightforward. I used
+an existing extension module as a reference, and completed most
+of the work in an afternoon. You can find the source 
+<a href="https://github.com/mballance/PeakRDL-pss">here</a> if you’re really
+interested. It’s about 300 lines of pretty simple code.</p>
+
+<p>Our example DMA engine register, when rendered as PSS, looks like
+the following. One implementation detail that the PSS export
+plug-in handles is insertion of ‘reserved’ fields between 
+register fields that are not contiguous.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    struct fwperiph_dma_channel_sz : packed_s&lt;&gt; {
+        bit[12] tot_sz;
+        bit[4] reserved;
+        bit[9] chk_sz;
+    }
+</code></pre></div></div>
+
+<h1 id="conclusions-and-next-steps">Conclusions and next steps</h1>
+<p>Register access layers are key to making testbench and firmware
+code that interacts with registers easy to understand and maintain.
+Standard register-description languages allow developers to capture the
+layout of registers using a easy-to-read and maintain language, then
+use automation tools like PeakRDL to automate generation of the
+environment-specific register access layer code.</p>
+
+<p>In terms of next steps for PSS support in PeakRDL, the long-term goal 
+is to finish documenting the extension and get is up-streamed to the 
+PeakRDL organization.
+Until then, you can try out the flow by installing PeakRDL, then
+installing the PSS extension from the GitHub repository.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">  % pip <span class="nb">install </span>peakrdl
+  % pip <span class="nb">install </span>git+https://github.com/mballance/PeakRDL-pss
+  % peakrdl pss <span class="nt">-o</span> my_register_model.pss my_register_model.rdl</code></pre></figure>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Memory-mapped registers play an integral part in configuring and driving the operation of the vast majority of digital designs today. As a consequence, it’s not surprising that each language and methodology involved in the design, verification, and documentation of digital designs has its own way of interacting with registers. Fortunately, standard languages and descriptions exist that allow these language- and methodology-specific formats to be created from a single central description. This post focuses on the results of a weekend project that allows a Portable Test and Stimlus (PSS) register access layer to be created from SystemRDL input.]]></summary></entry><entry><title type="html">Relating Actions with Dataflow Part2 – Parallelism</title><link href="https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2.html" rel="alternate" type="text/html" title="Relating Actions with Dataflow Part2 – Parallelism" /><published>2023-05-07T00:00:00+00:00</published><updated>2023-05-07T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/05/07/RelatingActionsWithDataflowPart2.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2023/05/RelatingActionsPart2_splash.png" />
 </p>
 
@@ -2886,53 +3092,4 @@ optimizations that are difficult and error-prone for humans. It
 remains to be seen whether PSS is considered to provide a natural 
 (innate or acquired) way to capture system-level tests. I hope 
 you’ll have the information to assess this for yourself by the
-end of this series.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As a technologist, it’s tempting to focus on what is new (at least, new to me) – especially when choosing what to write about. I’m periodically reminded that there is immense value in returning to topics. Returning to a topic might raise awareness with a different set of readers, but it’s also highly likely that I’ll learn something new about the topic, or that my perspective on the topic will evolve in the process. This post marks the beginning of just such a “back to basics” series that focuses on the Accellera Portable Test and Stimulus (PSS) language. PSS is a specification language for modeling behavior to test. It specifically focuses on providing features that help in creating bare-metal software-driven system-level tests. Consequently, this ‘Intro to PSS’ series will focus on the task of the bare-metal software-driven test writer, and the value PSS provides.]]></summary></entry><entry><title type="html">New Year, New Space</title><link href="https://bitsbytesgates.com/intro/2023/02/16/NewYearNewSpace.html" rel="alternate" type="text/html" title="New Year, New Space" /><published>2023-02-16T00:00:00+00:00</published><updated>2023-02-16T00:00:00+00:00</updated><id>https://bitsbytesgates.com/intro/2023/02/16/NewYearNewSpace</id><content type="html" xml:base="https://bitsbytesgates.com/intro/2023/02/16/NewYearNewSpace.html"><![CDATA[<p>We’ve more than gotten started on the new year. In fact, DVCon – reliably
-and predictably held during the last few days of February and initial 
-few of March is right around the corner. And, here I am just getting the
-first post of the year out.</p>
-
-<p>Getting a late start on blog posts this year isn’t for lack of interesting
-ideas and projects to, though. Here are a few things you can look forward 
-to in the coming Blog year.</p>
-
-<!--more-->
-
-<h1 id="new-space">New Space</h1>
-<p>First, about the new space… For many years, I hosted the bitsbytesgates 
-blog on the blogspot.com platform.
-It was (relatively) easy to type up posts, and simple was good. That said,
-the more technical content I put out (code snippets and such), the more I 
-started to hit the usability edges of the blogspot environment. So, like
-so many of my peers, I decided it was time to take the plunge and move 
-to a new platform, and that this was the year to do it.</p>
-
-<p>Going forward, you can find the bitsbytesgates blog at <a href="https://bitsbytesgates.com">https://bitsbytesgates.com</a>.</p>
-
-<h1 id="python-functional-verification">Python Functional Verification</h1>
-<p>Using Python for functional verification continues to be an interest of
-mine. Declarative descriptions have also been an interest of mine for some time. 
-This year, I want to look more deeply at how some of those declarative
-approaches to capturing aspects of verification environments can be deployed
-in Python to make Python-based functional verification even more productive.</p>
-
-<h1 id="constrained-random-generation-and-functional-coverage">Constrained-Random Generation and Functional Coverage</h1>
-<p>If you’ve been following the blog for a while, you’re aware of some of the
-Python-based projects that bring constrained-random generation and 
-functional coverage capture and manipulation into Python. Using these
-capabilities in Python continues to be key, but I’m looking at making 
-some of these capabilities available to projects not implemented in 
-Python.</p>
-
-<h1 id="portable-test-and-stimulus-pss">Portable Test and Stimulus (PSS)</h1>
-<p>I’ve been involved in the Accellera standards committee for 
-Portable Test and Stimulus (PSS) since its inception, but haven’t written
-much about it here … until this year. I’m very optimistic about the 
-opportunity PSS has to substantially improve the way that we approach
-system-level tests – and, especially, the creation of bare-metal software
-test content. Look for more about PSS, starting with a ground-up tour, in
-the coming year.</p>
-
-<h1 id="conclusion">Conclusion</h1>
-<p>With that, welcome to the new blog space, and to a new year of posts. And,
-if you happen to be attending DVCon 2023 in San Jose, I hope we get a
-chance to interact live and in person!</p>]]></content><author><name></name></author><category term="Intro" /><summary type="html"><![CDATA[We’ve more than gotten started on the new year. In fact, DVCon – reliably and predictably held during the last few days of February and initial few of March is right around the corner. And, here I am just getting the first post of the year out. Getting a late start on blog posts this year isn’t for lack of interesting ideas and projects to, though. Here are a few things you can look forward to in the coming Blog year.]]></summary></entry></feed>
+end of this series.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As a technologist, it’s tempting to focus on what is new (at least, new to me) – especially when choosing what to write about. I’m periodically reminded that there is immense value in returning to topics. Returning to a topic might raise awareness with a different set of readers, but it’s also highly likely that I’ll learn something new about the topic, or that my perspective on the topic will evolve in the process. This post marks the beginning of just such a “back to basics” series that focuses on the Accellera Portable Test and Stimulus (PSS) language. PSS is a specification language for modeling behavior to test. It specifically focuses on providing features that help in creating bare-metal software-driven system-level tests. Consequently, this ‘Intro to PSS’ series will focus on the task of the bare-metal software-driven test writer, and the value PSS provides.]]></summary></entry></feed>

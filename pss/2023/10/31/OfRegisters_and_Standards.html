@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Of Register Models and Standards &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/10/31/OfRegisters_and_Standards.html">Of Register Models and Standards</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">Relating Actions with Dataflow Part2 -- Parallelism</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">Interacting with Devices via PSS Registers</a></li>
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <div class="hbox">
+        <div class="image">
+            <a href="https://bitsbytesgates.com/feed.xml"><img src="https://bitsbytesgates.com/imgs/rss_16_16.png"/></a>
+        </div>
+        <div class="text">
+            <a href="https://bitsbytesgates.com/feed.xml">RSS Feed</a>
+        </div>
+    </div>
+    <br/>
+    <p>
+        Subscribe to Bits, Bytes, and Gates
+    </p>
+    
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+
+    <p>
+      &copy; 2014-2023 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Of Register Models and Standards &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+
+  <body>
+
+
+  <div class="post">
+    <h1 class="post-title">Of Register Models and Standards</h1>
+    <span class="post-date">31 Oct 2023</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/10/OfRegistersAndStandards_splash.png" />
+</p>
+
+<p>Memory-mapped registers play an integral part in configuring and driving
+the operation of the vast majority of digital designs today. As a 
+consequence, it’s not surprising that each language and methodology 
+involved in the design, verification, and documentation of digital
+designs has its own way of interacting with registers. Fortunately,
+standard languages and descriptions exist that allow these language-
+and methodology-specific formats to be created from a single central
+description.</p>
+
+<p>This post focuses on the results of a weekend project that allows 
+a Portable Test and Stimlus (PSS) register access layer to be created 
+from SystemRDL input.</p>
+
+<!--more-->
+
+<h1 id="why-so-many-rals">Why so Many RALs?</h1>
+<p>Nearly every design and verification environment defines a way to access
+and manipulate registers. UVM provides a set of classes for capturing
+the definition of register fields, register banks, and address maps. It’s
+common when writing low-level firmware or tests in C to have either 
+pre-processor defines or C ‘structs’ that specify the layout of fields
+within registers and registers within the device memory map. PSS, as well,
+defines a set of data structures to use in specifying the layout of 
+registers.</p>
+
+<p>Why go to this effort? The simple answer is that it makes code much easier
+to create and understand, which makes mistakes much less likely.</p>
+
+<p>Consider the following register, which captures two aspects of how a DMA
+transfer is carried out.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/10/WB_DMA_Channel_SZ_Reg.png" />
+</p>
+
+<p>Let’s assume that we want to configure the 
+DMA engine to transfer a total of 128 words, with a chunk size of
+4 words.</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c">  <span class="kt">uint32_t</span> <span class="n">tot_chk_sz_v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">tot_chk_sz_v</span> <span class="o">|=</span> <span class="mi">128</span><span class="p">;</span> <span class="c1">// set total size</span>
+  <span class="n">tok_chk_sz_v</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">);</span>
+  <span class="n">write32</span><span class="p">(</span><span class="n">chk_sz_reg</span><span class="p">,</span> <span class="n">tot_chk_sz_v</span><span class="p">);</span></code></pre></figure>
+
+<p>This code certainly accomplishes the job. It will result in the 
+intended values being written into the register. However, other than comments, 
+there is nothing in this code to provide meaning to the constants that are used.
+If you’re like me, revisiting this code after a few months will have you
+reaching for the DMA Engine’s programmers’ guide to remember what all
+those numbers mean.</p>
+
+<p>Using a register-access layer makes our code more readable. For example,
+here is that same code in C using a struct-based register access layer:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c">  <span class="n">fwperiph_dma_ch_sz</span> <span class="n">tot_chk_sz_v</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+  <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">tot_sz</span> <span class="o">=</span> <span class="mi">128</span><span class="p">;</span>
+  <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">chk_sz</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="n">write32</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dma</span><span class="o">-&gt;</span><span class="n">ch_sz</span><span class="p">,</span> <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">value</span><span class="p">);</span></code></pre></figure>
+
+<p>Even without going into detail on exactly what is happening here, the
+code conveys a much better picture of what is happening. And, we don’t
+need to worry about shifting and masking our data to cause it to be 
+placed in the right bit positions.</p>
+
+<h1 id="register-description-standards">Register-description Standards</h1>
+<p>This is great, but across a project we’re likely to need to have 
+register access layers for UVM, C, and (just maybe) PSS. Clearly, 
+environment-specific register-access layers helps us be productive. But, 
+having to create each by hand has a high cost. Fortunately, there exist
+a couple of standard description language for capturing the layout of 
+registers. This allows us to capture the register layout once, and 
+use automation tools to generate the specific 
+register-access layers that we need.</p>
+
+<h2 id="ip-xact--registers-and-more-in-xml">IP-XACT – Registers (and more) in XML</h2>
+<p><a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a> has been 
+around in one flavor or another since around 2004. Its purpose is 
+to document the external and programming interfaces of IPs
+in a machine readable format. While this mission is much more expansive
+than just capturing registers, IP-XACT also supports capturing 
+register definitions.</p>
+
+<p>In IP-XACT, our DMA transfer-size register description looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">    <span class="nt">&lt;ipxact:register&gt;</span>
+        <span class="nt">&lt;ipxact:name&gt;</span>SZ<span class="nt">&lt;/ipxact:name&gt;</span>
+        <span class="nt">&lt;ipxact:addressOffset&gt;</span>'h4<span class="nt">&lt;/ipxact:addressOffset&gt;</span>
+        <span class="nt">&lt;ipxact:size&gt;</span>32<span class="nt">&lt;/ipxact:size&gt;</span>
+        <span class="nt">&lt;ipxact:field&gt;</span>
+          <span class="nt">&lt;ipxact:name&gt;</span>tot_sz<span class="nt">&lt;/ipxact:name&gt;</span>
+          <span class="nt">&lt;ipxact:description&gt;</span>Total transfer size (in words)<span class="nt">&lt;/ipxact:description&gt;</span>
+          <span class="nt">&lt;ipxact:bitOffset&gt;</span>0<span class="nt">&lt;/ipxact:bitOffset&gt;</span>
+          <span class="nt">&lt;ipxact:bitWidth&gt;</span>12<span class="nt">&lt;/ipxact:bitWidth&gt;</span>
+          <span class="nt">&lt;ipxact:volatile&gt;</span>true<span class="nt">&lt;/ipxact:volatile&gt;</span>
+          <span class="nt">&lt;ipxact:access&gt;</span>read-write<span class="nt">&lt;/ipxact:access&gt;</span>
+        <span class="nt">&lt;/ipxact:field&gt;</span>
+        <span class="nt">&lt;ipxact:field&gt;</span>
+          <span class="nt">&lt;ipxact:name&gt;</span>chk_sz<span class="nt">&lt;/ipxact:name&gt;</span>
+          <span class="nt">&lt;ipxact:description&gt;</span>Chunk size<span class="nt">&lt;/ipxact:description&gt;</span>
+          <span class="nt">&lt;ipxact:bitOffset&gt;</span>16<span class="nt">&lt;/ipxact:bitOffset&gt;</span>
+          <span class="nt">&lt;ipxact:bitWidth&gt;</span>9<span class="nt">&lt;/ipxact:bitWidth&gt;</span>
+          <span class="nt">&lt;ipxact:volatile&gt;</span>true<span class="nt">&lt;/ipxact:volatile&gt;</span>
+          <span class="nt">&lt;ipxact:access&gt;</span>read-write<span class="nt">&lt;/ipxact:access&gt;</span>
+        <span class="nt">&lt;/ipxact:field&gt;</span>
+    <span class="nt">&lt;/ipxact:register&gt;</span></code></pre></figure>
+
+<p>IP-XACT captures all the data we need, and provides a great interchange
+format between tools. The one thing it’s (subjectively) not good at is
+providing a human-friently description. XML, after all, is quite 
+verbose.</p>
+
+<h2 id="systemrdl--a-language-for-describing-registers">SystemRDL – A language for describing registers</h2>
+<p>That brings us to 
+<a href="https://www.accellera.org/downloads/standards/systemrdl">SystemRDL</a>. 
+SystemRDL is a domain-specific language (DSL) specifically designed for 
+capturing the structure and layout of registers.</p>
+
+<p>In SystemRDL, our DMA transfer-size register description looks like 
+this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>reg fwperiph_dma_channel_sz {
+    field {
+        desc = "Total transfer size (in words)";
+        hw = rw;
+        sw = rw;
+    } tot_sz[11:0];
+    field {
+        desc = "Chunk size";
+        hw = rw;
+        sw = rw;
+    } chk_sz[24:16];
+};
+</code></pre></div></div>
+
+<p>While the code above captures the same information as the previous 
+IP-XACT snippet, the SystemRDL description is shorter and (arguably) 
+much easier for a human to capture. Ease of use is generally the benefit 
+of using a domain-specific language. The cost is the 
+expense (dollars, development time, etc) of tools to support
+a domain-specific language.</p>
+
+<h1 id="peakrdl--tools-for-processing-systemrdl">PeakRDL – Tools for processing SystemRDL</h1>
+<p>That brings me to <a href="https://www-archive.fossi-foundation.org/latchup/">Latch-Up</a> – 
+the excellent FOSSi Foundation conference that acts as the US version of 
+<a href="https://orconf.org/">ORConf</a>. I was fortunate to be able to attend this year 
+and, as always, learned a great deal about developments in the open-source 
+hardware development space.</p>
+
+<p>It was at Latch-Up that I first became aware of 
+<a href="https://github.com/SystemRDL/PeakRDL">PeakRDL</a>.
+PeakRDL is a collection of tools focused on the SystemRDL language.</p>
+
+<p>In addition to tools for parsing and transforming SystemRDL descriptions
+into various output formats, PeakRDL provides a 
+<a href="https://code.visualstudio.com/">VSCode</a> extension that supports syntax
+highlighting for SystemRDL files.</p>
+
+<h1 id="peakrdl-pss---connecting-systemrdl-to-pss">PeakRDL-pss - Connecting SystemRDL to PSS</h1>
+<p>Ever since I saw PeakRDL at Latch-Up in April, my TODO list has contained
+an item dedicated to adding support for the PSS register-access layer.
+Fortunately, PeakRDL has a well-defined extension mechanism that allows 
+new input formats and output formats to be supported without touching the
+core of the tool.</p>
+
+<p>Last weekend, I was starting to hand-write yet another PSS register 
+description when I thought “why not tackle that TODO-list item and
+actually create the PSS exporter? How hard could it really be?”.</p>
+
+<p>And, the great news is that it was really straightforward. I used
+an existing extension module as a reference, and completed most
+of the work in an afternoon. You can find the source 
+<a href="https://github.com/mballance/PeakRDL-pss">here</a> if you’re really
+interested. It’s about 300 lines of pretty simple code.</p>
+
+<p>Our example DMA engine register, when rendered as PSS, looks like
+the following. One implementation detail that the PSS export
+plug-in handles is insertion of ‘reserved’ fields between 
+register fields that are not contiguous.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    struct fwperiph_dma_channel_sz : packed_s&lt;&gt; {
+        bit[12] tot_sz;
+        bit[4] reserved;
+        bit[9] chk_sz;
+    }
+</code></pre></div></div>
+
+<h1 id="conclusions-and-next-steps">Conclusions and next steps</h1>
+<p>Register access layers are key to making testbench and firmware
+code that interacts with registers easy to understand and maintain.
+Standard register-description languages allow developers to capture the
+layout of registers using a easy-to-read and maintain language, then
+use automation tools like PeakRDL to automate generation of the
+environment-specific register access layer code.</p>
+
+<p>In terms of next steps for PSS support in PeakRDL, the long-term goal 
+is to finish documenting the extension and get is up-streamed to the 
+PeakRDL organization.
+Until then, you can try out the flow by installing PeakRDL, then
+installing the PSS extension from the GitHub repository.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">  % pip <span class="nb">install </span>peakrdl
+  % pip <span class="nb">install </span>git+https://github.com/mballance/PeakRDL-pss
+  % peakrdl pss <span class="nt">-o</span> my_register_model.pss my_register_model.rdl</code></pre></figure>
+
+
+  </div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2023 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
+  
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>
