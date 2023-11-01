@@ -22,7 +22,7 @@ and methodology-specific formats to be created from a single central
 description.
 
 This post focuses on the results of a weekend project that allows 
-a Portable Test and Stimlus (PSS) register access layer to be created 
+a Portable Test and Stimulus (PSS) register access layer to be created 
 from SystemRDL input.
 
 <!--more-->
