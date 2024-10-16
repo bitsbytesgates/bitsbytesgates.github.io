@@ -21,11 +21,11 @@ jobs:
           run: |
             python3 -m ivpm update -a
             bundle config set path vendor
-            bundle install
+            bundle install --gemfile=Gemfile.cfg
         - name: Install and build
           run: |
             export JEKYLL_ENV=production
-            bundle exec jekyll build -d web
+            bundle exec --gemfile=Gemfile.cfg jekyll build -d web
             touch web/.nojekyll
 
         - name: Deploy
