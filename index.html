@@ -90,6 +90,26 @@ Post-env
     
     <ul class="BlogPostTreeUL" list-style-type="none">
     
+        <li list-style-type="none"><span class="caret">2024</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2024</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn't Enough: Making Python Part of Your SV Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
         <li list-style-type="none"><span class="caret">2023</span>
         <!--
         <a class="sidebar-nav-item active" href="">2023</a>
@@ -620,216 +640,393 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/pss/2023/10/31/OfRegisters_and_Standards.html">Of Register Models and Standards</a>
+    <a href="/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn't Enough: Making Python Part of Your SV Testbench</a>
   </h1>      
 
 <div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/10/OfRegistersAndStandards_splash.png" />
+<img src="https://bitsbytesgates.com/imgs/2024/11/DPI_Isnt_Enough_splash.png" /> 
 </p>
 
-<p>Memory-mapped registers play an integral part in configuring and driving
-the operation of the vast majority of digital designs today. As a 
-consequence, it’s not surprising that each language and methodology 
-involved in the design, verification, and documentation of digital
-designs has its own way of interacting with registers. Fortunately,
-standard languages and descriptions exist that allow these language-
-and methodology-specific formats to be created from a single central
-description.</p>
+<p>I’ve been using Python for verification since early 2019 for personal projects,
+and have found both the language and the rich ecosystem of general and
+special-purpose libraries to be incredibly helpful in quickly and efficiently 
+bringing up a testbench environment. <a href="https://www.cocotb.org">cocotb</a>, 
+the most popular integration between Python and HDL simulators, integrates with 
+the simulator at the signal level. This isn’t a problem as long as you fully adopt 
+Python as your testbench
+methodology and implement everything in Python – from test scenario down to BFMs 
+interacting with signals. Sometimes this is the case, but often we have an existing
+SystemVerilog environment that we’d like to mix some Python into.  We might have an 
+existing BFM implemented in SystemVerilog that we’d like to call from Python. 
+We might have an existing UVM environment from which we want to call a Python library.</p>
 
-<p>This post focuses on the results of a weekend project that allows 
-a Portable Test and Stimulus (PSS) register access layer to be created 
-from SystemRDL input.</p>
+<p>SystemVerilog simulators support the Direct Procedure Interface (DPI), of course,
+which allows SystemVerilog to call C code and for C code to call SystemVerilog.
+Unfortunately, DPI on its own, doesn’t provide the features that we need for 
+a fully-featured integration between Python and a HDL simulation. As you might
+surmise, though, I’m about to describe a library 
+(<a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF</a>) that fills in the missing pieces.
+Before we get there, though, let’s have a look at how we’d like to interact
+with Python in a SystemVerilog testbench</p>
 
 <!--more-->
 
-<h1 id="why-so-many-rals">Why so Many RALs?</h1>
-<p>Nearly every design and verification environment defines a way to access
-and manipulate registers. UVM provides a set of classes for capturing
-the definition of register fields, register banks, and address maps. It’s
-common when writing low-level firmware or tests in C to have either 
-pre-processor defines or C ‘structs’ that specify the layout of fields
-within registers and registers within the device memory map. PSS, as well,
-defines a set of data structures to use in specifying the layout of 
-registers.</p>
+<h1 id="using-python-from-sv-and-vice-versa">Using Python from SV and Vice Versa</h1>
 
-<p>Why go to this effort? The simple answer is that it makes code much easier
-to create and understand, which makes mistakes much less likely.</p>
+<h2 id="calling-python-from-sv">Calling Python from SV</h2>
 
-<p>Consider the following register, which captures two aspects of how a DMA
-transfer is carried out.</p>
+<p>Requirements:</p>
+<ul>
+  <li>Be able to keep things dynamic
+    <ul>
+      <li>Don’t require any Python library-specific SV code in order to use the library</li>
+      <li>Be able to look up Python elements by name, etc</li>
+    </ul>
+  </li>
+  <li>Ideally, have some utilities on the SV side to make this easier</li>
+</ul>
 
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/10/WB_DMA_Channel_SZ_Reg.png" />
-</p>
+<p>This is actually pretty easy, since the CPython interpreter has a C API. 
+If we expose the C API via SystemVerilog DPI, we can make the same calls from
+SystemVerilog that we would make from a C/C++ application. The C API
+is fairly low-level and detailed, but we can always add a layer of SystemVerilog
+utility classes on top.</p>
 
-<p>Let’s assume that we want to configure the 
-DMA engine to transfer a total of 128 words, with a chunk size of
-4 words.</p>
+<p>This type of integration works well for using Python libraries to access 
+data (ie JSON, YAML, etc), when we want to manipulate data using a library
+like Pandas, or when we want to use a Python library to generate reference
+data. In other words, as long as our SV call to Python returns immediately.</p>
 
-<figure class="highlight"><pre><code class="language-c" data-lang="c">  <span class="kt">uint32_t</span> <span class="n">tot_chk_sz_v</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="n">tot_chk_sz_v</span> <span class="o">|=</span> <span class="mi">128</span><span class="p">;</span> <span class="c1">// set total size</span>
-  <span class="n">tok_chk_sz_v</span> <span class="o">|=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">);</span>
-  <span class="n">write32</span><span class="p">(</span><span class="n">chk_sz_reg</span><span class="p">,</span> <span class="n">tot_chk_sz_v</span><span class="p">);</span></code></pre></figure>
+<h2 id="calling-sv-from-python">Calling SV from Python</h2>
 
-<p>This code certainly accomplishes the job. It will result in the 
-intended values being written into the register. However, other than comments, 
-there is nothing in this code to provide meaning to the constants that are used.
-If you’re like me, revisiting this code after a few months will have you
-reaching for the DMA Engine’s programmers’ guide to remember what all
-those numbers mean.</p>
+<p>Python gets much more interesting – and useful – in a SystemVerilog 
+testbench when a Python method call from SystemVerilog can 
+consume simulation time.</p>
 
-<p>Using a register-access layer makes our code more readable. For example,
-here is that same code in C using a struct-based register access layer:</p>
+<p>This allows us to implement active elements of a our testbench, 
+such as tests, in Python. It also allows us to call existing
+testbench elements, such Bus Functional Models (BFMs), from Python.</p>
 
-<figure class="highlight"><pre><code class="language-c" data-lang="c">  <span class="n">fwperiph_dma_ch_sz</span> <span class="n">tot_chk_sz_v</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
-  <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">tot_sz</span> <span class="o">=</span> <span class="mi">128</span><span class="p">;</span>
-  <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">chk_sz</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
-  <span class="n">write32</span><span class="p">(</span><span class="o">&amp;</span><span class="n">dma</span><span class="o">-&gt;</span><span class="n">ch_sz</span><span class="p">,</span> <span class="n">tot_chk_sz_v</span><span class="p">.</span><span class="n">value</span><span class="p">);</span></code></pre></figure>
+<p>This usecase is where SystemVerilog DPI poses some technical challenges. 
+Both SystemVerilog and Python implement cooperative multi-threading, 
+Unfortunately, the requirements that they place on how threaded behavior 
+interacts with the outside world (and vice versa) prevent cross-calling
+in a ‘blocking’ manner between the two languages.</p>
 
-<p>Even without going into detail on exactly what is happening here, the
-code conveys a much better picture of what is happening. And, we don’t
-need to worry about shifting and masking our data to cause it to be 
-placed in the right bit positions.</p>
+<h2 id="additional-requirements">Additional Requirements</h2>
 
-<h1 id="register-description-standards">Register-description Standards</h1>
-<p>This is great, but across a project we’re likely to need to have 
-register access layers for UVM, C, and (just maybe) PSS. Clearly, 
-environment-specific register-access layers helps us be productive. But, 
-having to create each by hand has a high cost. Fortunately, there exist
-a couple of standard description language for capturing the layout of 
-registers. This allows us to capture the register layout once, and 
-use automation tools to generate the specific 
-register-access layers that we need.</p>
+<p>Beyond the raw capability to cross-call between SystemVerilog and Python,
+there a few additional requirements that vastly simplify the ability
+to create reusable infrastructure.</p>
+<ul>
+  <li>Reusable functionality should be implemented by Python and SystemVerilog
+code only. Application-specific DPI C code brings platform dependencies
+and exposes us to implementation details of how different simulators 
+deal implement DPI. These are things you want to deal with as infrequently 
+as possible, and certainly not every time you add a new Python+SV library.</li>
+  <li>Any generated code should be, at most, application-specific. Specifically,
+the end user shouldn’t need to re-generate application-specific code.</li>
+</ul>
 
-<h2 id="ip-xact--registers-and-more-in-xml">IP-XACT – Registers (and more) in XML</h2>
-<p><a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a> has been 
-around in one flavor or another since around 2004. Its purpose is 
-to document the external and programming interfaces of IPs
-in a machine readable format. While this mission is much more expansive
-than just capturing registers, IP-XACT also supports capturing 
-register definitions.</p>
+<h1 id="pyhdl-if-package">PyHDL-IF Package</h1>
 
-<p>In IP-XACT, our DMA transfer-size register description looks like this:</p>
+<div class="mermaid" align="center">
+block-beta
+columns 1
+  block:UICode
+  columns 1
+    Title["App-Specific Code"]
+    style Title fill:transparent,stroke:transparent
+    block:UICodeLanguages
+        UIPython["Python"]
+        UIEmpty["Spacer"]
+        style UIEmpty fill:transparent,stroke:transparent,color:transparent
+        UISystemVerilog["SystemVerilog"]
+    end
+  end
+  block:Codegen
+  columns 1
+    block:CodegenI
+      CodegenM1["CodegenM1"]
+      CodegenPad["CodegenPad"]
+      CodegenM2["CodegenM2"]
+      style CodegenM1 fill:transparent,stroke:transparent,color:transparent
+      style CodegenPad fill:transparent,stroke:transparent,color:transparent
+      style CodegenM2 fill:transparent,stroke:transparent,color:transparent
+    end
+    CodegenTitle["Code Generator"]
+    style CodegenTitle fill:transparent,stroke:transparent
+  end
+  UIPython --&gt; CodegenM1
+  CodegenM2 --&gt; UISystemVerilog
+  block:Library
+  columns 1
+    block:LibraryI
+      LibraryPy["Python"]
+      LibraryDpi["DPI"]
+      LibrarySV["SystemVerilog"]
+    end
+    LibraryTitle["Core PyHDL-IF Library"]
+    style LibraryTitle fill:transparent,stroke:transparent
+  end
+</div>
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml">    <span class="nt">&lt;ipxact:register&gt;</span>
-        <span class="nt">&lt;ipxact:name&gt;</span>SZ<span class="nt">&lt;/ipxact:name&gt;</span>
-        <span class="nt">&lt;ipxact:addressOffset&gt;</span>'h4<span class="nt">&lt;/ipxact:addressOffset&gt;</span>
-        <span class="nt">&lt;ipxact:size&gt;</span>32<span class="nt">&lt;/ipxact:size&gt;</span>
-        <span class="nt">&lt;ipxact:field&gt;</span>
-          <span class="nt">&lt;ipxact:name&gt;</span>tot_sz<span class="nt">&lt;/ipxact:name&gt;</span>
-          <span class="nt">&lt;ipxact:description&gt;</span>Total transfer size (in words)<span class="nt">&lt;/ipxact:description&gt;</span>
-          <span class="nt">&lt;ipxact:bitOffset&gt;</span>0<span class="nt">&lt;/ipxact:bitOffset&gt;</span>
-          <span class="nt">&lt;ipxact:bitWidth&gt;</span>12<span class="nt">&lt;/ipxact:bitWidth&gt;</span>
-          <span class="nt">&lt;ipxact:volatile&gt;</span>true<span class="nt">&lt;/ipxact:volatile&gt;</span>
-          <span class="nt">&lt;ipxact:access&gt;</span>read-write<span class="nt">&lt;/ipxact:access&gt;</span>
-        <span class="nt">&lt;/ipxact:field&gt;</span>
-        <span class="nt">&lt;ipxact:field&gt;</span>
-          <span class="nt">&lt;ipxact:name&gt;</span>chk_sz<span class="nt">&lt;/ipxact:name&gt;</span>
-          <span class="nt">&lt;ipxact:description&gt;</span>Chunk size<span class="nt">&lt;/ipxact:description&gt;</span>
-          <span class="nt">&lt;ipxact:bitOffset&gt;</span>16<span class="nt">&lt;/ipxact:bitOffset&gt;</span>
-          <span class="nt">&lt;ipxact:bitWidth&gt;</span>9<span class="nt">&lt;/ipxact:bitWidth&gt;</span>
-          <span class="nt">&lt;ipxact:volatile&gt;</span>true<span class="nt">&lt;/ipxact:volatile&gt;</span>
-          <span class="nt">&lt;ipxact:access&gt;</span>read-write<span class="nt">&lt;/ipxact:access&gt;</span>
-        <span class="nt">&lt;/ipxact:field&gt;</span>
-    <span class="nt">&lt;/ipxact:register&gt;</span></code></pre></figure>
+<p>With those use models and requirements in mind, let’s take a look at the
+PyHDL-IF library. This library is designed to implement the low-level
+details of interfacing between Python and SystemVerilog at the 
+method-call level, such that you can focus on writing SystemVerilog
+and Python and ignore the low-level details implemented in C.</p>
 
-<p>IP-XACT captures all the data we need, and provides a great interchange
-format between tools. The one thing it’s (subjectively) not good at is
-providing a human-friently description. XML, after all, is quite 
-verbose.</p>
+<p>The PyHDL-IF package has several components, but the two most-relevant
+ones for us are shown in the diagram above.
+PyHDL-IF provides a SystemVerilog API for calling into Python, and
+Python and DPI libraries to support calling back into SystemVerilog 
+from Python. It also provides a SystemVerilog code generator to create
+SystemVerilog class APIs to simplify the process of cross-calling 
+between the two languages.</p>
 
-<h2 id="systemrdl--a-language-for-describing-registers">SystemRDL – A language for describing registers</h2>
-<p>That brings us to 
-<a href="https://www.accellera.org/downloads/standards/systemrdl">SystemRDL</a>. 
-SystemRDL is a domain-specific language (DSL) specifically designed for 
-capturing the structure and layout of registers.</p>
+<h1 id="an-example">An Example</h1>
+<p>To better understand all of this, let’s walk through an example. You can find 
+the full code of this example here: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm">call_sv_bfm example</a></p>
 
-<p>In SystemRDL, our DMA transfer-size register description looks like 
-this:</p>
+<div class="mermaid" align="center">
+block-beta
+block:Outer
+columns 1
+  block:Inner
+  columns 2
+    block:Python
+    columns 1
+      PySeq(["Python Sequence"])
+      PyPad1["Python Pad"]
+      PyPad2["Python Pad"]
+      PyTitle["Python"]
+      style PyTitle fill:transparent,stroke:transparent
+      style PyPad1 fill:transparent,stroke:transparent,color:transparent
+      style PyPad2 fill:transparent,stroke:transparent,color:transparent
+    end
+    block:SvTB
+    columns 1
+      WbBfm["Wishbone BFM"]
+      SvPad["Pad"]
+      Init["Initial Block"]
+      SvTbTitle["SystemVerilog TB"]
+      style SvTbTitle fill:transparent,stroke:transparent
+      style SvPad fill:transparent,stroke:transparent,color:transparent
+    end
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>reg fwperiph_dma_channel_sz {
-    field {
-        desc = "Total transfer size (in words)";
-        hw = rw;
-        sw = rw;
-    } tot_sz[11:0];
-    field {
-        desc = "Chunk size";
-        hw = rw;
-        sw = rw;
-    } chk_sz[24:16];
-};
-</code></pre></div></div>
+    Init --&gt; PySeq
+    PySeq --&gt; WbBfm
+  end
+end
+</div>
 
-<p>While the code above captures the same information as the previous 
-IP-XACT snippet, the SystemRDL description is shorter and (arguably) 
-much easier for a human to capture. Ease of use is generally the benefit 
-of using a domain-specific language. The cost is the 
-expense (dollars, development time, etc) of tools to support
-a domain-specific language.</p>
+<p>Here’s a block diagram of what’s happening. We have a SystemVerilog testbench
+that contains an instance of a Wishbone BFM written in SystemVerilog. Our
+goal is to write a test in Python that will call tasks in the BFM. We want
+to start that Python test from SystemVerilog as well.</p>
 
-<h1 id="peakrdl--tools-for-processing-systemrdl">PeakRDL – Tools for processing SystemRDL</h1>
-<p>That brings me to <a href="https://www-archive.fossi-foundation.org/latchup/">Latch-Up</a> – 
-the excellent FOSSi Foundation conference that acts as the US version of 
-<a href="https://orconf.org/">ORConf</a>. I was fortunate to be able to attend this year 
-and, as always, learned a great deal about developments in the open-source 
-hardware development space.</p>
+<p>Let’s dig into some details on how this all fits together.</p>
 
-<p>It was at Latch-Up that I first became aware of 
-<a href="https://github.com/SystemRDL/PeakRDL">PeakRDL</a>.
-PeakRDL is a collection of tools focused on the SystemRDL language.</p>
+<h2 id="python-bfm-interface">Python BFM Interface</h2>
+<p>Let’s start with the Python interface to the Wishbone BFM. You can find the full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
 
-<p>In addition to tools for parsing and transforming SystemRDL descriptions
-into various output formats, PeakRDL provides a 
-<a href="https://code.visualstudio.com/">VSCode</a> extension that supports syntax
-highlighting for SystemRDL files.</p>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
+<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
 
-<h1 id="peakrdl-pss---connecting-systemrdl-to-pss">PeakRDL-pss - Connecting SystemRDL to PSS</h1>
-<p>Ever since I saw PeakRDL at Latch-Up in April, my TODO list has contained
-an item dedicated to adding support for the PSS register-access layer.
-Fortunately, PeakRDL has a well-defined extension mechanism that allows 
-new input formats and output formats to be supported without touching the
-core of the tool.</p>
+<span class="nd">@hif.api</span>
+<span class="k">class</span> <span class="nc">WishboneInitiator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<p>Last weekend, I was starting to hand-write yet another PSS register 
-description when I thought “why not tackle that TODO-list item and
-actually create the PSS exporter? How hard could it really be?”.</p>
+    <span class="nd">@hif.imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">data</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">):</span>
+        <span class="k">pass</span>
 
-<p>And, the great news is that it was really straightforward. I used
-an existing extension module as a reference, and completed most
-of the work in an afternoon. You can find the source 
-<a href="https://github.com/mballance/PeakRDL-pss">here</a> if you’re really
-interested. It’s about 300 lines of pretty simple code.</p>
+    <span class="nd">@hif.imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">:</span>
+        <span class="k">pass</span></code></pre></figure>
 
-<p>Our example DMA engine register, when rendered as PSS, looks like
-the following. One implementation detail that the PSS export
-plug-in handles is insertion of ‘reserved’ fields between 
-register fields that are not contiguous.</p>
+<p>A class decorated with the <em>api</em> decorator specifies a cross-language
+API. Methods within that class that are decorated with <em>import</em> or <em>export</em>
+decorators support cross-language calling.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    struct fwperiph_dma_channel_sz : packed_s&lt;&gt; {
-        bit[12] tot_sz;
-        bit[4] reserved;
-        bit[9] chk_sz;
-    }
-</code></pre></div></div>
+<p>Methods are described with respect to Python:</p>
+<ul>
+  <li>When an <em>Import</em> method is called from Python, the matching 
+SystemVerilog method is called</li>
+  <li>When an <em>Export</em> method is called from SystemVerilog, the 
+matching Python method is called.</li>
+</ul>
 
-<h1 id="conclusions-and-next-steps">Conclusions and next steps</h1>
-<p>Register access layers are key to making testbench and firmware
-code that interacts with registers easy to understand and maintain.
-Standard register-description languages allow developers to capture the
-layout of registers using a easy-to-read and maintain language, then
-use automation tools like PeakRDL to automate generation of the
-environment-specific register access layer code.</p>
+<p>Both Python and SystemVerilog have special rules about coroutine methods.
+In both languages, a coroutine method can call another coroutine method 
+or a non-coroutine method. However, a non-coroutine method cannot invoke
+a coroutine method. It’s critical to keep this aligned between SystemVerilog
+and Python:</p>
+<ul>
+  <li>An <em>async</em> Python method matches with a SystemVerilog <em>task</em></li>
+  <li>A plain Python method matches with a SystemVerilog <em>function</em></li>
+</ul>
 
-<p>In terms of next steps for PSS support in PeakRDL, the long-term goal 
-is to finish documenting the extension and get is up-streamed to the 
-PeakRDL organization.
-Until then, you can try out the flow by installing PeakRDL, then
-installing the PSS extension from the GitHub repository.</p>
+<p>The API class, with it’s decorators is used for two purposes. One, somewhat
+obviously, is to implement the Python side of a cross-language API. The
+other is to generate SystemVerilog to implement the SystemVerilog portion 
+of the API.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">  % pip <span class="nb">install </span>peakrdl
-  % pip <span class="nb">install </span>git+https://github.com/mballance/PeakRDL-pss
-  % peakrdl pss <span class="nt">-o</span> my_register_model.pss my_register_model.rdl</code></pre></figure>
+<h2 id="systemverilog-bfm">SystemVerilog BFM</h2>
+<p>Let’s move on and take a look at the Wishbone BFM that we will access 
+using the API class that we’ve defined above. You can find the full code here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/wb_init_bfm.sv">wb_init_bfm.sv</a></p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">WishboneInitiatorBFM</span><span class="p">(</span>
+    <span class="kt">input</span>           <span class="n">clock</span><span class="p">,</span>
+    <span class="kt">input</span>           <span class="n">reset</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">adr</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">dat_w</span><span class="p">,</span>
+    <span class="kt">input</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">dat_r</span><span class="p">,</span>
+    <span class="kt">output</span>                  <span class="n">cyc</span><span class="p">,</span>
+    <span class="kt">input</span>                   <span class="n">err</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">sel</span><span class="p">,</span>
+    <span class="kt">output</span>                  <span class="n">stb</span><span class="p">,</span>
+    <span class="kt">input</span>                   <span class="n">ack</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span>              <span class="n">we</span>
+<span class="p">);</span>
+<span class="c1">// ...</span>
+
+    <span class="k">task</span> <span class="n">bfm_write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">adr_v</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">dat_v</span><span class="p">);</span>
+        <span class="c1">// ...</span>
+        <span class="c1">// Works with the state machine to perform a write</span>
+    <span class="k">endtask</span>
+
+    <span class="c1">// ...</span>
+
+        <span class="kt">class</span> <span class="n">WishboneInitiatorImpl</span> <span class="k">extends</span> <span class="n">WishboneInitiator</span><span class="p">;</span>
+        <span class="kt">virtual</span> <span class="k">task</span> <span class="nb">write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">data</span><span class="p">);</span>
+            <span class="n">bfm_write</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+        <span class="k">endtask</span>
+
+        <span class="kt">virtual</span> <span class="k">task</span> <span class="n">read</span><span class="p">(</span>
+            <span class="kt">output</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">retval</span><span class="p">,</span> <span class="kt">input</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">);</span>
+            <span class="n">bfm_read</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
+        <span class="k">endtask</span>
+
+    <span class="k">endclass</span>
+
+    <span class="n">WishboneInitiatorImpl</span>       <span class="n">m_api_obj</span><span class="p">;</span>
+
+    <span class="c1">// Register ourselves with the PyHDL-IF object registry</span>
+    <span class="k">initial</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">init</span>
+        <span class="n">m_api_obj</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
+    <span class="k">end</span>
+
+    <span class="c1">// ...</span>
+<span class="k">endmodule</span></code></pre></figure>
+
+<p>Key portions of the BFM interface code are shown above. The BFM defines 
+<em>bfm_read</em> and <em>bfm_write</em> tasks that are used to drive read and write operations
+via the signal-level interface.</p>
+
+<p>The BFM defines a local class (<em>WishboneInitiatorImpl</em>) that inherits from 
+a class (<em>WishboneInitiator</em>) that is generated from the Python class specification
+of the API. The derived class here implements the <em>read</em> and <em>write</em> tasks in 
+terms of the BFM’s existing tasks.</p>
+
+<p>Finally, the BFM module creates an instance of the API implementation class.</p>
+
+<h2 id="python-test-class">Python Test Class</h2>
+<p>Okay, thus far we have a SystemVerilog BFM and a Python API definition for
+calling it. Now, let’s look at the test code that uses that API. You can find the
+full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
+<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
+
+<span class="nd">@hif.api</span>
+<span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@hif.exp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">bfm</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">py_object</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">64</span><span class="p">):</span>
+            <span class="n">wr_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] writing: </span><span class="si">{</span><span class="n">wr_val</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="n">wr_val</span><span class="p">)</span>
+            <span class="n">rd</span> <span class="o">=</span> <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">))</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] readback: </span><span class="si">{</span><span class="n">rd</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">wr_val</span> <span class="o">==</span> <span class="n">rd</span></code></pre></figure>
+
+<p>Our test code is encapsulated in a Python class with an <code class="language-plaintext highlighter-rouge">async</code> method.
+Our test method expects to receive a handle to the BFM API, which it will 
+use to perform reads and writes.</p>
+
+<h2 id="top-level-testbench">Top-level Testbench</h2>
+<p>Finally, let’s take a look at the top-level testbench that pulls it all 
+together. You can find the full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.sv">call_sv_bfm.sv</a></p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">call_sv_bfm</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">call_sv_bfm_pkg</span><span class="o">::*</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+
+    <span class="n">WishboneInitiatorBFM</span>    <span class="n">init_bfm</span><span class="p">(</span>
+        <span class="p">.</span><span class="n">clock</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">reset</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">adr</span><span class="p">(</span><span class="n">adr</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">dat_r</span><span class="p">(</span><span class="n">dat_r</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">dat_w</span><span class="p">(</span><span class="n">dat_w</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">stb</span><span class="p">(</span><span class="n">stb</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">cyc</span><span class="p">(</span><span class="n">cyc</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">ack</span><span class="p">(</span><span class="n">ack</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">we</span><span class="p">(</span><span class="n">we</span><span class="p">)</span>
+    <span class="p">);</span>
+
+    <span class="k">initial</span> <span class="k">begin</span>
+        <span class="k">automatic</span> <span class="n">Test</span> <span class="n">test</span><span class="p">;</span>
+
+        <span class="n">pyhdl_if_start</span><span class="p">();</span>
+
+        <span class="p">#</span><span class="mi">50</span><span class="n">ns</span><span class="p">;</span>
+        <span class="n">reset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="c1">// Create an instance of the Test class and run</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t --&gt; run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
+        <span class="n">test</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">init_bfm</span><span class="p">.</span><span class="n">m_api_obj</span><span class="p">.</span><span class="n">m_obj</span><span class="p">);</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t &lt;-- run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+        <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
+    <span class="k">end</span>
+
+<span class="k">endmodule</span></code></pre></figure>
+
+<p>The top-level testbench instances the BFM. This results in the BFM creating an
+instance of the Python class that can be used to call the BFM. The result is 
+a SystemVerilog class that holds a handle to the corresponding Python class.</p>
+
+<p>The top-level ‘initial’ block in the test module creates an instance of the
+<code class="language-plaintext highlighter-rouge">Test</code> Python class. As with the BFM, the result is a SystemVerilog class
+that holds a handle to the matching Python class.</p>
+
+<p>Finally, we call the <code class="language-plaintext highlighter-rouge">run</code> method on the Test class and pass a handle to the
+BFM’s Python class. The run method will, of course, call back into 
+SystemVerilog to invoke the BFM’s methods.</p>
+
+<h2 id="summary">Summary</h2>
+<p>We’ve quickly walked through an example of integrating Python and SystemVerilog
+such that we can implement Python methods that make task calls into the simulator.
+This can allow us to either quickly graft some Python onto am existing BFM we 
+have in our testbench. It could allow us to easily add an existing SystemVerilog
+BFM to our existing cocotb Python testbench and call it from our Python tests.
+There are, of course, more applications and usecases for PyHDL-IF. We’ll look at those
+in future posts.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://www.cocotb.org">cocotb</a>,</li>
+  <li><a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF library</a></li>
+</ul>
 
 </div>
 

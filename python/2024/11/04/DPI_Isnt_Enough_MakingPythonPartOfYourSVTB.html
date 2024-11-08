@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      DPI Isn't Enough: Making Python Part of Your SV Testbench &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2024</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2024</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn't Enough: Making Python Part of Your SV Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/10/31/OfRegisters_and_Standards.html">Of Register Models and Standards</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">Relating Actions with Dataflow Part2 -- Parallelism</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">Interacting with Devices via PSS Registers</a></li>
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <div class="hbox">
+        <div class="image">
+            <a href="https://bitsbytesgates.com/feed.xml"><img src="https://bitsbytesgates.com/imgs/rss_16_16.png"/></a>
+        </div>
+        <div class="text">
+            <a href="https://bitsbytesgates.com/feed.xml">RSS Feed</a>
+        </div>
+    </div>
+    <br/>
+    <p>
+        Subscribe to Bits, Bytes, and Gates
+    </p>
+    
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+
+    <p>
+      &copy; 2014-2024 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      DPI Isn't Enough: Making Python Part of Your SV Testbench &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+
+  <body>
+
+
+  <div class="post">
+    <h1 class="post-title">DPI Isn't Enough: Making Python Part of Your SV Testbench</h1>
+    <span class="post-date">04 Nov 2024</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/11/DPI_Isnt_Enough_splash.png" /> 
+</p>
+
+<p>I’ve been using Python for verification since early 2019 for personal projects,
+and have found both the language and the rich ecosystem of general and
+special-purpose libraries to be incredibly helpful in quickly and efficiently 
+bringing up a testbench environment. <a href="https://www.cocotb.org">cocotb</a>, 
+the most popular integration between Python and HDL simulators, integrates with 
+the simulator at the signal level. This isn’t a problem as long as you fully adopt 
+Python as your testbench
+methodology and implement everything in Python – from test scenario down to BFMs 
+interacting with signals. Sometimes this is the case, but often we have an existing
+SystemVerilog environment that we’d like to mix some Python into.  We might have an 
+existing BFM implemented in SystemVerilog that we’d like to call from Python. 
+We might have an existing UVM environment from which we want to call a Python library.</p>
+
+<p>SystemVerilog simulators support the Direct Procedure Interface (DPI), of course,
+which allows SystemVerilog to call C code and for C code to call SystemVerilog.
+Unfortunately, DPI on its own, doesn’t provide the features that we need for 
+a fully-featured integration between Python and a HDL simulation. As you might
+surmise, though, I’m about to describe a library 
+(<a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF</a>) that fills in the missing pieces.
+Before we get there, though, let’s have a look at how we’d like to interact
+with Python in a SystemVerilog testbench</p>
+
+<!--more-->
+
+<h1 id="using-python-from-sv-and-vice-versa">Using Python from SV and Vice Versa</h1>
+
+<h2 id="calling-python-from-sv">Calling Python from SV</h2>
+
+<p>Requirements:</p>
+<ul>
+  <li>Be able to keep things dynamic
+    <ul>
+      <li>Don’t require any Python library-specific SV code in order to use the library</li>
+      <li>Be able to look up Python elements by name, etc</li>
+    </ul>
+  </li>
+  <li>Ideally, have some utilities on the SV side to make this easier</li>
+</ul>
+
+<p>This is actually pretty easy, since the CPython interpreter has a C API. 
+If we expose the C API via SystemVerilog DPI, we can make the same calls from
+SystemVerilog that we would make from a C/C++ application. The C API
+is fairly low-level and detailed, but we can always add a layer of SystemVerilog
+utility classes on top.</p>
+
+<p>This type of integration works well for using Python libraries to access 
+data (ie JSON, YAML, etc), when we want to manipulate data using a library
+like Pandas, or when we want to use a Python library to generate reference
+data. In other words, as long as our SV call to Python returns immediately.</p>
+
+<h2 id="calling-sv-from-python">Calling SV from Python</h2>
+
+<p>Python gets much more interesting – and useful – in a SystemVerilog 
+testbench when a Python method call from SystemVerilog can 
+consume simulation time.</p>
+
+<p>This allows us to implement active elements of a our testbench, 
+such as tests, in Python. It also allows us to call existing
+testbench elements, such Bus Functional Models (BFMs), from Python.</p>
+
+<p>This usecase is where SystemVerilog DPI poses some technical challenges. 
+Both SystemVerilog and Python implement cooperative multi-threading, 
+Unfortunately, the requirements that they place on how threaded behavior 
+interacts with the outside world (and vice versa) prevent cross-calling
+in a ‘blocking’ manner between the two languages.</p>
+
+<h2 id="additional-requirements">Additional Requirements</h2>
+
+<p>Beyond the raw capability to cross-call between SystemVerilog and Python,
+there a few additional requirements that vastly simplify the ability
+to create reusable infrastructure.</p>
+<ul>
+  <li>Reusable functionality should be implemented by Python and SystemVerilog
+code only. Application-specific DPI C code brings platform dependencies
+and exposes us to implementation details of how different simulators 
+deal implement DPI. These are things you want to deal with as infrequently 
+as possible, and certainly not every time you add a new Python+SV library.</li>
+  <li>Any generated code should be, at most, application-specific. Specifically,
+the end user shouldn’t need to re-generate application-specific code.</li>
+</ul>
+
+<h1 id="pyhdl-if-package">PyHDL-IF Package</h1>
+
+<div class="mermaid" align="center">
+block-beta
+columns 1
+  block:UICode
+  columns 1
+    Title["App-Specific Code"]
+    style Title fill:transparent,stroke:transparent
+    block:UICodeLanguages
+        UIPython["Python"]
+        UIEmpty["Spacer"]
+        style UIEmpty fill:transparent,stroke:transparent,color:transparent
+        UISystemVerilog["SystemVerilog"]
+    end
+  end
+  block:Codegen
+  columns 1
+    block:CodegenI
+      CodegenM1["CodegenM1"]
+      CodegenPad["CodegenPad"]
+      CodegenM2["CodegenM2"]
+      style CodegenM1 fill:transparent,stroke:transparent,color:transparent
+      style CodegenPad fill:transparent,stroke:transparent,color:transparent
+      style CodegenM2 fill:transparent,stroke:transparent,color:transparent
+    end
+    CodegenTitle["Code Generator"]
+    style CodegenTitle fill:transparent,stroke:transparent
+  end
+  UIPython --&gt; CodegenM1
+  CodegenM2 --&gt; UISystemVerilog
+  block:Library
+  columns 1
+    block:LibraryI
+      LibraryPy["Python"]
+      LibraryDpi["DPI"]
+      LibrarySV["SystemVerilog"]
+    end
+    LibraryTitle["Core PyHDL-IF Library"]
+    style LibraryTitle fill:transparent,stroke:transparent
+  end
+</div>
+
+<p>With those use models and requirements in mind, let’s take a look at the
+PyHDL-IF library. This library is designed to implement the low-level
+details of interfacing between Python and SystemVerilog at the 
+method-call level, such that you can focus on writing SystemVerilog
+and Python and ignore the low-level details implemented in C.</p>
+
+<p>The PyHDL-IF package has several components, but the two most-relevant
+ones for us are shown in the diagram above.
+PyHDL-IF provides a SystemVerilog API for calling into Python, and
+Python and DPI libraries to support calling back into SystemVerilog 
+from Python. It also provides a SystemVerilog code generator to create
+SystemVerilog class APIs to simplify the process of cross-calling 
+between the two languages.</p>
+
+<h1 id="an-example">An Example</h1>
+<p>To better understand all of this, let’s walk through an example. You can find 
+the full code of this example here: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm">call_sv_bfm example</a></p>
+
+<div class="mermaid" align="center">
+block-beta
+block:Outer
+columns 1
+  block:Inner
+  columns 2
+    block:Python
+    columns 1
+      PySeq(["Python Sequence"])
+      PyPad1["Python Pad"]
+      PyPad2["Python Pad"]
+      PyTitle["Python"]
+      style PyTitle fill:transparent,stroke:transparent
+      style PyPad1 fill:transparent,stroke:transparent,color:transparent
+      style PyPad2 fill:transparent,stroke:transparent,color:transparent
+    end
+    block:SvTB
+    columns 1
+      WbBfm["Wishbone BFM"]
+      SvPad["Pad"]
+      Init["Initial Block"]
+      SvTbTitle["SystemVerilog TB"]
+      style SvTbTitle fill:transparent,stroke:transparent
+      style SvPad fill:transparent,stroke:transparent,color:transparent
+    end
+
+    Init --&gt; PySeq
+    PySeq --&gt; WbBfm
+  end
+end
+</div>
+
+<p>Here’s a block diagram of what’s happening. We have a SystemVerilog testbench
+that contains an instance of a Wishbone BFM written in SystemVerilog. Our
+goal is to write a test in Python that will call tasks in the BFM. We want
+to start that Python test from SystemVerilog as well.</p>
+
+<p>Let’s dig into some details on how this all fits together.</p>
+
+<h2 id="python-bfm-interface">Python BFM Interface</h2>
+<p>Let’s start with the Python interface to the Wishbone BFM. You can find the full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
+<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
+
+<span class="nd">@hif.api</span>
+<span class="k">class</span> <span class="nc">WishboneInitiator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@hif.imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">data</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@hif.imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">:</span>
+        <span class="k">pass</span></code></pre></figure>
+
+<p>A class decorated with the <em>api</em> decorator specifies a cross-language
+API. Methods within that class that are decorated with <em>import</em> or <em>export</em>
+decorators support cross-language calling.</p>
+
+<p>Methods are described with respect to Python:</p>
+<ul>
+  <li>When an <em>Import</em> method is called from Python, the matching 
+SystemVerilog method is called</li>
+  <li>When an <em>Export</em> method is called from SystemVerilog, the 
+matching Python method is called.</li>
+</ul>
+
+<p>Both Python and SystemVerilog have special rules about coroutine methods.
+In both languages, a coroutine method can call another coroutine method 
+or a non-coroutine method. However, a non-coroutine method cannot invoke
+a coroutine method. It’s critical to keep this aligned between SystemVerilog
+and Python:</p>
+<ul>
+  <li>An <em>async</em> Python method matches with a SystemVerilog <em>task</em></li>
+  <li>A plain Python method matches with a SystemVerilog <em>function</em></li>
+</ul>
+
+<p>The API class, with it’s decorators is used for two purposes. One, somewhat
+obviously, is to implement the Python side of a cross-language API. The
+other is to generate SystemVerilog to implement the SystemVerilog portion 
+of the API.</p>
+
+<h2 id="systemverilog-bfm">SystemVerilog BFM</h2>
+<p>Let’s move on and take a look at the Wishbone BFM that we will access 
+using the API class that we’ve defined above. You can find the full code here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/wb_init_bfm.sv">wb_init_bfm.sv</a></p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">WishboneInitiatorBFM</span><span class="p">(</span>
+    <span class="kt">input</span>           <span class="n">clock</span><span class="p">,</span>
+    <span class="kt">input</span>           <span class="n">reset</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">adr</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">dat_w</span><span class="p">,</span>
+    <span class="kt">input</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">dat_r</span><span class="p">,</span>
+    <span class="kt">output</span>                  <span class="n">cyc</span><span class="p">,</span>
+    <span class="kt">input</span>                   <span class="n">err</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">sel</span><span class="p">,</span>
+    <span class="kt">output</span>                  <span class="n">stb</span><span class="p">,</span>
+    <span class="kt">input</span>                   <span class="n">ack</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span>              <span class="n">we</span>
+<span class="p">);</span>
+<span class="c1">// ...</span>
+
+    <span class="k">task</span> <span class="n">bfm_write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">adr_v</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">dat_v</span><span class="p">);</span>
+        <span class="c1">// ...</span>
+        <span class="c1">// Works with the state machine to perform a write</span>
+    <span class="k">endtask</span>
+
+    <span class="c1">// ...</span>
+
+        <span class="kt">class</span> <span class="n">WishboneInitiatorImpl</span> <span class="k">extends</span> <span class="n">WishboneInitiator</span><span class="p">;</span>
+        <span class="kt">virtual</span> <span class="k">task</span> <span class="nb">write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">data</span><span class="p">);</span>
+            <span class="n">bfm_write</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+        <span class="k">endtask</span>
+
+        <span class="kt">virtual</span> <span class="k">task</span> <span class="n">read</span><span class="p">(</span>
+            <span class="kt">output</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">retval</span><span class="p">,</span> <span class="kt">input</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">);</span>
+            <span class="n">bfm_read</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
+        <span class="k">endtask</span>
+
+    <span class="k">endclass</span>
+
+    <span class="n">WishboneInitiatorImpl</span>       <span class="n">m_api_obj</span><span class="p">;</span>
+
+    <span class="c1">// Register ourselves with the PyHDL-IF object registry</span>
+    <span class="k">initial</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">init</span>
+        <span class="n">m_api_obj</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
+    <span class="k">end</span>
+
+    <span class="c1">// ...</span>
+<span class="k">endmodule</span></code></pre></figure>
+
+<p>Key portions of the BFM interface code are shown above. The BFM defines 
+<em>bfm_read</em> and <em>bfm_write</em> tasks that are used to drive read and write operations
+via the signal-level interface.</p>
+
+<p>The BFM defines a local class (<em>WishboneInitiatorImpl</em>) that inherits from 
+a class (<em>WishboneInitiator</em>) that is generated from the Python class specification
+of the API. The derived class here implements the <em>read</em> and <em>write</em> tasks in 
+terms of the BFM’s existing tasks.</p>
+
+<p>Finally, the BFM module creates an instance of the API implementation class.</p>
+
+<h2 id="python-test-class">Python Test Class</h2>
+<p>Okay, thus far we have a SystemVerilog BFM and a Python API definition for
+calling it. Now, let’s look at the test code that uses that API. You can find the
+full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
+<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
+
+<span class="nd">@hif.api</span>
+<span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@hif.exp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">bfm</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">py_object</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">64</span><span class="p">):</span>
+            <span class="n">wr_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] writing: </span><span class="si">{</span><span class="n">wr_val</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="n">wr_val</span><span class="p">)</span>
+            <span class="n">rd</span> <span class="o">=</span> <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">))</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] readback: </span><span class="si">{</span><span class="n">rd</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">wr_val</span> <span class="o">==</span> <span class="n">rd</span></code></pre></figure>
+
+<p>Our test code is encapsulated in a Python class with an <code class="language-plaintext highlighter-rouge">async</code> method.
+Our test method expects to receive a handle to the BFM API, which it will 
+use to perform reads and writes.</p>
+
+<h2 id="top-level-testbench">Top-level Testbench</h2>
+<p>Finally, let’s take a look at the top-level testbench that pulls it all 
+together. You can find the full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.sv">call_sv_bfm.sv</a></p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">call_sv_bfm</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">call_sv_bfm_pkg</span><span class="o">::*</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+
+    <span class="n">WishboneInitiatorBFM</span>    <span class="n">init_bfm</span><span class="p">(</span>
+        <span class="p">.</span><span class="n">clock</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">reset</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">adr</span><span class="p">(</span><span class="n">adr</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">dat_r</span><span class="p">(</span><span class="n">dat_r</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">dat_w</span><span class="p">(</span><span class="n">dat_w</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">stb</span><span class="p">(</span><span class="n">stb</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">cyc</span><span class="p">(</span><span class="n">cyc</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">ack</span><span class="p">(</span><span class="n">ack</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">we</span><span class="p">(</span><span class="n">we</span><span class="p">)</span>
+    <span class="p">);</span>
+
+    <span class="k">initial</span> <span class="k">begin</span>
+        <span class="k">automatic</span> <span class="n">Test</span> <span class="n">test</span><span class="p">;</span>
+
+        <span class="n">pyhdl_if_start</span><span class="p">();</span>
+
+        <span class="p">#</span><span class="mi">50</span><span class="n">ns</span><span class="p">;</span>
+        <span class="n">reset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="c1">// Create an instance of the Test class and run</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t --&gt; run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
+        <span class="n">test</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">init_bfm</span><span class="p">.</span><span class="n">m_api_obj</span><span class="p">.</span><span class="n">m_obj</span><span class="p">);</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t &lt;-- run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+        <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
+    <span class="k">end</span>
+
+<span class="k">endmodule</span></code></pre></figure>
+
+<p>The top-level testbench instances the BFM. This results in the BFM creating an
+instance of the Python class that can be used to call the BFM. The result is 
+a SystemVerilog class that holds a handle to the corresponding Python class.</p>
+
+<p>The top-level ‘initial’ block in the test module creates an instance of the
+<code class="language-plaintext highlighter-rouge">Test</code> Python class. As with the BFM, the result is a SystemVerilog class
+that holds a handle to the matching Python class.</p>
+
+<p>Finally, we call the <code class="language-plaintext highlighter-rouge">run</code> method on the Test class and pass a handle to the
+BFM’s Python class. The run method will, of course, call back into 
+SystemVerilog to invoke the BFM’s methods.</p>
+
+<h2 id="summary">Summary</h2>
+<p>We’ve quickly walked through an example of integrating Python and SystemVerilog
+such that we can implement Python methods that make task calls into the simulator.
+This can allow us to either quickly graft some Python onto am existing BFM we 
+have in our testbench. It could allow us to easily add an existing SystemVerilog
+BFM to our existing cocotb Python testbench and call it from our Python tests.
+There are, of course, more applications and usecases for PyHDL-IF. We’ll look at those
+in future posts.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://www.cocotb.org">cocotb</a>,</li>
+  <li><a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF library</a></li>
+</ul>
+
+
+  </div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2024 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
+  
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

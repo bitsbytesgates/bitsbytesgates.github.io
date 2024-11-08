@@ -1,4 +1,387 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2024-10-16T19:57:38+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Of Register Models and Standards</title><link href="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html" rel="alternate" type="text/html" title="Of Register Models and Standards" /><published>2023-10-31T00:00:00+00:00</published><updated>2023-10-31T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2024-11-08T01:46:12+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</title><link href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html" rel="alternate" type="text/html" title="DPI Isn’t Enough: Making Python Part of Your SV Testbench" /><published>2024-11-04T00:00:00+00:00</published><updated>2024-11-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html"><![CDATA[<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/11/DPI_Isnt_Enough_splash.png" /> 
+</p>
+
+<p>I’ve been using Python for verification since early 2019 for personal projects,
+and have found both the language and the rich ecosystem of general and
+special-purpose libraries to be incredibly helpful in quickly and efficiently 
+bringing up a testbench environment. <a href="https://www.cocotb.org">cocotb</a>, 
+the most popular integration between Python and HDL simulators, integrates with 
+the simulator at the signal level. This isn’t a problem as long as you fully adopt 
+Python as your testbench
+methodology and implement everything in Python – from test scenario down to BFMs 
+interacting with signals. Sometimes this is the case, but often we have an existing
+SystemVerilog environment that we’d like to mix some Python into.  We might have an 
+existing BFM implemented in SystemVerilog that we’d like to call from Python. 
+We might have an existing UVM environment from which we want to call a Python library.</p>
+
+<p>SystemVerilog simulators support the Direct Procedure Interface (DPI), of course,
+which allows SystemVerilog to call C code and for C code to call SystemVerilog.
+Unfortunately, DPI on its own, doesn’t provide the features that we need for 
+a fully-featured integration between Python and a HDL simulation. As you might
+surmise, though, I’m about to describe a library 
+(<a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF</a>) that fills in the missing pieces.
+Before we get there, though, let’s have a look at how we’d like to interact
+with Python in a SystemVerilog testbench</p>
+
+<!--more-->
+
+<h1 id="using-python-from-sv-and-vice-versa">Using Python from SV and Vice Versa</h1>
+
+<h2 id="calling-python-from-sv">Calling Python from SV</h2>
+
+<p>Requirements:</p>
+<ul>
+  <li>Be able to keep things dynamic
+    <ul>
+      <li>Don’t require any Python library-specific SV code in order to use the library</li>
+      <li>Be able to look up Python elements by name, etc</li>
+    </ul>
+  </li>
+  <li>Ideally, have some utilities on the SV side to make this easier</li>
+</ul>
+
+<p>This is actually pretty easy, since the CPython interpreter has a C API. 
+If we expose the C API via SystemVerilog DPI, we can make the same calls from
+SystemVerilog that we would make from a C/C++ application. The C API
+is fairly low-level and detailed, but we can always add a layer of SystemVerilog
+utility classes on top.</p>
+
+<p>This type of integration works well for using Python libraries to access 
+data (ie JSON, YAML, etc), when we want to manipulate data using a library
+like Pandas, or when we want to use a Python library to generate reference
+data. In other words, as long as our SV call to Python returns immediately.</p>
+
+<h2 id="calling-sv-from-python">Calling SV from Python</h2>
+
+<p>Python gets much more interesting – and useful – in a SystemVerilog 
+testbench when a Python method call from SystemVerilog can 
+consume simulation time.</p>
+
+<p>This allows us to implement active elements of a our testbench, 
+such as tests, in Python. It also allows us to call existing
+testbench elements, such Bus Functional Models (BFMs), from Python.</p>
+
+<p>This usecase is where SystemVerilog DPI poses some technical challenges. 
+Both SystemVerilog and Python implement cooperative multi-threading, 
+Unfortunately, the requirements that they place on how threaded behavior 
+interacts with the outside world (and vice versa) prevent cross-calling
+in a ‘blocking’ manner between the two languages.</p>
+
+<h2 id="additional-requirements">Additional Requirements</h2>
+
+<p>Beyond the raw capability to cross-call between SystemVerilog and Python,
+there a few additional requirements that vastly simplify the ability
+to create reusable infrastructure.</p>
+<ul>
+  <li>Reusable functionality should be implemented by Python and SystemVerilog
+code only. Application-specific DPI C code brings platform dependencies
+and exposes us to implementation details of how different simulators 
+deal implement DPI. These are things you want to deal with as infrequently 
+as possible, and certainly not every time you add a new Python+SV library.</li>
+  <li>Any generated code should be, at most, application-specific. Specifically,
+the end user shouldn’t need to re-generate application-specific code.</li>
+</ul>
+
+<h1 id="pyhdl-if-package">PyHDL-IF Package</h1>
+
+<div class="mermaid" align="center">
+block-beta
+columns 1
+  block:UICode
+  columns 1
+    Title["App-Specific Code"]
+    style Title fill:transparent,stroke:transparent
+    block:UICodeLanguages
+        UIPython["Python"]
+        UIEmpty["Spacer"]
+        style UIEmpty fill:transparent,stroke:transparent,color:transparent
+        UISystemVerilog["SystemVerilog"]
+    end
+  end
+  block:Codegen
+  columns 1
+    block:CodegenI
+      CodegenM1["CodegenM1"]
+      CodegenPad["CodegenPad"]
+      CodegenM2["CodegenM2"]
+      style CodegenM1 fill:transparent,stroke:transparent,color:transparent
+      style CodegenPad fill:transparent,stroke:transparent,color:transparent
+      style CodegenM2 fill:transparent,stroke:transparent,color:transparent
+    end
+    CodegenTitle["Code Generator"]
+    style CodegenTitle fill:transparent,stroke:transparent
+  end
+  UIPython --&gt; CodegenM1
+  CodegenM2 --&gt; UISystemVerilog
+  block:Library
+  columns 1
+    block:LibraryI
+      LibraryPy["Python"]
+      LibraryDpi["DPI"]
+      LibrarySV["SystemVerilog"]
+    end
+    LibraryTitle["Core PyHDL-IF Library"]
+    style LibraryTitle fill:transparent,stroke:transparent
+  end
+</div>
+
+<p>With those use models and requirements in mind, let’s take a look at the
+PyHDL-IF library. This library is designed to implement the low-level
+details of interfacing between Python and SystemVerilog at the 
+method-call level, such that you can focus on writing SystemVerilog
+and Python and ignore the low-level details implemented in C.</p>
+
+<p>The PyHDL-IF package has several components, but the two most-relevant
+ones for us are shown in the diagram above.
+PyHDL-IF provides a SystemVerilog API for calling into Python, and
+Python and DPI libraries to support calling back into SystemVerilog 
+from Python. It also provides a SystemVerilog code generator to create
+SystemVerilog class APIs to simplify the process of cross-calling 
+between the two languages.</p>
+
+<h1 id="an-example">An Example</h1>
+<p>To better understand all of this, let’s walk through an example. You can find 
+the full code of this example here: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm">call_sv_bfm example</a></p>
+
+<div class="mermaid" align="center">
+block-beta
+block:Outer
+columns 1
+  block:Inner
+  columns 2
+    block:Python
+    columns 1
+      PySeq(["Python Sequence"])
+      PyPad1["Python Pad"]
+      PyPad2["Python Pad"]
+      PyTitle["Python"]
+      style PyTitle fill:transparent,stroke:transparent
+      style PyPad1 fill:transparent,stroke:transparent,color:transparent
+      style PyPad2 fill:transparent,stroke:transparent,color:transparent
+    end
+    block:SvTB
+    columns 1
+      WbBfm["Wishbone BFM"]
+      SvPad["Pad"]
+      Init["Initial Block"]
+      SvTbTitle["SystemVerilog TB"]
+      style SvTbTitle fill:transparent,stroke:transparent
+      style SvPad fill:transparent,stroke:transparent,color:transparent
+    end
+
+    Init --&gt; PySeq
+    PySeq --&gt; WbBfm
+  end
+end
+</div>
+
+<p>Here’s a block diagram of what’s happening. We have a SystemVerilog testbench
+that contains an instance of a Wishbone BFM written in SystemVerilog. Our
+goal is to write a test in Python that will call tasks in the BFM. We want
+to start that Python test from SystemVerilog as well.</p>
+
+<p>Let’s dig into some details on how this all fits together.</p>
+
+<h2 id="python-bfm-interface">Python BFM Interface</h2>
+<p>Let’s start with the Python interface to the Wishbone BFM. You can find the full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
+<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
+
+<span class="nd">@hif.api</span>
+<span class="k">class</span> <span class="nc">WishboneInitiator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@hif.imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">data</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@hif.imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">:</span>
+        <span class="k">pass</span></code></pre></figure>
+
+<p>A class decorated with the <em>api</em> decorator specifies a cross-language
+API. Methods within that class that are decorated with <em>import</em> or <em>export</em>
+decorators support cross-language calling.</p>
+
+<p>Methods are described with respect to Python:</p>
+<ul>
+  <li>When an <em>Import</em> method is called from Python, the matching 
+SystemVerilog method is called</li>
+  <li>When an <em>Export</em> method is called from SystemVerilog, the 
+matching Python method is called.</li>
+</ul>
+
+<p>Both Python and SystemVerilog have special rules about coroutine methods.
+In both languages, a coroutine method can call another coroutine method 
+or a non-coroutine method. However, a non-coroutine method cannot invoke
+a coroutine method. It’s critical to keep this aligned between SystemVerilog
+and Python:</p>
+<ul>
+  <li>An <em>async</em> Python method matches with a SystemVerilog <em>task</em></li>
+  <li>A plain Python method matches with a SystemVerilog <em>function</em></li>
+</ul>
+
+<p>The API class, with it’s decorators is used for two purposes. One, somewhat
+obviously, is to implement the Python side of a cross-language API. The
+other is to generate SystemVerilog to implement the SystemVerilog portion 
+of the API.</p>
+
+<h2 id="systemverilog-bfm">SystemVerilog BFM</h2>
+<p>Let’s move on and take a look at the Wishbone BFM that we will access 
+using the API class that we’ve defined above. You can find the full code here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/wb_init_bfm.sv">wb_init_bfm.sv</a></p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">WishboneInitiatorBFM</span><span class="p">(</span>
+    <span class="kt">input</span>           <span class="n">clock</span><span class="p">,</span>
+    <span class="kt">input</span>           <span class="n">reset</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">adr</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">dat_w</span><span class="p">,</span>
+    <span class="kt">input</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">dat_r</span><span class="p">,</span>
+    <span class="kt">output</span>                  <span class="n">cyc</span><span class="p">,</span>
+    <span class="kt">input</span>                   <span class="n">err</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">sel</span><span class="p">,</span>
+    <span class="kt">output</span>                  <span class="n">stb</span><span class="p">,</span>
+    <span class="kt">input</span>                   <span class="n">ack</span><span class="p">,</span>
+    <span class="kt">output</span> <span class="kt">reg</span>              <span class="n">we</span>
+<span class="p">);</span>
+<span class="c1">// ...</span>
+
+    <span class="k">task</span> <span class="n">bfm_write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">adr_v</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">dat_v</span><span class="p">);</span>
+        <span class="c1">// ...</span>
+        <span class="c1">// Works with the state machine to perform a write</span>
+    <span class="k">endtask</span>
+
+    <span class="c1">// ...</span>
+
+        <span class="kt">class</span> <span class="n">WishboneInitiatorImpl</span> <span class="k">extends</span> <span class="n">WishboneInitiator</span><span class="p">;</span>
+        <span class="kt">virtual</span> <span class="k">task</span> <span class="nb">write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">data</span><span class="p">);</span>
+            <span class="n">bfm_write</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+        <span class="k">endtask</span>
+
+        <span class="kt">virtual</span> <span class="k">task</span> <span class="n">read</span><span class="p">(</span>
+            <span class="kt">output</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">retval</span><span class="p">,</span> <span class="kt">input</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">);</span>
+            <span class="n">bfm_read</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
+        <span class="k">endtask</span>
+
+    <span class="k">endclass</span>
+
+    <span class="n">WishboneInitiatorImpl</span>       <span class="n">m_api_obj</span><span class="p">;</span>
+
+    <span class="c1">// Register ourselves with the PyHDL-IF object registry</span>
+    <span class="k">initial</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">init</span>
+        <span class="n">m_api_obj</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
+    <span class="k">end</span>
+
+    <span class="c1">// ...</span>
+<span class="k">endmodule</span></code></pre></figure>
+
+<p>Key portions of the BFM interface code are shown above. The BFM defines 
+<em>bfm_read</em> and <em>bfm_write</em> tasks that are used to drive read and write operations
+via the signal-level interface.</p>
+
+<p>The BFM defines a local class (<em>WishboneInitiatorImpl</em>) that inherits from 
+a class (<em>WishboneInitiator</em>) that is generated from the Python class specification
+of the API. The derived class here implements the <em>read</em> and <em>write</em> tasks in 
+terms of the BFM’s existing tasks.</p>
+
+<p>Finally, the BFM module creates an instance of the API implementation class.</p>
+
+<h2 id="python-test-class">Python Test Class</h2>
+<p>Okay, thus far we have a SystemVerilog BFM and a Python API definition for
+calling it. Now, let’s look at the test code that uses that API. You can find the
+full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
+<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
+
+<span class="nd">@hif.api</span>
+<span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@hif.exp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">bfm</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">py_object</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">64</span><span class="p">):</span>
+            <span class="n">wr_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] writing: </span><span class="si">{</span><span class="n">wr_val</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="n">wr_val</span><span class="p">)</span>
+            <span class="n">rd</span> <span class="o">=</span> <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">))</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] readback: </span><span class="si">{</span><span class="n">rd</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">wr_val</span> <span class="o">==</span> <span class="n">rd</span></code></pre></figure>
+
+<p>Our test code is encapsulated in a Python class with an <code class="language-plaintext highlighter-rouge">async</code> method.
+Our test method expects to receive a handle to the BFM API, which it will 
+use to perform reads and writes.</p>
+
+<h2 id="top-level-testbench">Top-level Testbench</h2>
+<p>Finally, let’s take a look at the top-level testbench that pulls it all 
+together. You can find the full source here:
+<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.sv">call_sv_bfm.sv</a></p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">call_sv_bfm</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">call_sv_bfm_pkg</span><span class="o">::*</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+
+    <span class="n">WishboneInitiatorBFM</span>    <span class="n">init_bfm</span><span class="p">(</span>
+        <span class="p">.</span><span class="n">clock</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">reset</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">adr</span><span class="p">(</span><span class="n">adr</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">dat_r</span><span class="p">(</span><span class="n">dat_r</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">dat_w</span><span class="p">(</span><span class="n">dat_w</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">stb</span><span class="p">(</span><span class="n">stb</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">cyc</span><span class="p">(</span><span class="n">cyc</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">ack</span><span class="p">(</span><span class="n">ack</span><span class="p">),</span>
+        <span class="p">.</span><span class="n">we</span><span class="p">(</span><span class="n">we</span><span class="p">)</span>
+    <span class="p">);</span>
+
+    <span class="k">initial</span> <span class="k">begin</span>
+        <span class="k">automatic</span> <span class="n">Test</span> <span class="n">test</span><span class="p">;</span>
+
+        <span class="n">pyhdl_if_start</span><span class="p">();</span>
+
+        <span class="p">#</span><span class="mi">50</span><span class="n">ns</span><span class="p">;</span>
+        <span class="n">reset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="c1">// Create an instance of the Test class and run</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t --&gt; run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
+        <span class="n">test</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">init_bfm</span><span class="p">.</span><span class="n">m_api_obj</span><span class="p">.</span><span class="n">m_obj</span><span class="p">);</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t &lt;-- run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
+        <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
+    <span class="k">end</span>
+
+<span class="k">endmodule</span></code></pre></figure>
+
+<p>The top-level testbench instances the BFM. This results in the BFM creating an
+instance of the Python class that can be used to call the BFM. The result is 
+a SystemVerilog class that holds a handle to the corresponding Python class.</p>
+
+<p>The top-level ‘initial’ block in the test module creates an instance of the
+<code class="language-plaintext highlighter-rouge">Test</code> Python class. As with the BFM, the result is a SystemVerilog class
+that holds a handle to the matching Python class.</p>
+
+<p>Finally, we call the <code class="language-plaintext highlighter-rouge">run</code> method on the Test class and pass a handle to the
+BFM’s Python class. The run method will, of course, call back into 
+SystemVerilog to invoke the BFM’s methods.</p>
+
+<h2 id="summary">Summary</h2>
+<p>We’ve quickly walked through an example of integrating Python and SystemVerilog
+such that we can implement Python methods that make task calls into the simulator.
+This can allow us to either quickly graft some Python onto am existing BFM we 
+have in our testbench. It could allow us to easily add an existing SystemVerilog
+BFM to our existing cocotb Python testbench and call it from our Python tests.
+There are, of course, more applications and usecases for PyHDL-IF. We’ll look at those
+in future posts.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://www.cocotb.org">cocotb</a>,</li>
+  <li><a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF library</a></li>
+</ul>]]></content><author><name></name></author><category term="Python" /><summary type="html"><![CDATA[I’ve been using Python for verification since early 2019 for personal projects, and have found both the language and the rich ecosystem of general and special-purpose libraries to be incredibly helpful in quickly and efficiently bringing up a testbench environment. cocotb, the most popular integration between Python and HDL simulators, integrates with the simulator at the signal level. This isn’t a problem as long as you fully adopt Python as your testbench methodology and implement everything in Python – from test scenario down to BFMs interacting with signals. Sometimes this is the case, but often we have an existing SystemVerilog environment that we’d like to mix some Python into. We might have an existing BFM implemented in SystemVerilog that we’d like to call from Python. We might have an existing UVM environment from which we want to call a Python library. SystemVerilog simulators support the Direct Procedure Interface (DPI), of course, which allows SystemVerilog to call C code and for C code to call SystemVerilog. Unfortunately, DPI on its own, doesn’t provide the features that we need for a fully-featured integration between Python and a HDL simulation. As you might surmise, though, I’m about to describe a library (PyHDL-IF) that fills in the missing pieces. Before we get there, though, let’s have a look at how we’d like to interact with Python in a SystemVerilog testbench]]></summary></entry><entry><title type="html">Of Register Models and Standards</title><link href="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html" rel="alternate" type="text/html" title="Of Register Models and Standards" /><published>2023-10-31T00:00:00+00:00</published><updated>2023-10-31T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/10/31/OfRegisters_and_Standards.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2023/10/OfRegistersAndStandards_splash.png" />
 </p>
 
@@ -2896,200 +3279,4 @@ that PSS enables actions and components to interact.</p>
 
 <p>In the next post, we will begin to look in more detail at the declarative basis
 of the PSS language. Being, first and foremost, declarative makes PSS a bit 
-different as languages go, but also enables many of its most impressive capabilities.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Complex engineering endeavors require complex calculations. It’s open to debate as to when the first engineering project that required complex calculations occurred. What we do know is that those calculations would have been done by hand. And this state largely remained until the broad availability of the electronic calculator in the 1950s and 1960s, even as engineering projects and the technology we used to accomplish them become more ambitious. Computing Division of the US Veterans Bureau, 1924. Image Courtesy of the Computer History Museum. But this doesn’t mean that “computers” (those individuals performing computations with pen and ink or simple mechanical machines) were left to compute everything from the ground up. Fortunately, books were published containing mathematical tables that provided the pre-computed results of standard trigonometric functions for various input values. The data in these books of mathematical tables would, of course, have been produced laboriously by some other “computer” or “computers” working with pen and paper. But, they were invaluable at increasing the speed with which complex calculations could be completed by hand.]]></summary></entry><entry><title type="html">Automating Bare-Metal Tests with PSS</title><link href="https://bitsbytesgates.com/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html" rel="alternate" type="text/html" title="Automating Bare-Metal Tests with PSS" /><published>2023-02-25T00:00:00+00:00</published><updated>2023-02-25T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/02/25/AutomatingBareMetalTestsWithPSS</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/AutomatingBareMetalSoCTestsWithPSS_splash.png" /> 
-</p>
-<p>As a technologist, it’s tempting to focus on what is new 
-(at least, new to me) – especially when choosing what to write about.
-I’m periodically reminded that there is immense value in returning
-to topics. Returning to a topic might raise awareness with a different
-set of readers, but it’s also highly likely that I’ll learn something
-new about the topic, or that my perspective on the topic will evolve 
-in the process.</p>
-
-<p>This post marks the beginning of just such a “back to basics” series
-that focuses on the <a href="https://www.accellera.org/downloads/standards/portable-stimulus">Accellera Portable Test and Stimulus</a> 
-(PSS) language. PSS is a specification language for modeling behavior 
-to test. It specifically focuses on providing features that help 
-in creating bare-metal software-driven system-level tests. Consequently,
-this ‘Intro to PSS’ series will focus on the task of the bare-metal
-software-driven test writer, and the value PSS provides.</p>
-
-<!--more-->
-
-<h2 id="programming-languages-categories">Programming Languages Categories</h2>
-<p>When it comes to programming languages, there are two big 
-categories: general-purpose programming languages and domain-specific
-programming languages. General-purpose programming languages such
-as C/C++, Java, Python, and Rust are designed to be able to 
-implement any algorithm or behavior. The “any…” part comes 
-with a caveat, of course: any algorithm or behavior given sufficient
-expertise and time.</p>
-
-<p>There are classes of problems that have such
-well-defined expert solutions that it’s considered wasteful
-to actually apply large amounts of expert-programmer 
-resource to create a bespoke solution each time they arise. This is where 
-domain-specific languages (DSL) come into play. A domain-specific language 
-provides a way to capture a problem in a way that a domain expert finds 
-familiar, along with enough information to enable a synthesis tool to 
-produce an optimal implementation in a general-purpose language.</p>
-
-<h2 id="cases-where-dsls-shine">Cases where DSLs shine</h2>
-<p>As you may have guessed, PSS is a domain-specific language. In this case,
-one targeted at capturing system-level test behavior in terms 
-familiar to a domain expert.
-Let’s take a look at another very popular application for domain-specific
-languages to better understand the value and tradeoffs that they provide.</p>
-
-<p>An excellent example of an application of domain-specific languages 
-is building lexical analyzers (lexers) and parsers.  People that 
-define languages think in terms of language grammars – typically
-captured in <a href="https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form">Backus-Naur Form</a> 
-(BNF). For example, here is a snippet of BNF grammar from the PSS 
-language-reference manual.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action_body_item ::=
- activity_declaration
- | override_declaration
- | constraint_declaration
- | action_field_declaration
-</code></pre></div></div>
-
-<p>Coding a parser by hand from this description involves a fair amount of 
-analysis to, for example, identify the keywords that would cause a parser
-to proceed down one branch vs another, and how many tokens of
-‘lookahead’ are needed in each case to disambiguate choices. While these
-are critical implementation decisions, they’re difficult for a human to
-make by hand since they often involve ‘global’ thinking about the whole
-of a sizable language grammar. In other words, not areas of thinking that
-to which the untrained human mind lends itself.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>action_body_item:
- activity_declaration
- | override_declaration
- | constraint_declaration
- | action_field_declaration
- ;
-</code></pre></div></div>
-
-<p>Re-expressing the BNF in the terms of a domain-specific language is an
-almost-trivial exercise for a domain expert in language design. The 
-code snippet above is in <a href="https://www.antlr.org/">ANTLR4</a> format. There 
-are a few small changes in format, and a few things that are conveyed 
-typographically in a printed language grammar are conveyed differently
-to support programmatic processing, but overall the DSL description
-is easy to learn for a domain expert.</p>
-
-<p>By capturing our language grammar in a domain-specific language format,
-we’re able to make use of a parser/lexer builder tool to derive an 
-efficient implementation of a language parser for this language. The 
-parser-builder tool is able to easily and quickly make high-quality
-global optimizations that would have been very time consuming and 
-error-prone for a human to make. And, if we change the grammar at 
-some point, we only need to re-run the the parser-builder tool to derive
-a new (and still optimal) parser implementation.</p>
-
-<p>Looking at a few domain-specific languages, they tend to shine when:</p>
-<ul>
-  <li>There exists a natural (innate or acquired) way for a domain expert to 
-capture a domain problem.</li>
-  <li>Deterministic, automated methods exist to derive an optimized 
-implementation from the domain-specific description</li>
-  <li>There is a significant difference between the best way to describe a 
-problem and the best way to implement it in a general-purpose 
-programming language</li>
-  <li>Achieving a good implementation requires global and/or concurrent 
-optimization.</li>
-</ul>
-
-<h2 id="where-does-bare-metal-testing-fit">Where does Bare-Metal Testing fit?</h2>
-<p>With that in mind, let’s look back at our target application for PSS:
-creation of bare-metal software-driven tests. In a typical 
-system-development flow, development and verification of hardware and
-software proceed on different paths up to a point. Of course, there 
-can be some cross-over in the process, but the time when software
-really starts to run on the hardware for which it is intended is
-once the hardware system is assembled and verified.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/Hw_Sw_VDiagram_640.png" /> 
-</p>
-
-<p>Once a stable hardware-like representation of the hardware system 
-exists, the integration team can really get started on completing
-software for the system. Note that I said “hardware-like”. In many
-cases, this representation of the hardware system will be a hardware
-emulator, or an FPGA prototype. The key is that the representation
-has sufficient stability and performance to support 
-software-development efforts.</p>
-
-<p>Two key factors to a successful hardware/software integration process are 
-maximizing the stability of the hardware platform and having an efficient
-path to reproduce and produce minimized testcases for any bugs found
-by the integration team. The quality, quantity, and flexibility of the
-bare-metal tests used to verify the system-level hardware platform has
-a huge impact on success here.</p>
-
-<h2 id="what-are-bare-metal-tests">What are Bare-Metal Tests?</h2>
-<p>In order to appreciate some of the key benefits that PSS has to offer 
-in creating bare-metal software-driven tests, it’s useful to understand
-a bit more about about the characteristics of bare-metal software tests.</p>
-
-<p>As their name suggests, bare-metal software tests run directly on the
-processor cores of a design. Unlike production software, they don’t 
-run on top of an operating system or real-time operating system (RTOS),
-and consequently don’t have access to services that operating systems
-provide, such as:</p>
-<ul>
-  <li>Dynamic memory allocation</li>
-  <li>Threads and processes</li>
-  <li>Multi-processor scheduling infrastructure</li>
-  <li>Device-driver infrastructure</li>
-</ul>
-
-<p>There are very good reasons that bare-metal tests opt to run directly
-on the hardware and forego the use of an operating system.</p>
-
-<p>Early software-driven integration testing is performed using a hardware
-simulator to provide maximum debug visibility. Simulating a full system
-at RTL is a slow process. Even simple operating systems run a 
-not-insignificant amount of code prior to execution of the application,
-all of which is running very very slowly on a simulated RTL model of 
-a processor. Running bare-metal tests enables running more actual test
-code.</p>
-
-<p>The code that an operating system runs on start-up assumes that a the
-hardware platform is stable. For example, for proper operation, it 
-will require that memory accesses to different regions, and very possibly
-atomic operations, are working. It will require that exceptions and 
-interrupts are stable. Instability in the hardware platform is likely
-to manifest itself in kernel panic, “blue screen of death”, or other 
-generic error signal that is unlikely to point the developer to the
-root cause with any accuracy. We can create much more focused tests
-for ensuring stability in various aspects of the platform that can
-produce much more accurate failure signatures, allowing the developer
-to zero in on the root cause much more quickly.</p>
-
-<p>Finally, writing bare-metal tests gives us much more fine-grained
-control over the hardware. The goal of an OS is to produce an 
-optimal balance between overall throughput, scheduling fairness,
-and other factors such as power consumption. The bare-metal testers
-goal is often to hit corner cases that such a ‘balanced’ approach
-to running code doesn’t lend itself to.</p>
-
-<h2 id="so-how-does-pss-help">So, how does PSS Help?</h2>
-<p>So, we have good reasons for writing our early software-driven 
-tests as bare-metal software. But this doesn’t really make them
-any easier to write. Over the next few posts we will explore how
-the PSS domain-specific language helps to boost test-writing
-productivity, while still enabling us to derive lean and mean
-bare-metal software-driven tests. We will see how PSS processing
-tools bridge the abstraction gap between a PSS-level description
-and good bare-metal implementation code. We will see how a PSS
-description enables PSS processing tools to make good global
-optimizations that are difficult and error-prone for humans. It
-remains to be seen whether PSS is considered to provide a natural 
-(innate or acquired) way to capture system-level tests. I hope 
-you’ll have the information to assess this for yourself by the
-end of this series.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As a technologist, it’s tempting to focus on what is new (at least, new to me) – especially when choosing what to write about. I’m periodically reminded that there is immense value in returning to topics. Returning to a topic might raise awareness with a different set of readers, but it’s also highly likely that I’ll learn something new about the topic, or that my perspective on the topic will evolve in the process. This post marks the beginning of just such a “back to basics” series that focuses on the Accellera Portable Test and Stimulus (PSS) language. PSS is a specification language for modeling behavior to test. It specifically focuses on providing features that help in creating bare-metal software-driven system-level tests. Consequently, this ‘Intro to PSS’ series will focus on the task of the bare-metal software-driven test writer, and the value PSS provides.]]></summary></entry></feed>
+different as languages go, but also enables many of its most impressive capabilities.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Complex engineering endeavors require complex calculations. It’s open to debate as to when the first engineering project that required complex calculations occurred. What we do know is that those calculations would have been done by hand. And this state largely remained until the broad availability of the electronic calculator in the 1950s and 1960s, even as engineering projects and the technology we used to accomplish them become more ambitious. Computing Division of the US Veterans Bureau, 1924. Image Courtesy of the Computer History Museum. But this doesn’t mean that “computers” (those individuals performing computations with pen and ink or simple mechanical machines) were left to compute everything from the ground up. Fortunately, books were published containing mathematical tables that provided the pre-computed results of standard trigonometric functions for various input values. The data in these books of mathematical tables would, of course, have been produced laboriously by some other “computer” or “computers” working with pen and paper. But, they were invaluable at increasing the speed with which complex calculations could be completed by hand.]]></summary></entry></feed>
