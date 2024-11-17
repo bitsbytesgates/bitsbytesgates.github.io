@@ -1,4 +1,226 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2024-11-08T01:46:12+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</title><link href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html" rel="alternate" type="text/html" title="DPI Isn’t Enough: Making Python Part of Your SV Testbench" /><published>2024-11-04T00:00:00+00:00</published><updated>2024-11-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2024-11-17T18:38:08+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Easy Access to Python Libraries with a SystemVerilog Convenience API</title><link href="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html" rel="alternate" type="text/html" title="Easy Access to Python Libraries with a SystemVerilog Convenience API" /><published>2024-11-17T00:00:00+00:00</published><updated>2024-11-17T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html"><![CDATA[<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/11/PyHDL_IF_Convenience_API.png" /> 
+</p>
+
+<p>In the last post 
+(<a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</a>), 
+we looked at how to use the <a href="https://fvutils.github.io/pyhdl-if">PyHDL-IF</a> library 
+to call SystemVerilog from Python. 
+This is, in some sense, the most challenging Python and SV interaction to implement. 
+And, as the title suggests, it’s something that definitely requires
+more than just the raw features of the SystemVerilog DPI.</p>
+
+<p>That said, there are many cases where we simply want to access some functionality
+that is readily-available in Python and not readily-available in SystemVerilog. 
+In these cases, we don’t need to call back into SystemVerilog from Python. 
+Arguably, we <strong>could</strong> simply use SystemVerilog DPI To call the relevant 
+<a href="https://docs.python.org/3/c-api/">Python C API</a>. The PyHDL-IF library uses the
+Python C API internally to implement cross-calling between SystemVerilog and
+Python, and it’s always good to have it as an option. The downside is that code that
+uses the C API tends to be rather verbose, so let’s see if we can improve the
+situation with a SystemVerilog convenience API.</p>
+
+<!--more-->
+
+<h1 id="pyhdl-if-architecture">PyHDL-IF Architecture</h1>
+
+<p>The PyHDL-IF implements the interface between Python and HDLs with a layered architecture.</p>
+
+<div class="mermaid" align="center">
+block-beta
+columns 1
+  block:UIApp
+  columns 1
+    TitleApp["App-Specific Interfaces"]
+    style TitleApp fill:transparent,stroke:transparent
+    block:UICodeAPIs
+      UICall["Method Call"]
+      UITlm["TLM"]
+    end
+  end
+  block:UIMid
+  columns 1
+    TitleMid["Convenience API"]
+  end
+  block:UIDirect
+  columns 1
+    TitleDirect["CPython API"]
+  end
+</div>
+
+<p>In the <a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">last post</a>,
+we looked at an example built on top of the ‘Call’ API. This is the API that manages blocking cross-calling
+between Python and a HDL. Using this API requires us to mark up our Python API with decorators and generate
+SystemVerilog source to implement the API in the SystemVerilog environment.</p>
+
+<p>We could use this same approach to “wrap up” the API of a Python library and expose it to SystemVerilog. But,
+it often makes sense to use one of the lower-level interface APIs. Let’s look at an example.</p>
+
+<h1 id="loading-json-data">Loading JSON Data</h1>
+
+<p>UVM testbench environments can be highly-configurable when used for complex, configurable IPs. Capturing 
+the configuration data in a JSON or YAML file is helpful in keeping all the settings in one place. 
+The challenge arises when we want to acccess that data from our UVM environment. Current options include:</p>
+
+<ul>
+  <li><strong>Integrate a parser implemented in C via SV DPI</strong></li>
+  <li><strong>Implement a parser in SystemVerilog</strong></li>
+</ul>
+
+<p>Both of these involve a fair amount of (likely project-specific) work and debugging. In contrast, reading 
+a JSON file in Python and iterating through the top-level entries is trivial:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">json</span>
+
+<span class="n">datafile</span> <span class="o">=</span> <span class="s">"data1.json"</span>
+
+<span class="n">fp</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="n">datafile</span><span class="p">,</span> <span class="s">"r"</span><span class="p">)</span>
+<span class="n">data_s</span> <span class="o">=</span> <span class="n">fp</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
+<span class="n">fp</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">data_s</span><span class="p">)</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="nf">keys</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %d %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %s"</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span></code></pre></figure>
+
+<h1 id="svpython-convenience-api">SV/Python Convenience API</h1>
+<p>Using the PyHDL-IF library, we actually have several options for leveraging Python to access JSON data. 
+Let’s look at using <a href="https://fvutils.github.io/pyhdl-if/sv_api.html#systemverilog-api">SystemVerilog convenience API</a>. 
+This API is object-oriented and higher level than the raw CPython API (which we also can use).</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
+
+    <span class="k">initial</span> <span class="k">begin</span>
+        <span class="k">automatic</span> <span class="kt">string</span> <span class="n">datafile</span><span class="p">;</span>
+        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">json</span><span class="p">,</span> <span class="n">data_fp</span><span class="p">,</span> <span class="n">data_s</span><span class="p">;</span>
+        <span class="k">automatic</span> <span class="n">py_dict</span> <span class="n">data</span><span class="p">;</span>
+        <span class="k">automatic</span> <span class="n">py_list</span> <span class="n">keys</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">$</span><span class="n">value</span><span class="p">$</span><span class="n">plusargs</span><span class="p">(</span><span class="s">"data=%s"</span><span class="p">,</span> <span class="n">datafile</span><span class="p">))</span> <span class="k">begin</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Error: no datafile specified"</span><span class="p">);</span>
+            <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
+        <span class="k">end</span>
+
+        <span class="n">py_gil_enter</span><span class="p">();</span>
+
+        <span class="c1">// Import Python's 'json' package </span>
+        <span class="n">json</span> <span class="o">=</span> <span class="n">py_import</span><span class="p">(</span><span class="s">"json"</span><span class="p">);</span>
+
+        <span class="c1">// Open and read the specified data file</span>
+        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span>
+        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
+        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span>
+
+        <span class="c1">// Parse the data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> 
+            <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span>
+
+        <span class="c1">// Get the list of keys</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
+
+        <span class="c1">// Iterate based on the list size</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
+        <span class="k">end</span>
+
+        <span class="c1">// Use an iterator</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
+            <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
+        <span class="k">end</span>
+
+        <span class="n">py_gil_leave</span><span class="p">();</span>
+    <span class="k">end</span></code></pre></figure>
+
+<p>The code above accomplishes the same thing as the pure-Python code that reads a JSON file. 
+While the SystemVerilog code involves roughly twice as many lines as the pure-Python code,
+it <em>is</em> pure SystemVerilog. And, it didn’t require us to do any code generation or any
+special “tagging” of Python code. Let’s look in more detail at what’s happening in this
+code, and how the PyHDL-IF convenience API helps us out.</p>
+
+<h2 id="calling-built-in-functions">Calling Built-in Functions</h2>
+<p>One of the first things we need to do is to read the contents of the JSON data file. 
+The Python <code class="language-plaintext highlighter-rouge">open</code> function is a built-in. This means that it’s not contained in 
+another package or module that needs to be imported.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span></code></pre></figure>
+
+<p>PyHDL-IF provides the <code class="language-plaintext highlighter-rouge">py_call_builtin</code> function to call built-ins. The PYthon C API
+requires function arguments to be Python objects, and to be packed in a Tuple. The
+<code class="language-plaintext highlighter-rouge">py_tuple::mk_init</code> function handles creating the properly-sized tuple. The helper
+function <code class="language-plaintext highlighter-rouge">py_from_str</code> creates a Python string object from a SystemVerilog string value.</p>
+
+<h2 id="calling-methods">Calling Methods</h2>
+<p>The <code class="language-plaintext highlighter-rouge">open</code> function returns a Python stream object. We want to read all the data from
+the file and then close the file.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
+        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span></code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">call_attr</code> function implemented by the <code class="language-plaintext highlighter-rouge">py_object</code> SV class handles looking up the
+requested attribute within the Python object and calling it. In this case, 
+both <code class="language-plaintext highlighter-rouge">read</code> and <code class="language-plaintext highlighter-rouge">close</code> methods take no arguments.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="c1">// Parse the data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span></code></pre></figure>
+
+<p>Python views everything as an object. Consequently, the <code class="language-plaintext highlighter-rouge">loads</code> method within
+the <code class="language-plaintext highlighter-rouge">json</code> package is just an attribute with the json package object. This means
+that we can call it in the same way we would invoke a method on a class-type object.
+We happen to know that the return of the <code class="language-plaintext highlighter-rouge">loads</code> method is a Python dictionary (<code class="language-plaintext highlighter-rouge">dict).
+Therefore, we can directly convert the return value to a </code>py_dict` object. This allows
+us to use convenience methods to access the data.</p>
+
+<h2 id="iterating">Iterating</h2>
+<p>Now that we have a Python dictionary containing the JSON data, we likely will 
+want to iterate over it. The PyHDL-IF objects also provide some convenience 
+APIs to help simplify this process as well.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Get the list of keys</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
+
+    <span class="c1">// Iterate based on the list size</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
+    <span class="k">end</span></code></pre></figure>
+
+<p>A Python dictionary returns it key set as a list. Perhaps the simplest way
+to iterate over the items of list is to get each element via its index,
+as shown above.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Use an iterator</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
+        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
+    <span class="k">end</span></code></pre></figure>
+
+<p>The list object also implements Python’s <em>iteration</em> interface. PyHDL-IF
+also provides helper types and functions around this interface. We can
+still use a SystemVerilog <em>for</em> loop. The difference is that the iteration
+variable is actually a Python iterator object. Here, again, the convenience
+API simplifies the user code compared to using the raw CPython API.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>The PyHDL-IF Python convenience API enables you to call Python code from
+SystemVerilog without the need to generate any application-specific 
+code, and with less work that directly using the CPython API would require.
+This reduction of effort makes is incredibly simple to augment the capabilities
+of your existing testbench with those of a library from the vast Python ecosystem.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li><a href="https://fvutils.github.io/pyhdl-if/">PyHDL-IF Documentation</a></li>
+  <li><a href="https://fvutils.github.io/pyhdl-if/sv_api.html">PyHDL-IF SV Convenience API</a></li>
+  <li><a href="https://docs.python.org/3/c-api/index.html">CPython API</a></li>
+</ul>]]></content><author><name></name></author><category term="Python" /><summary type="html"><![CDATA[In the last post (DPI Isn’t Enough: Making Python Part of Your SV Testbench), we looked at how to use the PyHDL-IF library to call SystemVerilog from Python. This is, in some sense, the most challenging Python and SV interaction to implement. And, as the title suggests, it’s something that definitely requires more than just the raw features of the SystemVerilog DPI. That said, there are many cases where we simply want to access some functionality that is readily-available in Python and not readily-available in SystemVerilog. In these cases, we don’t need to call back into SystemVerilog from Python. Arguably, we could simply use SystemVerilog DPI To call the relevant Python C API. The PyHDL-IF library uses the Python C API internally to implement cross-calling between SystemVerilog and Python, and it’s always good to have it as an option. The downside is that code that uses the C API tends to be rather verbose, so let’s see if we can improve the situation with a SystemVerilog convenience API.]]></summary></entry><entry><title type="html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</title><link href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html" rel="alternate" type="text/html" title="DPI Isn’t Enough: Making Python Part of Your SV Testbench" /><published>2024-11-04T00:00:00+00:00</published><updated>2024-11-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2024/11/DPI_Isnt_Enough_splash.png" /> 
 </p>
 
@@ -3042,241 +3264,4 @@ actions communicate in a reusable and modular fashion.</p>
   <li><a href="https://en.wikipedia.org/wiki/Declarative_programming">https://en.wikipedia.org/wiki/Declarative_programming</a></li>
   <li><a href="https://bitsbytesgates.com/code_html/2023/03/memtest.html">MemTest PSS Code (Viewing)</a></li>
   <li><a href="https://bitsbytesgates.com/code/2023/03/memtest.pss">MemTest PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As humans, we often pride ourselves on our ability to multi-task. Not only can we participate in a meeting, we can we simultaneously prepare the slides for the next meeting. Sadly, science has some bad news about our perception to multitask vs our actual ability. In reality, like a single-core processor, our mind is rapidly context switching between tasks to provide an illusion of simultaneous focus on multiple tasks. Re-establishing sole focus on a task can take 20 minutes and, during that time, productivity suffers by as much as 40%. Suffice it to say that we’re really working at half speed when constantly multitasking. What does multi-tasking have to do with PSS and bare-metal test creation? Well, there is another task that I’ve observed humans consistently find challenging: parallel and, especially, multi-core programming. I think there’s actually a connection between this and the challenges our brain has in multi-tasking. With a sequential program, I can reason step-by-step as to what happens. I can do the same for some portions of a parallel program. But, whenever the parallel threads interact, I need to reason about their possible relationships at that point in time. What happens under each possible ordering of threads reaching the synchronization point? It’s this last point that, I think, really stresses our multi-tasking ability. Not only do we need to envision what is happening in the context of one thread, but need to simultaneously envision the set of possible actions the other threads may be taking.]]></summary></entry><entry><title type="html">PSS Fundamentals: Actions, Components, and Test Generation</title><link href="https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration.html" rel="alternate" type="text/html" title="PSS Fundamentals: Actions, Components, and Test Generation" /><published>2023-03-03T00:00:00+00:00</published><updated>2023-03-03T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/03/03/ActionsComponents_and_TestGeneration.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/PSSFundamentals_ActionsComponents_splash.png" /> 
-</p>
-<p>Complex engineering endeavors require complex calculations. It’s open to 
-debate as to when the first engineering project that required complex 
-calculations occurred. What we do know is that those 
-calculations would have been done by hand. And this 
-state largely remained until the broad availability of the electronic 
-calculator in the 1950s and 1960s, even as engineering projects 
-and the technology we used to accomplish them become more ambitious.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/US-Veterans-Bureau-Computing-Division-1924.jpg" height="480" />
-<em><figcaption>Computing Division of the US Veterans Bureau, 1924. Image Courtesy of the Computer History Museum.</figcaption></em>
-</p>
-
-<p>But this doesn’t mean that “computers” (those individuals performing
-computations with pen and ink or simple mechanical machines) were left 
-to compute everything from the ground up. Fortunately, books were published 
-containing mathematical tables that provided the pre-computed results of 
-standard trigonometric 
-functions for various input values. The data in these books of 
-mathematical tables would, of course, have been produced
-laboriously by some other “computer” or “computers” working with pen 
-and paper. But, they were invaluable at increasing the speed with 
-which complex calculations could be completed by hand.</p>
-
-<!--more-->
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/LogTrigTablesBook.jpg" height="320" />
-<em><figcaption>Logarithmic and Trigonometric Tables Book. Image courtesy of the Smithsonian.</figcaption></em>
-</p>
-
-<p>What does this have to do with Portable Test and Stimulus (PSS)? 
-PSS is specifically designed to enable PSS processing tools to 
-pre-compute the result of complex test scenario relationships in order
-to make the best use of instructions running at a few Hertz on a simulated 
-RTL model of the design processor. But, before we get to how PSS creates tests, 
-we need to learn about two fundamental PSS concepts: Actions and Components</p>
-
-<h2 id="actions-and-layered-test-modeling">Actions and Layered Test Modeling</h2>
-<p>Our next key topic is the Action. As it so happens, several languages
-and description formats use the notion of <em>Action</em>. After all, it 
-is a very intuitive term to capture an element that is all about
-describing and encapsulating behavior. Before digging into actions,
-it is helpful to understand how PSS divides a description of test 
-behavior into two portions.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/ModelingRealizationLayers.png" />
-<em><figcaption>PSS Modeling and Realization Layers.</figcaption></em>
-</p>
-
-<p>The upper portion, called the Modeling Layer, contains the constraintt-driven 
-features for modeling test scenarios, and is responsible for capturing the 
-space of interesting and useful behaviors.</p>
-
-<p>In contrast, the realization layer is more-or-less 
-intended to carry out the instructions of the modeling layer, and 
-contains familiar procedural statements such as appear in other 
-programming languages like C, Java, and Python. The realization layer
-is also where we’ll find constructs for reading and writing registers
-and memory. While the realization layer makes local decisions, often
-related to handshaking with the device it controls, the modeling layer
-is intended to make the big-picture decisions about how the system
-is exercised.</p>
-
-<h3 id="connecting-modeling-and-realization-layers">Connecting Modeling and Realization Layers</h3>
-<p>As the diagram suggests, <em>Actions</em> bridge the boundary between modeling and 
-realization layer because they can contain both modeling and realization 
-aspects. In all cases, actions group the data, constraints, and implementation 
-for a given behavior.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">action</span> <span class="nc">check_reg_reset_vals</span> <span class="p">{</span>
-    <span class="kt">list</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span> <span class="n">reset_vals</span> <span class="o">=</span> <span class="p">{</span><span class="mh">0x0000_0000</span><span class="p">,</span> <span class="mh">0x0180_2FFF</span><span class="p">,</span> <span class="mh">0x8000_0000</span><span class="p">};</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="n">start</span><span class="p">;</span>
-
-    <span class="k">constraint</span> <span class="n">start</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">reset_vals</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
-
-    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-        <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">off</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">val</span><span class="p">;</span>
-        <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">reset_vals</span><span class="o">.</span><span class="n">size</span><span class="p">())</span> <span class="p">{</span>
-            <span class="n">off</span> <span class="o">=</span> <span class="p">((</span><span class="n">start</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span><span class="o">%</span><span class="n">reset_vals</span><span class="o">.</span><span class="n">size</span><span class="p">());</span>
-            <span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span> <span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">off</span><span class="p">;</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
-
-            <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="n">reset_vals</span><span class="p">[</span><span class="n">off</span><span class="p">])</span> <span class="p">{</span>
-                <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
-                    <span class="n">addr</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">reset_vals</span><span class="p">[</span><span class="n">off</span><span class="p">]);</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>The example above is an action that checks the reset value of registers in the
-design. It contains a list of register expected values, and a random variable
-that will specify the order in which the action checks the reset values – 
-just to be sure that the order in which we access registers doesn’t change
-behaviors. This is our modeling layer.</p>
-
-<p>The realization layer of the example is contained in the <code class="language-plaintext highlighter-rouge">body</code> block. This
-is the code that carries out the ‘higher-level’ decisions made by the 
-modeling layer. In this case, we:</p>
-<ul>
-  <li>Loop over the set of registers we need to check</li>
-  <li>Compute the offset and address of the selected register which are 
-relative to a random starting point.</li>
-  <li>Read it, check against the expected value, and report any mismatches.</li>
-</ul>
-
-<p>Even this tiny action begins to show some of the value of modeling scenarios
-with PSS. Our code is similar to what we might write in C and, if anything, is
-a bit more compact. Let’s come back to this example to see how PSS can help
-us with generating test variants.</p>
-
-<p>One other thing that we’ll come back to are activities. The action above is
-called an <code class="language-plaintext highlighter-rouge">atomic</code> action. An atomic action is a leaf-level action that
-is implemented in terms of procedural code. We can also implement the 
-behavior of an action in terms of other actions. This so-called <code class="language-plaintext highlighter-rouge">activity</code>
-provides us an expanded set of modeling features.</p>
-
-<h2 id="components">Components</h2>
-<p><code class="language-plaintext highlighter-rouge">Components</code> are the other key PSS fundamentals construct for this post. The 
-requirement for <code class="language-plaintext highlighter-rouge">components</code> stems from the observation that actions in
-a system <code class="language-plaintext highlighter-rouge">act on</code> a specific context. A DMA transfer action must <code class="language-plaintext highlighter-rouge">act on</code> 
-a <em>specific</em> DMA controller, because there are likely to
-be several in a system. A DMA transfer action needs to know things like
-what the base address is for the DMA controller registers. The PSS <code class="language-plaintext highlighter-rouge">Component</code> 
-construct fills this requirement for a persistent, static entity to model
-physical entities, the resources they contain, and the operations that 
-can be performed on them.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">dma_c</span> <span class="p">{</span>
-    <span class="kd">action</span> <span class="nc">mem2mem_a</span> <span class="p">{</span>
-        <span class="c1">// ...</span>
-    <span class="p">}</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-
-<span class="kd">component</span> <span class="nc">subsys_c</span> <span class="p">{</span>
-    <span class="n">dma_c</span>           <span class="n">dma0</span><span class="p">;</span>
-    <span class="n">dma_c</span>           <span class="n">dma1</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Components may be composed hierarchically, much as designs are. So, if your
-subsystem design contains two instances of a DMA controller IP, your
-PSS component that represents the subsystem from a test perspective will
-as well.</p>
-
-<p>Components is another topic that we will revisit in greater depth in a 
-future post. For now, their fundamental attributes are:</p>
-<ul>
-  <li>The component tree remains constant for the lifetime of the test</li>
-  <li>A component type groups the supported behaviors and resources required by 
-those behaviors</li>
-  <li>Each action execution is associated with a corresponding instance of
-a component</li>
-</ul>
-
-<h2 id="test-creation-flow">Test Creation Flow</h2>
-<p>PSS breaks the execution of a PSS model into two large phases:</p>
-<ul>
-  <li>Solve  – Constraints are solved, random variable values are assigned, etc</li>
-  <li>Target – Behavior executes on the target platform</li>
-</ul>
-
-<p>The goal is to enable separating or combining these phases depending 
-on the characteristics of the environment.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/PSSTestGenFlow.png" />
-<em><figcaption>PSS Pre-Gen Test Generation Flow.</figcaption></em>
-</p>
-
-<p>The figure above shows a typical <em>pre-generation</em> flow targeted at 
-producing bare-metal test software for SoC integration verification.
-In this case, simplifying computations performed on the target 
-platform is a key goal, since the simulated RTL processor model runs
-at a very low effective clock speed.</p>
-
-<p>Looking back at our ‘register reset test’ action, the implementation
-code might look like the following:</p>
-
-<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kt">uint32_t</span> <span class="n">val</span><span class="p">;</span>
-  <span class="kt">uint32_t</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-
-  <span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x10000004</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="mh">0x01802FFF</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
-         <span class="mh">0x10000004</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mh">0x01802FFF</span><span class="p">);</span>
-    <span class="n">ret</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x10000008</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="mh">0x80000000</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
-        <span class="mh">0x10000008</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mh">0x80000000</span><span class="p">);</span>
-    <span class="n">ret</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="p">((</span><span class="k">volatile</span> <span class="kt">uint32_t</span> <span class="o">*</span><span class="p">)</span><span class="mh">0x10000000</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">!=</span> <span class="mh">0x00000000</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">error</span><span class="p">(</span><span class="s">"Failed to read register at 0x%08x: read 0x%08x ; expected %08x"</span><span class="p">,</span>
-        <span class="mh">0x10000000</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mh">0x00000000</span><span class="p">);</span>
-    <span class="n">ret</span> <span class="o">|=</span> <span class="mi">1</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Note that, in this case, the PSS processing tool has pre-computed the random 
-starting index, unrolled the loop, and pre-computed addresses in order to minimize 
-instructions executed on the target platform. It could also have locally-computed
-a random value between 0 and 2 for the starting index. Due to the abstraction
-level at which the test behavior is defined, the PSS processing tool has many
-implementations options that can be traded off against the requirements of the
-implementation platform.</p>
-
-<p>Much as mathematical tables helped human
-computers to maximize the results they were able to produce by hand, the PSS
-semantics that enable pre-computation of results help PSS-created tests maximize
-test throughput on simulated hardware platforms.</p>
-
-<h2 id="looking-forward">Looking Forward</h2>
-<p>In this post, we have learned about two key PSS constructs: <em>actions</em> and <em>components</em>. 
-<em>Actions</em> describe model-level behavior and connect that high-level behavior to 
-test realization implementation via exec blocks. <em>Components</em> describe structure,
-and group behaviors (actions) with the resources they require. From now on, every
-example will be built from <em>Actions</em> and <em>Components</em>, and we will add new ways
-that PSS enables actions and components to interact.</p>
-
-<p>In the next post, we will begin to look in more detail at the declarative basis
-of the PSS language. Being, first and foremost, declarative makes PSS a bit 
-different as languages go, but also enables many of its most impressive capabilities.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Complex engineering endeavors require complex calculations. It’s open to debate as to when the first engineering project that required complex calculations occurred. What we do know is that those calculations would have been done by hand. And this state largely remained until the broad availability of the electronic calculator in the 1950s and 1960s, even as engineering projects and the technology we used to accomplish them become more ambitious. Computing Division of the US Veterans Bureau, 1924. Image Courtesy of the Computer History Museum. But this doesn’t mean that “computers” (those individuals performing computations with pen and ink or simple mechanical machines) were left to compute everything from the ground up. Fortunately, books were published containing mathematical tables that provided the pre-computed results of standard trigonometric functions for various input values. The data in these books of mathematical tables would, of course, have been produced laboriously by some other “computer” or “computers” working with pen and paper. But, they were invaluable at increasing the speed with which complex calculations could be completed by hand.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As humans, we often pride ourselves on our ability to multi-task. Not only can we participate in a meeting, we can we simultaneously prepare the slides for the next meeting. Sadly, science has some bad news about our perception to multitask vs our actual ability. In reality, like a single-core processor, our mind is rapidly context switching between tasks to provide an illusion of simultaneous focus on multiple tasks. Re-establishing sole focus on a task can take 20 minutes and, during that time, productivity suffers by as much as 40%. Suffice it to say that we’re really working at half speed when constantly multitasking. What does multi-tasking have to do with PSS and bare-metal test creation? Well, there is another task that I’ve observed humans consistently find challenging: parallel and, especially, multi-core programming. I think there’s actually a connection between this and the challenges our brain has in multi-tasking. With a sequential program, I can reason step-by-step as to what happens. I can do the same for some portions of a parallel program. But, whenever the parallel threads interact, I need to reason about their possible relationships at that point in time. What happens under each possible ordering of threads reaching the synchronization point? It’s this last point that, I think, really stresses our multi-tasking ability. Not only do we need to envision what is happening in the context of one thread, but need to simultaneously envision the set of possible actions the other threads may be taking.]]></summary></entry></feed>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Easy Access to Python Libraries with a SystemVerilog Convenience API &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2024</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2024</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/python/2024/11/17/PyHDL_Convenience_API.html">Easy Access to Python Libraries with a SystemVerilog Convenience API</a></li>
+        
+        <li><a href="/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn't Enough: Making Python Part of Your SV Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/10/31/OfRegisters_and_Standards.html">Of Register Models and Standards</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">Relating Actions with Dataflow Part2 -- Parallelism</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">Interacting with Devices via PSS Registers</a></li>
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <div class="hbox">
+        <div class="image">
+            <a href="https://bitsbytesgates.com/feed.xml"><img src="https://bitsbytesgates.com/imgs/rss_16_16.png"/></a>
+        </div>
+        <div class="text">
+            <a href="https://bitsbytesgates.com/feed.xml">RSS Feed</a>
+        </div>
+    </div>
+    <br/>
+    <p>
+        Subscribe to Bits, Bytes, and Gates
+    </p>
+    
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+
+    <p>
+      &copy; 2014-2024 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Easy Access to Python Libraries with a SystemVerilog Convenience API &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+
+  <body>
+
+
+  <div class="post">
+    <h1 class="post-title">Easy Access to Python Libraries with a SystemVerilog Convenience API</h1>
+    <span class="post-date">17 Nov 2024</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/11/PyHDL_IF_Convenience_API.png" /> 
+</p>
+
+<p>In the last post 
+(<a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</a>), 
+we looked at how to use the <a href="https://fvutils.github.io/pyhdl-if">PyHDL-IF</a> library 
+to call SystemVerilog from Python. 
+This is, in some sense, the most challenging Python and SV interaction to implement. 
+And, as the title suggests, it’s something that definitely requires
+more than just the raw features of the SystemVerilog DPI.</p>
+
+<p>That said, there are many cases where we simply want to access some functionality
+that is readily-available in Python and not readily-available in SystemVerilog. 
+In these cases, we don’t need to call back into SystemVerilog from Python. 
+Arguably, we <strong>could</strong> simply use SystemVerilog DPI To call the relevant 
+<a href="https://docs.python.org/3/c-api/">Python C API</a>. The PyHDL-IF library uses the
+Python C API internally to implement cross-calling between SystemVerilog and
+Python, and it’s always good to have it as an option. The downside is that code that
+uses the C API tends to be rather verbose, so let’s see if we can improve the
+situation with a SystemVerilog convenience API.</p>
+
+<!--more-->
+
+<h1 id="pyhdl-if-architecture">PyHDL-IF Architecture</h1>
+
+<p>The PyHDL-IF implements the interface between Python and HDLs with a layered architecture.</p>
+
+<div class="mermaid" align="center">
+block-beta
+columns 1
+  block:UIApp
+  columns 1
+    TitleApp["App-Specific Interfaces"]
+    style TitleApp fill:transparent,stroke:transparent
+    block:UICodeAPIs
+      UICall["Method Call"]
+      UITlm["TLM"]
+    end
+  end
+  block:UIMid
+  columns 1
+    TitleMid["Convenience API"]
+  end
+  block:UIDirect
+  columns 1
+    TitleDirect["CPython API"]
+  end
+</div>
+
+<p>In the <a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">last post</a>,
+we looked at an example built on top of the ‘Call’ API. This is the API that manages blocking cross-calling
+between Python and a HDL. Using this API requires us to mark up our Python API with decorators and generate
+SystemVerilog source to implement the API in the SystemVerilog environment.</p>
+
+<p>We could use this same approach to “wrap up” the API of a Python library and expose it to SystemVerilog. But,
+it often makes sense to use one of the lower-level interface APIs. Let’s look at an example.</p>
+
+<h1 id="loading-json-data">Loading JSON Data</h1>
+
+<p>UVM testbench environments can be highly-configurable when used for complex, configurable IPs. Capturing 
+the configuration data in a JSON or YAML file is helpful in keeping all the settings in one place. 
+The challenge arises when we want to acccess that data from our UVM environment. Current options include:</p>
+
+<ul>
+  <li><strong>Integrate a parser implemented in C via SV DPI</strong></li>
+  <li><strong>Implement a parser in SystemVerilog</strong></li>
+</ul>
+
+<p>Both of these involve a fair amount of (likely project-specific) work and debugging. In contrast, reading 
+a JSON file in Python and iterating through the top-level entries is trivial:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">json</span>
+
+<span class="n">datafile</span> <span class="o">=</span> <span class="s">"data1.json"</span>
+
+<span class="n">fp</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="n">datafile</span><span class="p">,</span> <span class="s">"r"</span><span class="p">)</span>
+<span class="n">data_s</span> <span class="o">=</span> <span class="n">fp</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
+<span class="n">fp</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">data_s</span><span class="p">)</span>
+<span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="nf">keys</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %d %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %s"</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span></code></pre></figure>
+
+<h1 id="svpython-convenience-api">SV/Python Convenience API</h1>
+<p>Using the PyHDL-IF library, we actually have several options for leveraging Python to access JSON data. 
+Let’s look at using <a href="https://fvutils.github.io/pyhdl-if/sv_api.html#systemverilog-api">SystemVerilog convenience API</a>. 
+This API is object-oriented and higher level than the raw CPython API (which we also can use).</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
+
+    <span class="k">initial</span> <span class="k">begin</span>
+        <span class="k">automatic</span> <span class="kt">string</span> <span class="n">datafile</span><span class="p">;</span>
+        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">json</span><span class="p">,</span> <span class="n">data_fp</span><span class="p">,</span> <span class="n">data_s</span><span class="p">;</span>
+        <span class="k">automatic</span> <span class="n">py_dict</span> <span class="n">data</span><span class="p">;</span>
+        <span class="k">automatic</span> <span class="n">py_list</span> <span class="n">keys</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">$</span><span class="n">value</span><span class="p">$</span><span class="n">plusargs</span><span class="p">(</span><span class="s">"data=%s"</span><span class="p">,</span> <span class="n">datafile</span><span class="p">))</span> <span class="k">begin</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Error: no datafile specified"</span><span class="p">);</span>
+            <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
+        <span class="k">end</span>
+
+        <span class="n">py_gil_enter</span><span class="p">();</span>
+
+        <span class="c1">// Import Python's 'json' package </span>
+        <span class="n">json</span> <span class="o">=</span> <span class="n">py_import</span><span class="p">(</span><span class="s">"json"</span><span class="p">);</span>
+
+        <span class="c1">// Open and read the specified data file</span>
+        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span>
+        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
+        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span>
+
+        <span class="c1">// Parse the data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> 
+            <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span>
+
+        <span class="c1">// Get the list of keys</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
+
+        <span class="c1">// Iterate based on the list size</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
+        <span class="k">end</span>
+
+        <span class="c1">// Use an iterator</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
+            <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
+        <span class="k">end</span>
+
+        <span class="n">py_gil_leave</span><span class="p">();</span>
+    <span class="k">end</span></code></pre></figure>
+
+<p>The code above accomplishes the same thing as the pure-Python code that reads a JSON file. 
+While the SystemVerilog code involves roughly twice as many lines as the pure-Python code,
+it <em>is</em> pure SystemVerilog. And, it didn’t require us to do any code generation or any
+special “tagging” of Python code. Let’s look in more detail at what’s happening in this
+code, and how the PyHDL-IF convenience API helps us out.</p>
+
+<h2 id="calling-built-in-functions">Calling Built-in Functions</h2>
+<p>One of the first things we need to do is to read the contents of the JSON data file. 
+The Python <code class="language-plaintext highlighter-rouge">open</code> function is a built-in. This means that it’s not contained in 
+another package or module that needs to be imported.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
+            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span></code></pre></figure>
+
+<p>PyHDL-IF provides the <code class="language-plaintext highlighter-rouge">py_call_builtin</code> function to call built-ins. The PYthon C API
+requires function arguments to be Python objects, and to be packed in a Tuple. The
+<code class="language-plaintext highlighter-rouge">py_tuple::mk_init</code> function handles creating the properly-sized tuple. The helper
+function <code class="language-plaintext highlighter-rouge">py_from_str</code> creates a Python string object from a SystemVerilog string value.</p>
+
+<h2 id="calling-methods">Calling Methods</h2>
+<p>The <code class="language-plaintext highlighter-rouge">open</code> function returns a Python stream object. We want to read all the data from
+the file and then close the file.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
+        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span></code></pre></figure>
+
+<p>The <code class="language-plaintext highlighter-rouge">call_attr</code> function implemented by the <code class="language-plaintext highlighter-rouge">py_object</code> SV class handles looking up the
+requested attribute within the Python object and calling it. In this case, 
+both <code class="language-plaintext highlighter-rouge">read</code> and <code class="language-plaintext highlighter-rouge">close</code> methods take no arguments.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="c1">// Parse the data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span></code></pre></figure>
+
+<p>Python views everything as an object. Consequently, the <code class="language-plaintext highlighter-rouge">loads</code> method within
+the <code class="language-plaintext highlighter-rouge">json</code> package is just an attribute with the json package object. This means
+that we can call it in the same way we would invoke a method on a class-type object.
+We happen to know that the return of the <code class="language-plaintext highlighter-rouge">loads</code> method is a Python dictionary (<code class="language-plaintext highlighter-rouge">dict).
+Therefore, we can directly convert the return value to a </code>py_dict` object. This allows
+us to use convenience methods to access the data.</p>
+
+<h2 id="iterating">Iterating</h2>
+<p>Now that we have a Python dictionary containing the JSON data, we likely will 
+want to iterate over it. The PyHDL-IF objects also provide some convenience 
+APIs to help simplify this process as well.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Get the list of keys</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
+
+    <span class="c1">// Iterate based on the list size</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
+    <span class="k">end</span></code></pre></figure>
+
+<p>A Python dictionary returns it key set as a list. Perhaps the simplest way
+to iterate over the items of list is to get each element via its index,
+as shown above.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Use an iterator</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
+        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
+        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
+    <span class="k">end</span></code></pre></figure>
+
+<p>The list object also implements Python’s <em>iteration</em> interface. PyHDL-IF
+also provides helper types and functions around this interface. We can
+still use a SystemVerilog <em>for</em> loop. The difference is that the iteration
+variable is actually a Python iterator object. Here, again, the convenience
+API simplifies the user code compared to using the raw CPython API.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>The PyHDL-IF Python convenience API enables you to call Python code from
+SystemVerilog without the need to generate any application-specific 
+code, and with less work that directly using the CPython API would require.
+This reduction of effort makes is incredibly simple to augment the capabilities
+of your existing testbench with those of a library from the vast Python ecosystem.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li><a href="https://fvutils.github.io/pyhdl-if/">PyHDL-IF Documentation</a></li>
+  <li><a href="https://fvutils.github.io/pyhdl-if/sv_api.html">PyHDL-IF SV Convenience API</a></li>
+  <li><a href="https://docs.python.org/3/c-api/index.html">CPython API</a></li>
+</ul>
+
+  </div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2024 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
+  
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>
