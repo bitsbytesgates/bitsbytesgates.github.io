@@ -1,4 +1,166 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2024-11-17T18:38:08+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Easy Access to Python Libraries with a SystemVerilog Convenience API</title><link href="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html" rel="alternate" type="text/html" title="Easy Access to Python Libraries with a SystemVerilog Convenience API" /><published>2024-11-17T00:00:00+00:00</published><updated>2024-11-17T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.4">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2024-12-16T01:26:45+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">What’s Next for PSS?</title><link href="https://bitsbytesgates.com/pss/2024/12/15/PSS_WhatsNext.html" rel="alternate" type="text/html" title="What’s Next for PSS?" /><published>2024-12-15T00:00:00+00:00</published><updated>2024-12-15T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2024/12/15/PSS_WhatsNext</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2024/12/15/PSS_WhatsNext.html"><![CDATA[<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/12/PSSFuture_splash.png" /> 
+</p>
+
+<p>As the year winds down, it’s a good time to think about the coming year and the
+areas where I’d like to have an impact. One area of particular
+interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera 
+PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt
+fortunate to have been involved with PSS Working Group (PSWG) from its inception,
+and to see how the growing body of features in PSS have allowed the language to 
+enable test-content portability across simulation, emulation, and post-silicon
+targets.</p>
+
+<p>The release of PSS 3.0 also provides an opportunity to step back and consider 
+the future of PSS – not just incremental additions to its current field of use,
+but also how its use could expand to other portions of the design and verification process.</p>
+
+<!--more-->
+
+<p>Today, the PSS language provides powerful features for capturing test 
+scenarios. It’s particularly adept at capturing IP programming sequences
+that are reusable from IP to system level.</p>
+
+<div class="mermaid" align="center">
+block-beta
+columns 1
+  block:Areas
+    A["Arch"]
+    B["Sw Models"]
+    C["Impl (RTL)"]
+    D["DV (Sim)"]
+    E["DV (Emu)"]
+    F["Prototying"]
+    G["Si Bring-Up"]
+    H["Si Validation"]
+  end
+</div>
+
+<p>Currently, the use of PSS centers around DV, prototyping, and silicon
+bring-up. PSS has plenty of room in which to expand adoption in 
+these areas, but there are also many others areas where PSS 
+could play and add value.</p>
+
+<p>Looking forward, there are three key areas where I’m looking to see growth
+in the PSS language and ecosystem:</p>
+
+<h2 id="develop-pss-core-language">Develop PSS Core Language</h2>
+
+<p>An evolving language is critical to maintaining interest and users. 
+Needs, styles, and approaches change over time, and a programming
+language must react to these changes in requirement in order to remain
+relevant. My informal observation is that, since the mid-2010s, more 
+programming languages are shortening the interval between updates
+to the language. I’m happy to see the PSS language continuing to
+grow and evolve in the context of the Accelera PSWG.</p>
+
+<h2 id="grow-pss-ecosystem">Grow PSS Ecosystem</h2>
+
+<p>Ecosystems are key to the success of any programming language. Having a 
+vibrant ecosystem means that users of a language will have access to 
+code snippets, expertise, and reusable libraries created by other users
+of the language. Vibrant ecosystems also act as a pipeline, getting 
+students interested in and familiar with the language.</p>
+
+<p>I’d also like to see more publicly-available examples and libraries. 
+Having real live code out there to play with is a critical part of
+learning a new technology.</p>
+
+<h2 id="exploration-of-new-applications">Exploration of New Applications</h2>
+
+<p>New applications and integrations is the area in which I most like to play.
+Each phase of the design process shown above has its own unique 
+requirements that it places – most often on <em>how</em> the language is 
+processed, but sometimes on the features provided by the language itself
+as well.</p>
+
+<p>There are key differences in test requirements across the different platforms
+shown in the diagram above, and worth exploring how that impacts how 
+tests are implemented. But, in addition, there might be some other interesting
+roles for PSS across the process. Could we use PSS, for example, to implement
+an architectural model of the design?</p>
+
+<h1 id="thinking-forward">Thinking Forward</h1>
+<p>Given these three areas, it’s reasonable to ask how we can “move the needle” 
+in each of them. To a certain extent, continued evolution of the core
+language might have the simplest answer since there’s a well-established 
+group (the Accellera PSWG) with members from across the industry that meet 
+weekly to discuss that topic.</p>
+
+<p>Advancing the other two areas poses a technology-access challenge. It’s 
+fine to speculate on how PSS might contribute to the design process, 
+for example. However, I’d argue that what most people really want to see
+are implementations (proof-of-concept or production) that deliver 
+concrete results.</p>
+
+<p>The same holds for building knowledge of PSS. It’s fine to read descriptions
+about how PSS works and how to use it to create test scenarios. Real learning
+takes places when people are able to work with the language themselves and
+internalize the key concepts of the language.</p>
+
+<h2 id="pss-and-open-source">PSS and Open Source</h2>
+<p>Open source software has been a powerful enabler of exploration in other ecosystems. 
+Having open source resources encourages people to learn about a technology. 
+It also provides a basis for experimentation that doesn’t require an interested
+party to start at zero.</p>
+
+<h2 id="zuspec">Zuspec</h2>
+<p>Starting in 2025, I’ll be starting to write more about components within the 
+<em>Zuspec</em> umbrella project. Consequently, it’s worth providing a brief 
+introduction to what <em>Zuspec</em> is, what it’s not, and what to expect.</p>
+
+<p>Zuspec is a collection of functionality for working with the style of
+action-centric dataflow descriptions used by the PSS language. The
+philosophy of the component libraries is to keep things as modular as
+possible to maximize the reuse opportunities even as we discover different
+ways in which to productively use and apply these descriptions.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/12/Zuspec_crop.png" style="width: 200px" />
+</p>
+
+<p>The <em>Zuspec</em> name is a portmanteau of zusammen (German for together) and ‘spec’,
+and reflects my ambition for PSS to be a specification that brings together
+disciplines such as design and verification that are quite separate today.</p>
+
+<p>From a technical perspective, the vast majority of Zuspec components are 
+implemented as C++ libraries (for speed) that also have Python bindings, 
+making it easy to use a small amount of Python to mix them together 
+into an application.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/12/ZuspecProjectMap.png" style="width: 800px" />
+</p>
+
+<p>Zuspec is much more of a technology framework than a tool today. You won’t find
+any fancy GUIs. And, it’s in an early state of development and testing: 
+you should expect to find bugs. That said, my hope is that if these 
+components can help me to explore new areas of PSS application they can
+enable others to do the same. Starting in the new year, I’ll be writing
+more about the components and what they allow us to do with a 
+PSS-based description</p>
+
+<h1 id="pss-looking-forward">PSS Looking Forward</h1>
+
+<p>I continue to see PSS as having a bright future. It’s providing strong value
+in the areas of test-content reuse, with a focus on simulation, emulation, 
+and silicon bring-up. And, as more people learn about PSS and get 
+hands-on experience with the language and its capabilities, I’m confident 
+that adoption will continue to grow. I also see great possibilities for the 
+language to expand its application space into domains adjacent to where it 
+is applied today.</p>
+
+<p>In the coming year, I’m looking forward to writing more about what PSS 
+enables today, and what it could enable in the future. And, of course,
+expect to hear more about other tools and technologies related to design
+and verification. There is always something new to learn and explore!</p>
+
+<h1 id="references">References</h1>
+<ul>
+  <li>Accellera - https://accellera.org</li>
+  <li>PSS Tutorial Video - https://www.accellera.org/resources/videos/portable-stimulus-tutorial-2024</li>
+  <li>PSS LRM - https://www.accellera.org/downloads/standards/portable-stimulus</li>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As the year winds down, it’s a good time to think about the coming year and the areas where I’d like to have an impact. One area of particular interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt fortunate to have been involved with PSS Working Group (PSWG) from its inception, and to see how the growing body of features in PSS have allowed the language to enable test-content portability across simulation, emulation, and post-silicon targets. The release of PSS 3.0 also provides an opportunity to step back and consider the future of PSS – not just incremental additions to its current field of use, but also how its use could expand to other portions of the design and verification process.]]></summary></entry><entry><title type="html">Easy Access to Python Libraries with a SystemVerilog Convenience API</title><link href="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html" rel="alternate" type="text/html" title="Easy Access to Python Libraries with a SystemVerilog Convenience API" /><published>2024-11-17T00:00:00+00:00</published><updated>2024-11-17T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2024/11/PyHDL_IF_Convenience_API.png" /> 
 </p>
 
@@ -2804,464 +2966,4 @@ use as a vehicle to introduce the next series of PSS modeling topics.</p>
   <li>[1] <a href="https://www.accellera.org/downloads/standards/portable-stimulus">PSS LRM</a></li>
   <li>[2] <a href="https://bitsbytesgates.com/code_html/2023/03/memtest_buffer.html">MemTest PSS Code (Viewing)</a></li>
   <li>[3] <a href="https://bitsbytesgates.com/code/2023/03/memtest_buffer.pss">MemTest PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Modularity and reuse are key concerns when it comes to programming languages. While languages without many modularity and reuse features may be quick and easy to write – think shell scripts – they ultimately fail to scale. PSS provides a wealth of mechanisms for structuring test content for reuse that are familiar to users of object-oriented languages. That said, PSS provides unique approaches to modularity and reuse as well. The PSS modeling layer is strongly declarative, and this has significant implications on the approach that PSS takes to provide reuse features for composing declarative behaviors. In this post, we will start to look at declarative data relationships via the PSS buffer construct.]]></summary></entry><entry><title type="html">Declarative Programming and Multi-Core Tests</title><link href="https://bitsbytesgates.com/pss/2023/03/11/DeclarativeMultiCoreTests.html" rel="alternate" type="text/html" title="Declarative Programming and Multi-Core Tests" /><published>2023-03-11T00:00:00+00:00</published><updated>2023-03-11T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/03/11/DeclarativeMultiCoreTests</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/03/11/DeclarativeMultiCoreTests.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/03/PSSMultiCoreTests_splash.png" /> 
-</p>
-
-<p>As humans, we often pride ourselves on our ability to multi-task. Not 
-only can we participate in a meeting, we can we simultaneously prepare the 
-slides for the next meeting. Sadly, science has some bad news about 
-our perception to multitask vs our actual ability. In reality, like a 
-single-core processor, our mind is rapidly context switching between tasks
-to provide an illusion of simultaneous focus on multiple tasks. Re-establishing
-sole focus on a task can take 20 minutes and, during that time, productivity 
-suffers by as much as 40%. Suffice it to say that we’re really working at 
-half speed when constantly multitasking.</p>
-
-<p>What does multi-tasking have to do with PSS and bare-metal test creation? Well,
-there is another task that I’ve observed humans consistently find challenging:
-parallel and, especially, multi-core programming. I think there’s actually 
-a connection between this and the challenges our brain has in multi-tasking. 
-With a sequential program, I can reason step-by-step as to what happens. 
-I can do the same for some portions of a parallel program. But, whenever 
-the parallel threads interact, I need to reason about their possible 
-relationships at that point in time. What happens
-under each possible ordering of threads reaching the synchronization point? 
-It’s this last point that, I think, really stresses our multi-tasking ability.
-Not only do we need to envision what is happening in the context of one
-thread, but need to simultaneously envision the set of possible actions the
-other threads may be taking.</p>
-
-<!--more-->
-
-<h2 id="specific-bare-metal-multi-core-test-challenges">Specific Bare-Metal Multi-Core Test Challenges</h2>
-
-<p>Creating bare-metal, multi-core tests poses challenges beyond just the core
-challenges of managing parallel behavior described above. Keep in mind that,
-because we don’t have an OS to manage the processor cores, our test will 
-need to be partitioned into per-core test programs that synchronize with
-each other.</p>
-
-<div class="mermaid" align="center">
-graph TD;
-    A[Core0\nWrite]--&gt;B[Core1\nCopy];
-    B--&gt;C[Core0\nCheck];
-</div>
-
-<p>The diagram above shows the test flow of a bring-up test that, on the surface,
-is quite simple:</p>
-<ul>
-  <li>Write some memory from Core0</li>
-  <li>Read that memory from Core1, and write some data elsewhere (copy)</li>
-  <li>Read the memory written by Core1 from Core0 and check that it’s correct</li>
-</ul>
-
-<p>From this simple test flow, we will need to create two core-specific tests that
-coordinate to achieve the desired activity. The diagram below shows what 
-our test core-specific tests need to do:</p>
-
-<div class="mermaid" align="center">
-flowchart TB
-    c01-. notify .-&gt;c10
-    c11-. notify .-&gt;c02
-    subgraph Core1
-    c1s[["Core1 Start"]]
-    c1s--&gt;c10
-    c10(["Wait: Core0::Write"])
-    c10--&gt;d
-    d[Core1\nCopy]
-    d--&gt;c11
-    c11(["Notify: Copy Complete"])
-    c11--&gt;c1e
-    c1e[["Core1 End"]]
-    end
-    subgraph Core0
-    c0s[["Core0 Start"]]
-    c0s--&gt;a
-    a[Core0\nWrite]
-    a--&gt;c01
-    c01(["Notify: Write Complete"])
-    c01--&gt;c02
-    c02(["Wait: Core1::Copy Complete"])
-    c02--&gt;e
-    e[Core0\nCheck]
-    e--&gt;c0e
-    c0e[["Core0 End"]]
-    end
-</div>
-
-<ul>
-  <li>Core 0
-    <ul>
-      <li>Wakes up and writes to the specified memory location</li>
-      <li>Notifies Core 1 that the write is complete</li>
-      <li>Waits for Core 1 to notify that the read/write is complete</li>
-      <li>Read the data from the specified location</li>
-    </ul>
-  </li>
-  <li>Core 1
-    <ul>
-      <li>Wakes up and waits for Core 0 to write to the specified memory location</li>
-      <li>Reads the specified location and writes to another</li>
-      <li>Notifies Core 0</li>
-    </ul>
-  </li>
-</ul>
-
-<p>In this case, we are working with three operations distributed across two 
-cores. As we introduce more behaviors spread across more processor cores,
-the individual tests only become more complex.</p>
-
-<h2 id="pss-and-declarative-descriptions">PSS and Declarative Descriptions</h2>
-
-<p>You may have heard PSS described as a <em>declarative language</em> and wondered
-what that really meant in practice. PSS being a declarative-first language
-is very important in enabling some of the capabilities of PSS. That said,
-the definition of ‘declarative language’ is a bit flexible.</p>
-
-<blockquote>
-  <p>In computer science, declarative programming is a programming paradigm — a 
-style of building the structure and elements of computer programs — that 
-expresses the logic of a computation without describing its control flow.</p>
-</blockquote>
-
-<p>Put another way:</p>
-<blockquote>
-  <p>Declarative programming is a non-imperative style of programming in which 
-programs describe their desired results without explicitly listing 
-commands or steps that must be performed.</p>
-</blockquote>
-
-<p>The PSS <code class="language-plaintext highlighter-rouge">modeling layer</code> that we looked at in the last post is heavily 
-constraint-based, exposing the declarative programming basis for that portion 
-of the language. We also see the declarative
-basis in how PSS approaches implementing multi-core test programs by focusing
-the test writer on capturing the desired <code class="language-plaintext highlighter-rouge">intent</code> of the test with respect to
-parallel execution rather than capturing the implementation of synchronization
-across threads.</p>
-
-<p>As we see more of the PSS language and its applications, the implications and
-results of PSS having a declarative <code class="language-plaintext highlighter-rouge">modeling layer</code> will become clearer. For 
-now, focus on two things:</p>
-<ul>
-  <li>We need to think in relationships and rules instead of computation steps.</li>
-  <li>We can focus much more on what we <em>want</em> to happen in our tests instead of
-on <em>how</em> we’re going to get our tests to do that.</li>
-</ul>
-
-<p>When it comes to our multi-core test, this means that we are free to focus
-on what interesting patterns of memory access we want to form, and leave 
-the task of creating self-synchronizing per-core test programs to our
-PSS tool.</p>
-
-<h2 id="pss-and-the-multi-core-memory-test">PSS and the Multi-Core Memory Test</h2>
-
-<p>Let’s revisit our multi-core memory test – this time showing the PSS 
-approach. First, a warning. We’re pretty early in looking through all the 
-constructs supported by the PSS language, so don’t worry if you don’t 
-recognize or understand the details of every language construct.</p>
-
-<div class="mermaid" align="center">
-graph TD;
-    A[Core0\nWrite]--&gt;B[Core1\nCopy];
-    B--&gt;C[Core0\nCheck];
-</div>
-
-<h3 id="modeling-the-leaf-level-actions">Modeling the Leaf-Level Actions</h3>
-
-<p>First, let’s create Write, Copy, and Check actions. Let’s keep our data
-generation and checking simple by using an incrementing data pattern.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
-    <span class="n">addr_handle_t</span>       <span class="n">base_addr</span><span class="p">;</span>
-
-    <span class="kd">action</span> <span class="nc">Write</span> <span class="p">{</span>
-        <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
-
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">words</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">write32</span><span class="p">(</span>
-                    <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span> 
-                    <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Okay, what do we have going on here? First off, let’s talk about two new
-data types: addr_handle_t and executor_claim. PSS defines the addr_handle_t
-type to represent an abstract reference to memory on the target system. 
-You can think of this as a sort of pointer if you’re a C programmer. Unlike
-in C, though, we don’t directly manipulate an addr_handle_t variable.</p>
-
-<p>PSS defines the <em>executor_claim_s</em> type to allow an action to specify 
-on which core it runs. The term <em>executor</em> encompasses both processor
-cores and elements of the testbench that execute behavior. As a user, we need
-to be able to direct actions to run on specific cores using relevant 
-characteristics of the cores. The executor <em>claim</em> data structure is
-templated with a data type that allows us to specify that relevant data.</p>
-
-<p>Finally, we have two random variables to specify a offset and size for 
-the write, and an exec block that specifies the behavior to run
-when the action executes. In this case, call the <em>write32</em> PSS 
-built-in method to write an incrementing value to a memory location.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-
-    <span class="kd">action</span> <span class="nc">Copy</span> <span class="p">{</span>
-        <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">src</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">dst</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
-
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
-            <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">words</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
-                    <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span>     
-                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">src</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
-                <span class="n">write32</span><span class="p">(</span>
-                    <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> 
-                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">dst</span><span class="o">+</span><span class="n">i</span><span class="p">)),</span> 
-                    <span class="n">tmp</span><span class="p">);</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Okay, many familiar things with the Copy action. Here, we’re also selecting
-a core to run on (<code class="language-plaintext highlighter-rouge">core</code>) and have a random <code class="language-plaintext highlighter-rouge">src</code> and <code class="language-plaintext highlighter-rouge">dst</code> offset that 
-point to different areas in memory.</p>
-
-<p>In this case, our <code class="language-plaintext highlighter-rouge">exec body</code> block reads from the source area and writes
-to the destination area.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
-
-    <span class="c1">// ...</span>
-
-    <span class="kd">action</span> <span class="nc">Check</span> <span class="p">{</span>
-        <span class="kd">rand</span> <span class="n">executor_claim_s</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span> <span class="n">core</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mh">0xFFFFFF</span><span class="p">]</span> <span class="n">offset</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="k">in</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">256</span><span class="p">]</span>      <span class="n">words</span><span class="p">;</span>
-
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">tmp</span><span class="p">;</span>
-            <span class="k">repeat</span> <span class="p">(</span><span class="n">i</span> <span class="p">:</span> <span class="n">words</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="n">read32</span><span class="p">(</span>
-                    <span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">base_addr</span><span class="p">,</span> 
-                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">)));</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">!=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="n">error</span><span class="p">(</span><span class="s">"0x%08x: expect %d ; receive %d"</span><span class="p">,</span> 
-                        <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">offset</span><span class="o">+</span><span class="n">i</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">tmp</span><span class="p">);</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Finally, our <em>Check</em> action reads back words from a region of memory and expects
-to find an incrementing pattern of data.</p>
-
-<h3 id="a-convenience-action">A Convenience Action</h3>
-<p>In order to perform a write, copy, check operation with these three actions, we
-need to ensure that some relationships hold. Let’s create a convenience action
-where we can place those constraints.</p>
-
-<p>As a side note, PSS provides much richer mechanisms for managing memory and
-coordination between actions. But let’s keep things simple for now.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">memtest_c</span> <span class="p">{</span>
-
-    <span class="c1">// ...</span>
-
-    <span class="kd">action</span> <span class="nc">WriteCopyCheck</span> <span class="p">{</span>
-        <span class="n">Write</span>             <span class="n">write</span><span class="p">;</span>
-        <span class="n">Copy</span>              <span class="n">copy</span><span class="p">;</span>
-        <span class="n">Check</span>             <span class="n">check</span><span class="p">;</span>
-
-        <span class="k">activity</span> <span class="p">{</span>
-            <span class="n">write</span><span class="p">;</span>
-            <span class="n">copy</span><span class="p">;</span>
-            <span class="n">check</span><span class="p">;</span>
-        <span class="p">}</span>
-
-        <span class="k">constraint</span> <span class="p">{</span>
-            <span class="c1">// Copy reads from same location that Write populated</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span> 
-            <span class="c1">// Check reads from the same location that Copy populated</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">dst</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">offset</span><span class="p">;</span>
-            <span class="c1">// All actions write the same number of words</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">write</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
-            <span class="n">copy</span><span class="o">.</span><span class="n">words</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">words</span><span class="p">;</span>
-
-            <span class="c1">// Ensure that src/dst regions do not overlap</span>
-            <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="p">)</span> <span class="o">||</span>
-            <span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">src</span> <span class="o">&gt;</span> <span class="n">copy</span><span class="o">.</span><span class="n">dst</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">copy</span><span class="o">.</span><span class="n">words</span><span class="p">));</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Our <code class="language-plaintext highlighter-rouge">WriteCopyCheck</code> action provides us a simple and reusable 
-write/copy/check operation that we can use and customize without
-worrying about the constraints inside.</p>
-
-<h3 id="modeling-the-cores-and-memory">Modeling the Cores and Memory</h3>
-
-<p>Let’s come back to how we describe cores. The leaf-level actions use a data
-structure named <code class="language-plaintext highlighter-rouge">core_s</code> to describe information about the processor cores.
-We can choose to put any type of data in this data structure to describe
-key attributes about the processor cores in our system. For now, let’s 
-just give each core a numeric ID.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="nc">core_s</span> <span class="p">:</span> <span class="n">executor_trait_s</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>     <span class="n">id</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>PSS defines two built-in component types to represent an individual executor
-and a group of executors. Assuming we have 4 cores, let’s define a 
-corresponding set of executors and group them.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">struct</span> <span class="nc">core_s</span> <span class="p">:</span> <span class="n">executor_trait_s</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>     <span class="n">id</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">executor_c</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span>         <span class="n">core</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
-    <span class="n">executor_group_c</span><span class="o">&lt;</span><span class="n">core_s</span><span class="o">&gt;</span>   <span class="n">cores</span><span class="p">;</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span> <span class="n">aspace</span><span class="p">;</span>
-    <span class="n">memtest_c</span>                  <span class="n">memtest</span><span class="p">;</span>
-
-    <span class="k">exec</span> <span class="k">init</span> <span class="p">{</span>
-        <span class="k">foreach</span> <span class="p">(</span><span class="n">core</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
-            <span class="n">core</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
-            <span class="n">cores</span><span class="o">.</span><span class="n">add_executor</span><span class="p">(</span><span class="n">core</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
-        <span class="p">}</span>
-
-        <span class="c1">// Define a memory region</span>
-        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span> <span class="n">region</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">memtest</span><span class="o">.</span><span class="n">base_addr</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>In the snippet above, we’ve declared an executor for each core and specified 
-its unique <code class="language-plaintext highlighter-rouge">id</code>. Each individual core is added to the <code class="language-plaintext highlighter-rouge">cores</code> group of 
-executors. As you might guess, this entire scheme is designed to handle 
-much more complex associations of cores and groups of cores.</p>
-
-<p>We also declare an address space that contains a region of memory. The memory
-region starts at 0x8000_0000 and is 0x1000_0000 in size. The <code class="language-plaintext highlighter-rouge">add_region</code> 
-call shown in the exec block returns an address handle, which we assign
-to the <code class="language-plaintext highlighter-rouge">base_addr</code> field in the memtest component. Our Write/Copy/Check 
-actions will be able to access the memory region via this handle.</p>
-
-<h3 id="creating-tests">Creating Tests</h3>
-
-<p>Let’s start by writing a test that is identical to the test flowchart that
-we’ve been looking at:</p>
-
-<div class="mermaid" align="center">
-graph TD;
-    A[Core0\nWrite]--&gt;B[Core1\nCopy];
-    B--&gt;C[Core0\nCheck];
-</div>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-
-    <span class="kd">action</span> <span class="nc">Copy_0_1_0</span> <span class="p">{</span>
-        <span class="k">activity</span> <span class="p">{</span>
-            <span class="k">do</span> <span class="nn">memtest_c</span><span class="p">::</span><span class="n">WriteCopyCheck</span> <span class="k">with</span> <span class="p">{</span>
-                <span class="n">write</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
-                <span class="n">copy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">;</span>
-                <span class="n">check</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Simply by adding a few extra constraints (rules) on top of our convenience
-Write/Copy/Check action, we can achieve exactly the scenario of writing
-data from Core 0, Copying it using Core 1, then checking the result from Core 0.
-Notice that, in this case, the size of data being created and copied is random.</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-
-    <span class="kd">action</span> <span class="nc">Copy_same_core</span> <span class="p">{</span>
-        <span class="k">activity</span> <span class="p">{</span>
-            <span class="k">do</span> <span class="nn">memtest_c</span><span class="p">::</span><span class="n">WriteCopyCheck</span> <span class="k">with</span> <span class="p">{</span>
-                <span class="n">write</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">copy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
-                <span class="n">copy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">check</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>With a slightly different set of rules, we can say that we want the same core
-to perform the write, copy, and check. The actual core (0..3) will be 
-randomly selected</p>
-
-<div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-
-    <span class="kd">action</span> <span class="nc">Copy_check_diff_core</span> <span class="p">{</span>
-        <span class="k">activity</span> <span class="p">{</span>
-            <span class="k">do</span> <span class="nn">memtest_c</span><span class="p">::</span><span class="n">WriteCopyCheck</span> <span class="k">with</span> <span class="p">{</span>
-                <span class="n">write</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">check</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">trait</span><span class="o">.</span><span class="n">id</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></div>
-
-<p>Changing the rules again, we can require the core writing data to be different
-from the core checking data. The one copying data is left completely random.</p>
-
-<h2 id="conclusion">Conclusion</h2>
-<p>While the human mind may not lend itself to efficiently reasoning about concurrency,
-automation can go a long way to simplifying the creation of multi-core tests. In this 
-post, we’ve seen a few ways in which the declarative modeling approach that PSS defines
-helps in focusing the user on capturing <em>what</em> to test, and delegating the task of
-making happen – the <em>how</em> – to the PSS test-synthesis tool. This lets us quickly
-change the rules of the test to focus in on specific scenarios – how much data 
-is being transferred, for example – and the generated test follows. This results in 
-a huge boost in test-creation productivity vs manually coding (or copy/paste/modifying)
-individual tests.</p>
-
-<p>If you have access to a PSS processing tool, please try out the example code
-(link below). You should be able to observe the multi-core synchronization code 
-that the PSS tool emits to explicitly schedule and synchronize behavior across
-multiple processor cores.</p>
-
-<p>In the next post, we’ll start to learn about the features PSS provides to help 
-actions communicate in a reusable and modular fashion.</p>
-
-<h3 id="references">References</h3>
-<ul>
-  <li><a href="https://www.npr.org/2008/10/02/95256794/think-youre-multitasking-think-again">https://www.npr.org/2008/10/02/95256794/think-youre-multitasking-think-again</a></li>
-  <li><a href="https://en.wikipedia.org/wiki/Declarative_programming">https://en.wikipedia.org/wiki/Declarative_programming</a></li>
-  <li><a href="https://bitsbytesgates.com/code_html/2023/03/memtest.html">MemTest PSS Code (Viewing)</a></li>
-  <li><a href="https://bitsbytesgates.com/code/2023/03/memtest.pss">MemTest PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As humans, we often pride ourselves on our ability to multi-task. Not only can we participate in a meeting, we can we simultaneously prepare the slides for the next meeting. Sadly, science has some bad news about our perception to multitask vs our actual ability. In reality, like a single-core processor, our mind is rapidly context switching between tasks to provide an illusion of simultaneous focus on multiple tasks. Re-establishing sole focus on a task can take 20 minutes and, during that time, productivity suffers by as much as 40%. Suffice it to say that we’re really working at half speed when constantly multitasking. What does multi-tasking have to do with PSS and bare-metal test creation? Well, there is another task that I’ve observed humans consistently find challenging: parallel and, especially, multi-core programming. I think there’s actually a connection between this and the challenges our brain has in multi-tasking. With a sequential program, I can reason step-by-step as to what happens. I can do the same for some portions of a parallel program. But, whenever the parallel threads interact, I need to reason about their possible relationships at that point in time. What happens under each possible ordering of threads reaching the synchronization point? It’s this last point that, I think, really stresses our multi-tasking ability. Not only do we need to envision what is happening in the context of one thread, but need to simultaneously envision the set of possible actions the other threads may be taking.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Modularity and reuse are key concerns when it comes to programming languages. While languages without many modularity and reuse features may be quick and easy to write – think shell scripts – they ultimately fail to scale. PSS provides a wealth of mechanisms for structuring test content for reuse that are familiar to users of object-oriented languages. That said, PSS provides unique approaches to modularity and reuse as well. The PSS modeling layer is strongly declarative, and this has significant implications on the approach that PSS takes to provide reuse features for composing declarative behaviors. In this post, we will start to look at declarative data relationships via the PSS buffer construct.]]></summary></entry></feed>

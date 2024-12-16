@@ -97,6 +97,16 @@ Post-env
         <ul class="nested" list-style-type="none">
         
         
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2024/12/15/PSS_WhatsNext.html">What's Next for PSS?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
         <li><span class="caret">Nov</span>
         <ul class="nested" list-style-type="none">
         
@@ -642,231 +652,171 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/python/2024/11/17/PyHDL_Convenience_API.html">Easy Access to Python Libraries with a SystemVerilog Convenience API</a>
+    <a href="/pss/2024/12/15/PSS_WhatsNext.html">What's Next for PSS?</a>
   </h1>      
 
 <div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/11/PyHDL_IF_Convenience_API.png" /> 
+<img src="https://bitsbytesgates.com/imgs/2024/12/PSSFuture_splash.png" /> 
 </p>
 
-<p>In the last post 
-(<a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</a>), 
-we looked at how to use the <a href="https://fvutils.github.io/pyhdl-if">PyHDL-IF</a> library 
-to call SystemVerilog from Python. 
-This is, in some sense, the most challenging Python and SV interaction to implement. 
-And, as the title suggests, it’s something that definitely requires
-more than just the raw features of the SystemVerilog DPI.</p>
+<p>As the year winds down, it’s a good time to think about the coming year and the
+areas where I’d like to have an impact. One area of particular
+interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera 
+PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt
+fortunate to have been involved with PSS Working Group (PSWG) from its inception,
+and to see how the growing body of features in PSS have allowed the language to 
+enable test-content portability across simulation, emulation, and post-silicon
+targets.</p>
 
-<p>That said, there are many cases where we simply want to access some functionality
-that is readily-available in Python and not readily-available in SystemVerilog. 
-In these cases, we don’t need to call back into SystemVerilog from Python. 
-Arguably, we <strong>could</strong> simply use SystemVerilog DPI To call the relevant 
-<a href="https://docs.python.org/3/c-api/">Python C API</a>. The PyHDL-IF library uses the
-Python C API internally to implement cross-calling between SystemVerilog and
-Python, and it’s always good to have it as an option. The downside is that code that
-uses the C API tends to be rather verbose, so let’s see if we can improve the
-situation with a SystemVerilog convenience API.</p>
+<p>The release of PSS 3.0 also provides an opportunity to step back and consider 
+the future of PSS – not just incremental additions to its current field of use,
+but also how its use could expand to other portions of the design and verification process.</p>
 
 <!--more-->
 
-<h1 id="pyhdl-if-architecture">PyHDL-IF Architecture</h1>
-
-<p>The PyHDL-IF implements the interface between Python and HDLs with a layered architecture.</p>
+<p>Today, the PSS language provides powerful features for capturing test 
+scenarios. It’s particularly adept at capturing IP programming sequences
+that are reusable from IP to system level.</p>
 
 <div class="mermaid" align="center">
 block-beta
 columns 1
-  block:UIApp
-  columns 1
-    TitleApp["App-Specific Interfaces"]
-    style TitleApp fill:transparent,stroke:transparent
-    block:UICodeAPIs
-      UICall["Method Call"]
-      UITlm["TLM"]
-    end
-  end
-  block:UIMid
-  columns 1
-    TitleMid["Convenience API"]
-  end
-  block:UIDirect
-  columns 1
-    TitleDirect["CPython API"]
+  block:Areas
+    A["Arch"]
+    B["Sw Models"]
+    C["Impl (RTL)"]
+    D["DV (Sim)"]
+    E["DV (Emu)"]
+    F["Prototying"]
+    G["Si Bring-Up"]
+    H["Si Validation"]
   end
 </div>
 
-<p>In the <a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">last post</a>,
-we looked at an example built on top of the ‘Call’ API. This is the API that manages blocking cross-calling
-between Python and a HDL. Using this API requires us to mark up our Python API with decorators and generate
-SystemVerilog source to implement the API in the SystemVerilog environment.</p>
+<p>Currently, the use of PSS centers around DV, prototyping, and silicon
+bring-up. PSS has plenty of room in which to expand adoption in 
+these areas, but there are also many others areas where PSS 
+could play and add value.</p>
 
-<p>We could use this same approach to “wrap up” the API of a Python library and expose it to SystemVerilog. But,
-it often makes sense to use one of the lower-level interface APIs. Let’s look at an example.</p>
+<p>Looking forward, there are three key areas where I’m looking to see growth
+in the PSS language and ecosystem:</p>
 
-<h1 id="loading-json-data">Loading JSON Data</h1>
+<h2 id="develop-pss-core-language">Develop PSS Core Language</h2>
 
-<p>UVM testbench environments can be highly-configurable when used for complex, configurable IPs. Capturing 
-the configuration data in a JSON or YAML file is helpful in keeping all the settings in one place. 
-The challenge arises when we want to acccess that data from our UVM environment. Current options include:</p>
+<p>An evolving language is critical to maintaining interest and users. 
+Needs, styles, and approaches change over time, and a programming
+language must react to these changes in requirement in order to remain
+relevant. My informal observation is that, since the mid-2010s, more 
+programming languages are shortening the interval between updates
+to the language. I’m happy to see the PSS language continuing to
+grow and evolve in the context of the Accelera PSWG.</p>
 
+<h2 id="grow-pss-ecosystem">Grow PSS Ecosystem</h2>
+
+<p>Ecosystems are key to the success of any programming language. Having a 
+vibrant ecosystem means that users of a language will have access to 
+code snippets, expertise, and reusable libraries created by other users
+of the language. Vibrant ecosystems also act as a pipeline, getting 
+students interested in and familiar with the language.</p>
+
+<p>I’d also like to see more publicly-available examples and libraries. 
+Having real live code out there to play with is a critical part of
+learning a new technology.</p>
+
+<h2 id="exploration-of-new-applications">Exploration of New Applications</h2>
+
+<p>New applications and integrations is the area in which I most like to play.
+Each phase of the design process shown above has its own unique 
+requirements that it places – most often on <em>how</em> the language is 
+processed, but sometimes on the features provided by the language itself
+as well.</p>
+
+<p>There are key differences in test requirements across the different platforms
+shown in the diagram above, and worth exploring how that impacts how 
+tests are implemented. But, in addition, there might be some other interesting
+roles for PSS across the process. Could we use PSS, for example, to implement
+an architectural model of the design?</p>
+
+<h1 id="thinking-forward">Thinking Forward</h1>
+<p>Given these three areas, it’s reasonable to ask how we can “move the needle” 
+in each of them. To a certain extent, continued evolution of the core
+language might have the simplest answer since there’s a well-established 
+group (the Accellera PSWG) with members from across the industry that meet 
+weekly to discuss that topic.</p>
+
+<p>Advancing the other two areas poses a technology-access challenge. It’s 
+fine to speculate on how PSS might contribute to the design process, 
+for example. However, I’d argue that what most people really want to see
+are implementations (proof-of-concept or production) that deliver 
+concrete results.</p>
+
+<p>The same holds for building knowledge of PSS. It’s fine to read descriptions
+about how PSS works and how to use it to create test scenarios. Real learning
+takes places when people are able to work with the language themselves and
+internalize the key concepts of the language.</p>
+
+<h2 id="pss-and-open-source">PSS and Open Source</h2>
+<p>Open source software has been a powerful enabler of exploration in other ecosystems. 
+Having open source resources encourages people to learn about a technology. 
+It also provides a basis for experimentation that doesn’t require an interested
+party to start at zero.</p>
+
+<h2 id="zuspec">Zuspec</h2>
+<p>Starting in 2025, I’ll be starting to write more about components within the 
+<em>Zuspec</em> umbrella project. Consequently, it’s worth providing a brief 
+introduction to what <em>Zuspec</em> is, what it’s not, and what to expect.</p>
+
+<p>Zuspec is a collection of functionality for working with the style of
+action-centric dataflow descriptions used by the PSS language. The
+philosophy of the component libraries is to keep things as modular as
+possible to maximize the reuse opportunities even as we discover different
+ways in which to productively use and apply these descriptions.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/12/Zuspec_crop.png" style="width: 200px" />
+</p>
+
+<p>The <em>Zuspec</em> name is a portmanteau of zusammen (German for together) and ‘spec’,
+and reflects my ambition for PSS to be a specification that brings together
+disciplines such as design and verification that are quite separate today.</p>
+
+<p>From a technical perspective, the vast majority of Zuspec components are 
+implemented as C++ libraries (for speed) that also have Python bindings, 
+making it easy to use a small amount of Python to mix them together 
+into an application.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2024/12/ZuspecProjectMap.png" style="width: 800px" />
+</p>
+
+<p>Zuspec is much more of a technology framework than a tool today. You won’t find
+any fancy GUIs. And, it’s in an early state of development and testing: 
+you should expect to find bugs. That said, my hope is that if these 
+components can help me to explore new areas of PSS application they can
+enable others to do the same. Starting in the new year, I’ll be writing
+more about the components and what they allow us to do with a 
+PSS-based description</p>
+
+<h1 id="pss-looking-forward">PSS Looking Forward</h1>
+
+<p>I continue to see PSS as having a bright future. It’s providing strong value
+in the areas of test-content reuse, with a focus on simulation, emulation, 
+and silicon bring-up. And, as more people learn about PSS and get 
+hands-on experience with the language and its capabilities, I’m confident 
+that adoption will continue to grow. I also see great possibilities for the 
+language to expand its application space into domains adjacent to where it 
+is applied today.</p>
+
+<p>In the coming year, I’m looking forward to writing more about what PSS 
+enables today, and what it could enable in the future. And, of course,
+expect to hear more about other tools and technologies related to design
+and verification. There is always something new to learn and explore!</p>
+
+<h1 id="references">References</h1>
 <ul>
-  <li><strong>Integrate a parser implemented in C via SV DPI</strong></li>
-  <li><strong>Implement a parser in SystemVerilog</strong></li>
-</ul>
-
-<p>Both of these involve a fair amount of (likely project-specific) work and debugging. In contrast, reading 
-a JSON file in Python and iterating through the top-level entries is trivial:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">json</span>
-
-<span class="n">datafile</span> <span class="o">=</span> <span class="s">"data1.json"</span>
-
-<span class="n">fp</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="n">datafile</span><span class="p">,</span> <span class="s">"r"</span><span class="p">)</span>
-<span class="n">data_s</span> <span class="o">=</span> <span class="n">fp</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
-<span class="n">fp</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
-
-<span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">data_s</span><span class="p">)</span>
-<span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="nf">keys</span><span class="p">()</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %d %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-
-<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %s"</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span></code></pre></figure>
-
-<h1 id="svpython-convenience-api">SV/Python Convenience API</h1>
-<p>Using the PyHDL-IF library, we actually have several options for leveraging Python to access JSON data. 
-Let’s look at using <a href="https://fvutils.github.io/pyhdl-if/sv_api.html#systemverilog-api">SystemVerilog convenience API</a>. 
-This API is object-oriented and higher level than the raw CPython API (which we also can use).</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
-
-    <span class="k">initial</span> <span class="k">begin</span>
-        <span class="k">automatic</span> <span class="kt">string</span> <span class="n">datafile</span><span class="p">;</span>
-        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">json</span><span class="p">,</span> <span class="n">data_fp</span><span class="p">,</span> <span class="n">data_s</span><span class="p">;</span>
-        <span class="k">automatic</span> <span class="n">py_dict</span> <span class="n">data</span><span class="p">;</span>
-        <span class="k">automatic</span> <span class="n">py_list</span> <span class="n">keys</span><span class="p">;</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">$</span><span class="n">value</span><span class="p">$</span><span class="n">plusargs</span><span class="p">(</span><span class="s">"data=%s"</span><span class="p">,</span> <span class="n">datafile</span><span class="p">))</span> <span class="k">begin</span>
-            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Error: no datafile specified"</span><span class="p">);</span>
-            <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
-        <span class="k">end</span>
-
-        <span class="n">py_gil_enter</span><span class="p">();</span>
-
-        <span class="c1">// Import Python's 'json' package </span>
-        <span class="n">json</span> <span class="o">=</span> <span class="n">py_import</span><span class="p">(</span><span class="s">"json"</span><span class="p">);</span>
-
-        <span class="c1">// Open and read the specified data file</span>
-        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span>
-        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
-        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span>
-
-        <span class="c1">// Parse the data</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> 
-            <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span>
-
-        <span class="c1">// Get the list of keys</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
-
-        <span class="c1">// Iterate based on the list size</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
-        <span class="k">end</span>
-
-        <span class="c1">// Use an iterator</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
-            <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
-            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
-        <span class="k">end</span>
-
-        <span class="n">py_gil_leave</span><span class="p">();</span>
-    <span class="k">end</span></code></pre></figure>
-
-<p>The code above accomplishes the same thing as the pure-Python code that reads a JSON file. 
-While the SystemVerilog code involves roughly twice as many lines as the pure-Python code,
-it <em>is</em> pure SystemVerilog. And, it didn’t require us to do any code generation or any
-special “tagging” of Python code. Let’s look in more detail at what’s happening in this
-code, and how the PyHDL-IF convenience API helps us out.</p>
-
-<h2 id="calling-built-in-functions">Calling Built-in Functions</h2>
-<p>One of the first things we need to do is to read the contents of the JSON data file. 
-The Python <code class="language-plaintext highlighter-rouge">open</code> function is a built-in. This means that it’s not contained in 
-another package or module that needs to be imported.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span></code></pre></figure>
-
-<p>PyHDL-IF provides the <code class="language-plaintext highlighter-rouge">py_call_builtin</code> function to call built-ins. The PYthon C API
-requires function arguments to be Python objects, and to be packed in a Tuple. The
-<code class="language-plaintext highlighter-rouge">py_tuple::mk_init</code> function handles creating the properly-sized tuple. The helper
-function <code class="language-plaintext highlighter-rouge">py_from_str</code> creates a Python string object from a SystemVerilog string value.</p>
-
-<h2 id="calling-methods">Calling Methods</h2>
-<p>The <code class="language-plaintext highlighter-rouge">open</code> function returns a Python stream object. We want to read all the data from
-the file and then close the file.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
-        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span></code></pre></figure>
-
-<p>The <code class="language-plaintext highlighter-rouge">call_attr</code> function implemented by the <code class="language-plaintext highlighter-rouge">py_object</code> SV class handles looking up the
-requested attribute within the Python object and calling it. In this case, 
-both <code class="language-plaintext highlighter-rouge">read</code> and <code class="language-plaintext highlighter-rouge">close</code> methods take no arguments.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="c1">// Parse the data</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span></code></pre></figure>
-
-<p>Python views everything as an object. Consequently, the <code class="language-plaintext highlighter-rouge">loads</code> method within
-the <code class="language-plaintext highlighter-rouge">json</code> package is just an attribute with the json package object. This means
-that we can call it in the same way we would invoke a method on a class-type object.
-We happen to know that the return of the <code class="language-plaintext highlighter-rouge">loads</code> method is a Python dictionary (<code class="language-plaintext highlighter-rouge">dict).
-Therefore, we can directly convert the return value to a </code>py_dict` object. This allows
-us to use convenience methods to access the data.</p>
-
-<h2 id="iterating">Iterating</h2>
-<p>Now that we have a Python dictionary containing the JSON data, we likely will 
-want to iterate over it. The PyHDL-IF objects also provide some convenience 
-APIs to help simplify this process as well.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Get the list of keys</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
-
-    <span class="c1">// Iterate based on the list size</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
-    <span class="k">end</span></code></pre></figure>
-
-<p>A Python dictionary returns it key set as a list. Perhaps the simplest way
-to iterate over the items of list is to get each element via its index,
-as shown above.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Use an iterator</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
-        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
-        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
-    <span class="k">end</span></code></pre></figure>
-
-<p>The list object also implements Python’s <em>iteration</em> interface. PyHDL-IF
-also provides helper types and functions around this interface. We can
-still use a SystemVerilog <em>for</em> loop. The difference is that the iteration
-variable is actually a Python iterator object. Here, again, the convenience
-API simplifies the user code compared to using the raw CPython API.</p>
-
-<h1 id="conclusion">Conclusion</h1>
-<p>The PyHDL-IF Python convenience API enables you to call Python code from
-SystemVerilog without the need to generate any application-specific 
-code, and with less work that directly using the CPython API would require.
-This reduction of effort makes is incredibly simple to augment the capabilities
-of your existing testbench with those of a library from the vast Python ecosystem.</p>
-
-<h1 id="resources">Resources</h1>
-<ul>
-  <li><a href="https://fvutils.github.io/pyhdl-if/">PyHDL-IF Documentation</a></li>
-  <li><a href="https://fvutils.github.io/pyhdl-if/sv_api.html">PyHDL-IF SV Convenience API</a></li>
-  <li><a href="https://docs.python.org/3/c-api/index.html">CPython API</a></li>
+  <li>Accellera - https://accellera.org</li>
+  <li>PSS Tutorial Video - https://www.accellera.org/resources/videos/portable-stimulus-tutorial-2024</li>
+  <li>PSS LRM - https://www.accellera.org/downloads/standards/portable-stimulus</li>
 </ul>
 </div>
 
