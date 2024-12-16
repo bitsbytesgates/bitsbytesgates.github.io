@@ -1,0 +1,201 @@
+---
+layout: post
+title:  "What's Next for PSS?"
+date: 2024-12-11
+categories: PSS
+excerpt_separator: <!--more-->
+mermaid: true
+---
+
+As the year winds down, it's a good time to think about the coming year and the
+areas where I'd like to have an impact in the coming year. One area of particular
+interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera 
+PSS working group released the 3.0 version of the PSS LRM in August. I feel 
+fortunate to have been involved with PSS Working Group (PSWG) from its inception,
+and to see how the growing body of features in PSS have allowed the language to 
+enable test-content portability across simulation, emulation, and post-silicon
+targets. 
+
+The release of PSS 3.0 also provides an opportunity to step back and consider 
+the future of PSS -- not just incremental additions to its current field of use,
+but also how its use could expand to other portions of the design and verification process.
+
+<!--more-->
+
+Today, the PSS language provides powerful features for capturing test 
+scenarios. It's particularly adept at capturing IP programming sequences
+that are reusable from IP to system level. 
+
+
+<div class="mermaid" align="center">
+block-beta
+columns 1
+  block:Areas
+    A["Arch"]
+    B["Sw Models"]
+    C["Impl (RTL)"]
+    D["DV (Sim)"]
+    E["DV (Emu)"]
+    F["Prototying"]
+    G["Si Bring-Up"]
+    H["Si Validation"]
+  end
+</div>
+
+Currently, the use of PSS centers around DV, prototyping, and silicon
+bring-up. And, PSS has a lot of room to grow in its use in these areas.
+But, there are many others potential areas of the design, verification, and 
+validation process where PSS potentially could add value. For the most part,
+PSS really just doesn't play in these areas today.
+
+Looking forward, there a three key areas where I'm looking to see growth
+in the PSS language and ecosystem:
+
+## PSS Core Language
+- Continued development of the language itself
+- Many more people learning and using PSS (professionals, hobbyists, academics, etc)
+- People pushing the envelope of what PSS can do. 
+  - Beyond test applications where it's currently applied -- what about using it to write firmware?
+  - 
+
+## PSS Ecosystem
+
+## PSS New Applications
+
+
+Given these three areas, it's reasonable to ask how we can "move the needle" 
+in each and all of them. To a certain extent, continued evolution of the core
+language might have the simplest answer since there's a well-established 
+group (the Accellera PSWG) with members from across the industry that meet 
+weekly to discuss that topic.
+
+Advancing the other two areas poses a technology-access challenge. It's 
+fine to speculate on how PSS might contribute to the design process, 
+for example. However, I'd argue that what most people really want to see
+are implementations (proof-of-concept or production) that deliver 
+concrete results.
+
+The same holds for building knowledge of PSS. It's fine to read descriptions
+about how PSS works and how to use it to create test scenarios. Real learning
+takes places when people are able to work with the language themselves and
+internalize the key concepts of the language.
+
+
+# PSS and Open Source
+Open source software has been a powerful enabler of exploration in other ecosystems. 
+Having open source resources encourages people to learn about a technology. 
+It also provides a basis for experimentation that doesn't require an interested
+party to start at zero.
+
+## Zuspec
+Starting in 2025, I'll be starting to write more about components within the 
+*Zuspec* umbrella project. Consequently, it's worth providing a brief 
+introduction to what *Zuspec* is, what it's not, and what to expect.
+
+Zuspec is a collection of functionality for working with the style of
+action-centric dataflow descriptions used by the PSS language. The
+philosophy of the component libraries is to keep things as modular as
+possible to maximize the reuse opportunities even as we discover different
+ways in which to productively use and apply these descriptions.
+
+The *Zuspec* name is a portmanteau of zusammen (German for together) and 'spec',
+and reflects my ambition for PSS to be a specification that brings together
+disciplines such as design and verification that, today, are quite separate.
+
+From a technical perspective, the vast majority of Zuspec components are 
+implemented as C++ libraries (for speed) that also have Python bindings, 
+making it easy to use a small amount of Python to mix them together 
+into an application.
+
+Zuspec is much more of a technology framework than a tool today. You won't find
+any fancy GUIs. And, it's in an early state of development and testing: 
+you should expect to find bugs. That said, my hope is that if these 
+components can help me to explore new areas of PSS application they can
+enable others to do the same. Starting in the new year, I'll be writing
+more about the components and what they allow us to do with a 
+PSS-based description
+
+# PSS Looking Forward
+
+I continue to see PSS as having a bright future. It's providing strong value
+in the areas of test-content reuse, with a focus on simulation, emulation, 
+and silicon bring-up. And, as more people learn about PSS and get 
+hands-on experience with the language and its capabilities, I'm confident 
+that adoption will continue to grow. I also see great possibilities for the 
+language to expand its application space into domains adjacent to where it 
+is applied today. 
+
+In the coming year, I'm looking forward to writing more about what PSS 
+enables today, and what it could enable in the future. And, of course,
+expect to hear more about other tools and technologies related to design
+and verification. There is always something new to learn and explore!
+
+
+## Growing Ecosystem of PSS-Knowledgeable Users and Collateral
+There is clear evidence that PSS adoption is growing. Look at vendor-published 
+success stores, look at conference papers, even look at LinkedIn, and you will
+see mentions of PSS. 
+
+There's clearly room to grow here, though.  I'd like to see more reusable 
+open-source libraries of PSS content. And, I would love to see more people 
+generally learning about PSS. 
+
+
+- A language like PSS is tightly intertwined with the environment in which its users work
+- Silicon engineering is a fast-moving discipline, with new challenges emerging frequently.
+- Natural to expect PSS to grow and adapt to those emerging challenges
+- Like to steal a page from the playbook of language, such as Python, that are always looking
+  for ways to simplify life for users. If a new language feature helps to convey intent in
+  half the lines that we would use now, let's do that. In addition to boosting productivity,
+  smaller bodies of code are easier to maintain and have fewer lurking bugs. 
+- Generative AI is the new kid on the block. It's already changing the way that we create
+  software. While it's not clear how it will impact the way that we crete tests, I can
+  guarantee that it will change it. 
+  We shouldn't just be asking how generative AI will change the way that we use programming
+  languages. We should also be asking how our programming languages should change to 
+  better-leverage generative AI. 
+
+  The interesting thing about generative AI is that it
+  won't just change how we work with existing programming languages. It is highly likely 
+  to change the character of those languages as well. 
+
+
+
+
+## Exploration of New PSS Applications
+- Know that PSS is productively applied to testing
+- The test space is huge, and current application of PSS really only scratches the surface 
+  of the full set of possibilities in terms of how tests are created and their capabilities.
+  Lots of opportunity here to explore how PSS description maps to a test implementation.
+- In addition, some of the very things that make PSS attractive for modeling tests 
+  also potentially make it attractive for other types of modeling as well.
+  - Early architectural and behavioral modeling
+    - Static/Statistical analysis
+    - Executable
+  - Possibly, even design
+
+
+I've been fortunate to have been a part of the PSS journey, and look forward to being 
+an active part of its future.  PSS is currently ready to deploy, and offers specific 
+features tailored to applications that require test-content reuse and cross-platform 
+portability. In the coming posts, we'll look at some emerging options to enable learning 
+and exploration of PSS.
+
+# References
+- Accellera - https://accellera.org
+- PSS Tutorial Video - https://www.accellera.org/resources/videos/portable-stimulus-tutorial-2024
+- PSS LRM - https://www.accellera.org/downloads/standards/portable-stimulus
+- https://www.analog.com/en/resources/technical-articles/product-life-cycle-of-an-interconnect-bus.html
+
+<div class="mermaid" align="center">
+gantt
+    title PSS Development
+    dateFormat YYYY-MM
+    todayMarker off
+    PSPWG           :2014-05,2014-12
+    PSS 1.0         :2015-01,2018-06
+    PSS 2.0         :2018-07,2021-04
+    PSS 2.1         :2021-05,2023-10
+    PSS 3.0         :2021-05,2024-08
+    PSS 3.1         :2024-09,2025-08
+</div>
