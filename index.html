@@ -90,6 +90,26 @@ Post-env
     
     <ul class="BlogPostTreeUL" list-style-type="none">
     
+        <li list-style-type="none"><span class="caret">2025</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2025</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2025/02/04/Transpilation_and_PSS.html">Transpilation and PSS</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
         <li list-style-type="none"><span class="caret">2024</span>
         <!--
         <a class="sidebar-nav-item active" href="">2024</a>
@@ -623,7 +643,7 @@ class="jfk-button jfk-button-action " style="">
 
 
     <p>
-      &copy; 2014-2024 Matthew Ballance. 
+      &copy; 2014-2025 Matthew Ballance. 
       <br/>
       All rights reserved.
     </p>
@@ -652,172 +672,203 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/pss/2024/12/15/PSS_WhatsNext.html">What's Next for PSS?</a>
+    <a href="/pss/2025/02/04/Transpilation_and_PSS.html">Transpilation and PSS</a>
   </h1>      
 
 <div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/12/PSSFuture_splash.png" /> 
+<img src="https://bitsbytesgates.com/imgs/2025/02/PSSTranspilation_splash.png" /> 
 </p>
 
-<p>As the year winds down, it’s a good time to think about the coming year and the
-areas where I’d like to have an impact. One area of particular
-interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera 
-PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt
-fortunate to have been involved with PSS Working Group (PSWG) from its inception,
-and to see how the growing body of features in PSS have allowed the language to 
-enable test-content portability across simulation, emulation, and post-silicon
-targets.</p>
+<p>You’re probably familiar with compilers. They take a high-level input description – 
+typically a programming language – and distill it down to an efficient 
+low-level implementation. Typically the implementation is machine code or 
+bytecode. In other words, as close as possible to what will actually execute 
+given the language ecosystem.</p>
 
-<p>The release of PSS 3.0 also provides an opportunity to step back and consider 
-the future of PSS – not just incremental additions to its current field of use,
-but also how its use could expand to other portions of the design and verification process.</p>
+<p>You might be less familiar with transpilers (or 
+source-to-source compilers, as they are <a href="https://en.wikipedia.org/wiki/Source-to-source_compiler">also known</a>). Transpilers convert
+an input in one programming language to output in another programming language
+with a similar level of abstraction. Transpilers have been in use for a very 
+long time. For example, the C++ language was originally implemented with 
+<a href="https://en.wikipedia.org/wiki/Cfront">Cfront</a>, a transpiler that converted
+C++ input to C code that any C compiler could process. More recently, the 
+<a href="https://www.typescriptlang.org/">Typescript</a> and 
+<a href="https://en.wikipedia.org/wiki/ECMAScript">Javascript/ECMAScript</a> ecosystems
+have used transpilation extensively to allow the languages to evolve while
+maintaining an impressive level of backward compatibility with older 
+implementations of the language.</p>
+
+<p>The next few posts will start to explore what we can do by transpiling
+test scenarios in PSS into implementations in existing programming languages.</p>
 
 <!--more-->
 
-<p>Today, the PSS language provides powerful features for capturing test 
-scenarios. It’s particularly adept at capturing IP programming sequences
-that are reusable from IP to system level.</p>
+<h1 id="is-pss-a-programming-language">Is PSS a Programming Language?</h1>
+<p>Both compilers and transpilers are software concepts, so it’s worth asking
+whether PSS language is a programming language. Portions of the language 
+do provide the features of a standard programming language – if/else,
+loops, functions, and data structures. In this portion of the language,
+these constructs retain the same <em>imperative</em> semantics as the 
+equivalent constructs in software programming languages.</p>
+
+<p>The other major portion of the language has <em>declarative</em> semantics.
+This means that we focus on capturing the <em>rules</em> of our test scenarios
+instead of capturing how we will <em>implement</em> our test scenarios.</p>
+
+<h2 id="why-be-declarative">Why be declarative?</h2>
+
+<p>Take, for example, test scenarios that exercise a multi-channel DMA
+controller. When our test exercises multiple channels at the same
+time, it needs to use unique channels. With PSS, we can simply 
+state that this is a rule: DMA channels are <em>resources</em> that 
+can only be used by a single behavior at a time.</p>
+
+<p>In contrast, if we are writing our tests in a regular programming 
+language, we would need to design a channel-allocation algorithm 
+to manage DMA channels for our tests. Actually, we would
+probably need several algorithms to handle all the corner cases
+that our tests need to cover.</p>
+
+<p>The declarative nature of the PSS language increases our testing
+productivity by allowing us to capture the rules of our scenarios
+and automate the work of implementing tests.</p>
+
+<h1 id="creating-model-implementations">Creating Model Implementations</h1>
+<p>Capturing tests in this way has huge productivity benefits. It also
+has a (subjective) downside: we need to use a <em>constraint solver</em> 
+to evaluate the model and select the data and operation schedule 
+that will be used to exercise the design. Constraints solvers are 
+marvelous tools for ripping through reams of constraints, but 
+they’re not considered <em>fast</em> when compared to the execution speed 
+of regular procedural programming languages. In addition, 
+constraint solvers typically require substantial resources to run.</p>
+
+<p>This need to <em>solve</em> the PSS model to generate specific tests, 
+along with different verification-platform characteristics,
+has resulted in two common ways to produce tests from a PSS model:</p>
+
+<ul>
+  <li><strong>On-the-Fly Solving</strong> - This model is typically used in simulation.
+A special PSS interpreter and constraint solver run in parallel with
+the simulation and make choices as they are needed.</li>
+  <li><strong>Pre-Run Test Generation</strong> - This model is typically used when 
+the test will run on a processor core within the design. In this model,
+the entire test is produced as source code prior to the start of 
+test execution.  We want to keep the code that runs on the processor 
+core simple for many reasons, and pre-solving the PSS model allows 
+us to do this.</li>
+</ul>
+
+<p>Both of these models are useful and important, but the on-the-fly
+model is very interesting because it suggests that we might be able
+to leverage the constraint solver within our SystemVerilog simulators
+to provide the solving needed to evaluate our PSS models.</p>
+
+<h1 id="transpiling-pss-to-systemverilog">Transpiling PSS to SystemVerilog</h1>
+<p>I’ve been working PSS infrastructure, in general, for a while. More
+recently, I’ve focused on using that infrastructure to implement the
+beginnings of a PSS to SystemVerilog transpiler.</p>
+
+<p>The general flow is shown below.</p>
 
 <div class="mermaid" align="center">
 block-beta
-columns 1
-  block:Areas
-    A["Arch"]
-    B["Sw Models"]
-    C["Impl (RTL)"]
-    D["DV (Sim)"]
-    E["DV (Emu)"]
-    F["Prototying"]
-    G["Si Bring-Up"]
-    H["Si Validation"]
+%% columns 5
+  block:Source
+    columns 1
+    PssFiles["PSS Files"]
+    Files1
+    Files2
+    Files3
+    Files["PSS Source"]
+    style Files1 fill:transparent,stroke:transparent,color:transparent
+    style Files2 fill:transparent,stroke:transparent,color:transparent
+    style Files3 fill:transparent,stroke:transparent,color:transparent
+    style Files fill:transparent,stroke:transparent
   end
+  block:Pkgs
+    columns 1
+    ScenarioPkg["Scenario-Specific Types"]
+    ModelPkg["Model-Specific Shared Types"]
+    Spacer1
+    Spacer2
+    Spacer3["Generated SV"]
+    style Spacer1 fill:transparent,stroke:transparent,color:transparent
+    style Spacer2 fill:transparent,stroke:transparent,color:transparent
+    style Spacer3 fill:transparent,stroke:transparent
+  end
+  block:Runtime
+    columns 1
+    ScenarioPkg2["Scenario-Specific Types"]
+    ModelPkg2["Model-Specific Shared Types"]
+    ClassLib["Shared Class Library"]
+    SVSolver["SystemVerilog Runtime"]
+    Runtime1["Runtime"]
+    style Runtime1 fill:transparent,stroke:transparent
+  end
+  Source--&gt;Pkgs
+  Pkgs--&gt;Runtime
 </div>
 
-<p>Currently, the use of PSS centers around DV, prototyping, and silicon
-bring-up. PSS has plenty of room in which to expand adoption in 
-these areas, but there are also many others areas where PSS 
-could play and add value.</p>
-
-<p>Looking forward, there are three key areas where I’m looking to see growth
-in the PSS language and ecosystem:</p>
-
-<h2 id="develop-pss-core-language">Develop PSS Core Language</h2>
-
-<p>An evolving language is critical to maintaining interest and users. 
-Needs, styles, and approaches change over time, and a programming
-language must react to these changes in requirement in order to remain
-relevant. My informal observation is that, since the mid-2010s, more 
-programming languages are shortening the interval between updates
-to the language. I’m happy to see the PSS language continuing to
-grow and evolve in the context of the Accelera PSWG.</p>
-
-<h2 id="grow-pss-ecosystem">Grow PSS Ecosystem</h2>
-
-<p>Ecosystems are key to the success of any programming language. Having a 
-vibrant ecosystem means that users of a language will have access to 
-code snippets, expertise, and reusable libraries created by other users
-of the language. Vibrant ecosystems also act as a pipeline, getting 
-students interested in and familiar with the language.</p>
-
-<p>I’d also like to see more publicly-available examples and libraries. 
-Having real live code out there to play with is a critical part of
-learning a new technology.</p>
-
-<h2 id="exploration-of-new-applications">Exploration of New Applications</h2>
-
-<p>New applications and integrations is the area in which I most like to play.
-Each phase of the design process shown above has its own unique 
-requirements that it places – most often on <em>how</em> the language is 
-processed, but sometimes on the features provided by the language itself
-as well.</p>
-
-<p>There are key differences in test requirements across the different platforms
-shown in the diagram above, and worth exploring how that impacts how 
-tests are implemented. But, in addition, there might be some other interesting
-roles for PSS across the process. Could we use PSS, for example, to implement
-an architectural model of the design?</p>
-
-<h1 id="thinking-forward">Thinking Forward</h1>
-<p>Given these three areas, it’s reasonable to ask how we can “move the needle” 
-in each of them. To a certain extent, continued evolution of the core
-language might have the simplest answer since there’s a well-established 
-group (the Accellera PSWG) with members from across the industry that meet 
-weekly to discuss that topic.</p>
-
-<p>Advancing the other two areas poses a technology-access challenge. It’s 
-fine to speculate on how PSS might contribute to the design process, 
-for example. However, I’d argue that what most people really want to see
-are implementations (proof-of-concept or production) that deliver 
-concrete results.</p>
-
-<p>The same holds for building knowledge of PSS. It’s fine to read descriptions
-about how PSS works and how to use it to create test scenarios. Real learning
-takes places when people are able to work with the language themselves and
-internalize the key concepts of the language.</p>
-
-<h2 id="pss-and-open-source">PSS and Open Source</h2>
-<p>Open source software has been a powerful enabler of exploration in other ecosystems. 
-Having open source resources encourages people to learn about a technology. 
-It also provides a basis for experimentation that doesn’t require an interested
-party to start at zero.</p>
-
-<h2 id="zuspec">Zuspec</h2>
-<p>Starting in 2025, I’ll be starting to write more about components within the 
-<em>Zuspec</em> umbrella project. Consequently, it’s worth providing a brief 
-introduction to what <em>Zuspec</em> is, what it’s not, and what to expect.</p>
-
-<p>Zuspec is a collection of functionality for working with the style of
-action-centric dataflow descriptions used by the PSS language. The
-philosophy of the component libraries is to keep things as modular as
-possible to maximize the reuse opportunities even as we discover different
-ways in which to productively use and apply these descriptions.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/12/Zuspec_crop.png" style="width: 200px" />
-</p>
-
-<p>The <em>Zuspec</em> name is a portmanteau of zusammen (German for together) and ‘spec’,
-and reflects my ambition for PSS to be a specification that brings together
-disciplines such as design and verification that are quite separate today.</p>
-
-<p>From a technical perspective, the vast majority of Zuspec components are 
-implemented as C++ libraries (for speed) that also have Python bindings, 
-making it easy to use a small amount of Python to mix them together 
-into an application.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/12/ZuspecProjectMap.png" style="width: 800px" />
-</p>
-
-<p>Zuspec is much more of a technology framework than a tool today. You won’t find
-any fancy GUIs. And, it’s in an early state of development and testing: 
-you should expect to find bugs. That said, my hope is that if these 
-components can help me to explore new areas of PSS application they can
-enable others to do the same. Starting in the new year, I’ll be writing
-more about the components and what they allow us to do with a 
-PSS-based description</p>
-
-<h1 id="pss-looking-forward">PSS Looking Forward</h1>
-
-<p>I continue to see PSS as having a bright future. It’s providing strong value
-in the areas of test-content reuse, with a focus on simulation, emulation, 
-and silicon bring-up. And, as more people learn about PSS and get 
-hands-on experience with the language and its capabilities, I’m confident 
-that adoption will continue to grow. I also see great possibilities for the 
-language to expand its application space into domains adjacent to where it 
-is applied today.</p>
-
-<p>In the coming year, I’m looking forward to writing more about what PSS 
-enables today, and what it could enable in the future. And, of course,
-expect to hear more about other tools and technologies related to design
-and verification. There is always something new to learn and explore!</p>
-
-<h1 id="references">References</h1>
+<p>Specifically:</p>
 <ul>
-  <li>Accellera - https://accellera.org</li>
-  <li>PSS Tutorial Video - https://www.accellera.org/resources/videos/portable-stimulus-tutorial-2024</li>
-  <li>PSS LRM - https://www.accellera.org/downloads/standards/portable-stimulus</li>
+  <li>The <a href="https://github.com/zuspec/zuspec-sv/">Zuspec-SV</a> tool processes the PSS model 
+source to produce an implementation 
+for an Action</li>
+  <li>It produces two SystemVerilog packages. The first contains types specific to the action 
+being implemented. The second contains types shared across all actions captured in the model</li>
+  <li>These packages are compiled along with a supporting class library and the user’s testbench,
+and executed by a SystemVerilog simulator.</li>
 </ul>
+
+<h1 id="a-simple-example">A simple example</h1>
+
+<p>Let’s take a look at a tiny example from the 
+<a href="https://github.com/zuspec/zuspec-examples">Zuspec Examples</a> project.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="nn">std_pkg</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+
+<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="kd">action</span> <span class="nc">Hello</span> <span class="p">{</span>
+        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+            <span class="n">message</span><span class="p">(</span><span class="n">LOW</span><span class="p">,</span> <span class="s">"Hello World!"</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>You can find the soure <a href="https://github.com/zuspec/zuspec-examples/blob/main/sv/hello_world/hello_world.pss">here</a>.</p>
+
+<p>This extremely-simple PSS model prints ‘Hello World!’ to the simulation log.</p>
+
+<p>Have a look at the root SystemVerilog module to see how the SystemVerilog
+model implementation is invoked:</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">module top;
+    import pss_top__Entry_pkg::*;
+
+    initial begin
+        automatic pss_top__Entry actor = new();
+        actor.run();
+        $finish;
+    end
+
+endmodule</code></pre></figure>
+
+<h1 id="where-do-we-go-from-here">Where do we go from here?</h1>
+
+<p>Transpiling PSS to SystemVerilog provides a useful interesting implementation 
+option for PSS, both because of the solver within the simulator and because
+PSS is frequently used with UVM testbenches.</p>
+
+<p>If you’re interested in trying out the PSS ‘Hello World’ example, have a look
+at the instructions in the 
+<a href="https://github.com/zuspec/zuspec-examples/blob/main/README.md">README</a> file.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">Zuspec-SV</code> transpiler is under active development, but the approach 
+looks very promising.  Over the next few posts, we’ll have  look at 
+additional PSS constructs that we can implement in SystemVerilog and,
+more importantly, see how PSS interacts the testbench and design.</p>
+
 </div>
 
 </div>
@@ -825,7 +876,7 @@ and verification. There is always something new to learn and explore!</p>
 <div />
 
 <center>
-  <b>Copyright 2014-2024 Matthew Ballance. All Rights Reserved</b>
+  <b>Copyright 2014-2025 Matthew Ballance. All Rights Reserved</b>
   </center>
 <p><em>The views and opinions expressed above are solely those of the author and do not 
       represent those of my employer or any other party.</em></p>
