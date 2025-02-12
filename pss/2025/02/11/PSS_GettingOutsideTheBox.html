@@ -10,12 +10,12 @@
   <title>
     
     
-      Transpilation and PSS &middot; Bits, Bytes, and Gates
+      PSS: Getting Outside the Box &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -100,7 +100,9 @@ Post-env
         <li><span class="caret">Feb</span>
         <ul class="nested" list-style-type="none">
         
-        <li><a href="/pss/2025/02/04/Transpilation_and_PSS.html">Transpilation and PSS</a></li>
+        <li><a href="/pss/2025/02/11/PSS_GettingOutsideTheBox.html">PSS: Getting Outside the Box</a></li>
+        
+        <li><a href="/pss/2025/02/05/Transpilation_and_PSS.html">Transpilation and PSS</a></li>
         
         <!--
         <a class="sidebar-nav-item active" href="">Feb</a>
@@ -675,12 +677,12 @@ class="jfk-button jfk-button-action " style="">
   <title>
     
     
-      Transpilation and PSS &middot; Bits, Bytes, and Gates
+      PSS: Getting Outside the Box &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -734,202 +736,285 @@ Post-env
 
 
   <div class="post">
-    <h1 class="post-title">Transpilation and PSS</h1>
-    <span class="post-date">04 Feb 2025</span>
+    <h1 class="post-title">PSS: Getting Outside the Box</h1>
+    <span class="post-date">11 Feb 2025</span>
 
     <p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/02/PSSTranspilation_splash.png" /> 
+<img src="https://bitsbytesgates.com/imgs/2025/02/PSSGettingOutsideTheBox_splash.png" /> 
 </p>
 
-<p>You’re probably familiar with compilers. They take a high-level input description – 
-typically a programming language – and distill it down to an efficient 
-low-level implementation. Typically the implementation is machine code or 
-bytecode. In other words, as close as possible to what will actually execute 
-given the language ecosystem.</p>
+<p>In the <a href="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html">last post</a>, 
+we showed a SystemVerilog implementation of a PSS model
+that printed “Hello World!”. Interesting, perhaps, but quite a ways from 
+being useful. In order to be useful, our PSS model needs to interact with
+the environment surrounding it.</p>
 
-<p>You might be less familiar with transpilers (or 
-source-to-source compilers, as they are <a href="https://en.wikipedia.org/wiki/Source-to-source_compiler">also known</a>). Transpilers convert
-an input in one programming language to output in another programming language
-with a similar level of abstraction. Transpilers have been in use for a very 
-long time. For example, the C++ language was originally implemented with 
-<a href="https://en.wikipedia.org/wiki/Cfront">Cfront</a>, a transpiler that converted
-C++ input to C code that any C compiler could process. More recently, the 
-<a href="https://www.typescriptlang.org/">Typescript</a> and 
-<a href="https://en.wikipedia.org/wiki/ECMAScript">Javascript/ECMAScript</a> ecosystems
-have used transpilation extensively to allow the languages to evolve while
-maintaining an impressive level of backward compatibility with older 
-implementations of the language.</p>
-
-<p>The next few posts will start to explore what we can do by transpiling
-test scenarios in PSS into implementations in existing programming languages.</p>
+<p>This post will cover more details about how a PSS model interacts with 
+the environment around it, and look at an object-oriented interface between
+PSS and a SystemVerilog environment.</p>
 
 <!--more-->
 
-<h1 id="is-pss-a-programming-language">Is PSS a Programming Language?</h1>
-<p>Both compilers and transpilers are software concepts, so it’s worth asking
-whether PSS language is a programming language. Portions of the language 
-do provide the features of a standard programming language – if/else,
-loops, functions, and data structures. In this portion of the language,
-these constructs retain the same <em>imperative</em> semantics as the 
-equivalent constructs in software programming languages.</p>
+<p>Both PSS and SystemVerilog are object-oriented languages. With language
+interoperability, our goal is to keep each language’s view of inteacting
+with the “other” consistent with its own norms and conventions. Because
+both languages are object-oriented, we want SystemVerilog to see its
+interactions with PSS in object-oriented terms, and vice versa.</p>
 
-<p>The other major portion of the language has <em>declarative</em> semantics.
-This means that we focus on capturing the <em>rules</em> of our test scenarios
-instead of capturing how we will <em>implement</em> our test scenarios.</p>
+<p>While we’re looking at an API in the context of our Zuspec PSS to SystemVerilog
+transpiler, the goal is to define a language interoperability approach that
+will work with many PSS tools.</p>
 
-<h2 id="why-be-declarative">Why be declarative?</h2>
-
-<p>Take, for example, test scenarios that exercise a multi-channel DMA
-controller. When our test exercises multiple channels at the same
-time, it needs to use unique channels. With PSS, we can simply 
-state that this is a rule: DMA channels are <em>resources</em> that 
-can only be used by a single behavior at a time.</p>
-
-<p>In contrast, if we are writing our tests in a regular programming 
-language, we would need to design a channel-allocation algorithm 
-to manage DMA channels for our tests. Actually, we would
-probably need several algorithms to handle all the corner cases
-that our tests need to cover.</p>
-
-<p>The declarative nature of the PSS language increases our testing
-productivity by allowing us to capture the rules of our scenarios
-and automate the work of implementing tests.</p>
-
-<h1 id="creating-model-implementations">Creating Model Implementations</h1>
-<p>Capturing tests in this way has huge productivity benefits. It also
-has a (subjective) downside: we need to use a <em>constraint solver</em> 
-to evaluate the model and select the data and operation schedule 
-that will be used to exercise the design. Constraints solvers are 
-marvelous tools for ripping through reams of constraints, but 
-they’re not considered <em>fast</em> when compared to the execution speed 
-of regular procedural programming languages. In addition, 
-constraint solvers typically require substantial resources to run.</p>
-
-<p>This need to <em>solve</em> the PSS model to generate specific tests, 
-along with different verification-platform characteristics,
-has resulted in two common ways to produce tests from a PSS model:</p>
-
-<ul>
-  <li><strong>On-the-Fly Solving</strong> - This model is typically used in simulation.
-A special PSS interpreter and constraint solver run in parallel with
-the simulation and make choices as they are needed.</li>
-  <li><strong>Pre-Run Test Generation</strong> - This model is typically used when 
-the test will run on a processor core within the design. In this model,
-the entire test is produced as source code prior to the start of 
-test execution.  We want to keep the code that runs on the processor 
-core simple for many reasons, and pre-solving the PSS model allows 
-us to do this.</li>
-</ul>
-
-<p>Both of these models are useful and important, but the on-the-fly
-model is very interesting because it suggests that we might be able
-to leverage the constraint solver within our SystemVerilog simulators
-to provide the solving needed to evaluate our PSS models.</p>
-
-<h1 id="transpiling-pss-to-systemverilog">Transpiling PSS to SystemVerilog</h1>
-<p>I’ve been working PSS infrastructure, in general, for a while. More
-recently, I’ve focused on using that infrastructure to implement the
-beginnings of a PSS to SystemVerilog transpiler.</p>
-
-<p>The general flow is shown below.</p>
-
+<p>Essentially, what we want is this:</p>
 <div class="mermaid" align="center">
-block-beta
-%% columns 5
-  block:Source
-    columns 1
-    PssFiles["PSS Files"]
-    Files1
-    Files2
-    Files3
-    Files["PSS Source"]
-    style Files1 fill:transparent,stroke:transparent,color:transparent
-    style Files2 fill:transparent,stroke:transparent,color:transparent
-    style Files3 fill:transparent,stroke:transparent,color:transparent
-    style Files fill:transparent,stroke:transparent
-  end
-  block:Pkgs
-    columns 1
-    ScenarioPkg["Scenario-Specific Types"]
-    ModelPkg["Model-Specific Shared Types"]
-    Spacer1
-    Spacer2
-    Spacer3["Generated SV"]
-    style Spacer1 fill:transparent,stroke:transparent,color:transparent
-    style Spacer2 fill:transparent,stroke:transparent,color:transparent
-    style Spacer3 fill:transparent,stroke:transparent
-  end
-  block:Runtime
-    columns 1
-    ScenarioPkg2["Scenario-Specific Types"]
-    ModelPkg2["Model-Specific Shared Types"]
-    ClassLib["Shared Class Library"]
-    SVSolver["SystemVerilog Runtime"]
-    Runtime1["Runtime"]
-    style Runtime1 fill:transparent,stroke:transparent
-  end
-  Source--&gt;Pkgs
-  Pkgs--&gt;Runtime
+flowchart TD
+    subgraph Model1 ["PSS Model1"]
+      BFM1_1["BFM1"]
+      BFM1_2["BFM2"]
+    end
+    subgraph Model2 ["PSS Model2"]
+      BFM2_1["BFM1"]
+      BFM2_2["BFM2"]
+    end
+
+    subgraph Sim ["Simulation"]
+      BFM1
+      BFM2
+      BFM3
+      BFM4
+    end
+    Model1 --&gt; Sim
+    Model2 --&gt; Sim
+
 </div>
 
-<p>Specifically:</p>
+<p>In other words, we want an integration mechanism that supports:</p>
 <ul>
-  <li>The <a href="https://github.com/zuspec/zuspec-sv/">Zuspec-SV</a> tool processes the PSS model 
-source to produce an implementation 
-for an Action</li>
-  <li>It produces two SystemVerilog packages. The first contains types specific to the action 
-being implemented. The second contains types shared across all actions captured in the model</li>
-  <li>These packages are compiled along with a supporting class library and the user’s testbench,
-and executed by a SystemVerilog simulator.</li>
+  <li>Multiple, independent, instances of PSS model implementations that run concurrently.</li>
+  <li>Multiple “logical streams” within each PSS model instance that
+interact with the SystemVerilog testbench</li>
 </ul>
 
-<h1 id="a-simple-example">A simple example</h1>
+<p>The biggest obstacle to achieving this is that both PSS and SystemVerilog
+use global functions to implement interactions with the outside world. 
+Global functions do not allow us to leverage object-oriented language constructs, so 
+we will need to add some infrastructure on top.</p>
 
-<p>Let’s take a look at a tiny example from the 
-<a href="https://github.com/zuspec/zuspec-examples">Zuspec Examples</a> project.</p>
+<h1 id="the-basics">The Basics</h1>
+<p>PSS provides <code class="language-plaintext highlighter-rouge">import</code> functions to allow the PSS model to interact 
+with the outside world.</p>
 
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="nn">std_pkg</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">bfm_write</span><span class="p">(</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">);</span>
+<span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">bfm_read</span><span class="p">(</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">);</span>
+
+<span class="kd">component</span> <span class="nc">bfm_c</span> <span class="p">{</span>
+  <span class="kd">action</span> <span class="nc">write</span> <span class="p">{</span>
+    <span class="c1">// </span>
+    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+      <span class="n">bfm_write</span><span class="p">(</span><span class="o">...</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In the example above, two functions are declared – one to perform
+a read via a BFM, and one to perform a write. These are global
+functions, accessible from all PSS contexts.</p>
+
+<p>The PSS LRM specifies how function parameter and return types are 
+mapped to SystemVerilog and C. Theoretically, we could map
+the functions themselves to <code class="language-plaintext highlighter-rouge">export</code> tasks and functions
+in SystemVerilog.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">interface bfm;
+  automatic task bfm_write(int unsigned addr, int unsigned data);
+  endtask
+  export "DPI-C" task bfm_write;
+
+  automatic task bfm_read(output int unsigned data, input int unsigned addr);
+  endtask
+  export "DPI-C" task bfm_read;
+
+endinterface</code></pre></figure>
+
+<p>The example above shows SystemVerilog <code class="language-plaintext highlighter-rouge">export</code> tasks that mirror the
+PSS <code class="language-plaintext highlighter-rouge">import</code> functions. Conceptually, calling <code class="language-plaintext highlighter-rouge">bfm_write</code> in PSS
+would translate into a call to the <code class="language-plaintext highlighter-rouge">bfm_write</code> task in SystemVerilog. 
+If we do that, though, we have no awareness of multiple PSS model
+instances, and little implementation flexibility.  Fortunately, a 
+little methodology and a little code generation can help us
+get the object-oriented interfaces that we want!</p>
+
+<h2 id="introducing-the-api-class">Introducing the API Class</h2>
+<p>Zuspec-SV (our PSS to SV transpiler) defines an Import API class that
+contains a virtual method definition for each and every Import function
+in the PSS model.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">class pss_import_api extends backend_api;
+   
+  virtual task bfm_write(int unsigned addr, int unsigned data);
+  endtask
+
+  virtual task bfm_read(output int unsigned data, input int unsigned addr);
+  endtask
+
+endclass</code></pre></figure>
+
+<p>The code above shows what would be produced for the <code class="language-plaintext highlighter-rouge">bfm_write</code> and
+<code class="language-plaintext highlighter-rouge">bfm_read</code> functions shown earlier. The <code class="language-plaintext highlighter-rouge">import</code> API class inherits
+from another API class that defines built-in functions that the PSS
+model needs to access. Implementing the API can be done simply by
+creating a class that inherits from <code class="language-plaintext highlighter-rouge">pss_import_api</code> and providing
+implementations of the tasks and functions.</p>
+
+<h2 id="connecting-our-api-implementation">Connecting our API Implementation</h2>
+<p>Once we have a SystemVerilog class with properly-implemented methods, 
+we need to connect the PSS model implementation to it. This is where
+things get a bit tool-specific.</p>
+
+<p>PSS defines a scenario model as the combination of a tree of 
+<em>components</em> and a hierarchy of <em>actions</em> that execute in the
+context of the components. <code class="language-plaintext highlighter-rouge">Zuspec-SV</code> refers to this 
+component/action combination as an <em>Actor</em>. An <em>Actor</em> is 
+implemented as a class that accepts the import API class 
+as an argument to its constructor.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">    class pss_top__Entry_actor extends actor_c;
+        pss_top comp_tree;
+        pss_import_api api;
+        executor_base_c default_executor;
+
+        function new(pss_import_api api=null);
+           ...
+        endfunction
+      ...
+    endclass</code></pre></figure>
+
+<p>As we saw in the <em>Hello World</em> example, we run a PSS model
+by creating an instance of the <em>Actor</em> and calling the
+<em>run</em> task.</p>
+
+<h2 id="full-example">Full Example</h2>
+<p>Let’s take a step-by-step look at the simple API implementation example
+in <code class="language-plaintext highlighter-rouge">zuspec-examples</code>. You can find the full example 
+<a href="https://github.com/zuspec/zuspec-examples/tree/main/sv/simple_read_write">here</a>.</p>
+
+<p>If you want to try this example yourself, be sure to update your <code class="language-plaintext highlighter-rouge">Zuspec-SV</code>
+version. You can do so in the <code class="language-plaintext highlighter-rouge">zuspec-examples</code> project by running the
+following command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>% ./packages/python/bin/pip install -U zuspec-sv
+</code></pre></div></div>
+
+<p>You will need at least version 0.0.9 to run this example.</p>
+
+<p>Let’s start with the PSS code:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">bfm_write</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span> <span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">);</span>
+<span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">bfm_read</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">);</span>
 
 <span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="kd">action</span> <span class="nc">Hello</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Entry</span> <span class="p">{</span>
         <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="n">message</span><span class="p">(</span><span class="n">LOW</span><span class="p">,</span> <span class="s">"Hello World!"</span><span class="p">);</span>
+            <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">;</span>
+            <span class="n">bfm_write</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mh">0x12345678</span><span class="p">);</span>
+            <span class="n">bfm_write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mh">0x12345678</span><span class="p">);</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">bfm_read</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+            <span class="n">message</span><span class="p">(</span><span class="n">LOW</span><span class="p">,</span> <span class="s">"PSS read data %d"</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>You can find the soure <a href="https://github.com/zuspec/zuspec-examples/blob/main/sv/hello_world/hello_world.pss">here</a>.</p>
+<p>We declare two import functions – one that writes data via a bus functional 
+model (BFM), and one that reads data via a bus functional model.</p>
 
-<p>This extremely-simple PSS model prints ‘Hello World!’ to the simulation log.</p>
+<p>We then declare a (very) simple PSS Action that calls the <code class="language-plaintext highlighter-rouge">write</code> function
+twice, calls the <code class="language-plaintext highlighter-rouge">read</code> function once, and displays the return value.</p>
 
-<p>Have a look at the root SystemVerilog module to see how the SystemVerilog
-model implementation is invoked:</p>
+<h3 id="implementing-the-api">Implementing the API</h3>
 
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">module top;
+<p><code class="language-plaintext highlighter-rouge">Zuspec-SV</code> creates the following API class based on the import functions
+declared within the PSS model:</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">    class pss_import_api #(type BaseT=zsp_sv::empty_t) extends backend_api #(BaseT);
+        virtual task bfm_write(
+                input int unsigned addr,
+                input int unsigned data);
+            `ZSP_FATAL(("Import function bfm_write is not implemented"));
+        endtask
+        virtual task bfm_read(
+                output int unsigned __retval,
+                input int unsigned addr);
+            `ZSP_FATAL(("Import function bfm_read is not implemented"));
+        endtask
+    endclass</code></pre></figure>
+
+<p>Note that the signature of the <code class="language-plaintext highlighter-rouge">bfm_read</code> task is a bit different. This 
+is because SystemVerilog tasks do not support a return value, so the
+result must be returned via an output parameter. Fortunately, this is
+all well-defined by the rules in the PSS LRM.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">package simple_read_write_pkg;
+    import pss_types::*;
+
+    class api_impl extends pss_import_api;
+        virtual task bfm_write(
+            input int unsigned addr,
+            input int unsigned data);
+            $display("bfm_write: 'h%08h 'h%08h", addr, data);
+        endtask
+
+        virtual task bfm_read(
+            output int unsigned __retval,
+            input int unsigned addr);
+            $display("bfm_read: 'h%08h", addr);
+            __retval = 42;
+        endtask
+    endclass
+
+endpackage</code></pre></figure>
+
+<p>Our testbench environment is responsible for providing code, like 
+that shown above, to provide an implementation for the import functions.
+Our implementation, here, is quite simple: We print a message when either 
+task is called, and return the value <code class="language-plaintext highlighter-rouge">42</code> from the <code class="language-plaintext highlighter-rouge">read</code> function.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">module simple_read_write;
+    import simple_read_write_pkg::*;
     import pss_top__Entry_pkg::*;
 
     initial begin
-        automatic pss_top__Entry actor = new();
-        actor.run();
-        $finish;
-    end
+        automatic api_impl api = new();
+        pss_top__Entry actor = new(api);
 
+        actor.run();
+    end
 endmodule</code></pre></figure>
 
-<h1 id="where-do-we-go-from-here">Where do we go from here?</h1>
+<p>Finally, we can put everything together and run our PSS model. The 
+code above creates an instance of our implementation of the API 
+class, and passes it to the constructor of our PSS <code class="language-plaintext highlighter-rouge">Actor</code> class.
+When we run the simulation, we should see something like the following:</p>
 
-<p>Transpiling PSS to SystemVerilog provides a useful interesting implementation 
-option for PSS, both because of the solver within the simulator and because
-PSS is frequently used with UVM testbenches.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bfm_write: 'h00000000 'h12345678
+bfm_write: 'h00000004 'h12345678
+bfm_read: 'h00000004
+PSS read data 42
+</code></pre></div></div>
 
-<p>If you’re interested in trying out the PSS ‘Hello World’ example, have a look
-at the instructions in the 
-<a href="https://github.com/zuspec/zuspec-examples/blob/main/README.md">README</a> file.</p>
+<h1 id="summary-and-whats-next">Summary and What’s Next</h1>
+<p>We’ve looked at the funadamentals of a strategy to integrate two 
+object-oriented languages, via global functions, 
+in an object-oriented way. This approach
+gives us flexibility in changing how APIs are implemented using 
+the standard object-oriented approaches that we’re used to.</p>
 
-<p>The <code class="language-plaintext highlighter-rouge">Zuspec-SV</code> transpiler is under active development, but the approach 
-looks very promising.  Over the next few posts, we’ll have  look at 
-additional PSS constructs that we can implement in SystemVerilog and,
-more importantly, see how PSS interacts the testbench and design.</p>
+<p>But, we’re not done just yet. You can likely imagine how this 
+approach supports multiple indepdent PSS model instances. But,
+how does it support API implementations coming from different
+sources, and multiple independent streams of activity within
+one PSS model? In the next post, we’ll start to dig into how
+to interface PSS to verifcation IP (VIP) and bus functional models (BFMs).</p>
 
 
   </div>

@@ -1,4 +1,279 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-02-06T00:03:38+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Transpilation and PSS</title><link href="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html" rel="alternate" type="text/html" title="Transpilation and PSS" /><published>2025-02-04T00:00:00+00:00</published><updated>2025-02-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-02-12T02:34:35+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">PSS: Getting Outside the Box</title><link href="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html" rel="alternate" type="text/html" title="PSS: Getting Outside the Box" /><published>2025-02-11T00:00:00+00:00</published><updated>2025-02-11T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html"><![CDATA[<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2025/02/PSSGettingOutsideTheBox_splash.png" /> 
+</p>
+
+<p>In the <a href="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html">last post</a>, 
+we showed a SystemVerilog implementation of a PSS model
+that printed “Hello World!”. Interesting, perhaps, but quite a ways from 
+being useful. In order to be useful, our PSS model needs to interact with
+the environment surrounding it.</p>
+
+<p>This post will cover more details about how a PSS model interacts with 
+the environment around it, and look at an object-oriented interface between
+PSS and a SystemVerilog environment.</p>
+
+<!--more-->
+
+<p>Both PSS and SystemVerilog are object-oriented languages. With language
+interoperability, our goal is to keep each language’s view of inteacting
+with the “other” consistent with its own norms and conventions. Because
+both languages are object-oriented, we want SystemVerilog to see its
+interactions with PSS in object-oriented terms, and vice versa.</p>
+
+<p>While we’re looking at an API in the context of our Zuspec PSS to SystemVerilog
+transpiler, the goal is to define a language interoperability approach that
+will work with many PSS tools.</p>
+
+<p>Essentially, what we want is this:</p>
+<div class="mermaid" align="center">
+flowchart TD
+    subgraph Model1 ["PSS Model1"]
+      BFM1_1["BFM1"]
+      BFM1_2["BFM2"]
+    end
+    subgraph Model2 ["PSS Model2"]
+      BFM2_1["BFM1"]
+      BFM2_2["BFM2"]
+    end
+
+    subgraph Sim ["Simulation"]
+      BFM1
+      BFM2
+      BFM3
+      BFM4
+    end
+    Model1 --&gt; Sim
+    Model2 --&gt; Sim
+
+</div>
+
+<p>In other words, we want an integration mechanism that supports:</p>
+<ul>
+  <li>Multiple, independent, instances of PSS model implementations that run concurrently.</li>
+  <li>Multiple “logical streams” within each PSS model instance that
+interact with the SystemVerilog testbench</li>
+</ul>
+
+<p>The biggest obstacle to achieving this is that both PSS and SystemVerilog
+use global functions to implement interactions with the outside world. 
+Global functions do not allow us to leverage object-oriented language constructs, so 
+we will need to add some infrastructure on top.</p>
+
+<h1 id="the-basics">The Basics</h1>
+<p>PSS provides <code class="language-plaintext highlighter-rouge">import</code> functions to allow the PSS model to interact 
+with the outside world.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">bfm_write</span><span class="p">(</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">);</span>
+<span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">bfm_read</span><span class="p">(</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">);</span>
+
+<span class="kd">component</span> <span class="nc">bfm_c</span> <span class="p">{</span>
+  <span class="kd">action</span> <span class="nc">write</span> <span class="p">{</span>
+    <span class="c1">// </span>
+    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+      <span class="n">bfm_write</span><span class="p">(</span><span class="o">...</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>In the example above, two functions are declared – one to perform
+a read via a BFM, and one to perform a write. These are global
+functions, accessible from all PSS contexts.</p>
+
+<p>The PSS LRM specifies how function parameter and return types are 
+mapped to SystemVerilog and C. Theoretically, we could map
+the functions themselves to <code class="language-plaintext highlighter-rouge">export</code> tasks and functions
+in SystemVerilog.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">interface bfm;
+  automatic task bfm_write(int unsigned addr, int unsigned data);
+  endtask
+  export "DPI-C" task bfm_write;
+
+  automatic task bfm_read(output int unsigned data, input int unsigned addr);
+  endtask
+  export "DPI-C" task bfm_read;
+
+endinterface</code></pre></figure>
+
+<p>The example above shows SystemVerilog <code class="language-plaintext highlighter-rouge">export</code> tasks that mirror the
+PSS <code class="language-plaintext highlighter-rouge">import</code> functions. Conceptually, calling <code class="language-plaintext highlighter-rouge">bfm_write</code> in PSS
+would translate into a call to the <code class="language-plaintext highlighter-rouge">bfm_write</code> task in SystemVerilog. 
+If we do that, though, we have no awareness of multiple PSS model
+instances, and little implementation flexibility.  Fortunately, a 
+little methodology and a little code generation can help us
+get the object-oriented interfaces that we want!</p>
+
+<h2 id="introducing-the-api-class">Introducing the API Class</h2>
+<p>Zuspec-SV (our PSS to SV transpiler) defines an Import API class that
+contains a virtual method definition for each and every Import function
+in the PSS model.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">class pss_import_api extends backend_api;
+   
+  virtual task bfm_write(int unsigned addr, int unsigned data);
+  endtask
+
+  virtual task bfm_read(output int unsigned data, input int unsigned addr);
+  endtask
+
+endclass</code></pre></figure>
+
+<p>The code above shows what would be produced for the <code class="language-plaintext highlighter-rouge">bfm_write</code> and
+<code class="language-plaintext highlighter-rouge">bfm_read</code> functions shown earlier. The <code class="language-plaintext highlighter-rouge">import</code> API class inherits
+from another API class that defines built-in functions that the PSS
+model needs to access. Implementing the API can be done simply by
+creating a class that inherits from <code class="language-plaintext highlighter-rouge">pss_import_api</code> and providing
+implementations of the tasks and functions.</p>
+
+<h2 id="connecting-our-api-implementation">Connecting our API Implementation</h2>
+<p>Once we have a SystemVerilog class with properly-implemented methods, 
+we need to connect the PSS model implementation to it. This is where
+things get a bit tool-specific.</p>
+
+<p>PSS defines a scenario model as the combination of a tree of 
+<em>components</em> and a hierarchy of <em>actions</em> that execute in the
+context of the components. <code class="language-plaintext highlighter-rouge">Zuspec-SV</code> refers to this 
+component/action combination as an <em>Actor</em>. An <em>Actor</em> is 
+implemented as a class that accepts the import API class 
+as an argument to its constructor.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">    class pss_top__Entry_actor extends actor_c;
+        pss_top comp_tree;
+        pss_import_api api;
+        executor_base_c default_executor;
+
+        function new(pss_import_api api=null);
+           ...
+        endfunction
+      ...
+    endclass</code></pre></figure>
+
+<p>As we saw in the <em>Hello World</em> example, we run a PSS model
+by creating an instance of the <em>Actor</em> and calling the
+<em>run</em> task.</p>
+
+<h2 id="full-example">Full Example</h2>
+<p>Let’s take a step-by-step look at the simple API implementation example
+in <code class="language-plaintext highlighter-rouge">zuspec-examples</code>. You can find the full example 
+<a href="https://github.com/zuspec/zuspec-examples/tree/main/sv/simple_read_write">here</a>.</p>
+
+<p>If you want to try this example yourself, be sure to update your <code class="language-plaintext highlighter-rouge">Zuspec-SV</code>
+version. You can do so in the <code class="language-plaintext highlighter-rouge">zuspec-examples</code> project by running the
+following command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>% ./packages/python/bin/pip install -U zuspec-sv
+</code></pre></div></div>
+
+<p>You will need at least version 0.0.9 to run this example.</p>
+
+<p>Let’s start with the PSS code:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">bfm_write</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span> <span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">);</span>
+<span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">bfm_read</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">);</span>
+
+<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+
+    <span class="kd">action</span> <span class="nc">Entry</span> <span class="p">{</span>
+        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+            <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">;</span>
+            <span class="n">bfm_write</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mh">0x12345678</span><span class="p">);</span>
+            <span class="n">bfm_write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mh">0x12345678</span><span class="p">);</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">bfm_read</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+            <span class="n">message</span><span class="p">(</span><span class="n">LOW</span><span class="p">,</span> <span class="s">"PSS read data %d"</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We declare two import functions – one that writes data via a bus functional 
+model (BFM), and one that reads data via a bus functional model.</p>
+
+<p>We then declare a (very) simple PSS Action that calls the <code class="language-plaintext highlighter-rouge">write</code> function
+twice, calls the <code class="language-plaintext highlighter-rouge">read</code> function once, and displays the return value.</p>
+
+<h3 id="implementing-the-api">Implementing the API</h3>
+
+<p><code class="language-plaintext highlighter-rouge">Zuspec-SV</code> creates the following API class based on the import functions
+declared within the PSS model:</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">    class pss_import_api #(type BaseT=zsp_sv::empty_t) extends backend_api #(BaseT);
+        virtual task bfm_write(
+                input int unsigned addr,
+                input int unsigned data);
+            `ZSP_FATAL(("Import function bfm_write is not implemented"));
+        endtask
+        virtual task bfm_read(
+                output int unsigned __retval,
+                input int unsigned addr);
+            `ZSP_FATAL(("Import function bfm_read is not implemented"));
+        endtask
+    endclass</code></pre></figure>
+
+<p>Note that the signature of the <code class="language-plaintext highlighter-rouge">bfm_read</code> task is a bit different. This 
+is because SystemVerilog tasks do not support a return value, so the
+result must be returned via an output parameter. Fortunately, this is
+all well-defined by the rules in the PSS LRM.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">package simple_read_write_pkg;
+    import pss_types::*;
+
+    class api_impl extends pss_import_api;
+        virtual task bfm_write(
+            input int unsigned addr,
+            input int unsigned data);
+            $display("bfm_write: 'h%08h 'h%08h", addr, data);
+        endtask
+
+        virtual task bfm_read(
+            output int unsigned __retval,
+            input int unsigned addr);
+            $display("bfm_read: 'h%08h", addr);
+            __retval = 42;
+        endtask
+    endclass
+
+endpackage</code></pre></figure>
+
+<p>Our testbench environment is responsible for providing code, like 
+that shown above, to provide an implementation for the import functions.
+Our implementation, here, is quite simple: We print a message when either 
+task is called, and return the value <code class="language-plaintext highlighter-rouge">42</code> from the <code class="language-plaintext highlighter-rouge">read</code> function.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">module simple_read_write;
+    import simple_read_write_pkg::*;
+    import pss_top__Entry_pkg::*;
+
+    initial begin
+        automatic api_impl api = new();
+        pss_top__Entry actor = new(api);
+
+        actor.run();
+    end
+endmodule</code></pre></figure>
+
+<p>Finally, we can put everything together and run our PSS model. The 
+code above creates an instance of our implementation of the API 
+class, and passes it to the constructor of our PSS <code class="language-plaintext highlighter-rouge">Actor</code> class.
+When we run the simulation, we should see something like the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bfm_write: 'h00000000 'h12345678
+bfm_write: 'h00000004 'h12345678
+bfm_read: 'h00000004
+PSS read data 42
+</code></pre></div></div>
+
+<h1 id="summary-and-whats-next">Summary and What’s Next</h1>
+<p>We’ve looked at the funadamentals of a strategy to integrate two 
+object-oriented languages, via global functions, 
+in an object-oriented way. This approach
+gives us flexibility in changing how APIs are implemented using 
+the standard object-oriented approaches that we’re used to.</p>
+
+<p>But, we’re not done just yet. You can likely imagine how this 
+approach supports multiple indepdent PSS model instances. But,
+how does it support API implementations coming from different
+sources, and multiple independent streams of activity within
+one PSS model? In the next post, we’ll start to dig into how
+to interface PSS to verifcation IP (VIP) and bus functional models (BFMs).</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[In the last post, we showed a SystemVerilog implementation of a PSS model that printed “Hello World!”. Interesting, perhaps, but quite a ways from being useful. In order to be useful, our PSS model needs to interact with the environment surrounding it. This post will cover more details about how a PSS model interacts with the environment around it, and look at an object-oriented interface between PSS and a SystemVerilog environment.]]></summary></entry><entry><title type="html">Transpilation and PSS</title><link href="https://bitsbytesgates.com/pss/2025/02/05/Transpilation_and_PSS.html" rel="alternate" type="text/html" title="Transpilation and PSS" /><published>2025-02-05T00:00:00+00:00</published><updated>2025-02-05T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2025/02/05/Transpilation_and_PSS</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2025/02/05/Transpilation_and_PSS.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2025/02/PSSTranspilation_splash.png" /> 
 </p>
 
@@ -2448,263 +2723,4 @@ managing another type of resource: the DMA channels within the engine.</p>
   <li>[1] <a href="https://www.accellera.org/downloads/standards/portable-stimulus">PSS LRM</a></li>
   <li>[2] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_2.html">DMA PSS Code (Viewing)</a></li>
   <li>[3] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_2.pss">DMA PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Storage (memory) is right in the middle of all the work with do with computer architecture. We have different kinds of memory that each have different trade-offs around performance (latency / throughput), cost per unit, and power consumption. We arrange memories into hierarchies with the goal of keeping frequently-used data in the upper (faster, but limited) layers, while pushing infrequently-accessed data to the lower (slower, but more expansive) layers. Given the large amount of time time designers spend thinking about memory needs, it’s no surprise that creating good and capable tests to exercise those designs depends on being able to acquire the right type of memory at the right time in order to fully-exercise the capabilities and characteristics of the system.]]></summary></entry><entry><title type="html">Modeling DMA Test Scenarios with PSS</title><link href="https://bitsbytesgates.com/pss/2023/03/25/ModelingTestScenariosForDMA.html" rel="alternate" type="text/html" title="Modeling DMA Test Scenarios with PSS" /><published>2023-03-25T00:00:00+00:00</published><updated>2023-03-25T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/03/25/ModelingTestScenariosForDMA</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/03/25/ModelingTestScenariosForDMA.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/03/ModelingTestScenariosForDMA_1_splash.png" /> 
-</p>
-
-<p>If you’ve been following the blog for any length of time, you’ve likely noticed
-that I like to work with examples and applications when it comes to 
-learning and understanding technology. I certainly like the tendency of
-applications to take knowledge out of the theoretical realm and into the 
-practical, helping to answer the ‘why’ and ‘how’ questions about a technology.</p>
-
-<p>We’ve used a simple multi-core memory test example to illustrate the first 
-few PSS concepts:</p>
-<ul>
-  <li>Actions and Components</li>
-  <li>Modeling multi-core tests (and automating test creation)</li>
-  <li>Specifying declarative communication relationships between actions</li>
-</ul>
-
-<p>We could likely continue on with this example to illustrate a few more PSS
-concepts, but let’s move on and use a new example. In addition to showing
-off a few new PSS concepts, my hope is to start talking about the PSS
-modeling process in the context of this example.</p>
-
-<p>To that end, we’ll spend a bit more time talking about the example design
-itself before digging into the PSS that we’ll use to create tests for it.</p>
-
-<!--more-->
-
-<h1 id="wishbone-dma-engine">Wishbone DMA Engine</h1>
-
-<p>Our next example design will be the 
-<a href="https://opencores.org/projects/wb_dma">Wishbone DMA Core</a>. While this 
-design has been around for quite some time, and certainly isn’t the most 
-complex, I have found that it acts as a great proxy for various hardware 
-accelerators, autonomous communication IP, and data movers that exist 
-in moderately-complex systems.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/03/DMA_block_diagram.png" />
-</p>
-
-<p>The DMA engine has a configurable number of channels up to 31. Any
-channel can perform memory-to-memory transfers using the two initiator
-interfaces. The DMA engine also provides a per-channel control interface 
-that allows devices without an internal DMA engine to request data 
-transfers.</p>
-
-<p>DMA transfers are setup via the register interface. Simple transfers
-are configured via registers in the IP, while more-complex chained
-transfers are configured via an in-memory lists of descriptors.</p>
-
-<p>Transfer termination can be signalled via an interrupt, and also polled 
-by reading the channel status registers.</p>
-
-<p>We’ll use this example to look at PSS features such as:</p>
-<ul>
-  <li>Memory management in tests</li>
-  <li>Modeling and managing contended resources</li>
-  <li>Implementing test scenarios down to the register level</li>
-</ul>
-
-<h1 id="first-steps-in-pss-modeling">First Steps in PSS Modeling</h1>
-
-<p>Getting started is often the hardest part of any task, and creating a
-PSS scenario model is no different. I often advise that the best 
-approach is to take some step, any step, since it’s easy to subsequently
-revise and fix the inevitable mistakes. In this way, creating a PSS 
-scenario is very different from craft and construction projects where 
-“measure twice cut once” remains the mantra.</p>
-
-<p>There are several ways to approach the initial PSS scenario model. The
-best is often guided by what details stand out from the description 
-of the device to be tested:</p>
-<ul>
-  <li>The behaviors that need to be exercised via PSS scenarios</li>
-  <li>The restrictions imposed by the device that must be obeyed by the scenario</li>
-  <li>Interesting relationships between behaviors</li>
-  <li>Interesting relationships between the device and others in the system</li>
-</ul>
-
-<p>My fallback approach is to start with the individual behaviors supported
-by the device. The other details can always be layered on later.</p>
-
-<h1 id="core-dma-behaviors">Core DMA Behaviors</h1>
-
-<p>At the core, our DMA engine supports three operations:</p>
-<ul>
-  <li>Copy memory from a source region to a destination region</li>
-  <li>Read data from a device (eg a USB controller) and write it to a memory region</li>
-  <li>Read data from a memory region and send it to a device</li>
-</ul>
-
-<p>Each of these core operations has two variations based on whether the description
-of the transfer is stored in DMA channel registers or in an in-memory descriptor
-chain. But, let’s also worry about in-memory descriptors later. For now, 
-let’s figure out what our three behaviors look like in PSS.</p>
-
-<h2 id="component">Component</h2>
-
-<p>One thing that we always need when creating a new PSS scenario model is a 
-component to put everything in. It’s generally a good practice to name
-this component after the target of the scenario model. In our case, we
-might name our component <code class="language-plaintext highlighter-rouge">WbDma</code> since that’s the name of the device
-that we’re targeting.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-    <span class="c1">// ... </span>
-<span class="p">}</span></code></pre></figure>
-
-<p>While we could do our initial development of actions inside <code class="language-plaintext highlighter-rouge">pss_top</code>, 
-eventually we will need to move our content to a container that is 
-reusable. Might as well start that way instead.</p>
-
-<h2 id="memory-copy-action">Memory Copy Action</h2>
-
-<p>Let’s think a bit about our memory copy operation – specifically 
-what its <code class="language-plaintext highlighter-rouge">pre-conditions</code> and <code class="language-plaintext highlighter-rouge">post-conditions</code> are. For normal 
-operation, our copy action needs an initialized region of memory
-from which to copy. While the DMA controller doesn’t care whether
-the source region of memory is initialized, we’ll have difficulty
-telling whether the operation was properly carried out unless we
-can compare the result against known values.</p>
-
-<p>When the DMA runs, it will copy data from the source region to 
-a destination region of memory. We could encapsulate all of the
-behavior to setup test the DMA copy operation into a single
-action that:</p>
-<ul>
-  <li>Selects and initializes a block of memory (source)</li>
-  <li>Selects a block of memory to copy data to (destination)</li>
-  <li>Programs the DMA to carry out the transfer</li>
-  <li>Checks that the result is correct</li>
-</ul>
-
-<p>But, this wouldn’t be terribly reusable. And, one great rule of
-thumb to use with PSS is to always think about how the actions
-you create today might be combined with those created by 
-someone else for a different device and used to create 
-a larger test scenario.</p>
-
-<p>So, let’s think about our copy operation in terms of <code class="language-plaintext highlighter-rouge">pre-conditions</code>
-and <code class="language-plaintext highlighter-rouge">post-conditions</code>:</p>
-<ul>
-  <li><code class="language-plaintext highlighter-rouge">pre-condition</code> In order for DMA Copy to run, it needs an initialized 
-source region of memory, a region of memory to copy to, and a DMA 
-channel on which to run. For now, let’s focus on the memory region bit. 
-We’ll get to the DMA channel aspect in a future post.</li>
-  <li><code class="language-plaintext highlighter-rouge">post-condition</code> Once the DMA Copy has run, a new region of initialized
-memory is available that other devices could use.</li>
-</ul>
-
-<p>The source and destination memory aspect of pre-conditions and 
-post-conditions matches the semantics of the PSS <code class="language-plaintext highlighter-rouge">buffer</code> object, so we
-can model this aspect by having our DMA copy operation input and
-output buffer objects.</p>
-
-<p>Here is what our memory-copy operation will look like as a diagram:</p>
-
-<div class="mermaid" align="center">
-flowchart TD;
-    mem_b_i([MemBuf]) --&gt; mem2mem(Mem2Mem) --&gt; mem_b_o([MemBuf])
-</div>
-
-<p>And, here is the code:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-
-<span class="kd">component</span> <span class="nc">WbDMA</span> <span class="p">{</span>
-
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>      <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">output</span> <span class="n">MemBuf</span>     <span class="n">dst_o</span><span class="p">;</span>
-
-        <span class="c1">// ...</span>
-
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>We’ll figure out the contents of the <code class="language-plaintext highlighter-rouge">MemBuf</code> and how the DMA
-transfer is implemented later. For now, though, this action
-captures the <code class="language-plaintext highlighter-rouge">pre-conditions</code> and <code class="language-plaintext highlighter-rouge">post-conditions</code> that we
-listed above.</p>
-
-<h2 id="copy-tofrom-device">Copy To/From Device</h2>
-
-<p>The role of a DMA engine in copying data to/from a device is
-a bit interesting. While the DMA engine may implement the
-mechanics of data transfer from the device (eg a UART) to
-memory, we think of the device itself as having produced the data.
-The DMA was just a helper to make that happen more efficiently.</p>
-
-<p>We’ll come back to how, exactly, the DMA portion
-of our behavior coordinates with the <code class="language-plaintext highlighter-rouge">device</code> portion of 
-our behavior, and introduce the PSS construct that enables this. 
-For now, let’s give ourselves place holders
-for the actions that copy data to and from a device. In
-PSS, as in other programming languages, creating an outline
-marked with <em>TODO: Fill in Later</em> is a perfectly acceptable
-way to make forward progress.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="c1">// ...</span>
-
-<span class="kd">component</span> <span class="nc">WbDMA</span> <span class="p">{</span>
-
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>      <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">output</span> <span class="n">MemBuf</span>     <span class="n">dst_o</span><span class="p">;</span>
-
-        <span class="c1">// ...</span>
-
-    <span class="p">}</span>
-
-    <span class="kd">action</span> <span class="nc">Mem2Dev</span> <span class="p">{</span>
-        <span class="c1">// TODO: fill in later</span>
-    <span class="p">}</span>
-
-    <span class="kd">action</span> <span class="nc">Dev2Mem</span> <span class="p">{</span>
-        <span class="c1">// TODO: fill in later</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<h2 id="playing-with-scenarios">Playing with Scenarios</h2>
-
-<p>Even in this early state, we can start to arrange our actions to see if 
-we’ll be able to form the test scenarios that we might be interested in.</p>
-
-<p>Can we chain DMA operations together? Yes, we can.</p>
-
-<p>Can we have data produced by another block be the source of the DMA copy?
-Yes, so long as the <code class="language-plaintext highlighter-rouge">buffer</code> data types are the same.</p>
-
-<p>Can we have data produced as a result of the DMA copy be the source for
-another block? Again, yes, as long as the <code class="language-plaintext highlighter-rouge">buffer</code> data types are the same.</p>
-
-<p>With very little work, we can start to build confidence that we’ll be able
-to create the tests that we want.</p>
-
-<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
-
-<p>Taking the first step with a new programming language and new modeling 
-approach can seem intimidating, but it needn’t be with PSS. With PSS,
-there are several ways to approach creating a scenario model based on
-a behavioral description of a device, and it’s easy to sketch up 
-something quickly.</p>
-
-<p>Over the next few posts, we’ll continue to refine our initial PSS 
-scenario model for the Wishbone DMA engine and fill in the missing 
-details by learning about new PSS constructs.</p>
-
-<p>Next up: modeling memory with PSS.</p>
-
-<h1 id="resources">Resources</h1>
-<ul>
-  <li>[1] Wishbone DMA Core <a href="https://opencores.org/projects/wb_dma">project page</a></li>
-  <li>[2] Wishbone DMA Core <a href="https://bitsbytesgates.com/imgs/2023/03/dma_doc.pdf">manual</a></li>
-  <li>[3] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_1.html">DMA PSS Code (Viewing)</a></li>
-  <li>[4] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_1.pss">DMA PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[If you’ve been following the blog for any length of time, you’ve likely noticed that I like to work with examples and applications when it comes to learning and understanding technology. I certainly like the tendency of applications to take knowledge out of the theoretical realm and into the practical, helping to answer the ‘why’ and ‘how’ questions about a technology. We’ve used a simple multi-core memory test example to illustrate the first few PSS concepts: Actions and Components Modeling multi-core tests (and automating test creation) Specifying declarative communication relationships between actions We could likely continue on with this example to illustrate a few more PSS concepts, but let’s move on and use a new example. In addition to showing off a few new PSS concepts, my hope is to start talking about the PSS modeling process in the context of this example. To that end, we’ll spend a bit more time talking about the example design itself before digging into the PSS that we’ll use to create tests for it.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Storage (memory) is right in the middle of all the work with do with computer architecture. We have different kinds of memory that each have different trade-offs around performance (latency / throughput), cost per unit, and power consumption. We arrange memories into hierarchies with the goal of keeping frequently-used data in the upper (faster, but limited) layers, while pushing infrequently-accessed data to the lower (slower, but more expansive) layers. Given the large amount of time time designers spend thinking about memory needs, it’s no surprise that creating good and capable tests to exercise those designs depends on being able to acquire the right type of memory at the right time in order to fully-exercise the capabilities and characteristics of the system.]]></summary></entry></feed>
