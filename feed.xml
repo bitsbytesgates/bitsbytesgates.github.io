@@ -1,4 +1,209 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-02-14T17:50:20+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">PSS: Getting Outside the Box</title><link href="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html" rel="alternate" type="text/html" title="PSS: Getting Outside the Box" /><published>2025-02-11T00:00:00+00:00</published><updated>2025-02-11T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-08-18T14:48:36+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Re-Evaluating EDA DSLs in the AI Era</title><link href="https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html" rel="alternate" type="text/html" title="Re-Evaluating EDA DSLs in the AI Era" /><published>2025-08-18T00:00:00+00:00</published><updated>2025-08-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html"><![CDATA[<p>I’ve been looking for a new hardware-centric design language for the last couple of years. 
+Or, more precisely, I’ve been looking for a hardware-centric design language that would
+allow me to realize my ideal silicon design flow.</p>
+<ul>
+  <li>Must support using the same language to refine a design through a series of abstraction levels – from architecture down to RTL</li>
+  <li>Must support fast iteration by supporting both dynamic/executable and static/formal/symbolic evaluation of the same description</li>
+  <li>Must support capturing the test, verification, and firmware aspects of a design in addition to the hardware.</li>
+  <li>Must be interoperable with existing design flows and environments</li>
+</ul>
+
+<p>Until recently, I’ve assumed that a dedicated domain-specific language would be required
+to meet these requirements. However, some new observations about languages and 
+large language models, coupled with some technical learning has me seeing a different 
+path forward for my little project – as well as for future EDA domain-specific languages.</p>
+
+<!-- more -->
+
+<h1 id="why-eda-domain-specific-languages">Why EDA Domain-Specific Languages?</h1>
+<p>If you work in silicon design, you’re very familiar with a set of domain-specific languages (DSLs),
+such as SystemVerilog and VHDL,  that are used to specify a model of your design intent, 
+verify its logical correctness, and synthesize it to a gate-level representation that can
+be programmed onto an FPGA or fabricated as an ASIC. These languages exist precisely because 
+of the domain (hardware)-specific semantics that we need to capture, and how distinct 
+those semantics are from those captured by software languages.</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">module counter(
+    input clock, reset, enable,
+    output reg [31:0] count);
+
+  always @(posedge clock or posedge reset) begin
+    if (reset) begin
+      count &lt;= 0;
+    end else if (enable) begin
+      count &lt;= count + 1;
+    end
+  end
+endmodule</code></pre></figure>
+
+<p>Even a simple counter, like the code above, highlights some of the key semantics
+unique to hardware.</p>
+<ul>
+  <li>implicit entrypoint – nothing “calls” the always block</li>
+  <li>parallel evaluation – always blocks run concurrently</li>
+  <li>synchronized assignment – the new value of ‘count’ doesn’t take effect immediately</li>
+</ul>
+
+<p>Typical implementation, such as an event-driven simulator, is very different from 
+how this code would be evaluated if it was written in a software language. Having a
+language that directly captures the semantics of synchronous digital logic makes us
+much more productive.</p>
+
+<p>There certainly are advantages to this approach of creating specific languages for
+capturing hardware semantics. We can use whatever syntax we find to most-accurately
+convey the semantics that we’re capturing – for example, using ‘&lt;=’ above to denote
+an assignment that doesn’t take effect immediately. Having a full, bespoke, language 
+also often encourages new applications for the language. For example, Verilog started
+off as a simulation language. It was only later that tools started to synthesize
+gates from a Verilog description.</p>
+
+<h1 id="the-cost-of-eda-domain-specific-languages">The Cost of EDA Domain-specific Languages</h1>
+<p>For all the benefits of having full EDA domain-specific languages, there are 
+significant drawbacks.</p>
+
+<p>For one, the cost of designing such a language is high 
+precisely because we often want to have standard software features and semantics
+alongside our hardware-specific semantics. Creating a whole language necessitates
+designing all the details – not just the ones that we’re most interested in 
+as hardware designers.</p>
+
+<p>When it comes to languages, community and popularity matter. Community and popularity
+lead to tools and libraries built around the language, and people talking about 
+how to accomplish things with a language. As hardware designers, 
+we represent a very small group compared to the much larger community of software 
+engineers. A keynote speaker at DAC this year cited a statistic that the number of 
+hardware engineers (inclusive of all disciplines) was less than 10% the number of 
+software engineers. Even a language that is wildly popular among hardware engineers
+would still be considered a niche language in the broader industry.</p>
+
+<p>Generative AI and LLMs are driving what appears to be a consolidation around 
+popular languages recently. In their <a href="https://www.tiobe.com/tiobe-index/">August report</a>, TIOBE (software security analysts, that also track langauge popularity) note a strong
+increase in the popularity of Python driven by the proficiency of AI assistants with
+Python. Given the cost of training a large language model (LLM), language popularity is likely to become a self-reinforcing pattern: increasing popularity leads to better 
+results from LLMs, which further increases the popularity of a language.</p>
+
+<h1 id="alterative-approaches">Alterative Approaches</h1>
+
+<p>Over the years, at least two alternatives to a full domain-specific language have been
+used: class libraries and embedded domain-specific languages.</p>
+
+<h2 id="class-libraries">Class Libraries</h2>
+
+<p>A class library is the lightest-weight approach to capturing domain-specific semantics.
+In this approach, the host language is used as-is and domain-specific semantics are
+captured by creating instances of classes and calling methods from the class library.
+Both UVM and SystemC Follow the class-library approach to domain-specific semantics.</p>
+
+<p>This approach encounters challenges when the semantics to be captured run counter to
+the host language, or the host language doesn’t support capturing them. For example,
+introspecting the value of class fields is of high interest in both SystemC and UVM. 
+UVM uses a special set of macros to register user-defined class fields with the 
+library.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">class ABC extends uvm_object;
+	rand bit [15:0] 	m_addr;
+	rand bit [15:0] 	m_data;
+
+	`uvm_object_utils_begin(ABC)
+		`uvm_field_int(m_addr, UVM_DEFAULT)
+		`uvm_field_int(m_data, UVM_DEFAULT)
+	`uvm_object_utils_end
+endclass</code></pre></figure>
+
+<p>Exposing access to fields in this way is both a bit cumbersome for the user,
+and quite possibly computationally inefficiency because the implementation
+must cover so many cases in a generic fashion.</p>
+
+<p>Class libraries also tend to be tightly locked to the their host language
+for evaluation. Because a processing tool isn’t able to look at the
+structure of user-defined functions, there isn’t an opportunity to represent
+them in a different language. If a class library-based description needs to 
+target a different language, it typically will build an internal data 
+model based on running the model and generate code from that data model.</p>
+
+<h2 id="embedded-domain-specific-languages">Embedded Domain-Specific Languages</h2>
+
+<p>If a class library is insufficient to capture the semantics we require, another
+approach is to create an embedded domain-specific language (eDSL) using a language
+feature called operator overloading. Not all languages support operator overloading
+– for example, SystemVerilog does not. For those that do, operator overloading 
+allows us to redefine the implementation of standard operators in specific cases.
+This can allow us to create the illusion of writing a different language inside
+the confines of our host language.</p>
+
+<p><a href="https://systemc.org/overview/systemc-verification/">SystemC Verification (SCV) library</a> 
+provides one example of using operator 
+overloading to capture random constraints. The PyVSC library offers another.</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    @vsc.constraint
+    def ab_c(self):
+       self.a &gt; self.b</code></pre></figure>
+
+<p>Python is feature-rich when it comes to operator overloading. The constraint
+above looks exactly how you would intuitively expect a ‘greater-than’ constraint
+to look. But there are limits.</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    @vsc.constraint
+    def ab_c(self):
+        self.a == 5
+
+        with vsc.if_then(self.a == 1):
+            self.b == 1
+        with vsc.else_if(self.a == 2):
+            self.b == 2</code></pre></figure>
+
+<p>Python doesn’t allow us to override statements, so we need to invent a new
+way of capturing constraint statements like if/elsif/else.</p>
+
+<p>Furthermore, Python doesn’t allow us to override some operators. So, we need
+to invent another way of capturing logical <code class="language-plaintext highlighter-rouge">and</code>, logical <code class="language-plaintext highlighter-rouge">or</code>, and the <code class="language-plaintext highlighter-rouge">in</code>
+operator.</p>
+
+<p>Finally, the code above doesn’t really <em>look</em> like good Python code. Tools
+like linters are likely to complain. LLMs will also not know how to create
+this content unless specially prompted.</p>
+
+<h1 id="back-to-python">Back to Python</h1>
+
+<p>So, where does that leave us? Well, until recently, right back to needing a full language to
+satisfy the requirements. But, as it turns out, Python has a few more features to offer.</p>
+
+<p>Unlike many languages, Python supports introspecting and rewriting code at the <a href="https://docs.python.org/3/library/ast.html">abstract 
+syntax tree (AST) level</a>. This feature is mostly
+used by linting tools, but is also used by the <a href="https://docs.pytest.org/en/stable/">Pytest</a> 
+tool to provide more detail about assertions that fail.</p>
+
+<p>This suggests a new way to look at a Python description:</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">class MyClass(vsc.RandClass):
+    a : vsc.rand[vsc.bit[32]]
+    b : vsc.rand[vsc.bit[32]]
+
+    @vsc.constraint
+    def ab_c(self):
+        self.a == 5
+
+        if self.a == 1:
+            self.b == 1
+        elif self.a == 2:
+            self.b == 2</code></pre></figure>
+
+<p>Specifically, all syntax is plain Python syntax – no operator overloading that might
+confuse linters or LLMs. We still can use markers, such as base classes and 
+decorators, to identify special regions where the semantics differ from plain 
+Python execution. For example, the @vsc.constraint decorator marks a method that
+contains constraints. Instead of executing these regions to build up a data structure,
+we simply use Python’s AST introspection to build the data structure directly.
+This allows us to leverage Python syntax, and all the tools that understand it, while
+layering our own special semantics on top.</p>
+
+<h1 id="next-steps">Next Steps</h1>
+
+<p>As I mentioned at the beginning of this post, my key interest is in having a modeling
+language that supports capturing very abstraction descriptions of hardware behavior
+all the way to RTL. While I could start with any of the abstraction levels, I’ve 
+decided to start with RTL because that’s where all abstraction levels eventually end 
+up. We’ll start looking at a Python-encapsulated description of RTL in the next post.</p>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[I’ve been looking for a new hardware-centric design language for the last couple of years. Or, more precisely, I’ve been looking for a hardware-centric design language that would allow me to realize my ideal silicon design flow. Must support using the same language to refine a design through a series of abstraction levels – from architecture down to RTL Must support fast iteration by supporting both dynamic/executable and static/formal/symbolic evaluation of the same description Must support capturing the test, verification, and firmware aspects of a design in addition to the hardware. Must be interoperable with existing design flows and environments Until recently, I’ve assumed that a dedicated domain-specific language would be required to meet these requirements. However, some new observations about languages and large language models, coupled with some technical learning has me seeing a different path forward for my little project – as well as for future EDA domain-specific languages. Why EDA Domain-Specific Languages? If you work in silicon design, you’re very familiar with a set of domain-specific languages (DSLs), such as SystemVerilog and VHDL, that are used to specify a model of your design intent, verify its logical correctness, and synthesize it to a gate-level representation that can be programmed onto an FPGA or fabricated as an ASIC. These languages exist precisely because of the domain (hardware)-specific semantics that we need to capture, and how distinct those semantics are from those captured by software languages. module counter( input clock, reset, enable, output reg [31:0] count); always @(posedge clock or posedge reset) begin if (reset) begin count &lt;= 0; end else if (enable) begin count &lt;= count + 1; end end endmodule Even a simple counter, like the code above, highlights some of the key semantics unique to hardware. implicit entrypoint – nothing “calls” the always block parallel evaluation – always blocks run concurrently synchronized assignment – the new value of ‘count’ doesn’t take effect immediately Typical implementation, such as an event-driven simulator, is very different from how this code would be evaluated if it was written in a software language. Having a language that directly captures the semantics of synchronous digital logic makes us much more productive. There certainly are advantages to this approach of creating specific languages for capturing hardware semantics. We can use whatever syntax we find to most-accurately convey the semantics that we’re capturing – for example, using ‘&lt;=’ above to denote an assignment that doesn’t take effect immediately. Having a full, bespoke, language also often encourages new applications for the language. For example, Verilog started off as a simulation language. It was only later that tools started to synthesize gates from a Verilog description. The Cost of EDA Domain-specific Languages For all the benefits of having full EDA domain-specific languages, there are significant drawbacks. For one, the cost of designing such a language is high precisely because we often want to have standard software features and semantics alongside our hardware-specific semantics. Creating a whole language necessitates designing all the details – not just the ones that we’re most interested in as hardware designers. When it comes to languages, community and popularity matter. Community and popularity lead to tools and libraries built around the language, and people talking about how to accomplish things with a language. As hardware designers, we represent a very small group compared to the much larger community of software engineers. A keynote speaker at DAC this year cited a statistic that the number of hardware engineers (inclusive of all disciplines) was less than 10% the number of software engineers. Even a language that is wildly popular among hardware engineers would still be considered a niche language in the broader industry. Generative AI and LLMs are driving what appears to be a consolidation around popular languages recently. In their August report, TIOBE (software security analysts, that also track langauge popularity) note a strong increase in the popularity of Python driven by the proficiency of AI assistants with Python. Given the cost of training a large language model (LLM), language popularity is likely to become a self-reinforcing pattern: increasing popularity leads to better results from LLMs, which further increases the popularity of a language. Alterative Approaches Over the years, at least two alternatives to a full domain-specific language have been used: class libraries and embedded domain-specific languages. Class Libraries A class library is the lightest-weight approach to capturing domain-specific semantics. In this approach, the host language is used as-is and domain-specific semantics are captured by creating instances of classes and calling methods from the class library. Both UVM and SystemC Follow the class-library approach to domain-specific semantics. This approach encounters challenges when the semantics to be captured run counter to the host language, or the host language doesn’t support capturing them. For example, introspecting the value of class fields is of high interest in both SystemC and UVM. UVM uses a special set of macros to register user-defined class fields with the library. class ABC extends uvm_object; rand bit [15:0] m_addr; rand bit [15:0] m_data; `uvm_object_utils_begin(ABC) `uvm_field_int(m_addr, UVM_DEFAULT) `uvm_field_int(m_data, UVM_DEFAULT) `uvm_object_utils_end endclass Exposing access to fields in this way is both a bit cumbersome for the user, and quite possibly computationally inefficiency because the implementation must cover so many cases in a generic fashion. Class libraries also tend to be tightly locked to the their host language for evaluation. Because a processing tool isn’t able to look at the structure of user-defined functions, there isn’t an opportunity to represent them in a different language. If a class library-based description needs to target a different language, it typically will build an internal data model based on running the model and generate code from that data model. Embedded Domain-Specific Languages If a class library is insufficient to capture the semantics we require, another approach is to create an embedded domain-specific language (eDSL) using a language feature called operator overloading. Not all languages support operator overloading – for example, SystemVerilog does not. For those that do, operator overloading allows us to redefine the implementation of standard operators in specific cases. This can allow us to create the illusion of writing a different language inside the confines of our host language. SystemC Verification (SCV) library provides one example of using operator overloading to capture random constraints. The PyVSC library offers another. @vsc.constraint def ab_c(self): self.a &gt; self.b Python is feature-rich when it comes to operator overloading. The constraint above looks exactly how you would intuitively expect a ‘greater-than’ constraint to look. But there are limits. @vsc.constraint def ab_c(self): self.a == 5 with vsc.if_then(self.a == 1): self.b == 1 with vsc.else_if(self.a == 2): self.b == 2 Python doesn’t allow us to override statements, so we need to invent a new way of capturing constraint statements like if/elsif/else. Furthermore, Python doesn’t allow us to override some operators. So, we need to invent another way of capturing logical and, logical or, and the in operator. Finally, the code above doesn’t really look like good Python code. Tools like linters are likely to complain. LLMs will also not know how to create this content unless specially prompted. Back to Python So, where does that leave us? Well, until recently, right back to needing a full language to satisfy the requirements. But, as it turns out, Python has a few more features to offer. Unlike many languages, Python supports introspecting and rewriting code at the abstract syntax tree (AST) level. This feature is mostly used by linting tools, but is also used by the Pytest tool to provide more detail about assertions that fail. This suggests a new way to look at a Python description: class MyClass(vsc.RandClass): a : vsc.rand[vsc.bit[32]] b : vsc.rand[vsc.bit[32]] @vsc.constraint def ab_c(self): self.a == 5 if self.a == 1: self.b == 1 elif self.a == 2: self.b == 2 Specifically, all syntax is plain Python syntax – no operator overloading that might confuse linters or LLMs. We still can use markers, such as base classes and decorators, to identify special regions where the semantics differ from plain Python execution. For example, the @vsc.constraint decorator marks a method that contains constraints. Instead of executing these regions to build up a data structure, we simply use Python’s AST introspection to build the data structure directly. This allows us to leverage Python syntax, and all the tools that understand it, while layering our own special semantics on top. Next Steps As I mentioned at the beginning of this post, my key interest is in having a modeling language that supports capturing very abstraction descriptions of hardware behavior all the way to RTL. While I could start with any of the abstraction levels, I’ve decided to start with RTL because that’s where all abstraction levels eventually end up. We’ll start looking at a Python-encapsulated description of RTL in the next post.]]></summary></entry><entry><title type="html">PSS: Getting Outside the Box</title><link href="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html" rel="alternate" type="text/html" title="PSS: Getting Outside the Box" /><published>2025-02-11T00:00:00+00:00</published><updated>2025-02-11T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2025/02/11/PSS_GettingOutsideTheBox.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2025/02/PSSGettingOutsideTheBox_splash.png" /> 
 </p>
 
@@ -2456,271 +2661,4 @@ actions in our PSS model to the registers within the DMA engine.</p>
 <ul>
   <li>[1] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_3.html">DMA PSS Code (Viewing)</a></li>
   <li>[2] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_3.pss">DMA PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Resource contention is a challenge that arises any time concurrency and shared resources (data, hardware accelerators, etc) are involved. It’s one of the big challenges, and source of bugs, in implementing code that takes advantage of parallelism. When it comes to hardware resources, safe access to shared resources is generally managed in production by the operating system. There are two big reasons that using this same approach for bare-metal tests isn’t a good solution: First, and most obvious, is that our bare-metal tests don’t have an operating system to use in managing access to shared devices Second, and more interesting, is that our tests are constraint guided and seek to exercise as many unique corner cases as possible. In contrast, the OS can focus simply on providing correct results, and doesn’t need t be as concerned with being able to produce interesting and unique corner cases. The good news, as you might guess, is that PSS provides constructs for modeling available resources and how actions can make use of them without conflicts – whether the actions are executing sequentially or concurrently. Let’s dig in and learn more.]]></summary></entry><entry><title type="html">PSS Memory Management Fundamentals</title><link href="https://bitsbytesgates.com/pss/2023/04/02/ManagingMemoryInPSS.html" rel="alternate" type="text/html" title="PSS Memory Management Fundamentals" /><published>2023-04-02T00:00:00+00:00</published><updated>2023-04-02T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/04/02/ManagingMemoryInPSS</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/04/02/ManagingMemoryInPSS.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/04/MemoryManagement_splash.png" /> 
-</p>
-
-<p>Storage (memory) is right in the middle of all the work with do with
-computer architecture. We have different kinds of memory that each have different
-trade-offs around performance (latency / throughput), cost per unit,
-and power consumption. We arrange memories into hierarchies with 
-the goal of keeping frequently-used data in the upper 
-(faster, but limited) layers, while pushing infrequently-accessed data 
-to the lower (slower, but more expansive) layers.</p>
-
-<p>Given the large amount of time time designers spend thinking about 
-memory needs, it’s no surprise that creating good and capable tests 
-to exercise those designs depends on being able to acquire the right 
-type of memory at the right time in order to fully-exercise the 
-capabilities and characteristics of the system.</p>
-
-<!--more-->
-
-<p>Remember, though, that we’re writing bare-metal tests. Consequently, we need 
-to allocate memory for our test behaviors ahead of time in order to not waste valuable
-simulation or emulation time running the ‘malloc’ and ‘free’ algorithm. 
-When done by hand, static allocation can limit how reusable code is and
-remove the majority of variability (ie randomness) from test scenarios. Fortunately, 
-PSS provides some easy to use features that allow actions to manage memory that 
-they require in a way that enables static allocation while not limiting 
-variability or reuse. Let’s dig in!</p>
-
-<h1 id="test-requirements-for-memory-management">Test Requirements for Memory Management</h1>
-<p>System-level tests have three core requirements when it comes to 
-memory management:</p>
-<ul>
-  <li>Ensure that behaviors needing distinct blocks of memory are provided non-overlapping
-blocks of memory</li>
-  <li>Ensure behaviors that need to share data see the same memory</li>
-  <li>Ensure that a test is able to explicitly specify the general
-location in memory (eg SRAM, DDR, etc) where a memory block
-comes from.</li>
-</ul>
-
-<p>One of the biggest challenges with hand-written bare-metal
-tests is implementing these three characteristics in a distributed
-and modular way.</p>
-
-<p>There are two parts of the PSS memory management approach:</p>
-<ul>
-  <li>Specification of available memory resource</li>
-  <li>Specification of claims on those resources, and how the claimed data is used.</li>
-</ul>
-
-<h1 id="using-memory-in-behaviors">Using Memory in Behaviors</h1>
-<p>Let’s start with the second point – how we claim memory – since we can see 
-immediately how that fits into our DMA example.</p>
-
-<p>In PSS, an action claims memory by having one or more random fields of type
-<em>addr_claim_s</em>. The action can control how much memory is being requested,
-and its alignment, by constraining the fields of the claim.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>    <span class="n">size</span><span class="p">;</span> <span class="c1">// Size of the data</span>
-    <span class="n">addr_handle_t</span>   <span class="n">addr_h</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
-
-        <span class="c1">// Input and output size must be the same</span>
-        <span class="k">constraint</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">src_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
-
-        <span class="c1">// DMA only transfers words</span>
-        <span class="k">constraint</span> <span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span> 
-
-        <span class="c1">// Specify size/alignment for allocation</span>
-        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
-        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">alignment</span> <span class="o">==</span> <span class="mi">4</span><span class="p">;</span>
-
-        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
-            <span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span> <span class="o">=</span> <span class="n">make_handle_from_claim</span><span class="p">(</span><span class="n">dst_claim</span><span class="p">);</span>
-        <span class="p">}</span>
-
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="c1">// ...</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Okay, we’ve added a few things to the skeleton Mem2Mem action that
-we created in the last post:</p>
-<ul>
-  <li>Added a <code class="language-plaintext highlighter-rouge">size</code> field to <code class="language-plaintext highlighter-rouge">MemBuf</code> to ensure that producers and consumers
-of this type agree on the data size.</li>
-  <li>Added an ‘addr_h’ field to <code class="language-plaintext highlighter-rouge">MemBuf</code> that will hold a handle to the allocated
-memory block.</li>
-  <li>Add a claim field (<code class="language-plaintext highlighter-rouge">dst_claim</code>) to the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action that will cause 
-memory to be allocated for the DMA destination memory</li>
-  <li>Add constraints to:
-    <ul>
-      <li>Relate the source and destination buffer objects.</li>
-      <li>Relate the source and destination buffer objects.</li>
-    </ul>
-  </li>
-</ul>
-
-<p>One new thing is that we assign the address handle to a field in the output 
-buffer within the <code class="language-plaintext highlighter-rouge">post_solve</code> exec block inside the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action. 
-This is done in order to make the address available to the consumer of the 
-buffer. Why does this work? 
-PSS specifies that two actions that are connected by a buffer object 
-both have a handle to exactly the same object. That means that when the 
-outputting action assigns a value to a field, it is assigning to the 
-exact field that the inputting action will read.</p>
-
-<h2 id="specifying-memory-claim-lifetimes">Specifying Memory Claim Lifetimes</h2>
-
-<p>By default, the lifetime of a memory claim is the same as the action containing
-it.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
-
-        <span class="c1">// ...</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>In the context of our example, that means that <code class="language-plaintext highlighter-rouge">dst_claim</code> would be released
-as soon as the DMA transfer completes. Clearly, that’s not what we want since we
-are claiming <code class="language-plaintext highlighter-rouge">dst_claim</code> in order to provide data to another action.</p>
-
-<p>The solution is to <em>extend</em> the lifetime of the memory claim by attaching 
-it to something with a longer lifetime. In this case, that thing with a 
-longer lifetime is, very naturally, the output buffer, since we intend the 
-lifetime of the buffer and the lifetime of our memory claim to match.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
-
-        <span class="c1">// ...</span>
-
-        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
-            <span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span> <span class="o">=</span> <span class="n">make_handle_from_claim</span><span class="p">(</span><span class="n">dst_claim</span><span class="p">);</span>
-        <span class="p">}</span>
-
-        <span class="c1">// ...</span>
-        
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Now, when the memory we’ve claimed is passed to another action via a buffer,
-the memory claim lives at least until the receiving action is complete.</p>
-
-<div class="mermaid" align="center">
-flowchart TD;
-  mem_b_1 -.-&gt; mem2mem_1
-  mem2mem_1 -.-&gt; mem_b_2
-  mem_b_2 -.-&gt; mem2mem_2
-  mem2mem_2 -.-&gt; mem_b_3
-  subgraph Execution
-    mem2mem_1("Mem2Mem[1]") --&gt; mem2mem_2("Mem2Mem[2]")
-  end
-  subgraph Dataflow
-    mem_b_1(["MemBuf\nsize: 64\naddr_h=0x80000000"])
-    mem_b_2(["MemBuf\nsize: 64\naddr_h=0x80001000"])
-    mem_b_3(["MemBuf\nsize: 64\naddr_h=0x80002000"])
-  end
-</div>
-
-<h1 id="describing-memory-resources">Describing Memory Resources</h1>
-<p>In addition to claiming memory, we also need to capture the memory available
-to us in the system. This is done by defining an address space with one or
-more memory regions, from which memory will be allocated.</p>
-
-<p>Address spaces are instanced in the component tree. Recall from the post about
-actions and components that each action execution occurs in the context of
-a component instance.</p>
-
-<p>The address space used by a given claim is located by searching hierarchically
-up the component tree from the action’s context component instance until an 
-address space with the same <code class="language-plaintext highlighter-rouge">trait</code> type as the claim is found.</p>
-
-<p>This resolution scheme means that we need to exercise care in where we place
-our address space. Memory is most commonly a system property. 
-If we instance our DMA Engine in two different systems, we could reasonably
-expect the available memory to be different. The amount of memory is likely
-to be different, as are the base addresses of key memory regions.</p>
-
-<div class="mermaid" align="center">
-flowchart TD
-  subgraph PssTop["pss_top"]
-    aspace[["aspace : transparen_address_space_c&lt;&gt;"]]
-    mem2mem-. claim .-&gt;aspace
-    subgraph WbDma["dma : WbDma"]
-      mem2mem["Mem2Mem"]
-    end
-  end
-</div>
-
-<h2 id="capturing-available-memory">Capturing Available Memory</h2>
-<p>In our simple example, we will capture the address space for our DMA
-engine to use in <code class="language-plaintext highlighter-rouge">pss_top</code>.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="c1">// ...</span>
-
-<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>           <span class="n">aspace</span><span class="p">;</span>
-
-    <span class="n">WbDma</span>                                <span class="n">dma</span><span class="p">;</span>
-
-    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
-        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>      <span class="n">region</span><span class="p">;</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x0000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>The available memory regions within the address space are specified in the 
-<code class="language-plaintext highlighter-rouge">init_down</code> exec block. Here, we register two regions of memory – one at
-0x8000_0000 and one at 0x0000_0000.</p>
-
-<h1 id="putting-it-all-together">Putting it all together</h1>
-<p>We’ve completed the basic updates to our PSS model that enable our DMA actions
-to sensibly management memory.</p>
-<ul>
-  <li>We have added a memory claim to the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action to claim memory
-for the destination buffer.</li>
-  <li>We have added a handle to the the <code class="language-plaintext highlighter-rouge">MemBuf</code> buffer type that enables
-us to properly manage the lifetime of that claimed memory.</li>
-  <li>We have specified an address space with available regions of memory for 
-the <code class="language-plaintext highlighter-rouge">Mem2Mem</code> action to use.</li>
-</ul>
-
-<p>At this point, the Mem2Mem action will randomly allocate memory regions from 
-the two registered regions. For now, this is likely just fine. In the future,
-we will need to take finer-grain control over where our memory claims are 
-satisfied. Fortunately, PSS provides features to support that requirement
-as well.</p>
-
-<p>In this post, we’ve seen the steps necessarily to make use of the core 
-memory-management features that PSS provides. Now that we know how to
-manage memory as a test-scenario resource, we can turn our attention to
-managing another type of resource: the DMA channels within the engine.</p>
-
-<h1 id="resources">Resources</h1>
-<ul>
-  <li>[1] <a href="https://www.accellera.org/downloads/standards/portable-stimulus">PSS LRM</a></li>
-  <li>[2] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_2.html">DMA PSS Code (Viewing)</a></li>
-  <li>[3] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_2.pss">DMA PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Storage (memory) is right in the middle of all the work with do with computer architecture. We have different kinds of memory that each have different trade-offs around performance (latency / throughput), cost per unit, and power consumption. We arrange memories into hierarchies with the goal of keeping frequently-used data in the upper (faster, but limited) layers, while pushing infrequently-accessed data to the lower (slower, but more expansive) layers. Given the large amount of time time designers spend thinking about memory needs, it’s no surprise that creating good and capable tests to exercise those designs depends on being able to acquire the right type of memory at the right time in order to fully-exercise the capabilities and characteristics of the system.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Resource contention is a challenge that arises any time concurrency and shared resources (data, hardware accelerators, etc) are involved. It’s one of the big challenges, and source of bugs, in implementing code that takes advantage of parallelism. When it comes to hardware resources, safe access to shared resources is generally managed in production by the operating system. There are two big reasons that using this same approach for bare-metal tests isn’t a good solution: First, and most obvious, is that our bare-metal tests don’t have an operating system to use in managing access to shared devices Second, and more interesting, is that our tests are constraint guided and seek to exercise as many unique corner cases as possible. In contrast, the OS can focus simply on providing correct results, and doesn’t need t be as concerned with being able to produce interesting and unique corner cases. The good news, as you might guess, is that PSS provides constructs for modeling available resources and how actions can make use of them without conflicts – whether the actions are executing sequentially or concurrently. Let’s dig in and learn more.]]></summary></entry></feed>

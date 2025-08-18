@@ -97,6 +97,16 @@ Post-env
         <ul class="nested" list-style-type="none">
         
         
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html">Re-Evaluating EDA DSLs in the AI Era</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
         <li><span class="caret">Feb</span>
         <ul class="nested" list-style-type="none">
         
@@ -674,285 +684,215 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/pss/2025/02/11/PSS_GettingOutsideTheBox.html">PSS: Getting Outside the Box</a>
+    <a href="/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html">Re-Evaluating EDA DSLs in the AI Era</a>
   </h1>      
 
-<div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/02/PSSGettingOutsideTheBox_splash.png" /> 
-</p>
-
-<p>In the <a href="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html">last post</a>, 
-we showed a SystemVerilog implementation of a PSS model
-that printed “Hello World!”. Interesting, perhaps, but quite a ways from 
-being useful. In order to be useful, our PSS model needs to interact with
-the environment surrounding it.</p>
-
-<p>This post will cover more details about how a PSS model interacts with 
-the environment around it, and look at an object-oriented interface between
-PSS and a SystemVerilog environment.</p>
-
-<!--more-->
-
-<p>Both PSS and SystemVerilog are object-oriented languages. With language
-interoperability, our goal is to keep each language’s view of inteacting
-with the “other” consistent with its own norms and conventions. Because
-both languages are object-oriented, we want SystemVerilog to see its
-interactions with PSS in object-oriented terms, and vice versa.</p>
-
-<p>While we’re looking at an API in the context of our Zuspec PSS to SystemVerilog
-transpiler, the goal is to define a language interoperability approach that
-will work with many PSS tools.</p>
-
-<p>Essentially, what we want is this:</p>
-<div class="mermaid" align="center">
-flowchart TD
-    subgraph Model1 ["PSS Model1"]
-      BFM1_1["BFM1"]
-      BFM1_2["BFM2"]
-    end
-    subgraph Model2 ["PSS Model2"]
-      BFM2_1["BFM1"]
-      BFM2_2["BFM2"]
-    end
-
-    subgraph Sim ["Simulation"]
-      BFM1
-      BFM2
-      BFM3
-      BFM4
-    end
-    Model1 --&gt; Sim
-    Model2 --&gt; Sim
-
-</div>
-
-<p>In other words, we want an integration mechanism that supports:</p>
+<div class="entry-content"><p>I’ve been looking for a new hardware-centric design language for the last couple of years. 
+Or, more precisely, I’ve been looking for a hardware-centric design language that would
+allow me to realize my ideal silicon design flow.</p>
 <ul>
-  <li>Multiple, independent, instances of PSS model implementations that run concurrently.</li>
-  <li>Multiple “logical streams” within each PSS model instance that
-interact with the SystemVerilog testbench</li>
+  <li>Must support using the same language to refine a design through a series of abstraction levels – from architecture down to RTL</li>
+  <li>Must support fast iteration by supporting both dynamic/executable and static/formal/symbolic evaluation of the same description</li>
+  <li>Must support capturing the test, verification, and firmware aspects of a design in addition to the hardware.</li>
+  <li>Must be interoperable with existing design flows and environments</li>
 </ul>
 
-<p>The biggest obstacle to achieving this is that both PSS and SystemVerilog
-use global functions to implement interactions with the outside world. 
-Global functions do not allow us to leverage object-oriented language constructs, so 
-we will need to add some infrastructure on top.</p>
+<p>Until recently, I’ve assumed that a dedicated domain-specific language would be required
+to meet these requirements. However, some new observations about languages and 
+large language models, coupled with some technical learning has me seeing a different 
+path forward for my little project – as well as for future EDA domain-specific languages.</p>
 
-<h1 id="the-basics">The Basics</h1>
-<p>PSS provides <code class="language-plaintext highlighter-rouge">import</code> functions to allow the PSS model to interact 
-with the outside world.</p>
+<!-- more -->
 
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">bfm_write</span><span class="p">(</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">);</span>
-<span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">bfm_read</span><span class="p">(</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">);</span>
+<h1 id="why-eda-domain-specific-languages">Why EDA Domain-Specific Languages?</h1>
+<p>If you work in silicon design, you’re very familiar with a set of domain-specific languages (DSLs),
+such as SystemVerilog and VHDL,  that are used to specify a model of your design intent, 
+verify its logical correctness, and synthesize it to a gate-level representation that can
+be programmed onto an FPGA or fabricated as an ASIC. These languages exist precisely because 
+of the domain (hardware)-specific semantics that we need to capture, and how distinct 
+those semantics are from those captured by software languages.</p>
 
-<span class="kd">component</span> <span class="nc">bfm_c</span> <span class="p">{</span>
-  <span class="kd">action</span> <span class="nc">write</span> <span class="p">{</span>
-    <span class="c1">// </span>
-    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-      <span class="n">bfm_write</span><span class="p">(</span><span class="o">...</span><span class="p">);</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">module counter(
+    input clock, reset, enable,
+    output reg [31:0] count);
 
-<p>In the example above, two functions are declared – one to perform
-a read via a BFM, and one to perform a write. These are global
-functions, accessible from all PSS contexts.</p>
-
-<p>The PSS LRM specifies how function parameter and return types are 
-mapped to SystemVerilog and C. Theoretically, we could map
-the functions themselves to <code class="language-plaintext highlighter-rouge">export</code> tasks and functions
-in SystemVerilog.</p>
-
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">interface bfm;
-  automatic task bfm_write(int unsigned addr, int unsigned data);
-  endtask
-  export "DPI-C" task bfm_write;
-
-  automatic task bfm_read(output int unsigned data, input int unsigned addr);
-  endtask
-  export "DPI-C" task bfm_read;
-
-endinterface</code></pre></figure>
-
-<p>The example above shows SystemVerilog <code class="language-plaintext highlighter-rouge">export</code> tasks that mirror the
-PSS <code class="language-plaintext highlighter-rouge">import</code> functions. Conceptually, calling <code class="language-plaintext highlighter-rouge">bfm_write</code> in PSS
-would translate into a call to the <code class="language-plaintext highlighter-rouge">bfm_write</code> task in SystemVerilog. 
-If we do that, though, we have no awareness of multiple PSS model
-instances, and little implementation flexibility.  Fortunately, a 
-little methodology and a little code generation can help us
-get the object-oriented interfaces that we want!</p>
-
-<h2 id="introducing-the-api-class">Introducing the API Class</h2>
-<p>Zuspec-SV (our PSS to SV transpiler) defines an Import API class that
-contains a virtual method definition for each and every Import function
-in the PSS model.</p>
-
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">class pss_import_api extends backend_api;
-   
-  virtual task bfm_write(int unsigned addr, int unsigned data);
-  endtask
-
-  virtual task bfm_read(output int unsigned data, input int unsigned addr);
-  endtask
-
-endclass</code></pre></figure>
-
-<p>The code above shows what would be produced for the <code class="language-plaintext highlighter-rouge">bfm_write</code> and
-<code class="language-plaintext highlighter-rouge">bfm_read</code> functions shown earlier. The <code class="language-plaintext highlighter-rouge">import</code> API class inherits
-from another API class that defines built-in functions that the PSS
-model needs to access. Implementing the API can be done simply by
-creating a class that inherits from <code class="language-plaintext highlighter-rouge">pss_import_api</code> and providing
-implementations of the tasks and functions.</p>
-
-<h2 id="connecting-our-api-implementation">Connecting our API Implementation</h2>
-<p>Once we have a SystemVerilog class with properly-implemented methods, 
-we need to connect the PSS model implementation to it. This is where
-things get a bit tool-specific.</p>
-
-<p>PSS defines a scenario model as the combination of a tree of 
-<em>components</em> and a hierarchy of <em>actions</em> that execute in the
-context of the components. <code class="language-plaintext highlighter-rouge">Zuspec-SV</code> refers to this 
-component/action combination as an <em>Actor</em>. An <em>Actor</em> is 
-implemented as a class that accepts the import API class 
-as an argument to its constructor.</p>
-
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">    class pss_top__Entry_actor extends actor_c;
-        pss_top comp_tree;
-        pss_import_api api;
-        executor_base_c default_executor;
-
-        function new(pss_import_api api=null);
-           ...
-        endfunction
-      ...
-    endclass</code></pre></figure>
-
-<p>As we saw in the <em>Hello World</em> example, we run a PSS model
-by creating an instance of the <em>Actor</em> and calling the
-<em>run</em> task.</p>
-
-<h2 id="full-example">Full Example</h2>
-<p>Let’s take a step-by-step look at the simple API implementation example
-in <code class="language-plaintext highlighter-rouge">zuspec-examples</code>. You can find the full example 
-<a href="https://github.com/zuspec/zuspec-examples/tree/main/sv/simple_read_write">here</a>.</p>
-
-<p>If you want to try this example yourself, be sure to update your <code class="language-plaintext highlighter-rouge">Zuspec-SV</code>
-version. You can do so in the <code class="language-plaintext highlighter-rouge">zuspec-examples</code> project by running the
-following command:</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>% ./packages/python/bin/pip install -U zuspec-sv
-</code></pre></div></div>
-
-<p>You will need at least version 0.0.9 to run this example.</p>
-
-<p>Let’s start with the PSS code:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">bfm_write</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">,</span> <span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">);</span>
-<span class="k">import</span> <span class="k">target</span> <span class="k">function</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">bfm_read</span><span class="p">(</span><span class="k">input</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">addr</span><span class="p">);</span>
-
-<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-
-    <span class="kd">action</span> <span class="nc">Entry</span> <span class="p">{</span>
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="n">data</span><span class="p">;</span>
-            <span class="n">bfm_write</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mh">0x12345678</span><span class="p">);</span>
-            <span class="n">bfm_write</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mh">0x12345678</span><span class="p">);</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">bfm_read</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
-            <span class="n">message</span><span class="p">(</span><span class="n">LOW</span><span class="p">,</span> <span class="s">"PSS read data %d"</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>We declare two import functions – one that writes data via a bus functional 
-model (BFM), and one that reads data via a bus functional model.</p>
-
-<p>We then declare a (very) simple PSS Action that calls the <code class="language-plaintext highlighter-rouge">write</code> function
-twice, calls the <code class="language-plaintext highlighter-rouge">read</code> function once, and displays the return value.</p>
-
-<h3 id="implementing-the-api">Implementing the API</h3>
-
-<p><code class="language-plaintext highlighter-rouge">Zuspec-SV</code> creates the following API class based on the import functions
-declared within the PSS model:</p>
-
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">    class pss_import_api #(type BaseT=zsp_sv::empty_t) extends backend_api #(BaseT);
-        virtual task bfm_write(
-                input int unsigned addr,
-                input int unsigned data);
-            `ZSP_FATAL(("Import function bfm_write is not implemented"));
-        endtask
-        virtual task bfm_read(
-                output int unsigned __retval,
-                input int unsigned addr);
-            `ZSP_FATAL(("Import function bfm_read is not implemented"));
-        endtask
-    endclass</code></pre></figure>
-
-<p>Note that the signature of the <code class="language-plaintext highlighter-rouge">bfm_read</code> task is a bit different. This 
-is because SystemVerilog tasks do not support a return value, so the
-result must be returned via an output parameter. Fortunately, this is
-all well-defined by the rules in the PSS LRM.</p>
-
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">package simple_read_write_pkg;
-    import pss_types::*;
-
-    class api_impl extends pss_import_api;
-        virtual task bfm_write(
-            input int unsigned addr,
-            input int unsigned data);
-            $display("bfm_write: 'h%08h 'h%08h", addr, data);
-        endtask
-
-        virtual task bfm_read(
-            output int unsigned __retval,
-            input int unsigned addr);
-            $display("bfm_read: 'h%08h", addr);
-            __retval = 42;
-        endtask
-    endclass
-
-endpackage</code></pre></figure>
-
-<p>Our testbench environment is responsible for providing code, like 
-that shown above, to provide an implementation for the import functions.
-Our implementation, here, is quite simple: We print a message when either 
-task is called, and return the value <code class="language-plaintext highlighter-rouge">42</code> from the <code class="language-plaintext highlighter-rouge">read</code> function.</p>
-
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">module simple_read_write;
-    import simple_read_write_pkg::*;
-    import pss_top__Entry_pkg::*;
-
-    initial begin
-        automatic api_impl api = new();
-        pss_top__Entry actor = new(api);
-
-        actor.run();
+  always @(posedge clock or posedge reset) begin
+    if (reset) begin
+      count &lt;= 0;
+    end else if (enable) begin
+      count &lt;= count + 1;
     end
+  end
 endmodule</code></pre></figure>
 
-<p>Finally, we can put everything together and run our PSS model. The 
-code above creates an instance of our implementation of the API 
-class, and passes it to the constructor of our PSS <code class="language-plaintext highlighter-rouge">Actor</code> class.
-When we run the simulation, we should see something like the following:</p>
+<p>Even a simple counter, like the code above, highlights some of the key semantics
+unique to hardware.</p>
+<ul>
+  <li>implicit entrypoint – nothing “calls” the always block</li>
+  <li>parallel evaluation – always blocks run concurrently</li>
+  <li>synchronized assignment – the new value of ‘count’ doesn’t take effect immediately</li>
+</ul>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bfm_write: 'h00000000 'h12345678
-bfm_write: 'h00000004 'h12345678
-bfm_read: 'h00000004
-PSS read data 42
-</code></pre></div></div>
+<p>Typical implementation, such as an event-driven simulator, is very different from 
+how this code would be evaluated if it was written in a software language. Having a
+language that directly captures the semantics of synchronous digital logic makes us
+much more productive.</p>
 
-<h1 id="summary-and-whats-next">Summary and What’s Next</h1>
-<p>We’ve looked at the funadamentals of a strategy to integrate two 
-object-oriented languages, via global functions, 
-in an object-oriented way. This approach
-gives us flexibility in changing how APIs are implemented using 
-the standard object-oriented approaches that we’re used to.</p>
+<p>There certainly are advantages to this approach of creating specific languages for
+capturing hardware semantics. We can use whatever syntax we find to most-accurately
+convey the semantics that we’re capturing – for example, using ‘&lt;=’ above to denote
+an assignment that doesn’t take effect immediately. Having a full, bespoke, language 
+also often encourages new applications for the language. For example, Verilog started
+off as a simulation language. It was only later that tools started to synthesize
+gates from a Verilog description.</p>
 
-<p>But, we’re not done just yet. You can likely imagine how this 
-approach supports multiple indepdent PSS model instances. But,
-how does it support API implementations coming from different
-sources, and multiple independent streams of activity within
-one PSS model? In the next post, we’ll start to dig into how
-to interface PSS to verifcation IP (VIP) and bus functional models (BFMs).</p>
+<h1 id="the-cost-of-eda-domain-specific-languages">The Cost of EDA Domain-specific Languages</h1>
+<p>For all the benefits of having full EDA domain-specific languages, there are 
+significant drawbacks.</p>
+
+<p>For one, the cost of designing such a language is high 
+precisely because we often want to have standard software features and semantics
+alongside our hardware-specific semantics. Creating a whole language necessitates
+designing all the details – not just the ones that we’re most interested in 
+as hardware designers.</p>
+
+<p>When it comes to languages, community and popularity matter. Community and popularity
+lead to tools and libraries built around the language, and people talking about 
+how to accomplish things with a language. As hardware designers, 
+we represent a very small group compared to the much larger community of software 
+engineers. A keynote speaker at DAC this year cited a statistic that the number of 
+hardware engineers (inclusive of all disciplines) was less than 10% the number of 
+software engineers. Even a language that is wildly popular among hardware engineers
+would still be considered a niche language in the broader industry.</p>
+
+<p>Generative AI and LLMs are driving what appears to be a consolidation around 
+popular languages recently. In their <a href="https://www.tiobe.com/tiobe-index/">August report</a>, TIOBE (software security analysts, that also track langauge popularity) note a strong
+increase in the popularity of Python driven by the proficiency of AI assistants with
+Python. Given the cost of training a large language model (LLM), language popularity is likely to become a self-reinforcing pattern: increasing popularity leads to better 
+results from LLMs, which further increases the popularity of a language.</p>
+
+<h1 id="alterative-approaches">Alterative Approaches</h1>
+
+<p>Over the years, at least two alternatives to a full domain-specific language have been
+used: class libraries and embedded domain-specific languages.</p>
+
+<h2 id="class-libraries">Class Libraries</h2>
+
+<p>A class library is the lightest-weight approach to capturing domain-specific semantics.
+In this approach, the host language is used as-is and domain-specific semantics are
+captured by creating instances of classes and calling methods from the class library.
+Both UVM and SystemC Follow the class-library approach to domain-specific semantics.</p>
+
+<p>This approach encounters challenges when the semantics to be captured run counter to
+the host language, or the host language doesn’t support capturing them. For example,
+introspecting the value of class fields is of high interest in both SystemC and UVM. 
+UVM uses a special set of macros to register user-defined class fields with the 
+library.</p>
+
+<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">class ABC extends uvm_object;
+	rand bit [15:0] 	m_addr;
+	rand bit [15:0] 	m_data;
+
+	`uvm_object_utils_begin(ABC)
+		`uvm_field_int(m_addr, UVM_DEFAULT)
+		`uvm_field_int(m_data, UVM_DEFAULT)
+	`uvm_object_utils_end
+endclass</code></pre></figure>
+
+<p>Exposing access to fields in this way is both a bit cumbersome for the user,
+and quite possibly computationally inefficiency because the implementation
+must cover so many cases in a generic fashion.</p>
+
+<p>Class libraries also tend to be tightly locked to the their host language
+for evaluation. Because a processing tool isn’t able to look at the
+structure of user-defined functions, there isn’t an opportunity to represent
+them in a different language. If a class library-based description needs to 
+target a different language, it typically will build an internal data 
+model based on running the model and generate code from that data model.</p>
+
+<h2 id="embedded-domain-specific-languages">Embedded Domain-Specific Languages</h2>
+
+<p>If a class library is insufficient to capture the semantics we require, another
+approach is to create an embedded domain-specific language (eDSL) using a language
+feature called operator overloading. Not all languages support operator overloading
+– for example, SystemVerilog does not. For those that do, operator overloading 
+allows us to redefine the implementation of standard operators in specific cases.
+This can allow us to create the illusion of writing a different language inside
+the confines of our host language.</p>
+
+<p><a href="https://systemc.org/overview/systemc-verification/">SystemC Verification (SCV) library</a> 
+provides one example of using operator 
+overloading to capture random constraints. The PyVSC library offers another.</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    @vsc.constraint
+    def ab_c(self):
+       self.a &gt; self.b</code></pre></figure>
+
+<p>Python is feature-rich when it comes to operator overloading. The constraint
+above looks exactly how you would intuitively expect a ‘greater-than’ constraint
+to look. But there are limits.</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    @vsc.constraint
+    def ab_c(self):
+        self.a == 5
+
+        with vsc.if_then(self.a == 1):
+            self.b == 1
+        with vsc.else_if(self.a == 2):
+            self.b == 2</code></pre></figure>
+
+<p>Python doesn’t allow us to override statements, so we need to invent a new
+way of capturing constraint statements like if/elsif/else.</p>
+
+<p>Furthermore, Python doesn’t allow us to override some operators. So, we need
+to invent another way of capturing logical <code class="language-plaintext highlighter-rouge">and</code>, logical <code class="language-plaintext highlighter-rouge">or</code>, and the <code class="language-plaintext highlighter-rouge">in</code>
+operator.</p>
+
+<p>Finally, the code above doesn’t really <em>look</em> like good Python code. Tools
+like linters are likely to complain. LLMs will also not know how to create
+this content unless specially prompted.</p>
+
+<h1 id="back-to-python">Back to Python</h1>
+
+<p>So, where does that leave us? Well, until recently, right back to needing a full language to
+satisfy the requirements. But, as it turns out, Python has a few more features to offer.</p>
+
+<p>Unlike many languages, Python supports introspecting and rewriting code at the <a href="https://docs.python.org/3/library/ast.html">abstract 
+syntax tree (AST) level</a>. This feature is mostly
+used by linting tools, but is also used by the <a href="https://docs.pytest.org/en/stable/">Pytest</a> 
+tool to provide more detail about assertions that fail.</p>
+
+<p>This suggests a new way to look at a Python description:</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">class MyClass(vsc.RandClass):
+    a : vsc.rand[vsc.bit[32]]
+    b : vsc.rand[vsc.bit[32]]
+
+    @vsc.constraint
+    def ab_c(self):
+        self.a == 5
+
+        if self.a == 1:
+            self.b == 1
+        elif self.a == 2:
+            self.b == 2</code></pre></figure>
+
+<p>Specifically, all syntax is plain Python syntax – no operator overloading that might
+confuse linters or LLMs. We still can use markers, such as base classes and 
+decorators, to identify special regions where the semantics differ from plain 
+Python execution. For example, the @vsc.constraint decorator marks a method that
+contains constraints. Instead of executing these regions to build up a data structure,
+we simply use Python’s AST introspection to build the data structure directly.
+This allows us to leverage Python syntax, and all the tools that understand it, while
+layering our own special semantics on top.</p>
+
+<h1 id="next-steps">Next Steps</h1>
+
+<p>As I mentioned at the beginning of this post, my key interest is in having a modeling
+language that supports capturing very abstraction descriptions of hardware behavior
+all the way to RTL. While I could start with any of the abstraction levels, I’ve 
+decided to start with RTL because that’s where all abstraction levels eventually end 
+up. We’ll start looking at a Python-encapsulated description of RTL in the next post.</p>
 
 </div>
 
