@@ -1,4 +1,158 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-08-18T14:48:36+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Re-Evaluating EDA DSLs in the AI Era</title><link href="https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html" rel="alternate" type="text/html" title="Re-Evaluating EDA DSLs in the AI Era" /><published>2025-08-18T00:00:00+00:00</published><updated>2025-08-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html"><![CDATA[<p>I’ve been looking for a new hardware-centric design language for the last couple of years. 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-08-24T17:18:08+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Re-Evaluating EDA DSLs: Becoming the Compiler</title><link href="https://bitsbytesgates.com/zuspec/2025/08/24/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html" rel="alternate" type="text/html" title="Re-Evaluating EDA DSLs: Becoming the Compiler" /><published>2025-08-24T00:00:00+00:00</published><updated>2025-08-24T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/08/24/ReEvaluating_EDA_DSLs_BecomingTheCompiler</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/08/24/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html"><![CDATA[<p>A key benefit of full languages is having full control over processing
+the language: being the compiler.  Having full control over language
+processing is exactly what enables us target simulation and FPGA bitstream
+with the same SystemVerilog source simply by specifying the same source
+to different toolchains. Fortunately, Python’s dynamic nature gives us 
+all the tools we need to “become the compiler” for portions of the 
+Python description that we care about.</p>
+
+<!-- more -->
+
+<h1 id="a-simple-counter">A Simple Counter</h1>
+
+<p>Let’s start with an example. The code below represents the behavior of 
+a very simple counter in Verilog:</p>
+
+<figure class="highlight"><pre><code class="language-systenverilog" data-lang="systenverilog">module counter(
+  input             clock,
+  input             reset,
+  output reg[31:0]  count);
+
+  always @(posedge clock or posedge reset) begin
+    if (reset) begin
+      count &lt;= {32{1'b0}};
+    end else begin
+      count &lt;= count + 1;
+    end
+  end
+
+endmodule</code></pre></figure>
+
+<p>When we process this description to create an implementation, there
+are a few things that we need to know:</p>
+
+<ul>
+  <li>The region of interest – what is a class, module, interface, etc?</li>
+  <li>Data member types and kinds – local data vs port with directionality</li>
+  <li>Logic/behavior inside the region and when it’s activated</li>
+</ul>
+
+<p>A Verilog-based tool establishes these key attributes by lexically processing
+the input text.</p>
+
+<p>Let’s create an equivalent representation in Python using our Zuspec 
+library.</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">import zuspec.dataclasses as zdc
+
+@zdc.dataclass
+class Counter(zdc.Component):
+    clock : zdc.Bit = zdc.input()
+    reset : zdc.Bit = zdc.input()
+    count : zdc.Bit[32] = zdc.output()
+
+    @zdc.sync(clock=lambda s:s.reset, reset=lambda s:s.clock):
+    def inc(self):
+        if self.reset:
+            self.count = 0
+        else:
+            self.count += 1</code></pre></figure>
+
+<p>From one perspective, this is just a Python class that conforms to
+the Python’s syntactic and semantic rules. But, we’ve also encoded
+some special domain-specific information:</p>
+
+<ul>
+  <li>The base class is <code class="language-plaintext highlighter-rouge">Component</code>. A processing tool can identify the “kind” 
+of region based on the base type.</li>
+  <li>We have typed fields that have direction information attached to them.</li>
+  <li>We have tagged a method with a <code class="language-plaintext highlighter-rouge">decorator</code> named “sync”. This identifies
+the method as being evaluated with synchronous semantics.</li>
+</ul>
+
+<p>You might be asking how this is any different from a class library,
+such as SystemC or pyuvm. This is exactly the right question to ask, since
+it’s at the crux of how this approach is different.</p>
+
+<h1 id="becoming-the-compiler">Becoming the Compiler</h1>
+
+<p>If we were implementing the Zuspec library as a class library, we would have
+each of the key elements above (Component, @sync, input, output) construct
+a portion of a description that we could execute. For example, we might 
+create an implementation to generate Verilog source. But, committing to 
+an implementation is limiting. What if we, instead, wanted to test the 
+Python model by simulating it in Python? We would probably need a 
+different class library implementation. We’ll definitely want to use 
+different implementations for different modules in the system across the
+design cycle. Managing which class library implementation each module 
+uses gets complicated very quickly.</p>
+
+<p>How else can we approach this problem? Like a compiler, of course. And, Python’s
+dynamic programming aspects make this much more straightforward than any other
+language that I’m currently aware of.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2025/08/model_transform.png" /> 
+</p>
+
+<p>So, what does this look like?</p>
+<ul>
+  <li>Treat user input (Counter class above) as having no implementation</li>
+  <li>Doing something with the input requires a transformation – a “compiler”</li>
+  <li>Transformers take the user-specified class as input and return
+    <ul>
+      <li>Another Python class type</li>
+      <li>A Python data structure with information about a non-Python implementation</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Using this approach allows different transformations to be used for 
+different modules in the design.</p>
+
+<h1 id="anatomy-of-a-type-transformer">Anatomy of a Type Transformer</h1>
+
+<p>Type transformers typically use the visitor pattern, using a visitor that
+is aware of key elements of the domain-specific specification.</p>
+
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    class MyTransform(api.Visitor):
+        _result : str = ""
+
+        def transform(self, t) -&gt; str:
+            self._result = ""
+            self.visit(t)
+            return self._result
+
+        def visitComponentType(self, t):
+            self.print("MyV.visitComponentType")
+            return super().visitComponentType(t)
+        
+        def visitInput(self, f):
+            self.print("visitInput: %s" % f.name)
+
+        def visitOutput(self, f):
+            self.print("visitOutput: %s" % f.name)
+
+        def visitExec(self, name, e):
+            self.print("visitExec: %s" % name)
+
+        def print(self, m):
+            self._result += m + "\n"</code></pre></figure>
+
+<p>In this case, we’re simply transforming a type model into a string 
+that displays the content of the model. But, we could use the same
+approach to transform the type to Verilog. And, because the model 
+is a specification without a class-library implementation, both
+of these implementations (and more) can easily co-exist.</p>
+
+<h1 id="next-steps">Next Steps</h1>
+
+<p>In this post, we’ve looked at an approach to capturing hardware domain
+semantics in Python such that we keep the description independent 
+of the implementation in the same way a full-custom domain-specific
+language does. Moving forward, we’ll focus on getting an implementation
+path in place that will let us create Verilog and start to explore
+some of the ways that capturing RTL in Python boosts our productivity.</p>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[A key benefit of full languages is having full control over processing the language: being the compiler. Having full control over language processing is exactly what enables us target simulation and FPGA bitstream with the same SystemVerilog source simply by specifying the same source to different toolchains. Fortunately, Python’s dynamic nature gives us all the tools we need to “become the compiler” for portions of the Python description that we care about. A Simple Counter Let’s start with an example. The code below represents the behavior of a very simple counter in Verilog: module counter( input clock, input reset, output reg[31:0] count); always @(posedge clock or posedge reset) begin if (reset) begin count &lt;= {32{1'b0}}; end else begin count &lt;= count + 1; end end endmodule When we process this description to create an implementation, there are a few things that we need to know: The region of interest – what is a class, module, interface, etc? Data member types and kinds – local data vs port with directionality Logic/behavior inside the region and when it’s activated A Verilog-based tool establishes these key attributes by lexically processing the input text. Let’s create an equivalent representation in Python using our Zuspec library. import zuspec.dataclasses as zdc @zdc.dataclass class Counter(zdc.Component): clock : zdc.Bit = zdc.input() reset : zdc.Bit = zdc.input() count : zdc.Bit[32] = zdc.output() @zdc.sync(clock=lambda s:s.reset, reset=lambda s:s.clock): def inc(self): if self.reset: self.count = 0 else: self.count += 1 From one perspective, this is just a Python class that conforms to the Python’s syntactic and semantic rules. But, we’ve also encoded some special domain-specific information: The base class is Component. A processing tool can identify the “kind” of region based on the base type. We have typed fields that have direction information attached to them. We have tagged a method with a decorator named “sync”. This identifies the method as being evaluated with synchronous semantics. You might be asking how this is any different from a class library, such as SystemC or pyuvm. This is exactly the right question to ask, since it’s at the crux of how this approach is different. Becoming the Compiler If we were implementing the Zuspec library as a class library, we would have each of the key elements above (Component, @sync, input, output) construct a portion of a description that we could execute. For example, we might create an implementation to generate Verilog source. But, committing to an implementation is limiting. What if we, instead, wanted to test the Python model by simulating it in Python? We would probably need a different class library implementation. We’ll definitely want to use different implementations for different modules in the system across the design cycle. Managing which class library implementation each module uses gets complicated very quickly. How else can we approach this problem? Like a compiler, of course. And, Python’s dynamic programming aspects make this much more straightforward than any other language that I’m currently aware of. So, what does this look like? Treat user input (Counter class above) as having no implementation Doing something with the input requires a transformation – a “compiler” Transformers take the user-specified class as input and return Another Python class type A Python data structure with information about a non-Python implementation Using this approach allows different transformations to be used for different modules in the design. Anatomy of a Type Transformer Type transformers typically use the visitor pattern, using a visitor that is aware of key elements of the domain-specific specification. class MyTransform(api.Visitor): _result : str = "" def transform(self, t) -&gt; str: self._result = "" self.visit(t) return self._result def visitComponentType(self, t): self.print("MyV.visitComponentType") return super().visitComponentType(t) def visitInput(self, f): self.print("visitInput: %s" % f.name) def visitOutput(self, f): self.print("visitOutput: %s" % f.name) def visitExec(self, name, e): self.print("visitExec: %s" % name) def print(self, m): self._result += m + "\n" In this case, we’re simply transforming a type model into a string that displays the content of the model. But, we could use the same approach to transform the type to Verilog. And, because the model is a specification without a class-library implementation, both of these implementations (and more) can easily co-exist. Next Steps In this post, we’ve looked at an approach to capturing hardware domain semantics in Python such that we keep the description independent of the implementation in the same way a full-custom domain-specific language does. Moving forward, we’ll focus on getting an implementation path in place that will let us create Verilog and start to explore some of the ways that capturing RTL in Python boosts our productivity.]]></summary></entry><entry><title type="html">Re-Evaluating EDA DSLs in the AI Era</title><link href="https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html" rel="alternate" type="text/html" title="Re-Evaluating EDA DSLs in the AI Era" /><published>2025-08-18T00:00:00+00:00</published><updated>2025-08-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html"><![CDATA[<p>I’ve been looking for a new hardware-centric design language for the last couple of years. 
 Or, more precisely, I’ve been looking for a hardware-centric design language that would
 allow me to realize my ideal silicon design flow.</p>
 <ul>
@@ -2422,243 +2576,4 @@ for modeling this with PSS.</p>
   <li>[3] <a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a></li>
   <li>[4] <a href="https://bitsbytesgates.com/code_html/2023/04/wb_dma_4_registers.html">DMA Example (Viewing)</a></li>
   <li>[5] <a href="https://bitsbytesgates.com/code/2023/04/wb_dma_4_registers.pss">DMA Example (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[We’ve been looking at properly modeling the types of behaviors that we want to exercise on our DMA IP for the last few posts. Of course, until we can actually start programming the DMA registers, all of our modeling won’t actually do anything. PSS provides two primary ways to connect the model of test behavior we want to exercise to the device on which we will exercise that behavior: Calling functions that are implemented in the target environment Using PSS features to read/write registers and memory Both of these approaches have benefits and drawbacks. If functions already exist to program IP registers, leveraging these from PSS helps to get tests up and running more quickly. However, functions are typically only implemented in a single language. Greater portability is achieved by directly describing the interactions between PSS model and device registers in PSS. This post will look at describing the register interface using the PSS register model.]]></summary></entry><entry><title type="html">PSS Concurrency and Resources</title><link href="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html" rel="alternate" type="text/html" title="PSS Concurrency and Resources" /><published>2023-04-09T00:00:00+00:00</published><updated>2023-04-09T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/04/09/PSSConcurrencyAndResources.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/04/DMAModelingResourcesWithPSS_splash.png" /> 
-</p>
-
-<p>Resource contention is a challenge that arises any time concurrency and 
-shared resources (data, hardware accelerators, etc) are involved. It’s one
-of the big challenges, and source of bugs, in implementing code that takes
-advantage of parallelism. 
-When it comes to hardware resources, safe access to shared resources is 
-generally managed in production by the operating system. There are two big 
-reasons that using this same approach for bare-metal tests isn’t a good solution:</p>
-<ul>
-  <li>First, and most obvious, is that our bare-metal tests don’t have an
-operating system to use in managing access to shared devices</li>
-  <li>Second, and more interesting, is that our tests are constraint 
-guided and seek to exercise as many unique corner cases as possible.
-In contrast, the OS can focus simply on providing correct results, and
-doesn’t need t be as concerned with being able to produce interesting
-and unique corner cases.</li>
-</ul>
-
-<p>The good news, as you might guess, is that PSS provides constructs for modeling
-available resources and how actions can make use of them without 
-conflicts – whether the actions are executing sequentially or 
-concurrently. Let’s dig in and learn more.</p>
-
-<!--more-->
-
-<h1 id="resources-and-the-dma-example">Resources and the DMA Example</h1>
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/03/DMA_block_diagram.png" />
-</p>
-
-<p>In the DMA example, the most obvious features that must be managed
-as a resource are the channels. Channels can execute memory
-transfers in parallel – an important usecase for the IP. Eventually,
-the OS driver for the DMA will manage satisfying requests for a 
-DMA channel. But, for now, our test will need to manage allocating
-channels itself.</p>
-
-<h1 id="pss-resource-management-in-three-parts">PSS Resource Management in Three Parts</h1>
-
-<p>There are three key parts to managing resources in PSS.</p>
-<ul>
-  <li>A data type to encapsulate data related to the resource kind</li>
-  <li>A pool of a given resource kind that specifies the number of
-available resources</li>
-  <li>A resource claim on an action to acquire a resource with 
-specific characteristics</li>
-</ul>
-
-<h2 id="resource-type">Resource Type</h2>
-
-<p>A <em>resource</em> data type is declared using the <code class="language-plaintext highlighter-rouge">resource</code> keyword.
-A resource type is very similar to a struct, in that it can
-contain random and non-random data fields and constraints.</p>
-
-<p>A <em>resource</em> data type has one built-in field named
-<code class="language-plaintext highlighter-rouge">instance_id</code>. The <code class="language-plaintext highlighter-rouge">instance_id</code> field is a simple but effective
-way to uniquely identify a resource instance.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>        <span class="n">size</span><span class="p">;</span> <span class="c1">// Size of the data</span>
-    <span class="n">addr_handle_t</span>       <span class="n">addr_h</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="kd">resource</span> <span class="nc">Channel</span> <span class="p">{</span> <span class="p">}</span>
-
-<span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>In the case of the DMA engine, the key thing we need to know is
-to which DMA channel an action is assigned. Consequently, our
-resource type <code class="language-plaintext highlighter-rouge">Channel</code> doesn’t contain any custom fields.</p>
-
-<h2 id="resource-pool">Resource Pool</h2>
-
-<p>In prior posts, we’ve hand-waved a bit about where <code class="language-plaintext highlighter-rouge">buffer</code> pools
-are placed, and how they are statically bound to actions.
-Now that we have resources, we need to be a bit more mindful of 
-pools, where they are placed, and how actions are bound to them.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-
-    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
-
-    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>The bind directive connects a pool to a set of actions that 
-reference that <code class="language-plaintext highlighter-rouge">flow-object</code> type. In our case, we have 
-placed the resource pool inside the <code class="language-plaintext highlighter-rouge">WbDma</code> component and
-bound it to all actions that claim a <code class="language-plaintext highlighter-rouge">Channel</code> resource because
-channels are a property of a specific DMA engine instance. Actions
-running on that instance of a DMA engine IP have access to the
-available channels. Actions running on a different instance have
-access to a different set of channels.</p>
-
-<p>Note that a <code class="language-plaintext highlighter-rouge">resource</code> pool always has a size, unlike<br />
-<code class="language-plaintext highlighter-rouge">buffer</code> pools that are unsized. The specified size
-states exactly how many resources exist in the pool.</p>
-
-<p>As in previous posts, our <code class="language-plaintext highlighter-rouge">WbDma</code> component is instantiated inside the
-top component in the componet tree, <code class="language-plaintext highlighter-rouge">pss_top</code>.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
-    
-    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Let’s say we add another instance of the DMA engine:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
-    
-    <span class="n">WbDma</span>                                    <span class="n">dma_1</span><span class="p">;</span>
-    <span class="n">WbDma</span>                                    <span class="n">dma_2</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Everything will work as we expect with the <code class="language-plaintext highlighter-rouge">resource</code> pool 
-local to each DMA component, and resource claims on actions 
-within the DMA Component bound to that local pool. When an
-action runs on the <code class="language-plaintext highlighter-rouge">dma_1</code> instance, it will contend with
-other actions running on that component for the
-available 16 channels. Likewise, for an action running 
-on the <code class="language-plaintext highlighter-rouge">dma_2</code> instance.</p>
-
-<p>What would be different if we moved the resource pool up
-a level?</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
-    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>                        <span class="n">channels_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
-    
-    <span class="n">WbDma</span>                                    <span class="n">dma_1</span><span class="p">;</span>
-    <span class="n">WbDma</span>                                    <span class="n">dma_2</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Now, all actions that run on either <code class="language-plaintext highlighter-rouge">dma_1</code> or <code class="language-plaintext highlighter-rouge">dma_2</code>
-contend for the same set of shared channel resources 
-because all actions are bound to the same resource pool.</p>
-
-<p>Doing things this way doesn’t make sense for our DMA 
-example, but certainly makes sense in other cases. For example,
-consider a case where we have a family of algorithm 
-accelerators - each with their own distinct actions - that all need to use
-some shared resource such as a shared DMA engine. In that 
-case, having all actions share the same resource pool would 
-make sense.</p>
-
-<h2 id="resource-claim">Resource Claim</h2>
-
-<p>Finally, we reach the point where we can have our DMA actions
-claim a resource. Actions claim resources using a special 
-<code class="language-plaintext highlighter-rouge">lock</code> or <code class="language-plaintext highlighter-rouge">share</code> field within the action. Much like the 
-<code class="language-plaintext highlighter-rouge">input</code> and <code class="language-plaintext highlighter-rouge">output</code> fields used with buffers, declaring
-a resource lock or share field causes the PSS tool to make
-the field point to a resource that matches any criteria
-the user has specified for the resource.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-    <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-    <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-    <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
-    <span class="k">lock</span> <span class="n">Channel</span>            <span class="n">channel</span><span class="p">;</span>
-
-    <span class="c1">// Input and output size must be the same</span>
-    <span class="k">constraint</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">src_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>In the case above, the only criteria the action places on the
-resource is that it needs to have exclusive (lock) access to
-it. No other action can use the channel at the same time.</p>
-
-<p>It’s also possible to use constraints to add more criteria
-on selection of a resource. Take the example test below:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">extend</span> <span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="kd">action</span> <span class="nc">TestParallelXfer</span> <span class="p">{</span>
-
-        <span class="k">activity</span> <span class="p">{</span>
-            <span class="k">parallel</span> <span class="p">{</span>
-                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
-                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">==</span> <span class="mi">1</span><span class="p">;</span>
-                <span class="k">do</span> <span class="nn">WbDma</span><span class="p">::</span><span class="n">Mem2Mem</span> <span class="k">with</span> <span class="n">instance_id</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>In this case, we are very specific about which channels two of 
-the three transfers should run on. Perhaps that is because we 
-want to exercise some aspect of the arbitration scheme. 
-For the third parallel transfer, we request a channel less than 8. 
-The PSS tool will randomly select an appropriate channel, while not 
-selecting channels 0 or 1.</p>
-
-<h1 id="locking-vs-sharing-a-resource">Locking vs Sharing a Resource</h1>
-<p>In the case of the DMA example, acquiring exclusive access to a DMA channel
-(locking it) is the appropriate choice. In fact, locking resources is 
-probably the most common use case. However, there are certainly valid
-cases where we need to allow multiple actions to access the same resource.</p>
-
-<p>The most straightforward case for shared access to a resource is when a
-resource provides some useful information that can be read by multiple
-actions. In this case, actions that wish to read the information should
-acquire the resource as a <code class="language-plaintext highlighter-rouge">share(d)</code> resource. Actions wishing to write
-the information should acquire the resource as a <code class="language-plaintext highlighter-rouge">lock(ed)</code> resource. 
-Doing this will enable multiple actions to read information from the
-resource-protected element, while ensuring that no action is 
-simultaneously trying to change the stored information.</p>
-
-<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
-<p>In this post, we’ve seen how PSS enables the definition of resources
-that can only be used in certain ways by certain actions over time, 
-and have seen how PSS resources can be applied to describe restrictions
-on how DMA channels can be used over time by concurrent behavior.</p>
-
-<p>In the next post, we’ll look at using PSS <code class="language-plaintext highlighter-rouge">registers</code> to connect the 
-actions in our PSS model to the registers within the DMA engine.</p>
-
-<h1 id="resources">Resources</h1>
-<ul>
-  <li>[1] <a href="https://bitsbytesgates.com/code_html/2023/03/wb_dma_3.html">DMA PSS Code (Viewing)</a></li>
-  <li>[2] <a href="https://bitsbytesgates.com/code/2023/03/wb_dma_3.pss">DMA PSS Code (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[Resource contention is a challenge that arises any time concurrency and shared resources (data, hardware accelerators, etc) are involved. It’s one of the big challenges, and source of bugs, in implementing code that takes advantage of parallelism. When it comes to hardware resources, safe access to shared resources is generally managed in production by the operating system. There are two big reasons that using this same approach for bare-metal tests isn’t a good solution: First, and most obvious, is that our bare-metal tests don’t have an operating system to use in managing access to shared devices Second, and more interesting, is that our tests are constraint guided and seek to exercise as many unique corner cases as possible. In contrast, the OS can focus simply on providing correct results, and doesn’t need t be as concerned with being able to produce interesting and unique corner cases. The good news, as you might guess, is that PSS provides constructs for modeling available resources and how actions can make use of them without conflicts – whether the actions are executing sequentially or concurrently. Let’s dig in and learn more.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[We’ve been looking at properly modeling the types of behaviors that we want to exercise on our DMA IP for the last few posts. Of course, until we can actually start programming the DMA registers, all of our modeling won’t actually do anything. PSS provides two primary ways to connect the model of test behavior we want to exercise to the device on which we will exercise that behavior: Calling functions that are implemented in the target environment Using PSS features to read/write registers and memory Both of these approaches have benefits and drawbacks. If functions already exist to program IP registers, leveraging these from PSS helps to get tests up and running more quickly. However, functions are typically only implemented in a single language. Greater portability is achieved by directly describing the interactions between PSS model and device registers in PSS. This post will look at describing the register interface using the PSS register model.]]></summary></entry></feed>

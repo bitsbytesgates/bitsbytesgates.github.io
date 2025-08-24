@@ -100,6 +100,8 @@ Post-env
         <li><span class="caret">Aug</span>
         <ul class="nested" list-style-type="none">
         
+        <li><a href="/zuspec/2025/08/24/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html">Re-Evaluating EDA DSLs: Becoming the Compiler</a></li>
+        
         <li><a href="/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html">Re-Evaluating EDA DSLs in the AI Era</a></li>
         
         <!--
@@ -684,215 +686,164 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html">Re-Evaluating EDA DSLs in the AI Era</a>
+    <a href="/zuspec/2025/08/24/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html">Re-Evaluating EDA DSLs: Becoming the Compiler</a>
   </h1>      
 
-<div class="entry-content"><p>I’ve been looking for a new hardware-centric design language for the last couple of years. 
-Or, more precisely, I’ve been looking for a hardware-centric design language that would
-allow me to realize my ideal silicon design flow.</p>
-<ul>
-  <li>Must support using the same language to refine a design through a series of abstraction levels – from architecture down to RTL</li>
-  <li>Must support fast iteration by supporting both dynamic/executable and static/formal/symbolic evaluation of the same description</li>
-  <li>Must support capturing the test, verification, and firmware aspects of a design in addition to the hardware.</li>
-  <li>Must be interoperable with existing design flows and environments</li>
-</ul>
-
-<p>Until recently, I’ve assumed that a dedicated domain-specific language would be required
-to meet these requirements. However, some new observations about languages and 
-large language models, coupled with some technical learning has me seeing a different 
-path forward for my little project – as well as for future EDA domain-specific languages.</p>
+<div class="entry-content"><p>A key benefit of full languages is having full control over processing
+the language: being the compiler.  Having full control over language
+processing is exactly what enables us target simulation and FPGA bitstream
+with the same SystemVerilog source simply by specifying the same source
+to different toolchains. Fortunately, Python’s dynamic nature gives us 
+all the tools we need to “become the compiler” for portions of the 
+Python description that we care about.</p>
 
 <!-- more -->
 
-<h1 id="why-eda-domain-specific-languages">Why EDA Domain-Specific Languages?</h1>
-<p>If you work in silicon design, you’re very familiar with a set of domain-specific languages (DSLs),
-such as SystemVerilog and VHDL,  that are used to specify a model of your design intent, 
-verify its logical correctness, and synthesize it to a gate-level representation that can
-be programmed onto an FPGA or fabricated as an ASIC. These languages exist precisely because 
-of the domain (hardware)-specific semantics that we need to capture, and how distinct 
-those semantics are from those captured by software languages.</p>
+<h1 id="a-simple-counter">A Simple Counter</h1>
 
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">module counter(
-    input clock, reset, enable,
-    output reg [31:0] count);
+<p>Let’s start with an example. The code below represents the behavior of 
+a very simple counter in Verilog:</p>
+
+<figure class="highlight"><pre><code class="language-systenverilog" data-lang="systenverilog">module counter(
+  input             clock,
+  input             reset,
+  output reg[31:0]  count);
 
   always @(posedge clock or posedge reset) begin
     if (reset) begin
-      count &lt;= 0;
-    end else if (enable) begin
+      count &lt;= {32{1'b0}};
+    end else begin
       count &lt;= count + 1;
     end
   end
+
 endmodule</code></pre></figure>
 
-<p>Even a simple counter, like the code above, highlights some of the key semantics
-unique to hardware.</p>
+<p>When we process this description to create an implementation, there
+are a few things that we need to know:</p>
+
 <ul>
-  <li>implicit entrypoint – nothing “calls” the always block</li>
-  <li>parallel evaluation – always blocks run concurrently</li>
-  <li>synchronized assignment – the new value of ‘count’ doesn’t take effect immediately</li>
+  <li>The region of interest – what is a class, module, interface, etc?</li>
+  <li>Data member types and kinds – local data vs port with directionality</li>
+  <li>Logic/behavior inside the region and when it’s activated</li>
 </ul>
 
-<p>Typical implementation, such as an event-driven simulator, is very different from 
-how this code would be evaluated if it was written in a software language. Having a
-language that directly captures the semantics of synchronous digital logic makes us
-much more productive.</p>
+<p>A Verilog-based tool establishes these key attributes by lexically processing
+the input text.</p>
 
-<p>There certainly are advantages to this approach of creating specific languages for
-capturing hardware semantics. We can use whatever syntax we find to most-accurately
-convey the semantics that we’re capturing – for example, using ‘&lt;=’ above to denote
-an assignment that doesn’t take effect immediately. Having a full, bespoke, language 
-also often encourages new applications for the language. For example, Verilog started
-off as a simulation language. It was only later that tools started to synthesize
-gates from a Verilog description.</p>
-
-<h1 id="the-cost-of-eda-domain-specific-languages">The Cost of EDA Domain-specific Languages</h1>
-<p>For all the benefits of having full EDA domain-specific languages, there are 
-significant drawbacks.</p>
-
-<p>For one, the cost of designing such a language is high 
-precisely because we often want to have standard software features and semantics
-alongside our hardware-specific semantics. Creating a whole language necessitates
-designing all the details – not just the ones that we’re most interested in 
-as hardware designers.</p>
-
-<p>When it comes to languages, community and popularity matter. Community and popularity
-lead to tools and libraries built around the language, and people talking about 
-how to accomplish things with a language. As hardware designers, 
-we represent a very small group compared to the much larger community of software 
-engineers. A keynote speaker at DAC this year cited a statistic that the number of 
-hardware engineers (inclusive of all disciplines) was less than 10% the number of 
-software engineers. Even a language that is wildly popular among hardware engineers
-would still be considered a niche language in the broader industry.</p>
-
-<p>Generative AI and LLMs are driving what appears to be a consolidation around 
-popular languages recently. In their <a href="https://www.tiobe.com/tiobe-index/">August report</a>, TIOBE (software security analysts, that also track langauge popularity) note a strong
-increase in the popularity of Python driven by the proficiency of AI assistants with
-Python. Given the cost of training a large language model (LLM), language popularity is likely to become a self-reinforcing pattern: increasing popularity leads to better 
-results from LLMs, which further increases the popularity of a language.</p>
-
-<h1 id="alterative-approaches">Alterative Approaches</h1>
-
-<p>Over the years, at least two alternatives to a full domain-specific language have been
-used: class libraries and embedded domain-specific languages.</p>
-
-<h2 id="class-libraries">Class Libraries</h2>
-
-<p>A class library is the lightest-weight approach to capturing domain-specific semantics.
-In this approach, the host language is used as-is and domain-specific semantics are
-captured by creating instances of classes and calling methods from the class library.
-Both UVM and SystemC Follow the class-library approach to domain-specific semantics.</p>
-
-<p>This approach encounters challenges when the semantics to be captured run counter to
-the host language, or the host language doesn’t support capturing them. For example,
-introspecting the value of class fields is of high interest in both SystemC and UVM. 
-UVM uses a special set of macros to register user-defined class fields with the 
+<p>Let’s create an equivalent representation in Python using our Zuspec 
 library.</p>
 
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">class ABC extends uvm_object;
-	rand bit [15:0] 	m_addr;
-	rand bit [15:0] 	m_data;
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">import zuspec.dataclasses as zdc
 
-	`uvm_object_utils_begin(ABC)
-		`uvm_field_int(m_addr, UVM_DEFAULT)
-		`uvm_field_int(m_data, UVM_DEFAULT)
-	`uvm_object_utils_end
-endclass</code></pre></figure>
+@zdc.dataclass
+class Counter(zdc.Component):
+    clock : zdc.Bit = zdc.input()
+    reset : zdc.Bit = zdc.input()
+    count : zdc.Bit[32] = zdc.output()
 
-<p>Exposing access to fields in this way is both a bit cumbersome for the user,
-and quite possibly computationally inefficiency because the implementation
-must cover so many cases in a generic fashion.</p>
+    @zdc.sync(clock=lambda s:s.reset, reset=lambda s:s.clock):
+    def inc(self):
+        if self.reset:
+            self.count = 0
+        else:
+            self.count += 1</code></pre></figure>
 
-<p>Class libraries also tend to be tightly locked to the their host language
-for evaluation. Because a processing tool isn’t able to look at the
-structure of user-defined functions, there isn’t an opportunity to represent
-them in a different language. If a class library-based description needs to 
-target a different language, it typically will build an internal data 
-model based on running the model and generate code from that data model.</p>
+<p>From one perspective, this is just a Python class that conforms to
+the Python’s syntactic and semantic rules. But, we’ve also encoded
+some special domain-specific information:</p>
 
-<h2 id="embedded-domain-specific-languages">Embedded Domain-Specific Languages</h2>
+<ul>
+  <li>The base class is <code class="language-plaintext highlighter-rouge">Component</code>. A processing tool can identify the “kind” 
+of region based on the base type.</li>
+  <li>We have typed fields that have direction information attached to them.</li>
+  <li>We have tagged a method with a <code class="language-plaintext highlighter-rouge">decorator</code> named “sync”. This identifies
+the method as being evaluated with synchronous semantics.</li>
+</ul>
 
-<p>If a class library is insufficient to capture the semantics we require, another
-approach is to create an embedded domain-specific language (eDSL) using a language
-feature called operator overloading. Not all languages support operator overloading
-– for example, SystemVerilog does not. For those that do, operator overloading 
-allows us to redefine the implementation of standard operators in specific cases.
-This can allow us to create the illusion of writing a different language inside
-the confines of our host language.</p>
+<p>You might be asking how this is any different from a class library,
+such as SystemC or pyuvm. This is exactly the right question to ask, since
+it’s at the crux of how this approach is different.</p>
 
-<p><a href="https://systemc.org/overview/systemc-verification/">SystemC Verification (SCV) library</a> 
-provides one example of using operator 
-overloading to capture random constraints. The PyVSC library offers another.</p>
+<h1 id="becoming-the-compiler">Becoming the Compiler</h1>
 
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    @vsc.constraint
-    def ab_c(self):
-       self.a &gt; self.b</code></pre></figure>
+<p>If we were implementing the Zuspec library as a class library, we would have
+each of the key elements above (Component, @sync, input, output) construct
+a portion of a description that we could execute. For example, we might 
+create an implementation to generate Verilog source. But, committing to 
+an implementation is limiting. What if we, instead, wanted to test the 
+Python model by simulating it in Python? We would probably need a 
+different class library implementation. We’ll definitely want to use 
+different implementations for different modules in the system across the
+design cycle. Managing which class library implementation each module 
+uses gets complicated very quickly.</p>
 
-<p>Python is feature-rich when it comes to operator overloading. The constraint
-above looks exactly how you would intuitively expect a ‘greater-than’ constraint
-to look. But there are limits.</p>
+<p>How else can we approach this problem? Like a compiler, of course. And, Python’s
+dynamic programming aspects make this much more straightforward than any other
+language that I’m currently aware of.</p>
 
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    @vsc.constraint
-    def ab_c(self):
-        self.a == 5
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2025/08/model_transform.png" /> 
+</p>
 
-        with vsc.if_then(self.a == 1):
-            self.b == 1
-        with vsc.else_if(self.a == 2):
-            self.b == 2</code></pre></figure>
+<p>So, what does this look like?</p>
+<ul>
+  <li>Treat user input (Counter class above) as having no implementation</li>
+  <li>Doing something with the input requires a transformation – a “compiler”</li>
+  <li>Transformers take the user-specified class as input and return
+    <ul>
+      <li>Another Python class type</li>
+      <li>A Python data structure with information about a non-Python implementation</li>
+    </ul>
+  </li>
+</ul>
 
-<p>Python doesn’t allow us to override statements, so we need to invent a new
-way of capturing constraint statements like if/elsif/else.</p>
+<p>Using this approach allows different transformations to be used for 
+different modules in the design.</p>
 
-<p>Furthermore, Python doesn’t allow us to override some operators. So, we need
-to invent another way of capturing logical <code class="language-plaintext highlighter-rouge">and</code>, logical <code class="language-plaintext highlighter-rouge">or</code>, and the <code class="language-plaintext highlighter-rouge">in</code>
-operator.</p>
+<h1 id="anatomy-of-a-type-transformer">Anatomy of a Type Transformer</h1>
 
-<p>Finally, the code above doesn’t really <em>look</em> like good Python code. Tools
-like linters are likely to complain. LLMs will also not know how to create
-this content unless specially prompted.</p>
+<p>Type transformers typically use the visitor pattern, using a visitor that
+is aware of key elements of the domain-specific specification.</p>
 
-<h1 id="back-to-python">Back to Python</h1>
+<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    class MyTransform(api.Visitor):
+        _result : str = ""
 
-<p>So, where does that leave us? Well, until recently, right back to needing a full language to
-satisfy the requirements. But, as it turns out, Python has a few more features to offer.</p>
+        def transform(self, t) -&gt; str:
+            self._result = ""
+            self.visit(t)
+            return self._result
 
-<p>Unlike many languages, Python supports introspecting and rewriting code at the <a href="https://docs.python.org/3/library/ast.html">abstract 
-syntax tree (AST) level</a>. This feature is mostly
-used by linting tools, but is also used by the <a href="https://docs.pytest.org/en/stable/">Pytest</a> 
-tool to provide more detail about assertions that fail.</p>
+        def visitComponentType(self, t):
+            self.print("MyV.visitComponentType")
+            return super().visitComponentType(t)
+        
+        def visitInput(self, f):
+            self.print("visitInput: %s" % f.name)
 
-<p>This suggests a new way to look at a Python description:</p>
+        def visitOutput(self, f):
+            self.print("visitOutput: %s" % f.name)
 
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">class MyClass(vsc.RandClass):
-    a : vsc.rand[vsc.bit[32]]
-    b : vsc.rand[vsc.bit[32]]
+        def visitExec(self, name, e):
+            self.print("visitExec: %s" % name)
 
-    @vsc.constraint
-    def ab_c(self):
-        self.a == 5
+        def print(self, m):
+            self._result += m + "\n"</code></pre></figure>
 
-        if self.a == 1:
-            self.b == 1
-        elif self.a == 2:
-            self.b == 2</code></pre></figure>
-
-<p>Specifically, all syntax is plain Python syntax – no operator overloading that might
-confuse linters or LLMs. We still can use markers, such as base classes and 
-decorators, to identify special regions where the semantics differ from plain 
-Python execution. For example, the @vsc.constraint decorator marks a method that
-contains constraints. Instead of executing these regions to build up a data structure,
-we simply use Python’s AST introspection to build the data structure directly.
-This allows us to leverage Python syntax, and all the tools that understand it, while
-layering our own special semantics on top.</p>
+<p>In this case, we’re simply transforming a type model into a string 
+that displays the content of the model. But, we could use the same
+approach to transform the type to Verilog. And, because the model 
+is a specification without a class-library implementation, both
+of these implementations (and more) can easily co-exist.</p>
 
 <h1 id="next-steps">Next Steps</h1>
 
-<p>As I mentioned at the beginning of this post, my key interest is in having a modeling
-language that supports capturing very abstraction descriptions of hardware behavior
-all the way to RTL. While I could start with any of the abstraction levels, I’ve 
-decided to start with RTL because that’s where all abstraction levels eventually end 
-up. We’ll start looking at a Python-encapsulated description of RTL in the next post.</p>
+<p>In this post, we’ve looked at an approach to capturing hardware domain
+semantics in Python such that we keep the description independent 
+of the implementation in the same way a full-custom domain-specific
+language does. Moving forward, we’ll focus on getting an implementation
+path in place that will let us create Verilog and start to explore
+some of the ways that capturing RTL in Python boosts our productivity.</p>
 
 </div>
 
