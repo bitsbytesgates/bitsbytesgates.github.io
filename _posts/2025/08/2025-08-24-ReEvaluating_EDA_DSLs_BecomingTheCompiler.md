@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Re-Evaluating EDA DSLs: Becoming the Compiler"
-date: 2025-08-24
+date: 2025-08-23
 categories: Zuspec
 excerpt_separator: <!--more-->
 mermaid: true
