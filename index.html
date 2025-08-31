@@ -100,6 +100,8 @@ Post-env
         <li><span class="caret">Aug</span>
         <ul class="nested" list-style-type="none">
         
+        <li><a href="/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html">AI: Instigating a Developer Docs Renaissance?</a></li>
+        
         <li><a href="/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html">Re-Evaluating EDA DSLs: Becoming the Compiler</a></li>
         
         <li><a href="/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html">Re-Evaluating EDA DSLs in the AI Era</a></li>
@@ -686,165 +688,110 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html">Re-Evaluating EDA DSLs: Becoming the Compiler</a>
+    <a href="/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html">AI: Instigating a Developer Docs Renaissance?</a>
   </h1>      
 
-<div class="entry-content"><p>A key benefit of full languages is having full control over processing
-the language: being the compiler.  Having full control over language
-processing is exactly what enables us target simulation and FPGA bitstream
-with the same SystemVerilog source simply by specifying the same source
-to different toolchains. Fortunately, Python’s dynamic nature gives us 
-all the tools we need to “become the compiler” for portions of the 
-Python description that we care about.</p>
+<div class="entry-content"><p>There’s been lots of discussion about the future of writing in the AI age.
+LLMs have shown their potential as a tool by helping authors of many genres 
+brainstorm ideas, rough out content, and more. But, this automation comes
+with questions attached. If writing can be automated, 
+what is the writer’s role? If LLMs only deliver the illusion of
+producing useful content, are we about to experience a deluge of 
+unintelligible <a href="https://simonwillison.net/2024/May/8/slop/">slop</a> 
+masquerading as useful documentation? I’ve done my share of 
+hand wringing while reviewing AI-created code commands and documentation 
+that had the form of useful information, but little insightful content. 
+A recent coding experience has me seeing an opportunity for a 
+developer-docs renaissance driven by the needs of LLMs.</p>
 
 <!-- more -->
 
-<h1 id="a-simple-counter">A Simple Counter</h1>
+<h1 id="developer-docs-and-why-we-dont-create-them">Developer Docs and why we don’t create them</h1>
 
-<p>Let’s start with an example. The code below represents the behavior of 
-a very simple counter in Verilog:</p>
-
-<figure class="highlight"><pre><code class="language-systenverilog" data-lang="systenverilog">module counter(
-  input             clock,
-  input             reset,
-  output reg[31:0]  count);
-
-  always @(posedge clock or posedge reset) begin
-    if (reset) begin
-      count &lt;= {32{1'b0}};
-    end else begin
-      count &lt;= count + 1;
-    end
-  end
-
-endmodule</code></pre></figure>
-
-<p>When we process this description to create an implementation, there
-are a few things that we need to know:</p>
-
+<p>I define developer docs as the set of documentation that helps a
+developer navigate a technical project and understand things like:</p>
 <ul>
-  <li>The region of interest – what is a class, module, interface, etc?</li>
-  <li>Data member types and kinds – local data vs port with directionality</li>
-  <li>Logic/behavior inside the region and when it’s activated</li>
+  <li>How to build the project from source</li>
+  <li>How to run tests on the project</li>
+  <li>Basic structure and architecture of the project</li>
+  <li>Examples of how to interact with the API</li>
+  <li>Any special structures used by the project</li>
 </ul>
 
-<p>A Verilog-based tool establishes these key attributes by lexically processing
-the input text.</p>
-
-<p>Let’s create an equivalent representation in Python using our Zuspec 
-library.</p>
-
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">import zuspec.dataclasses as zdc
-
-@zdc.dataclass
-class Counter(zdc.Component):
-    clock : zdc.Bit = zdc.input()
-    reset : zdc.Bit = zdc.input()
-    count : zdc.Bit[32] = zdc.output()
-
-    @zdc.sync(clock=lambda s:s.reset, reset=lambda s:s.clock):
-    def inc(self):
-        if self.reset:
-            self.count = 0
-        else:
-            self.count += 1</code></pre></figure>
-
-<p>From one perspective, this is just a Python class that conforms to
-the Python’s syntactic and semantic rules. But, we’ve also encoded
-some special domain-specific information:</p>
-
+<p>Notes like this have several possible audiences</p>
 <ul>
-  <li>The base class is <code class="language-plaintext highlighter-rouge">Component</code>. A processing tool can identify the “kind” 
-of region based on the base type.</li>
-  <li>We have typed fields that have direction information attached to them.</li>
-  <li>We have tagged a method with a <code class="language-plaintext highlighter-rouge">decorator</code> named “sync”. This identifies
-the method as being evaluated with synchronous semantics.</li>
+  <li>Colleagues</li>
+  <li>Open source project: potential contributors</li>
+  <li>Future you</li>
 </ul>
 
-<p>You might be asking how this is any different from a class library,
-such as SystemC or pyuvm. This is exactly the right question to ask, since
-it’s at the crux of how this approach is different.</p>
+<p>I suspect most of us agree that this information is useful,
+and don’t truly feel that our code is self-documenting. 
+But, it always seems difficult to devote time to writing good 
+developer documentation. Why? I think it’s because, 
+no matter the audience, developer docs are for the future – 
+a future colleague, future collaborator, or future you. And
+it’s always tempting to prioritize the ‘now’ when it comes
+to choosing between ‘now’ and ‘future’.</p>
 
-<h1 id="becoming-the-compiler">Becoming the Compiler</h1>
+<p>LLMs shift that equation by making developer docs immediately 
+actionable, and I’m optimistic that this may actually shift 
+our behavior.</p>
 
-<p>If we were implementing the Zuspec library as a class library, we would have
-each of the key elements above (Component, @sync, input, output) construct
-a portion of a description that we could execute. For example, we might 
-create an implementation to generate Verilog source. But, committing to 
-an implementation is limiting. What if we, instead, wanted to test the 
-Python model by simulating it in Python? We would probably need a 
-different class library implementation. We’ll definitely want to use 
-different implementations for different modules in the system across the
-design cycle. Managing which class library implementation each module 
-uses gets complicated very quickly.</p>
+<h1 id="working-with-complex-projects">Working with Complex Projects</h1>
 
-<p>How else can we approach this problem? Like a compiler, of course. And, Python’s
-dynamic programming aspects make this much more straightforward than any other
-language that I’m currently aware of.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/08/model_transform.png" /> 
-</p>
-
-<p>So, what does this look like?</p>
+<p>I was recently working on one of my open source projects. The structure
+is a bit complicated due to some of the requirements. Specifically,
+I have library projects that consist of:</p>
 <ul>
-  <li>Treat user input (Counter class above) as having no implementation</li>
-  <li>Doing something with the input requires a transformation – a “compiler”</li>
-  <li>Transformers take the user-specified class as input and return
-    <ul>
-      <li>Another Python class type</li>
-      <li>A Python data structure with information about a non-Python implementation</li>
-    </ul>
-  </li>
+  <li>C++ API consisting of pure-virtual interface classes</li>
+  <li>Core implementation in C++</li>
+  <li>A Cython wrapper API implemented in terms of the pure-virtual interface classes</li>
 </ul>
 
-<p>Using this approach allows different transformations to be used for 
-different modules in the design.</p>
+<p>This structure enables the libraries to be used effiently from C++ and Python,
+and allows the library native code to interact directly whether called from
+C++ or Python. The downside, of course, is that adding a new class or method
+involves changes across several source locations: C++ interface, C++ implementation,
+and several locations across the Python interface.</p>
 
-<h1 id="anatomy-of-a-type-transformer">Anatomy of a Type Transformer</h1>
+<p>I’ve been using AI assistants (Cline, Copilot) to make modifications to 
+this codebase with varying success. On one hand, the results were quite
+good given that the only data it had was the code. On the other hand,
+there were many cases where the model (gpt-4.1 in this case) would only 
+perform a subset of the required changes. In one case, it decided to 
+create a new Cython extension file entirely.</p>
 
-<p>Type transformers typically use the visitor pattern, using a visitor that
-is aware of key elements of the domain-specific specification.</p>
+<h1 id="developer-docs-as-llm-instructions">Developer Docs as LLM Instructions</h1>
 
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    class MyTransform(api.Visitor):
-        _result : str = ""
+<p>I had independently started to write down some notes about the structure 
+of this code. You can find the notes <a href="https://github.com/zuspec/zuspec-dev-docs/blob/main/docs/python_ext_structure.md">here</a>
+if you’re interested. Not too complicated, and much more needed of course.</p>
 
-        def transform(self, t) -&gt; str:
-            self._result = ""
-            self.visit(t)
-            return self._result
+<p>But, when I included this as context for the LLM, the results from the AI assistant
+improved dramatically. Still not perfect, but sufficiently better that
+I feel more motivated to start a task by writing out some notes. Because,
+after all, these notes will be immediately useful as I start working on
+the implementation.</p>
 
-        def visitComponentType(self, t):
-            self.print("MyV.visitComponentType")
-            return super().visitComponentType(t)
-        
-        def visitInput(self, f):
-            self.print("visitInput: %s" % f.name)
+<h1 id="looking-forward">Looking Forward</h1>
 
-        def visitOutput(self, f):
-            self.print("visitOutput: %s" % f.name)
+<p>Writing developer docs and writing code is too-often seen as a zero-sum game:
+I can write code <em>or</em> I can write developer documentation. LLMs change this 
+by blurring the line between writing docs and code. Writing docs, in fact,
+may provide greater leverage by allowing you to drive automation of the 
+more-tedious aspects of writing code directly from developer docs.</p>
 
-        def visitExec(self, name, e):
-            self.print("visitExec: %s" % name)
+<p>Looking forward, I’m very interested in what standardization emerges around
+capturing and curating context documentation intended for LLMs. Specifically,
+I’m watching <a href="https://agents.md/">Agents.md</a> and <a href="https://llmstxt.org/">llms.txt</a>.</p>
 
-        def print(self, m):
-            self._result += m + "\n"</code></pre></figure>
+<p>Even more immediately, I’m revisiting how I build out the Zuspec Python-embedded
+language. I’m planning to take a documentation-first approach, and am interested
+to evaluate the impact this has on the development process itself and my ability
+to leverage AI assistants along the way.</p>
 
-<p>In this case, we’re simply transforming a type model into a string 
-that displays the content of the model. But, we could use the same
-approach to transform the type to Verilog. And, because the model 
-is a specification without a class-library implementation, both
-of these implementations (and more) can easily co-exist.</p>
-
-<h1 id="next-steps">Next Steps</h1>
-
-<p>In this post, we’ve looked at an approach to capturing hardware domain
-semantics in Python such that we keep the description independent 
-of the implementation in the same way a full-custom domain-specific
-language does. Moving forward, we’ll focus on getting an implementation
-path in place that will let us create Verilog and start to explore
-some of the ways that capturing RTL in Python boosts our productivity.</p>
-
+<p>.</p>
 </div>
 
 </div>

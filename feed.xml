@@ -1,4 +1,104 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-08-24T17:22:09+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Re-Evaluating EDA DSLs: Becoming the Compiler</title><link href="https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html" rel="alternate" type="text/html" title="Re-Evaluating EDA DSLs: Becoming the Compiler" /><published>2025-08-23T00:00:00+00:00</published><updated>2025-08-23T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html"><![CDATA[<p>A key benefit of full languages is having full control over processing
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-08-31T22:11:49+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">AI: Instigating a Developer Docs Renaissance?</title><link href="https://bitsbytesgates.com/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html" rel="alternate" type="text/html" title="AI: Instigating a Developer Docs Renaissance?" /><published>2025-08-30T00:00:00+00:00</published><updated>2025-08-30T00:00:00+00:00</updated><id>https://bitsbytesgates.com/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance</id><content type="html" xml:base="https://bitsbytesgates.com/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html"><![CDATA[<p>There’s been lots of discussion about the future of writing in the AI age.
+LLMs have shown their potential as a tool by helping authors of many genres 
+brainstorm ideas, rough out content, and more. But, this automation comes
+with questions attached. If writing can be automated, 
+what is the writer’s role? If LLMs only deliver the illusion of
+producing useful content, are we about to experience a deluge of 
+unintelligible <a href="https://simonwillison.net/2024/May/8/slop/">slop</a> 
+masquerading as useful documentation? I’ve done my share of 
+hand wringing while reviewing AI-created code commands and documentation 
+that had the form of useful information, but little insightful content. 
+A recent coding experience has me seeing an opportunity for a 
+developer-docs renaissance driven by the needs of LLMs.</p>
+
+<!-- more -->
+
+<h1 id="developer-docs-and-why-we-dont-create-them">Developer Docs and why we don’t create them</h1>
+
+<p>I define developer docs as the set of documentation that helps a
+developer navigate a technical project and understand things like:</p>
+<ul>
+  <li>How to build the project from source</li>
+  <li>How to run tests on the project</li>
+  <li>Basic structure and architecture of the project</li>
+  <li>Examples of how to interact with the API</li>
+  <li>Any special structures used by the project</li>
+</ul>
+
+<p>Notes like this have several possible audiences</p>
+<ul>
+  <li>Colleagues</li>
+  <li>Open source project: potential contributors</li>
+  <li>Future you</li>
+</ul>
+
+<p>I suspect most of us agree that this information is useful,
+and don’t truly feel that our code is self-documenting. 
+But, it always seems difficult to devote time to writing good 
+developer documentation. Why? I think it’s because, 
+no matter the audience, developer docs are for the future – 
+a future colleague, future collaborator, or future you. And
+it’s always tempting to prioritize the ‘now’ when it comes
+to choosing between ‘now’ and ‘future’.</p>
+
+<p>LLMs shift that equation by making developer docs immediately 
+actionable, and I’m optimistic that this may actually shift 
+our behavior.</p>
+
+<h1 id="working-with-complex-projects">Working with Complex Projects</h1>
+
+<p>I was recently working on one of my open source projects. The structure
+is a bit complicated due to some of the requirements. Specifically,
+I have library projects that consist of:</p>
+<ul>
+  <li>C++ API consisting of pure-virtual interface classes</li>
+  <li>Core implementation in C++</li>
+  <li>A Cython wrapper API implemented in terms of the pure-virtual interface classes</li>
+</ul>
+
+<p>This structure enables the libraries to be used effiently from C++ and Python,
+and allows the library native code to interact directly whether called from
+C++ or Python. The downside, of course, is that adding a new class or method
+involves changes across several source locations: C++ interface, C++ implementation,
+and several locations across the Python interface.</p>
+
+<p>I’ve been using AI assistants (Cline, Copilot) to make modifications to 
+this codebase with varying success. On one hand, the results were quite
+good given that the only data it had was the code. On the other hand,
+there were many cases where the model (gpt-4.1 in this case) would only 
+perform a subset of the required changes. In one case, it decided to 
+create a new Cython extension file entirely.</p>
+
+<h1 id="developer-docs-as-llm-instructions">Developer Docs as LLM Instructions</h1>
+
+<p>I had independently started to write down some notes about the structure 
+of this code. You can find the notes <a href="https://github.com/zuspec/zuspec-dev-docs/blob/main/docs/python_ext_structure.md">here</a>
+if you’re interested. Not too complicated, and much more needed of course.</p>
+
+<p>But, when I included this as context for the LLM, the results from the AI assistant
+improved dramatically. Still not perfect, but sufficiently better that
+I feel more motivated to start a task by writing out some notes. Because,
+after all, these notes will be immediately useful as I start working on
+the implementation.</p>
+
+<h1 id="looking-forward">Looking Forward</h1>
+
+<p>Writing developer docs and writing code is too-often seen as a zero-sum game:
+I can write code <em>or</em> I can write developer documentation. LLMs change this 
+by blurring the line between writing docs and code. Writing docs, in fact,
+may provide greater leverage by allowing you to drive automation of the 
+more-tedious aspects of writing code directly from developer docs.</p>
+
+<p>Looking forward, I’m very interested in what standardization emerges around
+capturing and curating context documentation intended for LLMs. Specifically,
+I’m watching <a href="https://agents.md/">Agents.md</a> and <a href="https://llmstxt.org/">llms.txt</a>.</p>
+
+<p>Even more immediately, I’m revisiting how I build out the Zuspec Python-embedded
+language. I’m planning to take a documentation-first approach, and am interested
+to evaluate the impact this has on the development process itself and my ability
+to leverage AI assistants along the way.</p>
+
+<p>.</p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[There’s been lots of discussion about the future of writing in the AI age. LLMs have shown their potential as a tool by helping authors of many genres brainstorm ideas, rough out content, and more. But, this automation comes with questions attached. If writing can be automated, what is the writer’s role? If LLMs only deliver the illusion of producing useful content, are we about to experience a deluge of unintelligible slop masquerading as useful documentation? I’ve done my share of hand wringing while reviewing AI-created code commands and documentation that had the form of useful information, but little insightful content. A recent coding experience has me seeing an opportunity for a developer-docs renaissance driven by the needs of LLMs. Developer Docs and why we don’t create them I define developer docs as the set of documentation that helps a developer navigate a technical project and understand things like: How to build the project from source How to run tests on the project Basic structure and architecture of the project Examples of how to interact with the API Any special structures used by the project Notes like this have several possible audiences Colleagues Open source project: potential contributors Future you I suspect most of us agree that this information is useful, and don’t truly feel that our code is self-documenting. But, it always seems difficult to devote time to writing good developer documentation. Why? I think it’s because, no matter the audience, developer docs are for the future – a future colleague, future collaborator, or future you. And it’s always tempting to prioritize the ‘now’ when it comes to choosing between ‘now’ and ‘future’. LLMs shift that equation by making developer docs immediately actionable, and I’m optimistic that this may actually shift our behavior. Working with Complex Projects I was recently working on one of my open source projects. The structure is a bit complicated due to some of the requirements. Specifically, I have library projects that consist of: C++ API consisting of pure-virtual interface classes Core implementation in C++ A Cython wrapper API implemented in terms of the pure-virtual interface classes This structure enables the libraries to be used effiently from C++ and Python, and allows the library native code to interact directly whether called from C++ or Python. The downside, of course, is that adding a new class or method involves changes across several source locations: C++ interface, C++ implementation, and several locations across the Python interface. I’ve been using AI assistants (Cline, Copilot) to make modifications to this codebase with varying success. On one hand, the results were quite good given that the only data it had was the code. On the other hand, there were many cases where the model (gpt-4.1 in this case) would only perform a subset of the required changes. In one case, it decided to create a new Cython extension file entirely. Developer Docs as LLM Instructions I had independently started to write down some notes about the structure of this code. You can find the notes here if you’re interested. Not too complicated, and much more needed of course. But, when I included this as context for the LLM, the results from the AI assistant improved dramatically. Still not perfect, but sufficiently better that I feel more motivated to start a task by writing out some notes. Because, after all, these notes will be immediately useful as I start working on the implementation. Looking Forward Writing developer docs and writing code is too-often seen as a zero-sum game: I can write code or I can write developer documentation. LLMs change this by blurring the line between writing docs and code. Writing docs, in fact, may provide greater leverage by allowing you to drive automation of the more-tedious aspects of writing code directly from developer docs. Looking forward, I’m very interested in what standardization emerges around capturing and curating context documentation intended for LLMs. Specifically, I’m watching Agents.md and llms.txt. Even more immediately, I’m revisiting how I build out the Zuspec Python-embedded language. I’m planning to take a documentation-first approach, and am interested to evaluate the impact this has on the development process itself and my ability to leverage AI assistants along the way. .]]></summary></entry><entry><title type="html">Re-Evaluating EDA DSLs: Becoming the Compiler</title><link href="https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html" rel="alternate" type="text/html" title="Re-Evaluating EDA DSLs: Becoming the Compiler" /><published>2025-08-23T00:00:00+00:00</published><updated>2025-08-23T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html"><![CDATA[<p>A key benefit of full languages is having full control over processing
 the language: being the compiler.  Having full control over language
 processing is exactly what enables us target simulation and FPGA bitstream
 with the same SystemVerilog source simply by specifying the same source
@@ -2100,480 +2200,4 @@ to explore these topics!</p>
 <ul>
   <li>[1] Wishbone DMA Core <a href="https://opencores.org/projects/wb_dma">project page</a></li>
   <li>[2] Wishbone DMA Core <a href="https://bitsbytesgates.com/imgs/2023/03/dma_doc.pdf">manual</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[A few posts back (Relating Actions with Dataflow), we talked about using buffer objects to form a relationship between actions that execute sequentially. Because the actions execute sequentially, this relationship looks a lot like function call or the transfer of a transaction. What is actually happening is actually a bit more involved and much more powerful. Let’s use the DMA engine’s ‘peripheral interface’ as a vehicle to explore this declarative data exchange aspect of the PSS language.]]></summary></entry><entry><title type="html">Interacting with Devices via PSS Registers</title><link href="https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters.html" rel="alternate" type="text/html" title="Interacting with Devices via PSS Registers" /><published>2023-04-18T00:00:00+00:00</published><updated>2023-04-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/04/InteractingWithDevicesViaPssRegisters_splash.png" /> 
-</p>
-<p>We’ve been looking at properly modeling the types of behaviors that we want
-to exercise on our DMA IP for the last few posts. Of course, until we can 
-actually start programming the DMA registers, all of our modeling won’t
-actually <em>do</em> anything.</p>
-
-<p>PSS provides two primary ways to connect the model of test behavior we 
-want to exercise to the device on which we will exercise that behavior:</p>
-<ul>
-  <li>Calling functions that are implemented in the target environment</li>
-  <li>Using PSS features to read/write registers and memory</li>
-</ul>
-
-<p>Both of these approaches have benefits and drawbacks. If functions
-already exist to program IP registers, leveraging these from PSS
-helps to get tests up and running more quickly. However, functions
-are typically only implemented in a single language. Greater 
-portability is achieved by directly describing the interactions
-between PSS model and device registers in PSS.</p>
-
-<p>This post will look at describing the register interface 
-using the PSS register model.</p>
-
-<!--more-->
-
-<h1 id="registers-in-different-contexts">Registers in Different Contexts</h1>
-
-<p>Looking across the various contexts in which registers appear, it 
-quickly becomes clear that the critical capabilities are
-quite different.</p>
-
-<ul>
-  <li>Within the RTL implementation of an IP, registers communicate
-control values set by firmware to the implementing logic and
-feed back status data from hardware to firmware. In addition,
-some degree of change event may be useful (eg register written).
-In other words, data storage and the structure of that data
-are the key care-abouts here.</li>
-  <li>In a UVM block-level verification environment, there are a
-significant number of overlapping requirements. A UVM register
-model captures the structure of data within registers (eg 
-named fields), and layout of registers within memory. A
-UVM register model enables a shadow copy of register 
-contents to be maintained for debug and analysis purposes.
-Since access to registers is typically via a memory-mapped
-address space, the register model supports mapping between
-high-level changes to register values and writes to the
-addresses of those modified registers. All in all, the UVM
-register model may be the most complex that we work with.</li>
-  <li>At system level, we interact with the registers in our
-IP blocks and subsystems using firmware. When we’re 
-writing this firmware by hand, it’s typical to have a 
-set of C ‘#define’ macros that help to calculate the 
-address of registers, and that extract and set the value
-of register fields. At this level, there’s little to 
-no value in caching a copy of the last known value of
-a device register.</li>
-</ul>
-
-<p>Because PSS has a system-level focus, it’s probably no surprise 
-that it focuses on the key capabilities required at system
-level: being able to efficiently model how registers fit into
-the address space space of a device, and efficiently read and
-write them. Unlike the UVM register model, the PSS register
-model doesn’t maintain a copy of the data stored in registers.</p>
-
-<h1 id="the-pss-register-model">The PSS Register Model</h1>
-<p>The PSS register model focuses on capturing the field layout
-of each register, the layout of device registers in the
-memory map, and on providing efficient mechanisms for
-reading and writing to the device registers.</p>
-
-<p>The key elements to be aware of are:</p>
-<ul>
-  <li>Register group component that collects registers and sub-groups of registers together</li>
-  <li>Register component that describes a single register – often in-line</li>
-  <li>Register definition struct that describes the fields of a register</li>
-</ul>
-
-<p>Both the register group and register components are pre-defined components
-defined by the PSS <em>Core Library</em>. While they are not built-in constructs
-in the language, they are special types that tools are expected to 
-implement specially.</p>
-
-<h2 id="register-group">Register Group</h2>
-
-<p>We define a register group to contain the top-level registers and register
-groups of a device (eg our DMA engine). Or, any time we collections of 
-registers that we want to use mulitple times.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/04/WB_DMA_TopLevel_Channel_Regs.png" />
-</p>
-
-<p>Let’s look at the first part of the DMA Engine registers (shown above). We have
-some control registers that are common across all of the DMA channels. Then, 
-groups of registers that are replicated for each channel.</p>
-
-<p>We will create a register group for the full set of DMA engine registers
-and a register group for the per-channel registers. The full DMA engine
-register group will contain both the individual registers and an array
-of the per-channel register groups.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaChannelRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span>
-
-<span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-
-    <span class="n">WbDmaChannelRegs</span>        <span class="n">channels</span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
-<span class="p">}</span></code></pre></figure>
-
-<h2 id="register-definition-struct-and-component">Register Definition Struct and Component</h2>
-
-<p>Each register is composed of some number of fields. When these fields have
-special meaning, we define a <code class="language-plaintext highlighter-rouge">packed struct</code> to capture the field layout.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2023/04/WB_DMA_Channel_SZ_Reg.png" />
-</p>
-
-<p>The image above shows the layout of the <em>size</em> register within the block
-of per-channel registers. We declare the struct below to capture the 
-layout of the fields in the register. Note that the start of the first 
-field in the struct corresponds to the lowest bit in the register.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">struct</span> <span class="nc">WbDmaChannelSz</span> <span class="p">:</span> <span class="n">packed_s</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span>           <span class="n">TOT_SZ</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>            <span class="n">RESERVED_1</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>            <span class="n">CHK_SZ</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>            <span class="n">RESERVED_2</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>The struct shown above just defines the layout of data within a
-register.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaChannelRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelSZ</span><span class="o">&gt;</span>          <span class="n">SZ</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddr</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddrMask</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddr</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddrMask</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">LinkListPtr</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SwPtr</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>When declaring a register within a register group, we add a field
-of type <code class="language-plaintext highlighter-rouge">reg_c</code> that is parameterized with the data type 
-that describes the register. This core data type could be a packed
-struct as is shown above. It could also be an integer in cases where
-giving names to all the fields isn’t so important.</p>
-
-<p>For example, we use packed structs to define the layout of the CSR
-and SZ fields. Address and address-mask fields are defined using
-plain integer data types.</p>
-
-<p>From this point on, we simply build up. We define a register struct
-for any register whose field layout we care about. We add a 
-type-parameterized <code class="language-plaintext highlighter-rouge">reg_c</code> field for each register to its containing
-register group, and fields of <code class="language-plaintext highlighter-rouge">reg_group_c</code> type for instances
-of register groups.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_A</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_B</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_A</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_B</span><span class="p">;</span>
-
-    <span class="n">WbDmaChannelRegs</span>        <span class="n">channels</span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>For the DMA engine, this process results in a top-level register block
-for the IP such as the one shown above. In this case, we have a few
-individual registers and an array of channel register groups.</p>
-
-<h1 id="the-pss-register-model-in-the-real-world">The PSS Register Model in the Real World</h1>
-
-<p>In the prior sections, we manually created a PSS register model.
-In practice this is quite rare because, in a production environment,<br />
-all of the various register descriptions 
-(RTL, UVM, firmware, documentation, etc)
-are derived automatically from a single description. That 
-central description might be captured in a spreadsheet or
-CSV file, IP-XACT document [3], or a SystemRDL description [1].</p>
-
-<p>Personally, I’m very interested in SystemRDL. My feeling is that
-it’s easier to create and modify than IP-XACT, and I just learned
-about an open source toolchain named 
-<a href="https://github.com/orgs/SystemRDL">PeakRDL</a> that can be used to 
-derive various outputs from it.</p>
-
-<p>As you begin to look at applying PSS in your environment, it’s
-a good idea to understand what single representation your
-organization uses for register information, and what 
-facilities exist for adding new automatically-derived
-output formats.</p>
-
-<h1 id="instantiating-and-connecting-the-register-model">Instantiating and Connecting the Register Model</h1>
-
-<p>Our PSS register model is simply a mechanism for associating
-the addresses and bit patterns of memory-mapped registers
-with symbolic representations. Consequently, we need to 
-connect our register model to an address space before we
-can actually use it for reading and writing registers.</p>
-
-<h2 id="connecting-to-register-space">Connecting to Register Space</h2>
-<p>Registers are always mapped at some location within the 
-address space. In order to determine the correct address
-to use when accessing a register, we need to know where
-its containing register model is located in memory.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
-    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
-    
-    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
-
-    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
-        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x0000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>The code above shows defining a region within the memory
-map that is defined as non-allocatable. In other words,
-we cannot use <code class="language-plaintext highlighter-rouge">addr_claim_s</code> fields within actions to
-claim memory from this region. Note that 
-<code class="language-plaintext highlighter-rouge">add_nonallocatable_region</code> returns an address handle that we save.
-We will use this handle to specify where the register block 
-is located.</p>
-
-<h2 id="connecting">Connecting</h2>
-<p>In this little example, the register model that we’re focusing on
-is the one and only register model. This is not the case most 
-of the time. It’s much more frequently the case that the register
-model for our IP is just one part of much larger system-level
-register model.</p>
-
-<p>Generally speaking, PSS provides two different strategies for
-associating a component with the register model it should use,
-and associating the register model with the base address it 
-must use:</p>
-<ul>
-  <li>We can create a large register model that has a base address
-and distribute references to register sub-models to components</li>
-  <li>We can create a register model per consumer component and 
-calculate a base address to associate with each.</li>
-</ul>
-
-<h3 id="large-register-model--distribute-refs">Large Register Model ; Distribute Refs</h3>
-
-<p>In this scheme, our DMA component has a reference to the 
-register model, not an instance:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-
-    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
-
-    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
-
-    <span class="c1">// Handle to the register model</span>
-    <span class="kd">ref</span> <span class="n">WbDmaRegs</span>           <span class="n">regs</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>The code that uses the register model doesn’t care whether it is
-using a reference or an instance of a register model. Either way,
-registers get written and read.</p>
-
-<p>The register for all instances of our DMA engine are included in
-the top-level register model, as shown below.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">SysRegModel</span> <span class="p">:</span> <span class="n">reg_group_c</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-    <span class="n">WbDmaRegs</span>           <span class="n">dma0</span><span class="p">;</span>
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Finally, our system-level register model is instanced at the top
-level of the component tree.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
-    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
-
-    <span class="n">SysRegModel</span>                              <span class="n">regs</span><span class="p">;</span>
-
-    <span class="n">WbDma</span>                                    <span class="n">dma0</span><span class="p">;</span>
-
-    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
-        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
-
-        <span class="c1">// ...</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-
-        <span class="n">regs</span><span class="o">.</span><span class="n">set_handle</span><span class="p">(</span><span class="n">mmio_h</span><span class="p">);</span>
-
-        <span class="n">dma</span><span class="o">.</span><span class="n">regs</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">dma0</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>A few things are going on here:</p>
-<ul>
-  <li>After obtaining a handle to the root of the memory-mapped I/O
-space, we configure this as the base address of the system
-register map by calling the <code class="language-plaintext highlighter-rouge">set_handle</code> function on the system
-register model.</li>
-  <li>Next, we hook set the register-model reference field in the 
-dma0 component instance to point to its instance of the 
-register in the system register model.</li>
-</ul>
-
-<p>And, with that we’re done. The advantages of this approach are that
-we’re only concerned with the base address of the full register
-space and it might be easier to construct this ‘super’ register
-model using automation tools. We also have the option to directly
-reach down through the register model to access registers. 
-The biggest downside is a loss of some degree of modularity.</p>
-
-<h3 id="individual-register-models--distribute-base-addresses">Individual Register Models ; Distribute Base Addresses</h3>
-
-<p>This approach is nearly mirror image of the previous approach. 
-In this approach, each component with registers “owns” its 
-register block and we distribute base-address handles.</p>
-
-<p>So, here’s the DMA component:</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
-
-    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
-
-    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
-
-    <span class="c1">// DMA register model</span>
-    <span class="n">WbDmaRegs</span>           <span class="n">regs</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Note that we have full register model instance here, instead of
-just a reference.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
-    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
-
-    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
-
-    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
-        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
-
-        <span class="c1">// ...</span>
-
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
-
-        <span class="n">dma</span><span class="o">.</span><span class="n">regs</span><span class="o">.</span><span class="n">set_handle</span><span class="p">(</span><span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">mmio_h</span><span class="p">,</span> <span class="mh">0x1000</span><span class="p">));</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>At the top level, things are a bit different as well. There is not
-unified top-level register model. Instead of setting the DMA 
-register-model handle within the DMA component, we set the base address
-handle on the register-model instance within the DMA component. Note
-that we need to compute the proper offset to create the correct address
-handle for the DMA registers.</p>
-
-<h1 id="using-the-register-model">Using the Register Model</h1>
-<p>Now that we have our register model integrated and connected, we can
-write PSS test realization code to program a DMA channel to perform
-a transfer.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-
-    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-        <span class="c1">// Setup the transfer size</span>
-        <span class="n">WbDmaChannelSZ</span> <span class="n">sz</span><span class="p">;</span>
-        <span class="n">sz</span><span class="o">.</span><span class="n">CHK_SZ</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
-        <span class="n">sz</span><span class="o">.</span><span class="n">TOT_SZ</span> <span class="o">=</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">;</span> <span class="c1">// We always work in words</span>
-        <span class="n">regs</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sz</span><span class="p">);</span>
-
-        <span class="c1">// Configure source and destination addresses</span>
-        <span class="n">regs</span><span class="o">.</span><span class="n">INT_SRC_A</span><span class="o">.</span><span class="n">write_val</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">src_i</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
-        <span class="n">regs</span><span class="o">.</span><span class="n">INT_DST_A</span><span class="o">.</span><span class="n">write_val</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
-
-        <span class="c1">// Enable the channel</span>
-        <span class="n">WbDmaChannelCSR</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
-        <span class="n">csr</span><span class="o">.</span><span class="n">CH_EN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-        <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">csr</span><span class="p">);</span>
-
-        <span class="c1">// Wait for the transfer to complete</span>
-        <span class="k">repeat</span> <span class="p">{</span>
-            <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
-            <span class="c1">// ...</span>
-        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">DONE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>First, we’ll want to configure a couple of details about the 
-size of the transfer. For this, we use the WbDmaChannelSZ packed struct to 
-properly format data to write to the register.</p>
-
-<p>Next, we’ll setup the source and destination addresses. For these, we will
-use the <code class="language-plaintext highlighter-rouge">write_val</code> function to just write the address value to the register.</p>
-
-<p>We need to enable the channel before the transfer will start. To do this, 
-we want to modify a bit within the configuration and status register while
-leaving the other fields as-is. To do this, we can read the value of the
-CSR into a register struct, set the <code class="language-plaintext highlighter-rouge">CH_EN</code> bit, then write it back 
-to the register.</p>
-
-<p>At this point, the DMA engine will begin transferring memory. Finally, we
-need to wait until the channel’s <code class="language-plaintext highlighter-rouge">DONE</code> bit is set. This signals that the
-transfer is complete. Here, again, we use the register struct to make it
-easy to extract the bits that we care about.</p>
-
-<p>This code is concise and easy to write – generally much more so than
-the equivalent hand-coded bare-metal C code. The great thing, of course,
-is that the resulting implementation is just as efficient as if it 
-were hand-coded in C.</p>
-
-<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
-
-<p>We have now worked through all the key topics in exercising the 
-memory to memory copy functionality of our DMA engine. We’ve looked
-at:</p>
-<ul>
-  <li>Buffers to represent data transfer between sequential actions</li>
-  <li>Memory management to remove complexity from our tests</li>
-  <li>Resource management to ensure concurrent test behavior doesn’t
-collide over resource usage like DMA channels</li>
-  <li>And finally, using the PSS register model to capture the layout
-of registers and register blocks, and access device registers.</li>
-</ul>
-
-<p>But, if you remember, there is one other key part of the DMA
-engine’s functionality: supporting DMA transfer for peripheral
-devices without their own internal DMA engines. Modeling this
-type of behavior brings unique challenges. Especially so when 
-we want to be able to exercise that behavior with multiple different 
-devices at the system. In the next post, we’ll look at approaches
-for modeling this with PSS.</p>
-
-<h1 id="resources">Resources</h1>
-<ul>
-  <li>[1] <a href="https://www.accellera.org/images/downloads/standards/systemrdl/SystemRDL_2.0_Jan2018.pdf">SystemRDL 2.0 LRM</a></li>
-  <li>[2] <a href="https://github.com/orgs/SystemRDL">PeakRDL</a></li>
-  <li>[3] <a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a></li>
-  <li>[4] <a href="https://bitsbytesgates.com/code_html/2023/04/wb_dma_4_registers.html">DMA Example (Viewing)</a></li>
-  <li>[5] <a href="https://bitsbytesgates.com/code/2023/04/wb_dma_4_registers.pss">DMA Example (Raw Text)</a></li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[We’ve been looking at properly modeling the types of behaviors that we want to exercise on our DMA IP for the last few posts. Of course, until we can actually start programming the DMA registers, all of our modeling won’t actually do anything. PSS provides two primary ways to connect the model of test behavior we want to exercise to the device on which we will exercise that behavior: Calling functions that are implemented in the target environment Using PSS features to read/write registers and memory Both of these approaches have benefits and drawbacks. If functions already exist to program IP registers, leveraging these from PSS helps to get tests up and running more quickly. However, functions are typically only implemented in a single language. Greater portability is achieved by directly describing the interactions between PSS model and device registers in PSS. This post will look at describing the register interface using the PSS register model.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[A few posts back (Relating Actions with Dataflow), we talked about using buffer objects to form a relationship between actions that execute sequentially. Because the actions execute sequentially, this relationship looks a lot like function call or the transfer of a transaction. What is actually happening is actually a bit more involved and much more powerful. Let’s use the DMA engine’s ‘peripheral interface’ as a vehicle to explore this declarative data exchange aspect of the PSS language.]]></summary></entry></feed>
