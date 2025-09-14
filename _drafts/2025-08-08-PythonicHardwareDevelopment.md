@@ -14,15 +14,17 @@ Compare this to
 Of course, Python is software and hardware is different. But, fundamentally, that 
 doesn't mean that we can't achieve the same developer experience.
 
-- Special markers to identify the hardware model. Keep it modular!
+- Special markers to identify the hardware model. Keep it modular, and keep it pure Python!
   - Base types
-  - 
-- Model is separate from implementation, and need not be implementation
+  - Decorators
 - Leverage Python dynamic nature
   - Powerful on-the-fly construction of types
   - Programmatically construct the model
   - Programmatically specify binding
-
+- Model is separate from implementation, and need not be implementation
+  - Ex: bind map
+  -> Might connect two data objects
+  -> Might introduce 
 - Model can be processed in multiple ways (including reconfiguring how regions are processed)
   - Create a pure-Python implementation of the model and test. Nearly instantaneous transform. Slow execution
   - Implement as a Verilog model running on a hardware simulator
