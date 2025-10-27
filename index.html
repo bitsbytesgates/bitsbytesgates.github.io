@@ -97,6 +97,16 @@ Post-env
         <ul class="nested" list-style-type="none">
         
         
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html">Unlocking the Combined Strength of UVM and Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
         <li><span class="caret">Sep</span>
         <ul class="nested" list-style-type="none">
         
@@ -698,326 +708,188 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html">Zuspec: Pythonic Model-Driven Hardware Development</a>
+    <a href="/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html">Unlocking the Combined Strength of UVM and Python</a>
   </h1>      
 
-<div class="entry-content"><p>Designing and implementing hardware is challenging, and is getting more 
-difficult each year as systems become more complex. Design and verification 
-teams are looking to boost productivity as a way to keep pace, 
-while also looking for ways to provide models of the design behavior to 
-software teams earlier. The fragmented and esoteric nature of the languages 
-and methodologies used for design and verification only make this more difficult. 
-Zuspec aspires to provide a unified, extensible Pythonic framework for multi-abstraction 
-hardware modeling that simplifies the design and verification process and 
-enables traditional and AI-driven automation.</p>
+<div class="entry-content"><p>UVM and Python are often positioned as rivals when it comes to their role in 
+functional verification, with teams picking one or the other as the basis 
+for a verification environments. Each have strengths, though, and using them 
+together produces much stronger results. In fact, building on the popularity
+of UVM and the availability of UVM verification components provides a 
+significant boost to the process of introducing Python to an existing UVM 
+environment.</p>
 
-<!-- more -->
+<!--more-->
 
-<p>The abstraction gap and model fragmentation are two key drivers of hardware
-design-flow complexity. The abstraction difference between a 
-natural-language design specification and the register-transfer-level (RTL) 
-model that implements it is enormous, and only increasing as designs 
-become larger and more complex. It’s natural to prioritize the 
-RTL model, since that is required to get to implementation. However, 
-because RTL models are detailed and execute slowly, they don’t do a good job of
-meeting the needs of adjacent disciplines, such as firmware. 
-This delays how early software teams obtain access to a representation of the design,
-and limits the platforms on which they can work to fast hardware emulation
-or prototyping environments.</p>
+<h1 id="assessing-languages-for-functional-verification">Assessing Languages for Functional Verification</h1>
+<p>Using object-oriented languages to develop hardware verification environments
+for simulation and hardware emulation is a longstanding practice. This is 
+enabled by the fact that dynamic verification of hardware has a lot in common
+with testing software. Aside from constrained randomization, tests for hardware look
+very similar to tests for software. Likewise, scoreboards and other analytics
+components organize, filter, and categorize data in very software-centric ways.</p>
 
-<p>Over time, new requirements have resulted in the development of new 
-domain-specific languages and language-like class libraries. SystemVerilog, 
-PSS, UPF, IP-XACT, SystemC, and others all provide features that address pain 
-points of hardware development.  Unfortunately, this has also led to a very 
-fragmented ecosystem with loosely-integrated languages and methodologies and 
-complex build flows.</p>
+<p>SystemVerilog is a commonly-used object-oriented language that is 
+often used alongside UVM. But, C/C++, Java, and Python have all been used for 
+verification for many years with and without UVM.</p>
 
-<h1 id="considering-the-ecosystem">Considering the Ecosystem</h1>
+<p>There are many factors to consider when selecting the languages to use for 
+verification. It’s important to consider the features provided by the language, 
+the size of its library ecosystem, and the size of the community. All of these 
+contribute to the perceived ease with which new content can be developed using 
+the language. Given the popularity of AI assistants, it’s also important to consider 
+how ‘AI friendly’ the language is.</p>
 
-<p>All of these innovations have primarily come from a hardware-design 
-perspective, and focus on enabling hardware-design flows. That,
-in itself, is a challenge given the relative sizes of the 
-hardware- and software-engineering ecosystems. While it’s 
-difficult to find accurate detailed data, US Bureau of Labor 
-Statistics reports a labor-market size of 76,800 for hardware 
-engineers vs a labor-market size of 1,534,790 for software 
-engineers (inclusive of all sub-disciplines in both cases).</p>
+<p>The Python language ranks highly on these criteria. It is the most popular software
+language by several measures, and has been for some time. Development in Python 
+is supported by a sizable collection of development tools and libraries. And,
+it offers superior results with AI assistants due to the availability of large
+volumes of training data for large language models (LLMs).</p>
 
-<p>Given that the collective challenge is a combined hardware and 
-software system, getting buy-in from both disciplines is critical.
-It seems quite unlikely that a language created to serve the unique
-requirements of the ecosystem’s minority can serve the combined
-needs and gain the acceptance of the majority.</p>
+<h1 id="ease-of-integration-and-reuse">Ease of Integration and Reuse</h1>
 
-<h1 id="zuspec">Zuspec</h1>
+<p>But, for hardware verification, two of the most important factors to consider 
+are ease of integration into a simulation environment and how readily existing
+collateral can be reused. Both of these are critical in assessing how easily
+a new language can be incrementally added to existing environments.</p>
 
-<p>Zuspec<a href="https://zuspec.github.io/">1</a> adopts Python as its starting 
-point, and embeds hardware semantics into that ecosystem. The result 
-is a platform that is familiar to software engineers, offers 
-high productivity for hardware engineering, and has the goal of 
-increasing the ability to share artifacts across the disciplines.</p>
+<p>When it comes to ease of integration with simulation environments, Python also 
+ranks very highly. The <a href="https://www.cocotb.org">cocotb</a> library is a well-known 
+and well-maintained library that implements a dynamic integration with simulation 
+environments at the signal level using the VPI API. This allows Python-driven tests 
+to easily interact with a design at the signal level.</p>
 
-<h2 id="why-python">Why Python?</h2>
+<p>When it comes to reuse of existing infrastructure, the picture with Python is a bit 
+more mixed. <code class="language-plaintext highlighter-rouge">cocotb</code> only supports integration at the signal level, which prevents 
+reuse of existing SystemVerilog object-oriented collateral.</p>
 
-<p>Many factors are involved in selecting a language for any purpose: 
-key language features, tool ecosystem, relevant libraries, as well
-as the community around the language. Applying an existing language to the 
-semantics of another  domains raises another factor to consider: 
-flexibility of the language.</p>
+<p>Having a strong reuse strategy is critical to the success of bringing a new 
+verification language into an existing environment. It’s likely that many thousands
+of person hours have been applied to building up the verification collateral in
+a verification environment. Not only is it prohibitively expensive to re-develop
+this in a new language, doing so risks the introduction of instability through
+new bugs.</p>
 
-<h3 id="popularity-can-be-self-reinforcing">Popularity can be Self-Reinforcing</h3>
+<p>The <code class="language-plaintext highlighter-rouge">pyhdl-if</code> library enables the use of Python with existing SystemVerilog 
+classes through the use of generated wrappers. This opens up significant new 
+possibilities for reuse, but does come with a cost. In the worst case, each
+and every VIP in a verification environment will require a task-based interface
+to be designed and developed. This forces teams to be selective in which 
+components are exposed to Python which, in turn, limits adoption of Python.</p>
 
-<p>Python is a popular language overall, holding the top spot in many
-rankings for several consecutive years, and being ranked highly 
-for many years before that. Language popularity may not seem relevant
-compared to the technical features of a language. Not only it is 
-relevant, popularity has a direct bearing on language technical
-features. TIOBE [2])(https://www.tiobe.com/tiobe-index/), for example, 
-measures language rank in terms of searches via a range of internet 
-search engines <a href="https://en.wikipedia.org/wiki/TIOBE_index">3</a>. This is, 
-of course, a rough measure a the size of a language’s community. Larger
-communities produce more ideas for using a language and, thus,
-a a larger library ecosystem. Larger communities more-rapidly
-produce and refine adjacent technologies, such as code 
-development and package management tools, and new language features.</p>
+<p>Ideally, we want the best of both when it comes to integration and reuse. 
+We want a low-effort integration that also supports seamless reuse of existing
+SystemVerilog object-oriented verification collateral.</p>
 
-<p>Popularity often builds upon itself, and there is evidence that 
-AI is acting as a driver of Python’s popularity.
-Specifically, AI assistants are often reported to be more 
-effective with Python than with other languages <a href="https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA">4</a>.
-This has the effect of drawing more developers to Python, which
-increases the available code in Python, which more-rapidly
-increases the quality of results with Python.</p>
+<h1 id="focusing-on-uvm">Focusing on UVM</h1>
 
-<p>But, language popularity is only relevant for the set of languages
-that can be used to capture relevant domain semantics. Fortunately,
-Python measures up very well here again.</p>
+<p>Fortunately, UVM helps to suggest a solution. Because of the popularity of UVM, 
+focusing on enabling easy integration with UVM environments is a good 80+% solution.
+Recent enhancements to the <code class="language-plaintext highlighter-rouge">pyhdl-if</code> library provide a ready-made integration with
+UVM classes, enabling Python behavior to be initiated from UVM and UVM components 
+to be used from Python. All without any custom wrapper code.</p>
 
-<h3 id="technical-arguments-for-python">Technical Arguments for Python</h3>
-
-<p>There are strong technical arguments for the Python language as well.
-As a dynamic language, Python provides excellent facilities for 
-introspecting and manipulating a Python description.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
-
-<span class="nd">@zdc.dataclass</span>
-<span class="k">class</span> <span class="nc">SendPacket</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Struct</span><span class="p">):</span>
-  <span class="n">sz</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">rand</span><span class="p">()</span>
-
-  <span class="nd">@zdc.constraint</span>
-  <span class="k">def</span> <span class="nf">valid_sz</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-    <span class="n">self</span><span class="p">.</span><span class="n">sz</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">]</span>
-</code></pre></div></div>
-
-<p>Python <code class="language-plaintext highlighter-rouge">decorators</code> can be used to annotate elements of the description,
-identifying specific semantics to be applied to an element or attaching
-special processing instructions. For example, the <code class="language-plaintext highlighter-rouge">constraint</code> decorator
-above marks the body of the <code class="language-plaintext highlighter-rouge">valid_sz</code> method as having constraint 
-semantics.</p>
-
-<p>Python also allows inheritance relationships to be inspected at any
-point in time. The base type controls capabilities and restrictions
-of the derived type.</p>
-
-<p>While Python can be used as a purely dynamically-typed language, it 
-also provides the ability to associate type “hints” with variables. 
-The <code class="language-plaintext highlighter-rouge">sz</code> field in the example above specifies that it is an unsigned
-8-bit field. This enables the modeler to control how data in the
-model will be represented in the implementation.</p>
-
-<p>Finally, Python supports AST introspection and transformation. This 
-capability allows tools to access the raw AST for code, such as 
-the constraint method above, without needing to use tricks like 
-operator overloading.</p>
-
-<p>Statically-typed languages often provide some introspection facilities
-that are available during the compilation phase. In contrast, Python 
-allows these facilities to be applied to a Python description at any 
-point in time, providing much more flexibility in processing flows. 
-Effectively, Python allows libraries like Zuspec to act as a compiler
-within the Python interpreter.</p>
-
-<p>Python also offers a strong set of system-programming features.
-Combined with Python’s dynamic language features, these dramatically
-simplify the process of integrating external tools and systems.</p>
-
-<p>Python also specifies a package specification and provides tools
-for producing, discovering, and consuming packages.</p>
-
-<p>Together, these capabilities make Python a very compelling platform 
-for developing, verifying, and publishing hardware models.</p>
-
-<h1 id="what-does-this-look-like">What does this look like?</h1>
-
-<p>All languages are a combination of syntax and semantics. Syntax 
-governs the lexical aspects of a language: the keywords, operators,
-and legal ways of arranging them. Semantics governs the meanings of
-those statements – for example, whether <code class="language-plaintext highlighter-rouge">a = b</code> changes the value
-of the <code class="language-plaintext highlighter-rouge">a</code> variable, changes the <code class="language-plaintext highlighter-rouge">a</code> variable to reference
-the <code class="language-plaintext highlighter-rouge">b</code> variable, or something entirely different. Zuspec proposes
-a way to adopt full Python syntax, while identifying key regions
-in which different semantics apply to this syntax. These new semantics
-are always more restrictive than native Python semantics, allowing
-existing code checkers (eg mypy) to work unmodified.</p>
-
-<p>Zuspec divides a Python description into two core region kinds:</p>
-
+<p>UVM provides several key areas of functionality, all of which are supported by APIs:</p>
 <ul>
-  <li>Pure Python regions</li>
-  <li>Python regions with domain-specific semantics</li>
+  <li>Component structure</li>
+  <li>Sequences and sequencers</li>
+  <li>Register model</li>
+  <li>Configuration database</li>
+  <li>Factory</li>
 </ul>
 
-<p>Even a simple binary counter highlights several unique semantics that 
-a hardware description must capture:</p>
-
+<p>In addition to having access to these APIs, we also need to address two challenges:</p>
 <ul>
-  <li>Bit width of the <code class="language-plaintext highlighter-rouge">count</code> field</li>
-  <li>When the count should be incremented</li>
-  <li>Hardware-specific notions like reset</li>
+  <li>How to work with user-defined types and data</li>
+  <li>How to initiate Python behavior</li>
 </ul>
 
-<p>Zuspec identifies regions with these semantics using a combination of
-Python <code class="language-plaintext highlighter-rouge">decorators</code> and base classes. The example below shows a 
-32-bit counter modeled using the Zuspec library.</p>
+<h1 id="example">Example</h1>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
+<p>Over the next few posts, we’ll dig into all the details of how this works from a
+technical perspective. For now, let’s take a look at a simple example that highlights
+just how easy it is to add Python behavior to a UVM environment by leveraging the
+UVM API.</p>
 
-<span class="nd">@zdc.dataclass</span>
-<span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
-  <span class="n">clock</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">input</span><span class="p">()</span>
-  <span class="n">reset</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">input</span><span class="p">()</span>
-  <span class="n">count</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">output</span><span class="p">()</span>
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2025/10/pyhdl_uvm_component_proxy.png" />
+</p>
 
-  <span class="nd">@zdc.sync</span><span class="p">(</span><span class="n">clock</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span><span class="n">s</span><span class="p">.</span><span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span><span class="n">s</span><span class="p">.</span><span class="n">reset</span><span class="p">)</span> 
-  <span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">reset</span><span class="p">:</span>
-      <span class="n">self</span><span class="p">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">else</span><span class="p">:</span>
-      <span class="n">self</span><span class="p">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-</code></pre></div></div>
+<p>This example shows how we can use a <em>component proxy</em> class in SystemVerilog 
+to initiate Python behavior from our UVM testbench. As the diagram suggests, 
+we will add a new component instance in SystemVerilog that will act as a 
+proxy for a UVM component implementation in Python.</p>
 
-<p>The <code class="language-plaintext highlighter-rouge">Counter</code> example above illustrates these two regions. By default,
-pure Python semantics are used. Consequently, the <code class="language-plaintext highlighter-rouge">import</code> statement
-at the top uses pure Python semantics.</p>
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">package</span> <span class="n">top_pkg</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">uvm_pkg</span><span class="o">::*</span><span class="p">;</span>
+    <span class="k">import</span> <span class="n">pyhdl_uvm</span><span class="o">::*</span><span class="p">;</span>
 
-<p>The <code class="language-plaintext highlighter-rouge">Counter</code> class inherits from the Zuspec <code class="language-plaintext highlighter-rouge">Component</code> class, which
-designates it as a class with specific capabilities.  The <code class="language-plaintext highlighter-rouge">inc</code> method
-is decorated with the <code class="language-plaintext highlighter-rouge">sync</code> decorator. This marks it as a method that
-is automatically evaluated on the active edge of the specified 
-clock or reset signals, and a method where deferred assignment is used.
-It also marks it as a method that may not be invoked directly.</p>
+    <span class="c1">// Test</span>
+    <span class="kt">class</span> <span class="n">base_test</span> <span class="k">extends</span> <span class="n">uvm_test</span><span class="p">;</span>
 
-<p>A class domain with special semantics is a model of implementation, 
-and cannot be used directly. Instead, a <code class="language-plaintext highlighter-rouge">Transformer</code> class 
-must first be used to create an implementation. In this case, the 
-implementation could be pure-Python, Verilog, or something entirely 
-different like documentation.</p>
+        <span class="n">pyhdl_uvm_component_proxy</span>   <span class="n">m_pycomp</span><span class="p">;</span>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">asyncio</span>
-<span class="kn">from</span> <span class="n">zuspec.be.py</span> <span class="kn">import</span> <span class="n">ComponentFactory</span>
-<span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
+        <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">base_test</span><span class="p">)</span>
 
-<span class="nd">@zdc.dataclass</span>
-<span class="k">class</span> <span class="nc">CountTB</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
-  <span class="n">clkrst</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">ClockReset</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="p">{</span><span class="n">period</span><span class="o">=</span><span class="mi">10</span><span class="p">})</span>
-  <span class="n">counter</span> <span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span>
-      <span class="n">bind</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:{</span>
-          <span class="n">s</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">clock</span> <span class="p">:</span> <span class="n">s</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="n">clock</span><span class="p">,</span>
-          <span class="n">s</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">reset</span> <span class="p">:</span> <span class="n">s</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="n">reset</span>
-      <span class="p">})</span>
+        <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span> <span class="o">=</span> <span class="s">"base_test"</span><span class="p">,</span> <span class="n">uvm_component</span> <span class="n">parent</span><span class="p">);</span>
+            <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">);</span>
+        <span class="k">endfunction</span>
 
-<span class="k">def</span> <span class="nf">test_smoke</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-  <span class="n">tb</span> <span class="o">=</span> <span class="nc">ComponentFactory</span><span class="p">(</span><span class="n">CountTB</span><span class="p">)</span>
-  <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">tb</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="nf">do_reset</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
-  <span class="k">assert</span> <span class="n">tb</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span>
-  <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">tb</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="nf">wait</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
-  <span class="k">assert</span> <span class="n">tb</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">10</span>
-</code></pre></div></div>
+        <span class="k">function</span> <span class="kt">void</span> <span class="n">build_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
+            <span class="k">super</span><span class="p">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
+            <span class="n">m_pycomp</span> <span class="o">=</span> <span class="n">pyhdl_uvm_component_proxy</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"m_pycomp"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+            <span class="n">m_pycomp</span><span class="p">.</span><span class="n">pyclass</span> <span class="o">=</span> <span class="s">"pycomp::PyComp"</span><span class="p">;</span>
+        <span class="k">endfunction</span>
 
-<p>The example above shows a small testbench around the <code class="language-plaintext highlighter-rouge">Counter</code> 
-component with a simple <code class="language-plaintext highlighter-rouge">Pytest</code> unit test. The type transformer 
-creates a Python object that is used to dynamically evaluate
-the model. While the interface is Python, the implementation
-may or may not be Python. For example, the transformer might, 
-instead, transform the model to Verilog and create a Verilator 
-<a href="https://www.veripool.org/verilator/">5</a>
-simulator executable that evaluates the model much faster than
-a pure-Python implementation, while still exposing a Python 
-interface to the signals.</p>
+        <span class="k">task</span> <span class="n">run_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"--&gt; test run_phase"</span><span class="p">);</span>
+            <span class="n">phase</span><span class="p">.</span><span class="n">raise_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="c1">// Test stimulus would go here</span>
+            <span class="p">#</span><span class="mi">100</span><span class="p">;</span>
+            <span class="n">phase</span><span class="p">.</span><span class="n">drop_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"&lt;-- test run_phase"</span><span class="p">);</span>
+        <span class="k">endtask</span>
+    <span class="k">endclass</span>
 
-<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="n">Counter</span><span class="p">(</span>
-    <span class="kt">input</span>            <span class="n">clock</span><span class="p">,</span>
-    <span class="kt">input</span>            <span class="n">reset</span><span class="p">,</span>
-    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count</span><span class="p">);</span>
+<span class="k">endpackage</span></code></pre></figure>
 
-    <span class="k">always</span> <span class="o">@</span><span class="p">(</span><span class="kt">posedge</span> <span class="n">clock</span> <span class="kt">or</span> <span class="kt">posedge</span> <span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
-        <span class="n">count</span> <span class="o">&lt;=</span> <span class="o">{</span><span class="mi">32</span><span class="o">{</span><span class="mb">1'b0</span><span class="o">}}</span><span class="p">;</span>
-      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-        <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-<span class="k">endmodule</span>
-</code></pre></div></div>
-
-<p>Another transformer might convert the model to the synthesizable
-Verilog shown above to be used as input to existing 
-synthesis or simulation flows.</p>
-
-<h1 id="the-user-extensible-language">The User-Extensible Language</h1>
-
-<p>The <code class="language-plaintext highlighter-rouge">Counter</code> example is quite simple, and at the register-transfer level (RTL).
-Zuspec is designed to be able to capture a broad range of 
-hardware-centric semantics that cover:</p>
-
+<p>The additions to the SystemVerilog portion of the testbench are minimal. Specifically:</p>
 <ul>
-  <li>Verification
-    <ul>
-      <li>Constrained randomization and functional coverage</li>
-      <li>Portable test and stimulus (PSS)</li>
-      <li>Assertions (SVA)</li>
-    </ul>
-  </li>
-  <li>Hardware design
-    <ul>
-      <li>RTL</li>
-      <li>Medium-level synthesis</li>
-      <li>Transaction-level modeling (TLM)</li>
-      <li>Register modeling</li>
-      <li>Clock and power domains</li>
-      <li>Physical design</li>
-    </ul>
-  </li>
-  <li>Firmware
-    <ul>
-      <li>Register interface</li>
-      <li>Specialized memory management</li>
-    </ul>
-  </li>
+  <li>New field for the component proxy</li>
+  <li>Construction of the component proxy in the <em>build_phase</em>.</li>
+  <li>Specification of the Python class that implements the component</li>
 </ul>
 
-<p>Zuspec brings a new approach to domain-specific languages that leverages the 
-popularity and ecosystem of Python, and embeds domain-specific semantics from
-hardware design, verification, and firmware. The big “bet” is that educating
-humans and LLMs on the delta between a Python and a set of domain-specific
-semantics is far easier than doing the same with a completely new language.</p>
+<p>Now let’s look at the Python class:</p>
 
-<p>While Zuspec models are captured in Python, processing tools may transform Zuspec 
-models into appropriate non-Python implementations such as embedded C or 
-synthesizable Verilog.  Zuspec encourages a Pythonic development process for 
-hardware that is code-centric, AI-friendly, and nimble. And, most importantly, 
-Zuspec provides togetherness: a common environment in which new language 
-innovations can be explored along with integrated existing technologies.</p>
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="n">hdl_if.uvm</span> <span class="kn">import</span> <span class="n">UvmComponentProxy</span>
 
-<h3 id="references">References</h3>
-<ol>
-  <li>https://zuspec.github.io</li>
-  <li>https://www.tiobe.com/tiobe-index/</li>
-  <li>https://en.wikipedia.org/wiki/TIOBE_index</li>
-  <li>https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA</li>
-  <li>https://www.veripool.org/verilator/</li>
-</ol>
+<span class="k">class</span> <span class="nc">PyComp</span><span class="p">(</span><span class="n">UvmComponentProxy</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"-- build_phase"</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">connect_phase</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"-- connect_phase"</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"Hello from PyComp run_phase"</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
+
+<p>The implementation must inherit from the <em>UvmComponentProxy</em> base class. The
+<em>build_phase</em>, <em>connect_phase</em>, and <em>run_phase</em> methods will be invoked by 
+the SystemVerilog UVM environment.</p>
+
+<p>And, that’s it. No need to generate API interface classes, and just a few
+lines a code needed to get something running.</p>
+
+<p>If you’re interested, you can look at the full code <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm">here</a>.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+
+<p>Of course, the example above only shows how to get started. 
+Over the next few posts, we’ll dive into more detail on the capabilities of the
+<code class="language-plaintext highlighter-rouge">pyhdl-if</code> library UVM integration. We’ll also look at usecases for Python in 
+a verification environment.</p>
 
 </div>
 
