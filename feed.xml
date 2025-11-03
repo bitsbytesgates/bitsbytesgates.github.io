@@ -1,4 +1,212 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-10-27T14:58:10+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Unlocking the Combined Strength of UVM and Python</title><link href="https://bitsbytesgates.com/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html" rel="alternate" type="text/html" title="Unlocking the Combined Strength of UVM and Python" /><published>2025-10-04T00:00:00+00:00</published><updated>2025-10-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html"><![CDATA[<p>UVM and Python are often positioned as rivals when it comes to their role in 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-11-03T15:48:18+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">The Mechanics of UVM/Python Cross-Calling</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html" rel="alternate" type="text/html" title="The Mechanics of UVM/Python Cross-Calling" /><published>2025-11-01T00:00:00+00:00</published><updated>2025-11-01T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html"><![CDATA[<p>It’s not necessary to understand very much about how PyHDL-IF implements
+the bridge between Python and UVM, but useful to understand a bit. Doing 
+so helps to understand what this library is and is not intended to do,
+and how you can best use it in your verification environment.</p>
+
+<!--more-->
+
+<h1 id="an-interface-not-a-uvm-library">An Interface, not a UVM Library</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2025/11/pyhdl_if_uvm_wrapper.png" />
+</p>
+
+<p>One important thing to understand is that PyHDL-IF is an interface library,
+and not a full testbench library. PyHDL-IF is intended to make it easy to 
+Python to SystemVerilog and UVM, and vice versa. Consequently, it is only
+useful if a SystemVerilog/UVM testbench is a part of your verification environment.
+If you want to create a UVM testbench in Python, the <a href="https://github.com/pyuvm/pyuvm">pyuvm</a>
+library is more likely to be what you’re looking for. You can even use 
+<code class="language-plaintext highlighter-rouge">pyuvm</code> with PyHDL-IF to provide structure to the Python portion of the testbench
+that leverages your existing UVM-SV testbench.</p>
+
+<p>Limiting the scope in this way has its advantages, though. While the UVM library
+is quite large, the APIs that test writers and scoreboard developers use is 
+a much smaller subset. Prioritizing this much-smaller subset very quickly 
+provides an interface library that covers a large percentage of usecases.</p>
+
+<h1 id="initiating-behavior-from-uvm">Initiating Behavior from UVM</h1>
+
+<p>One implication of PyHDL-IF being an interface library is that all 
+PyHDL-IF UVM objects are wrappers to access SystemVerilog UVM objects. 
+While it is possible (and common!) to create instances of UVM objects
+from Python, what happens under the hood as the following:</p>
+<ul>
+  <li>Python (via the PyHDL-IF library) calls a UVM method, creating a new UVM object</li>
+  <li>The PyHDL-IF library creates a SystemVerilog and Python object pair with a handle to the UVM object</li>
+  <li>This ‘wrapper’ Python object is returned to the caller.</li>
+</ul>
+
+<p>So, how do we initiate Python behavior from a UVM testbench? There are 
+two special PyHDL-IF “proxy” classes that provide a Python implementation
+for <code class="language-plaintext highlighter-rouge">uvm_component</code> and <code class="language-plaintext highlighter-rouge">uvm_sequence</code>: <code class="language-plaintext highlighter-rouge">pyhdl_uvm_component_proxy</code> and <code class="language-plaintext highlighter-rouge">pyhdl_uvm_sequence_proxy</code>.</p>
+
+<h1 id="interface-structure">Interface Structure</h1>
+
+<p>The PyHDL-IF library provides infrastructure that connects a Python object and 
+a SystemVerilog object via method calls. Specially-decorated classes define
+the shared API. For example, the code snippet below defines the API of the 
+UvmSequenceProxy:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@api</span>
+<span class="k">class</span> <span class="nc">UvmSequenceProxy</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@exp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span> <span class="p">...</span>
+
+    <span class="nd">@imp</span>
+    <span class="k">def</span> <span class="nf">get_userdata</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
+
+    <span class="nd">@imp</span>
+    <span class="k">def</span> <span class="nf">create_req</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
+
+    <span class="nd">@imp</span>
+    <span class="k">def</span> <span class="nf">create_rsp</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
+
+    <span class="nd">@imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">start_item</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">:</span> <span class="nb">object</span><span class="p">):</span> <span class="p">...</span>
+
+    <span class="nd">@imp</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">finish_item</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">:</span> <span class="nb">object</span><span class="p">):</span> <span class="p">...</span></code></pre></figure>
+
+<p><strong>exp</strong> methods are ones that will be implemented in Python and will
+be called from SystemVerilog. Likewise, <strong>imp</strong> methods will be implemented
+in SystemVerilog and called from Python.</p>
+
+<p>The PyHDL-IF code generator creates a SystemVerilog class that implements
+this protocol – calling the Python method when an <strong>exp</strong> method is
+called in SystemVerilog and calling a SystemVerilog when an <strong>imp</strong> method
+is called in Python.</p>
+
+<p>When a new instance of the generated SystemVerilog is created, it results 
+in a pair of objects: one in SystemVerilog and a connected peer Python object.</p>
+
+<h1 id="initiating-behavior">Initiating Behavior</h1>
+
+<p>Starting Python behavior from a UVM-SV environment is as simple as selecting
+the right <code class="language-plaintext highlighter-rouge">proxy</code> class, creating an instance, and using the <code class="language-plaintext highlighter-rouge">proxy</code> class
+object within the UVM-SV environment as if it were a regular UVM object.</p>
+
+<p>Let’s look at an example that implements a UVM sequence in Python.
+Let’s look at the Python class before seeing how it is used. The
+code below is from the <code class="language-plaintext highlighter-rouge">uvm/sequence_rand_item</code> example:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="n">hdl_if.uvm</span> <span class="kn">import</span> <span class="n">uvm_sequence_impl</span>
+
+<span class="k">class</span> <span class="nc">PyRandSeq</span><span class="p">(</span><span class="n">uvm_sequence_impl</span><span class="p">):</span> 
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="c1"># Send a small burst of randomized items
+</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">create_req</span><span class="p">()</span>
+            <span class="c1"># Randomize sequence item
+</span>            <span class="n">req</span><span class="p">.</span><span class="nf">randomize</span><span class="p">()</span>
+
+            <span class="c1"># Optional visibility
+</span>            <span class="k">try</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">req</span><span class="p">.</span><span class="nf">sprint</span><span class="p">()</span>
+            <span class="k">except</span> <span class="nb">Exception</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s">"&lt;no sprint available&gt;"</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"PyRandSeq: sending item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">start_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">finish_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></code></pre></figure>
+
+<p>On a side note, I’ve been finding that AI assistants like Copilot and 
+Cline are extremely helpful in creating tests and examples. I created
+the code above, along with the rest of the example, using 
+<a href="https://cline.bot/">Cline</a>. While the current set of models 
+(GPT-5 in this case) does well with many types of code, the only 
+mistakes I had to hand-correct were in the SystemVerilog code.</p>
+
+<p>If you look closely, there are two APIs used here that aren’t 
+technically UVM APIs: <code class="language-plaintext highlighter-rouge">randomize</code> and <code class="language-plaintext highlighter-rouge">create_req</code>. All the other APIs 
+are standard UVM.</p>
+
+<p>Now let’s see how we launch this code from UVM.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="kt">class</span> <span class="n">base_test</span> <span class="k">extends</span> <span class="n">uvm_test</span><span class="p">;</span>
+        <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">base_test</span><span class="p">)</span>
+        <span class="c1">// ...</span>
+
+        <span class="k">task</span> <span class="n">run_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
+            <span class="c1">// Python-driven sequence proxy</span>
+            <span class="k">typedef</span> <span class="n">pyhdl_uvm_sequence_proxy</span> <span class="p">#(</span>
+                <span class="p">.</span><span class="n">REQ</span><span class="p">(</span><span class="n">seq_item</span><span class="p">))</span> <span class="n">py_seq_t</span><span class="p">;</span>
+            <span class="n">py_seq_t</span> <span class="n">seq</span><span class="p">;</span>
+
+            <span class="n">phase</span><span class="p">.</span><span class="n">raise_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="n">seq</span> <span class="o">=</span> <span class="n">py_seq_t</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"seq"</span><span class="p">);</span>
+            <span class="n">seq</span><span class="p">.</span><span class="n">pyclass</span> <span class="o">=</span> <span class="s">"pyseq::PyRandSeq"</span><span class="p">;</span>
+            <span class="n">seq</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">m_env</span><span class="p">.</span><span class="n">m_seqr</span><span class="p">);</span>
+            <span class="n">phase</span><span class="p">.</span><span class="n">drop_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="k">endtask</span>
+    <span class="k">endclass</span></code></pre></figure>
+
+<p>In the abbreviated snippet above, the test <code class="language-plaintext highlighter-rouge">run_phase</code> task creates an
+instance of <code class="language-plaintext highlighter-rouge">pyhdl_uvm_sequence_proxy</code> that is properly specialized
+for the request sequence item type and the Python class, then starts 
+the sequence on the sequencer. UVM’s object-oriented nature lets us 
+create and use a sequence without caring whether it’s implemented in
+Python or SystemVerilog.</p>
+
+<h1 id="pyhdl-if-uvm-api-specifics">PYHDL-IF UVM API Specifics</h1>
+
+<p>Let’s use this example to look more closely at the API exposed by
+PYHDL-IF. There are three core categories:</p>
+<ul>
+  <li>UVM methods that are exposed to Python as-is</li>
+  <li>UVM methods whose signature is slightly altered</li>
+  <li>Utility methods that are not part of UVM</li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">get_name</code> method is an example of a UVM method that is exposed
+to Python as-is.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">function</span> <span class="kt">string</span> <span class="n">get_name</span><span class="p">();</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="p">...</span></code></pre></figure>
+
+<p>While there are a few cosmetic differences, these functions are
+practically identical: same user-specified parameters and same 
+return type.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">get_config_object</code> method is an example of a UVM method that
+is exposed to Python with slight alterations due to the language.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">function</span> <span class="kt">bit</span> <span class="n">get_config_object</span><span class="p">(</span><span class="kt">string</span> <span class="n">field_name</span><span class="p">,</span>
+                               <span class="kt">inout</span> <span class="n">uvm_object</span> <span class="n">value</span><span class="p">,</span>
+                               <span class="kt">input</span> <span class="kt">bit</span> <span class="n">clone</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_config_object</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> 
+    <span class="n">field_name</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+    <span class="n">clone</span> <span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">UvmObject</span><span class="p">]:</span></code></pre></figure>
+
+<p>The key differences are in the return type and whether in-out
+parameters are used. Python discourages returning values via
+reference parameters, while this is a common pattern in SystemVerilog.
+We follow the Python pattern to better-align with common practice there.</p>
+
+<p>The final category are utility methods that aren’t present in UVM 
+at all. Two examples are the <code class="language-plaintext highlighter-rouge">randomize</code> method and the <code class="language-plaintext highlighter-rouge">create_req</code>
+method in the UVM sequence Python class. While <code class="language-plaintext highlighter-rouge">randomize</code> isn’t 
+part of the UVM API, Python test content benefits from having it.
+<code class="language-plaintext highlighter-rouge">create_req</code> exists for similar reasons. In SystemVerilog, we could
+refer to the <code class="language-plaintext highlighter-rouge">REQ</code> type parameter of the sequence class to create 
+a new request sequence item. In Python, it makes sense to expose
+this functionality via a method.</p>
+
+<h1 id="beyond-uvm-methods">Beyond UVM Methods</h1>
+
+<p>The combination of exposing UVM-defined methods to Python, along with and 
+two <code class="language-plaintext highlighter-rouge">proxy</code> classes to initiate behavior, makes it simple to run Python 
+behavior and interact with the UVM testbench.</p>
+
+<p>One thing you’ve probably noticed about the examples is that user-defined
+data isn’t accessed from Python. While we call the <code class="language-plaintext highlighter-rouge">randomize</code> method from 
+Python, we aren’t directly controlling the sequence-item fields. In the next 
+post, we’ll take a look at how we can get and set the value of SystemVerilog
+class fields from Python.</p>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[It’s not necessary to understand very much about how PyHDL-IF implements the bridge between Python and UVM, but useful to understand a bit. Doing so helps to understand what this library is and is not intended to do, and how you can best use it in your verification environment.]]></summary></entry><entry><title type="html">Unlocking the Combined Strength of UVM and Python</title><link href="https://bitsbytesgates.com/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html" rel="alternate" type="text/html" title="Unlocking the Combined Strength of UVM and Python" /><published>2025-10-04T00:00:00+00:00</published><updated>2025-10-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html"><![CDATA[<p>UVM and Python are often positioned as rivals when it comes to their role in 
 functional verification, with teams picking one or the other as the basis 
 for a verification environments. Each have strengths, though, and using them 
 together produces much stronger results. In fact, building on the popularity
@@ -1802,387 +2010,4 @@ of your existing testbench with those of a library from the vast Python ecosyste
   <li><a href="https://fvutils.github.io/pyhdl-if/">PyHDL-IF Documentation</a></li>
   <li><a href="https://fvutils.github.io/pyhdl-if/sv_api.html">PyHDL-IF SV Convenience API</a></li>
   <li><a href="https://docs.python.org/3/c-api/index.html">CPython API</a></li>
-</ul>]]></content><author><name></name></author><category term="Python" /><summary type="html"><![CDATA[In the last post (DPI Isn’t Enough: Making Python Part of Your SV Testbench), we looked at how to use the PyHDL-IF library to call SystemVerilog from Python. This is, in some sense, the most challenging Python and SV interaction to implement. And, as the title suggests, it’s something that definitely requires more than just the raw features of the SystemVerilog DPI. That said, there are many cases where we simply want to access some functionality that is readily-available in Python and not readily-available in SystemVerilog. In these cases, we don’t need to call back into SystemVerilog from Python. Arguably, we could simply use SystemVerilog DPI To call the relevant Python C API. The PyHDL-IF library uses the Python C API internally to implement cross-calling between SystemVerilog and Python, and it’s always good to have it as an option. The downside is that code that uses the C API tends to be rather verbose, so let’s see if we can improve the situation with a SystemVerilog convenience API.]]></summary></entry><entry><title type="html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</title><link href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html" rel="alternate" type="text/html" title="DPI Isn’t Enough: Making Python Part of Your SV Testbench" /><published>2024-11-04T00:00:00+00:00</published><updated>2024-11-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/11/DPI_Isnt_Enough_splash.png" /> 
-</p>
-
-<p>I’ve been using Python for verification since early 2019 for personal projects,
-and have found both the language and the rich ecosystem of general and
-special-purpose libraries to be incredibly helpful in quickly and efficiently 
-bringing up a testbench environment. <a href="https://www.cocotb.org">cocotb</a>, 
-the most popular integration between Python and HDL simulators, integrates with 
-the simulator at the signal level. This isn’t a problem as long as you fully adopt 
-Python as your testbench
-methodology and implement everything in Python – from test scenario down to BFMs 
-interacting with signals. Sometimes this is the case, but often we have an existing
-SystemVerilog environment that we’d like to mix some Python into.  We might have an 
-existing BFM implemented in SystemVerilog that we’d like to call from Python. 
-We might have an existing UVM environment from which we want to call a Python library.</p>
-
-<p>SystemVerilog simulators support the Direct Procedure Interface (DPI), of course,
-which allows SystemVerilog to call C code and for C code to call SystemVerilog.
-Unfortunately, DPI on its own, doesn’t provide the features that we need for 
-a fully-featured integration between Python and a HDL simulation. As you might
-surmise, though, I’m about to describe a library 
-(<a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF</a>) that fills in the missing pieces.
-Before we get there, though, let’s have a look at how we’d like to interact
-with Python in a SystemVerilog testbench</p>
-
-<!--more-->
-
-<h1 id="using-python-from-sv-and-vice-versa">Using Python from SV and Vice Versa</h1>
-
-<h2 id="calling-python-from-sv">Calling Python from SV</h2>
-
-<p>Requirements:</p>
-<ul>
-  <li>Be able to keep things dynamic
-    <ul>
-      <li>Don’t require any Python library-specific SV code in order to use the library</li>
-      <li>Be able to look up Python elements by name, etc</li>
-    </ul>
-  </li>
-  <li>Ideally, have some utilities on the SV side to make this easier</li>
-</ul>
-
-<p>This is actually pretty easy, since the CPython interpreter has a C API. 
-If we expose the C API via SystemVerilog DPI, we can make the same calls from
-SystemVerilog that we would make from a C/C++ application. The C API
-is fairly low-level and detailed, but we can always add a layer of SystemVerilog
-utility classes on top.</p>
-
-<p>This type of integration works well for using Python libraries to access 
-data (ie JSON, YAML, etc), when we want to manipulate data using a library
-like Pandas, or when we want to use a Python library to generate reference
-data. In other words, as long as our SV call to Python returns immediately.</p>
-
-<h2 id="calling-sv-from-python">Calling SV from Python</h2>
-
-<p>Python gets much more interesting – and useful – in a SystemVerilog 
-testbench when a Python method call from SystemVerilog can 
-consume simulation time.</p>
-
-<p>This allows us to implement active elements of a our testbench, 
-such as tests, in Python. It also allows us to call existing
-testbench elements, such Bus Functional Models (BFMs), from Python.</p>
-
-<p>This usecase is where SystemVerilog DPI poses some technical challenges. 
-Both SystemVerilog and Python implement cooperative multi-threading, 
-Unfortunately, the requirements that they place on how threaded behavior 
-interacts with the outside world (and vice versa) prevent cross-calling
-in a ‘blocking’ manner between the two languages.</p>
-
-<h2 id="additional-requirements">Additional Requirements</h2>
-
-<p>Beyond the raw capability to cross-call between SystemVerilog and Python,
-there a few additional requirements that vastly simplify the ability
-to create reusable infrastructure.</p>
-<ul>
-  <li>Reusable functionality should be implemented by Python and SystemVerilog
-code only. Application-specific DPI C code brings platform dependencies
-and exposes us to implementation details of how different simulators 
-deal implement DPI. These are things you want to deal with as infrequently 
-as possible, and certainly not every time you add a new Python+SV library.</li>
-  <li>Any generated code should be, at most, application-specific. Specifically,
-the end user shouldn’t need to re-generate application-specific code.</li>
-</ul>
-
-<h1 id="pyhdl-if-package">PyHDL-IF Package</h1>
-
-<div class="mermaid" align="center">
-block-beta
-columns 1
-  block:UICode
-  columns 1
-    Title["App-Specific Code"]
-    style Title fill:transparent,stroke:transparent
-    block:UICodeLanguages
-        UIPython["Python"]
-        UIEmpty["Spacer"]
-        style UIEmpty fill:transparent,stroke:transparent,color:transparent
-        UISystemVerilog["SystemVerilog"]
-    end
-  end
-  block:Codegen
-  columns 1
-    block:CodegenI
-      CodegenM1["CodegenM1"]
-      CodegenPad["CodegenPad"]
-      CodegenM2["CodegenM2"]
-      style CodegenM1 fill:transparent,stroke:transparent,color:transparent
-      style CodegenPad fill:transparent,stroke:transparent,color:transparent
-      style CodegenM2 fill:transparent,stroke:transparent,color:transparent
-    end
-    CodegenTitle["Code Generator"]
-    style CodegenTitle fill:transparent,stroke:transparent
-  end
-  UIPython --&gt; CodegenM1
-  CodegenM2 --&gt; UISystemVerilog
-  block:Library
-  columns 1
-    block:LibraryI
-      LibraryPy["Python"]
-      LibraryDpi["DPI"]
-      LibrarySV["SystemVerilog"]
-    end
-    LibraryTitle["Core PyHDL-IF Library"]
-    style LibraryTitle fill:transparent,stroke:transparent
-  end
-</div>
-
-<p>With those use models and requirements in mind, let’s take a look at the
-PyHDL-IF library. This library is designed to implement the low-level
-details of interfacing between Python and SystemVerilog at the 
-method-call level, such that you can focus on writing SystemVerilog
-and Python and ignore the low-level details implemented in C.</p>
-
-<p>The PyHDL-IF package has several components, but the two most-relevant
-ones for us are shown in the diagram above.
-PyHDL-IF provides a SystemVerilog API for calling into Python, and
-Python and DPI libraries to support calling back into SystemVerilog 
-from Python. It also provides a SystemVerilog code generator to create
-SystemVerilog class APIs to simplify the process of cross-calling 
-between the two languages.</p>
-
-<h1 id="an-example">An Example</h1>
-<p>To better understand all of this, let’s walk through an example. You can find 
-the full code of this example here: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm">call_sv_bfm example</a></p>
-
-<div class="mermaid" align="center">
-block-beta
-block:Outer
-columns 1
-  block:Inner
-  columns 2
-    block:Python
-    columns 1
-      PySeq(["Python Sequence"])
-      PyPad1["Python Pad"]
-      PyPad2["Python Pad"]
-      PyTitle["Python"]
-      style PyTitle fill:transparent,stroke:transparent
-      style PyPad1 fill:transparent,stroke:transparent,color:transparent
-      style PyPad2 fill:transparent,stroke:transparent,color:transparent
-    end
-    block:SvTB
-    columns 1
-      WbBfm["Wishbone BFM"]
-      SvPad["Pad"]
-      Init["Initial Block"]
-      SvTbTitle["SystemVerilog TB"]
-      style SvTbTitle fill:transparent,stroke:transparent
-      style SvPad fill:transparent,stroke:transparent,color:transparent
-    end
-
-    Init --&gt; PySeq
-    PySeq --&gt; WbBfm
-  end
-end
-</div>
-
-<p>Here’s a block diagram of what’s happening. We have a SystemVerilog testbench
-that contains an instance of a Wishbone BFM written in SystemVerilog. Our
-goal is to write a test in Python that will call tasks in the BFM. We want
-to start that Python test from SystemVerilog as well.</p>
-
-<p>Let’s dig into some details on how this all fits together.</p>
-
-<h2 id="python-bfm-interface">Python BFM Interface</h2>
-<p>Let’s start with the Python interface to the Wishbone BFM. You can find the full source here:
-<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
-<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
-
-<span class="nd">@hif.api</span>
-<span class="k">class</span> <span class="nc">WishboneInitiator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="nd">@hif.imp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">,</span> <span class="n">data</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">):</span>
-        <span class="k">pass</span>
-
-    <span class="nd">@hif.imp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ct</span><span class="p">.</span><span class="n">c_uint32</span><span class="p">:</span>
-        <span class="k">pass</span></code></pre></figure>
-
-<p>A class decorated with the <em>api</em> decorator specifies a cross-language
-API. Methods within that class that are decorated with <em>import</em> or <em>export</em>
-decorators support cross-language calling.</p>
-
-<p>Methods are described with respect to Python:</p>
-<ul>
-  <li>When an <em>Import</em> method is called from Python, the matching 
-SystemVerilog method is called</li>
-  <li>When an <em>Export</em> method is called from SystemVerilog, the 
-matching Python method is called.</li>
-</ul>
-
-<p>Both Python and SystemVerilog have special rules about coroutine methods.
-In both languages, a coroutine method can call another coroutine method 
-or a non-coroutine method. However, a non-coroutine method cannot invoke
-a coroutine method. It’s critical to keep this aligned between SystemVerilog
-and Python:</p>
-<ul>
-  <li>An <em>async</em> Python method matches with a SystemVerilog <em>task</em></li>
-  <li>A plain Python method matches with a SystemVerilog <em>function</em></li>
-</ul>
-
-<p>The API class, with it’s decorators is used for two purposes. One, somewhat
-obviously, is to implement the Python side of a cross-language API. The
-other is to generate SystemVerilog to implement the SystemVerilog portion 
-of the API.</p>
-
-<h2 id="systemverilog-bfm">SystemVerilog BFM</h2>
-<p>Let’s move on and take a look at the Wishbone BFM that we will access 
-using the API class that we’ve defined above. You can find the full code here:
-<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/wb_init_bfm.sv">wb_init_bfm.sv</a></p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">WishboneInitiatorBFM</span><span class="p">(</span>
-    <span class="kt">input</span>           <span class="n">clock</span><span class="p">,</span>
-    <span class="kt">input</span>           <span class="n">reset</span><span class="p">,</span>
-    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">adr</span><span class="p">,</span>
-    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>        <span class="n">dat_w</span><span class="p">,</span>
-    <span class="kt">input</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>             <span class="n">dat_r</span><span class="p">,</span>
-    <span class="kt">output</span>                  <span class="n">cyc</span><span class="p">,</span>
-    <span class="kt">input</span>                   <span class="n">err</span><span class="p">,</span>
-    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">sel</span><span class="p">,</span>
-    <span class="kt">output</span>                  <span class="n">stb</span><span class="p">,</span>
-    <span class="kt">input</span>                   <span class="n">ack</span><span class="p">,</span>
-    <span class="kt">output</span> <span class="kt">reg</span>              <span class="n">we</span>
-<span class="p">);</span>
-<span class="c1">// ...</span>
-
-    <span class="k">task</span> <span class="n">bfm_write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">adr_v</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">dat_v</span><span class="p">);</span>
-        <span class="c1">// ...</span>
-        <span class="c1">// Works with the state machine to perform a write</span>
-    <span class="k">endtask</span>
-
-    <span class="c1">// ...</span>
-
-        <span class="kt">class</span> <span class="n">WishboneInitiatorImpl</span> <span class="k">extends</span> <span class="n">WishboneInitiator</span><span class="p">;</span>
-        <span class="kt">virtual</span> <span class="k">task</span> <span class="nb">write</span><span class="p">(</span><span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">data</span><span class="p">);</span>
-            <span class="n">bfm_write</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">data</span><span class="p">);</span>
-        <span class="k">endtask</span>
-
-        <span class="kt">virtual</span> <span class="k">task</span> <span class="n">read</span><span class="p">(</span>
-            <span class="kt">output</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">retval</span><span class="p">,</span> <span class="kt">input</span> <span class="kt">int</span> <span class="kt">unsigned</span> <span class="n">addr</span><span class="p">);</span>
-            <span class="n">bfm_read</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">addr</span><span class="p">);</span>
-        <span class="k">endtask</span>
-
-    <span class="k">endclass</span>
-
-    <span class="n">WishboneInitiatorImpl</span>       <span class="n">m_api_obj</span><span class="p">;</span>
-
-    <span class="c1">// Register ourselves with the PyHDL-IF object registry</span>
-    <span class="k">initial</span> <span class="k">begin</span> <span class="o">:</span> <span class="n">init</span>
-        <span class="n">m_api_obj</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
-    <span class="k">end</span>
-
-    <span class="c1">// ...</span>
-<span class="k">endmodule</span></code></pre></figure>
-
-<p>Key portions of the BFM interface code are shown above. The BFM defines 
-<em>bfm_read</em> and <em>bfm_write</em> tasks that are used to drive read and write operations
-via the signal-level interface.</p>
-
-<p>The BFM defines a local class (<em>WishboneInitiatorImpl</em>) that inherits from 
-a class (<em>WishboneInitiator</em>) that is generated from the Python class specification
-of the API. The derived class here implements the <em>read</em> and <em>write</em> tasks in 
-terms of the BFM’s existing tasks.</p>
-
-<p>Finally, the BFM module creates an instance of the API implementation class.</p>
-
-<h2 id="python-test-class">Python Test Class</h2>
-<p>Okay, thus far we have a SystemVerilog BFM and a Python API definition for
-calling it. Now, let’s look at the test code that uses that API. You can find the
-full source here:
-<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py">call_sv_bfm.py</a></p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">ctypes</span> <span class="k">as</span> <span class="n">ct</span>
-<span class="kn">import</span> <span class="n">hdl_if</span> <span class="k">as</span> <span class="n">hif</span>
-
-<span class="nd">@hif.api</span>
-<span class="k">class</span> <span class="nc">Test</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="nd">@hif.exp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">bfm</span> <span class="p">:</span> <span class="n">ct</span><span class="p">.</span><span class="n">py_object</span><span class="p">):</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">64</span><span class="p">):</span>
-            <span class="n">wr_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] writing: </span><span class="si">{</span><span class="n">wr_val</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
-            <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">),</span> <span class="n">wr_val</span><span class="p">)</span>
-            <span class="n">rd</span> <span class="o">=</span> <span class="k">await</span> <span class="n">bfm</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mh">0x8000_0000</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">i</span><span class="p">))</span>
-            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'[Py] readback: </span><span class="si">{</span><span class="n">rd</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">wr_val</span> <span class="o">==</span> <span class="n">rd</span></code></pre></figure>
-
-<p>Our test code is encapsulated in a Python class with an <code class="language-plaintext highlighter-rouge">async</code> method.
-Our test method expects to receive a handle to the BFM API, which it will 
-use to perform reads and writes.</p>
-
-<h2 id="top-level-testbench">Top-level Testbench</h2>
-<p>Finally, let’s take a look at the top-level testbench that pulls it all 
-together. You can find the full source here:
-<a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.sv">call_sv_bfm.sv</a></p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">module</span> <span class="n">call_sv_bfm</span><span class="p">;</span>
-    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
-    <span class="k">import</span> <span class="n">call_sv_bfm_pkg</span><span class="o">::*</span><span class="p">;</span>
-
-    <span class="c1">// ...</span>
-
-    <span class="n">WishboneInitiatorBFM</span>    <span class="n">init_bfm</span><span class="p">(</span>
-        <span class="p">.</span><span class="n">clock</span><span class="p">(</span><span class="n">clk</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">reset</span><span class="p">(</span><span class="n">reset</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">adr</span><span class="p">(</span><span class="n">adr</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">dat_r</span><span class="p">(</span><span class="n">dat_r</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">dat_w</span><span class="p">(</span><span class="n">dat_w</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">stb</span><span class="p">(</span><span class="n">stb</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">cyc</span><span class="p">(</span><span class="n">cyc</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">ack</span><span class="p">(</span><span class="n">ack</span><span class="p">),</span>
-        <span class="p">.</span><span class="n">we</span><span class="p">(</span><span class="n">we</span><span class="p">)</span>
-    <span class="p">);</span>
-
-    <span class="k">initial</span> <span class="k">begin</span>
-        <span class="k">automatic</span> <span class="n">Test</span> <span class="n">test</span><span class="p">;</span>
-
-        <span class="n">pyhdl_if_start</span><span class="p">();</span>
-
-        <span class="p">#</span><span class="mi">50</span><span class="n">ns</span><span class="p">;</span>
-        <span class="n">reset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-
-        <span class="c1">// Create an instance of the Test class and run</span>
-        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t --&gt; run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
-        <span class="n">test</span> <span class="o">=</span> <span class="k">new</span><span class="p">();</span>
-        <span class="n">test</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">init_bfm</span><span class="p">.</span><span class="n">m_api_obj</span><span class="p">.</span><span class="n">m_obj</span><span class="p">);</span>
-        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"%0t &lt;-- run"</span><span class="p">,</span> <span class="p">$</span><span class="kt">time</span><span class="p">);</span>
-        <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
-    <span class="k">end</span>
-
-<span class="k">endmodule</span></code></pre></figure>
-
-<p>The top-level testbench instances the BFM. This results in the BFM creating an
-instance of the Python class that can be used to call the BFM. The result is 
-a SystemVerilog class that holds a handle to the corresponding Python class.</p>
-
-<p>The top-level ‘initial’ block in the test module creates an instance of the
-<code class="language-plaintext highlighter-rouge">Test</code> Python class. As with the BFM, the result is a SystemVerilog class
-that holds a handle to the matching Python class.</p>
-
-<p>Finally, we call the <code class="language-plaintext highlighter-rouge">run</code> method on the Test class and pass a handle to the
-BFM’s Python class. The run method will, of course, call back into 
-SystemVerilog to invoke the BFM’s methods.</p>
-
-<h2 id="summary">Summary</h2>
-<p>We’ve quickly walked through an example of integrating Python and SystemVerilog
-such that we can implement Python methods that make task calls into the simulator.
-This can allow us to either quickly graft some Python onto am existing BFM we 
-have in our testbench. It could allow us to easily add an existing SystemVerilog
-BFM to our existing cocotb Python testbench and call it from our Python tests.
-There are, of course, more applications and usecases for PyHDL-IF. We’ll look at those
-in future posts.</p>
-
-<h2 id="references">References</h2>
-<ul>
-  <li><a href="https://www.cocotb.org">cocotb</a>,</li>
-  <li><a href="https://github.com/fvutils/pyhdl-if">PyHDL-IF library</a></li>
-</ul>]]></content><author><name></name></author><category term="Python" /><summary type="html"><![CDATA[I’ve been using Python for verification since early 2019 for personal projects, and have found both the language and the rich ecosystem of general and special-purpose libraries to be incredibly helpful in quickly and efficiently bringing up a testbench environment. cocotb, the most popular integration between Python and HDL simulators, integrates with the simulator at the signal level. This isn’t a problem as long as you fully adopt Python as your testbench methodology and implement everything in Python – from test scenario down to BFMs interacting with signals. Sometimes this is the case, but often we have an existing SystemVerilog environment that we’d like to mix some Python into. We might have an existing BFM implemented in SystemVerilog that we’d like to call from Python. We might have an existing UVM environment from which we want to call a Python library. SystemVerilog simulators support the Direct Procedure Interface (DPI), of course, which allows SystemVerilog to call C code and for C code to call SystemVerilog. Unfortunately, DPI on its own, doesn’t provide the features that we need for a fully-featured integration between Python and a HDL simulation. As you might surmise, though, I’m about to describe a library (PyHDL-IF) that fills in the missing pieces. Before we get there, though, let’s have a look at how we’d like to interact with Python in a SystemVerilog testbench]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="Python" /><summary type="html"><![CDATA[In the last post (DPI Isn’t Enough: Making Python Part of Your SV Testbench), we looked at how to use the PyHDL-IF library to call SystemVerilog from Python. This is, in some sense, the most challenging Python and SV interaction to implement. And, as the title suggests, it’s something that definitely requires more than just the raw features of the SystemVerilog DPI. That said, there are many cases where we simply want to access some functionality that is readily-available in Python and not readily-available in SystemVerilog. In these cases, we don’t need to call back into SystemVerilog from Python. Arguably, we could simply use SystemVerilog DPI To call the relevant Python C API. The PyHDL-IF library uses the Python C API internally to implement cross-calling between SystemVerilog and Python, and it’s always good to have it as an option. The downside is that code that uses the C API tends to be rather verbose, so let’s see if we can improve the situation with a SystemVerilog convenience API.]]></summary></entry></feed>
