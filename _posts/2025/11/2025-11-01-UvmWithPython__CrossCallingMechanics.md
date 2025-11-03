@@ -8,7 +8,7 @@ mermaid: true
 ---
 
 It's not necessary to understand very much about how PyHDL-IF implements
-the bridge between Python and UVM, but useful to undestand a bit. Doing 
+the bridge between Python and UVM, but useful to understand a bit. Doing 
 so helps to understand what this library is and is not intended to do,
 and how you can best use it in your verification environment.
 
@@ -27,7 +27,8 @@ Python to SystemVerilog and UVM, and vice versa. Consequently, it is only
 useful if a SystemVerilog/UVM testbench is a part of your verification environment.
 If you want to create a UVM testbench in Python, the [pyuvm](https://github.com/pyuvm/pyuvm)
 library is more likely to be what you're looking for. You can even use 
-`pyuvm` with PyHDL-IF To interface with your existing UVM-SV testbench.
+`pyuvm` with PyHDL-IF to provide structure to the Python portion of the testbench
+that leverages your existing UVM-SV testbench.
 
 Limiting the scope in this way has its advantages, though. While the UVM library
 is quite large, the APIs that test writers and scoreboard developers use is 
@@ -39,7 +40,7 @@ provides an interface library that covers a large percentage of usecases.
 One implication of PyHDL-IF being an interface library is that all 
 PyHDL-IF UVM objects are wrappers to access SystemVerilog UVM objects. 
 While it is possible (and common!) to create instances of UVM objects
-from Python, what actually happens is:
+from Python, what happens under the hood as the following:
 - Python (via the PyHDL-IF library) calls a UVM method, creating a new UVM object
 - The PyHDL-IF library creates a SystemVerilog and Python object pair with a handle to the UVM object
 - This 'wrapper' Python object is returned to the caller. 
@@ -101,15 +102,15 @@ Let's look at the Python class before seeing how it is used. The
 code below is from the `uvm/sequence_rand_item` example:
 
 {% highlight python %}
-from hdl_if.uvm import UvmSequenceProxy
+from hdl_if.uvm import uvm_sequence_impl
 
-class PyRandSeq(UvmSequenceProxy): 
+class PyRandSeq(uvm_sequence_impl): 
 
     async def body(self):
         # Send a small burst of randomized items
         for i in range(8):
-            req = self.create_req()
-            # Backend-driven randomization of the SV sequence item
+            req = self.proxy.create_req()
+            # Randomize sequence item
             req.randomize()
 
             # Optional visibility
@@ -117,10 +118,10 @@ class PyRandSeq(UvmSequenceProxy):
                 s = req.sprint()
             except Exception:
                 s = "<no sprint available>"
-            print(f"PyRandSeq: sending item {i}\n{s}", flush=True)
+            print(f"PyRandSeq: sending item {i}\n{s}")
 
-            await self.start_item(req)
-            await self.finish_item(req)
+            await self.proxy.start_item(req)
+            await self.proxy.finish_item(req)
 
 {% endhighlight %}
 
@@ -143,13 +144,14 @@ Now let's see how we launch this code from UVM.
         // ...
 
         task run_phase(uvm_phase phase);
-            // Python-driven sequence proxy specialized to seq_item
+            // Python-driven sequence proxy
             typedef pyhdl_uvm_sequence_proxy #(
-                .REQ(seq_item), .PyClass("pyseq::PyRandSeq")) py_seq_t;
+                .REQ(seq_item)) py_seq_t;
             py_seq_t seq;
 
             phase.raise_objection(this);
             seq = py_seq_t::type_id::create("seq");
+            seq.pyclass = "pyseq::PyRandSeq";
             seq.start(m_env.m_seqr);
             phase.drop_objection(this);
         endtask
