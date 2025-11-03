@@ -22,8 +22,9 @@ and how you can best use it in your verification environment.
 </p>
 
 One important thing to understand is that PyHDL-IF is an interface library,
-and not a full testbench library. PyHDL-IF is intended to make it easy to 
-Python to SystemVerilog and UVM, and vice versa. Consequently, it is only
+and not a full testbench library. The UVM portion of PyHDL-IF is intended to 
+make it easy to call SystemVerilog/UVM APIs from Python, and vice versa. 
+Consequently, it is only
 useful if a SystemVerilog/UVM testbench is a part of your verification environment.
 If you want to create a UVM testbench in Python, the [pyuvm](https://github.com/pyuvm/pyuvm)
 library is more likely to be what you're looking for. You can even use 
