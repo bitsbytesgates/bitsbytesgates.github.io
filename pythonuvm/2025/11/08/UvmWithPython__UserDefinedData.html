@@ -10,12 +10,12 @@
   <title>
     
     
-      Chisel Sharpening: If it's not tested, it's broken &middot; Bits, Bytes, and Gates
+      Accessing User-Defined SV Data from Python &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2017/08/20/chisel-sharpening-verification.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -27,6 +27,14 @@
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -715,12 +723,12 @@ class="jfk-button jfk-button-action " style="">
   <title>
     
     
-      Chisel Sharpening: If it's not tested, it's broken &middot; Bits, Bytes, and Gates
+      Accessing User-Defined SV Data from Python &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2017/08/20/chisel-sharpening-verification.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -732,6 +740,14 @@ class="jfk-button jfk-button-action " style="">
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -761,49 +777,284 @@ Post-env
 </head>
 
 
+
   <body>
-    
+
 
   <div class="post">
-    <h1 class="post-title">Chisel Sharpening: If it's not tested, it's broken</h1>
-    <span class="post-date">20 Aug 2017</span>
-    <h1 class="quote clearfix" style="background-color: white; box-sizing: border-box; color: #666666; font-family: &quot;libre baskerville&quot;, serif; font-weight: normal; line-height: 1.4; margin: 0.2rem 0px 0.5rem; padding: 0px;"><span style="font-size: x-large;">"If it's not tested, it's broken."</span></h1><span style="font-size: x-small;"><span style="background-color: white; color: #999999; font-family: &quot;varela round&quot; , sans-serif;">--&nbsp;</span><a href="http://www.inspiringquotes.us/author/9711-bruce-eckel" style="background-color: white; box-sizing: border-box; color: black; font-family: &quot;varela round&quot;, sans-serif; font-weight: bold; line-height: inherit;">Bruce Eckel</a></span><br /><br />I'm a big believer in the quote above, and cite it somewhat frequently -- perhaps to the tedium of my colleagues. In my last post, I showed a Chisel3-based description of a Wishbone interconnect. While it might have looked cool, without tests I had no idea whether it worked correctly or not. After adding a simple UVM testbench around my interconnect I can, yet again, confirm the truth of the quote above. But, enough pontificating, let's dig into the specifics.<br /><br /><h3>Error Types</h3><div>Especially when implementing something while learning a new language or technique, I find that I make four types of errors:</div><div><ul><li><b>Implementation errors and oversights - </b>There are your run of the mill bugs. For example, I neglected to implement an intended feature, or I implemented the logic incorrectly. Good planning helps to minimize these errors, but they are why we place such value on good verification.</li><li>&nbsp;<b>Errors in description - </b>These are learning mistakes related to the new language or technique. I structured a description around my understanding of the language/technique, only to find that it resulted in unexpected behavior. The ease or difficulty in avoiding and/or diagnosing errors in description is a key determinant for me in deciding how easy a new technique is to adopt.&nbsp;</li><li><b>Errors in reuse - </b>This type of error occurs when reusing existing IP, only to find that it functions differently from my understanding.&nbsp;</li><li><b>Tool or library issues - </b>These are errors that you hope not to encounter, but do crop up from time to time.&nbsp;</li></ul><div>Not surprisingly, I encountered the first three categories of errors while verifying my Wishbone interconnect. &nbsp;I did encounter one tool/library issue, but I'll get to that later...</div></div><div><br /></div><h3>UVM Testbench</h3><div>I decided to verify a 2x4 configuration of the Wishbone interconnect, and created a very (very) basic UVM testbench around the interconnect and instantiated two Wishbone master agents and four memory target devices - mapped at 0x00000000, 0x00001000, 0x00002000, and 0x00003000, respectively.</div><div class="separator" style="clear: both; text-align: center;"><a href="https://4.bp.blogspot.com/-RvjgxA5Gsk8/WZhaNqjw6aI/AAAAAAAACAw/PCEPL1rG9Wceib6PIZiNmXKqAlxGEY62gCLcBGAs/s1600/Wishbone_2x4.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="737" data-original-width="962" height="245" src="https://4.bp.blogspot.com/-RvjgxA5Gsk8/WZhaNqjw6aI/AAAAAAAACAw/PCEPL1rG9Wceib6PIZiNmXKqAlxGEY62gCLcBGAs/s320/Wishbone_2x4.png" width="320" /></a></div><div><br /></div><div><br /></div><div>And, a very basic write/read test:<br /><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-FRsghUP_ww0/WZheiR1mguI/AAAAAAAACA8/IHVfNYovfjsiarkojlMQ8GBlx9IicLDcgCLcBGAs/s1600/BasicTest.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" data-original-height="572" data-original-width="527" height="400" src="https://1.bp.blogspot.com/-FRsghUP_ww0/WZheiR1mguI/AAAAAAAACA8/IHVfNYovfjsiarkojlMQ8GBlx9IicLDcgCLcBGAs/s400/BasicTest.png" width="366" /></a></div><br /></div><div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />I ran this in Questa (the Altera Modelsim Starter Edition, to be precise). On the first test run, nothing worked and quite a few signals were driven to X. In order to accelerate progress, I turned on register randomization (something supported by the Verilog code generated by Chisel).<br /><br /><h3>Reuse Error: Chisel Arbiter</h3><div>My simple write/read test causes both masters to perform a write to the same target device as the first operation. I had assumed that the Chisel-provided arbiter would grant the output to the selected master until that master dropped its request. However, this turned out to not be the case. It took browsing the source code (for me at least) to understand the mechanism the library developer had provided for controlling the arbiter locking behavior. Once I understood that mechanism, it was very simple to customize the locking behavior.</div><div>The arbiter is such a useful and reusable construct that I'll devote a future post to it, rather than delve into the details here.</div><div><br /></div><h3>Description Error: Multiple Assignments</h3><div>My original interconnect description used a nested loop structure across the masters and slaves, with a conditional assignment to propagate back the slave response.&nbsp;</div><div><br /></div><div><pre style="white-space: pre-wrap; word-wrap: break-word;">  for (i &lt;- 0 until p.N_SLAVES) {<br />    for (j &lt;- 0 until p.N_MASTERS) {<br />      // ...<br />      <br />      // Propagate slave response back to active master<br />      when (out_arb(i).io.in(j).ready) {<br />          in_rsp(j) := out_rsp(i);<br />      } .otherwise {<br />          in_rsp(j).park_rsp();<br />      }<br />    }<br />    out_arb(i).io.out.bits.assign_req2p(io.s(i));<br />  }<br /></pre></div><div>&nbsp;&nbsp;</div>As it turns out, this code trips over one of the corner cases of Chisel: when procedural code (eg for loops) make multiple assignments, the last assignment is taken. In this case, that means that both masters were being fed the response from the last slave device.<br />Investigating description errors like these unfortunately involve digging into the generated Verilog code. This is both tedious and not quite as bad as it sounds. Chisel picks sensible names for module I/O signals, so these are easy to track. However, Chisel also generates lots of anonymously-named internal signals (eg _T_51) that are used to implement the logic within the module.<br />I don't have a concrete proposal for the Chisel authors on how to improve this situation, but I would like to think a graphical view, such as a schematic, might be helpful in relating the input Scala code to the resulting Verilog.<br /><br /><h3>Reuse Error: Mux Arguments</h3><div>After better-understanding Chisel's behavior with respect to multiple assignments, I decided that using Chisel's 1-hot Mux primitive would be the best way to handle the response data. Here I bumped into a limitation of the Mux that the Arbiter primitive allowed me to ignore: multiplexing bundles with signals of different I/O directions is not supported (and, sadly, only uncovered very late in the transformation process from Chisel to Verilog). It all makes a lot of sense once you think it through.</div><div>Understanding this limitation drove me to redefine the I/O bundles I used to describe the Wishbone interface. It was a fairly straight-forward process, and one that I'll describe in more depth in a future post on structuring I/Os for standard interfaces with Chisel.</div><div><br /></div><h3>Understanding Data Manipulation Techniques</h3><div>&nbsp;Chisel encourages descriptions that involve collections of data. In some ways, this isn't so different from other hardware-description languages. What's different is the set of operators Chisel provides for manipulating these data collections. One early example I ran across was implementing address decode for the masters. I had arrays of target base/limit addresses, and wanted to determine which target device each master was selecting. This was very easy (and compactly) described with the following code:</div><div><br /></div><div><div>&nbsp; &nbsp; val slave_req = io.addr_base.zip(io.addr_limit).map(e =&gt; (</div><div>&nbsp; &nbsp; &nbsp; &nbsp; io.m(i).ADR &gt;= e._1 &amp;&amp; io.m(i).ADR &lt;= e._2) &amp;&amp;</div><div>&nbsp; &nbsp; &nbsp; &nbsp; io.m(i).CYC &amp;&amp; io.m(i).STB)</div></div><div><br /></div><div>This code describes the following:</div><div><ul><li>Combine the addr_base and addr_limit arrays into an array of (addr_base,addr_limit) tuples using the 'zip' operation</li><li>Convert this array of tuples into an array of Bool where the entry is 'true' if the target is selected</li></ul><div>These techniques also apply nicely to selecting fields from composite data structures, as shown below. In the case below, we want to determine whether a given target device is actively selected by any master.</div></div><div><br /></div><div><div>&nbsp; &nbsp; &nbsp; when (out_arb(j).io.in.map((f) =&gt; f.valid).reduceLeft(_|_)) {</div><div>&nbsp; &nbsp; &nbsp; &nbsp; out_arb(j).io.out.bits.assign_b2(io.s(j));</div><div>&nbsp; &nbsp; &nbsp; } .otherwise {</div><div>&nbsp; &nbsp; &nbsp; &nbsp; // If no master is requesting, deactivate the slave requests</div><div>&nbsp; &nbsp; &nbsp; &nbsp; io.s(j).park_req()</div><div>&nbsp; &nbsp; &nbsp; }</div></div><div><br /></div><div>In this case, the code does the following:</div><div><ul><li>out_arb(j).io.in is an array of composite data going into the per-target arbiters. The map() operation selects just the 'valid' field from each array element</li><li>Then, the reduceLeft() operation performs a reduction across the array</li></ul><div>Now, both of these operations can be described in other hardware description languages. But both likely would involve several layers of temporary data fields. It's actually really nice to be able to describe the high-level view of the manipulation to be performed, and be confident that a sensible implementation of this implementation will be inferred (and, after having to dig into the implementation for other reasons, I can state that the implementation <b>is</b>&nbsp;sensible).</div></div><div><br /></div><h3>Tool Issue: Register without Reset</h3><div>I mentioned earlier that I had turned on register initial-value randomization when I first started simulations. After getting my test running correctly, I had hoped this would not be needed. However, it turns out that Chisel's Arbiter primitive contains a register without a reset value. Perhaps this hasn't created an issue for many Chisel users because the Verilator 2-state simulator is often used. However, with a 4-state simulator like Questa/Modelsim, an uninitialized register is a fatal issue that results in X propagation and a non-functioning design.</div><div><br /></div><div>I strongly recommend using registers that are reset, and will provide this feedback to the Chisel team.&nbsp;</div><h3>Conclusions</h3><div>I'd class many of the issues I faced as all part of the learning curve for a new tool or technique. Challenging (and sometimes time-consuming) to surmount, perhaps, but issues I'd likely not face in the future. I've also gained an new-found appreciation for the descriptive power that Chisel's support for Scala's collection-manipulation operators bring to the description of hardware.&nbsp;</div><div><br /></div><div>For now, I have a working Wishbone interconnect described with Chisel. And, despite a few hiccups along the way, I'm still feeling pretty good about the expressive power that Chisel brings to hardware description.</div><div><br /></div><div class="separator" style="clear: both; text-align: center;"><a href="https://4.bp.blogspot.com/-4go5IsrHVb0/WZjxzcfPcqI/AAAAAAAACBM/gTOlpqXTsXUtAsgX4xkljg09Bmbrc_yPQCLcBGAs/s1600/Waves.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="615" data-original-width="1131" height="174" src="https://4.bp.blogspot.com/-4go5IsrHVb0/WZjxzcfPcqI/AAAAAAAACBM/gTOlpqXTsXUtAsgX4xkljg09Bmbrc_yPQCLcBGAs/s320/Waves.png" width="320" /></a></div><div><br /></div><div>Next, I'm curious to see how synthesis results compare for a hand-coded Wishbone interconnect and the Chisel-generated one.&nbsp;</div><div>As always, you can find the source for my experiments here:</div><div><a href="https://github.com/mballance/wb_sys_ip.git">https://github.com/mballance/wb_sys_ip.git</a></div><div><br /></div><div><br /></div><div><br /></div><div><br /></div><div><br /></div><br /></div>
+    <h1 class="post-title">Accessing User-Defined SV Data from Python</h1>
+    <span class="post-date">08 Nov 2025</span>
+
+    <p>We’ve seen how the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library makes it simple to implement UVM sequences 
+and components in Python, and how Python can call back into SystemVerilog. But,
+a significant part of a testbench deals with user-defined data, ranging from 
+named UVM instances, transaction fields in sequence items and control knobs on 
+sequences. Fortunately, UVM provides features that <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> uses to provide 
+dynamic and Pythonic access to user-defined data in UVM.</p>
+
+<!--more-->
+
+<h1 id="two-kinds-of-user-defined-data">Two Kinds of User-Defined Data</h1>
+
+<p>There are two key kinds of user-defined data that we care about in our UVM 
+environment: named UVM instances, and data fields. In both of these cases,
+a SystemVerilog environment typically references the named field directly.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="k">task</span> <span class="n">body</span><span class="p">();</span>
+      <span class="n">uvm_status_e</span>   <span class="n">status</span><span class="p">;</span>
+      <span class="n">uvm_reg_data_t</span> <span class="n">rd</span><span class="p">;</span>
+
+      <span class="c1">// Program CTRL / CLKDIV / SS</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">enable</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">master</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">CLKDIV</span><span class="p">.</span><span class="n">div</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mh">16'h0004</span><span class="p">);</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">SS</span><span class="p">.</span><span class="n">ss_mask</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mh">4'h1</span><span class="p">);</span>
+
+      <span class="c1">// ...</span>
+    <span class="k">endtask</span></code></pre></figure>
+
+<p>An example of using named instance fields, using registers, is shown
+above.  Our goal is to be able to access these fields just as easily in 
+Python, as well as plain data fields.</p>
+
+<h2 id="named-uvm-instances">Named UVM Instances</h2>
+
+<p>Named UVM instances are UVM objects registered with the UVM library using a name.
+User code typically accesses these objects via the SystemVerilog instance 
+fields, but they can also be obtained using UVM API methods. Fortunately, 
+Python provides specific functionality to enable us to do this.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">  <span class="kt">class</span> <span class="n">spi_reg_block</span> <span class="k">extends</span> <span class="n">uvm_reg_block</span><span class="p">;</span>
+    <span class="cp">`uvm_object_utils</span><span class="p">(</span><span class="n">spi_reg_block</span><span class="p">)</span>
+
+    <span class="k">rand</span> <span class="n">reg_CTRL</span>   <span class="n">CTRL</span><span class="p">;</span>
+    <span class="k">rand</span> <span class="n">reg_STATUS</span> <span class="n">STATUS</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+
+    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="o">=</span><span class="s">"spi_reg_block"</span><span class="p">);</span>
+      <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">UVM_NO_COVERAGE</span><span class="p">);</span>
+    <span class="k">endfunction</span>
+
+    <span class="kt">virtual</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">build</span><span class="p">();</span>
+      <span class="c1">// ...</span>
+
+      <span class="n">CTRL</span>   <span class="o">=</span> <span class="n">reg_CTRL</span>  <span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"CTRL"</span><span class="p">);</span>
+      <span class="n">STATUS</span> <span class="o">=</span> <span class="n">reg_STATUS</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"STATUS"</span><span class="p">);</span>
+      <span class="c1">// ...</span>
+
+      <span class="n">CTRL</span>  <span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="s">""</span><span class="p">);</span>
+      <span class="n">STATUS</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="s">""</span><span class="p">);</span>
+      <span class="c1">// ...</span>
+    <span class="k">endfunction</span>
+
+  <span class="k">endclass</span></code></pre></figure>
+
+<p>Registers and register fields provide a good example of UVM named 
+instances. As shown above, register blocks (and registers) usually
+provide named SystemVerilog fields to represent registers and fields.
+But, the <code class="language-plaintext highlighter-rouge">configure</code> method also registers the object with the UVM
+API such that it can be found by name. In the case of the register
+block, the <code class="language-plaintext highlighter-rouge">get_registers</code> function returns a list of register objects.</p>
+
+<p>The Python <code class="language-plaintext highlighter-rouge">__getattr__</code> method allows us to access UVM named instances
+from Python just as easily as in SystemVerilog.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="o">@</span><span class="n">api</span>
+<span class="kt">class</span> <span class="n">uvm_reg_block</span><span class="p">(</span><span class="n">uvm_object</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="n">def</span> <span class="mi">__</span><span class="n">init__</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span> <span class="o">=</span> <span class="n">None</span>
+
+    <span class="p">#</span> <span class="p">...</span>
+    <span class="o">@</span><span class="n">imp</span>
+    <span class="n">def</span> <span class="n">get_registers</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">uvm_reg_p</span><span class="p">]</span><span class="o">:</span>
+        <span class="n">raise</span> <span class="n">NotImplementedError</span><span class="p">()</span>
+    
+    <span class="n">def</span> <span class="mi">__</span><span class="n">getattr__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span> <span class="n">is</span> <span class="n">None</span><span class="o">:</span>
+            <span class="n">regs</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">get_registers</span><span class="p">()</span>
+            <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span> <span class="o">=</span> <span class="o">{}</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="n">in</span> <span class="n">regs</span><span class="o">:</span>
+                <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span><span class="p">[</span><span class="n">r</span><span class="p">.</span><span class="n">get_name</span><span class="p">()]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="n">in</span> <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span><span class="p">.</span><span class="n">keys</span><span class="p">()</span><span class="o">:</span>
+            <span class="k">return</span> <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="nl">else:</span>
+            <span class="n">raise</span> <span class="n">AttributeError</span><span class="p">(</span><span class="s">"No register %s in block %s"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">get_name</span><span class="p">()))</span></code></pre></figure>
+
+<p>The Python code snippet above shows how this is implemented for the 
+<code class="language-plaintext highlighter-rouge">uvm_reg_block</code> class. Python calls the <code class="language-plaintext highlighter-rouge">__getattr__</code> class method
+any time an unknown class attribute is referenced. In a <code class="language-plaintext highlighter-rouge">uvm_reg_block</code>
+class, we build a map of the named register fields and return the
+proper one if it is available.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">PyRegSeq</span><span class="p">(</span><span class="n">uvm_sequence_impl</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="c1"># Obtain the register model from the sequencer
+</span>        <span class="n">seqr</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="n">m_sequencer</span>
+        <span class="n">_</span><span class="p">,</span><span class="n">spi_regs</span> <span class="o">=</span> <span class="n">seqr</span><span class="p">.</span><span class="nf">get_config_object</span><span class="p">(</span><span class="s">"spi_regs"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="s">"spi_regs: %s"</span> <span class="o">%</span> <span class="nf">str</span><span class="p">(</span><span class="n">spi_regs</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">enable</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">master</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="nf">update</span><span class="p">()</span>
+
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">CLKDIV</span><span class="p">.</span><span class="n">div</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mh">0x4</span><span class="p">)</span>
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">SS</span><span class="p">.</span><span class="n">ss_mask</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">CLKDIV</span><span class="p">.</span><span class="nf">update</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">SS</span><span class="p">.</span><span class="nf">update</span><span class="p">()</span>
+
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">TXDATA</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="mh">0xA5</span><span class="p">)</span></code></pre></figure>
+
+<p>Connecting <code class="language-plaintext highlighter-rouge">__getattr__</code> to a search of named UVM fields enables a 
+Python-implemented UVM sequence to access registers and register fields
+directly, as shown above.</p>
+
+<h2 id="plain-data-fields">Plain-Data Fields</h2>
+
+<p>Accessing UVM named-instance fields is useful in some cases, but there
+are many other cases where the fields are not named instances. UVM 
+sequence-item fields are a great example. Python code may wish to
+both read and write the value of these fields. While the path to accessing
+the value of these fields is a bit less direct, UVM absolutely provides
+a path for doing so.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="kt">class</span> <span class="n">seq_item</span> <span class="k">extends</span> <span class="n">uvm_sequence_item</span><span class="p">;</span>
+    <span class="kt">bit</span>              <span class="n">ctrl_addr_page</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">addr_page</span><span class="p">;</span>
+
+    <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">addr</span><span class="p">;</span>
+    <span class="k">rand</span> <span class="kt">bit</span>         <span class="nb">write</span><span class="p">;</span> <span class="c1">// 1=write, 0=read</span>
+    <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">data</span><span class="p">;</span>
+    <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">tid</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+
+    <span class="cp">`uvm_object_utils_begin</span><span class="p">(</span><span class="n">seq_item</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">ctrl_addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="nb">write</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">data</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">tid</span>  <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+    <span class="cp">`uvm_object_utils_end</span>
+    <span class="c1">// ...</span>
+<span class="k">endclass</span></code></pre></figure>
+
+<p>The code snippet above shows a typical UVM sequence item with random fields.
+This sequence item uses the UVM field macros (eg uvm_field_int) to register
+the user-defined fields with the UVM library. This enables the UVM library
+to automatically implement several pieces of functionality, such as 
+comparing the value of two objects and copying the field values of an object.
+Users can also implement these functions by hand-implementing methods such 
+as <code class="language-plaintext highlighter-rouge">do_copy</code> and <code class="language-plaintext highlighter-rouge">do_compare</code>, but that results in quite a bit of hand-created
+code and an increased risk of introducing errors.</p>
+
+<p>There are three key elements of functionality that the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library uses
+to enable user-defined data fields to be accessed from Python:</p>
+<ul>
+  <li><strong>sprint</strong> – Converts the class and its fields to a string representation</li>
+  <li><strong>pack_int</strong> – Packs the field values to an array of unsigned ints</li>
+  <li><strong>unpack_int</strong> – Sets the field values from an array of unsigned ints</li>
+</ul>
+
+<p>Used together, these three methods provide the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library everything
+it needs to allow Python to easily get and set the value of user-defined
+fields. If you’re interested in the details of how it works, see the
+<code class="language-plaintext highlighter-rouge">mk</code> method of the <a href="https://github.com/fvutils/pyhdl-if/blob/main/src/hdl_if/uvm/wrap/object_rgy.py">uvm_object_rgy</a>
+class.</p>
+
+<p>The short version is that type information is built each time a new type of 
+UVM object is passed from SystemVerilog to Python. The field names and
+types are extracted using the string representation provided by <code class="language-plaintext highlighter-rouge">sprint</code>.
+The field names and types are used to dynamically define a Python type.
+When Python code calls the <code class="language-plaintext highlighter-rouge">pack</code> method, an instance of this Python 
+type is constructed with field values provided by packing the SystemVerilog 
+field values. Setting the value of the SystemVerilog fields is done 
+by calling <code class="language-plaintext highlighter-rouge">unpack</code> in Python. Let’s see how it is used.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">PyRandSeq</span><span class="p">(</span><span class="n">uvm_sequence_impl</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="c1"># ...
+</span>
+        <span class="c1"># Now, exercise each page in turn 
+</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">create_req</span><span class="p">()</span>
+            
+            <span class="c1"># Get the current values
+</span>            <span class="n">val</span> <span class="o">=</span> <span class="n">req</span><span class="p">.</span><span class="nf">pack</span><span class="p">()</span>
+            <span class="n">val</span><span class="p">.</span><span class="n">ctrl_addr_page</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">val</span><span class="p">.</span><span class="n">addr_page</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="c1"># Set the field values
+</span>            <span class="n">req</span><span class="p">.</span><span class="nf">unpack</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">start_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+            <span class="c1"># Randomize with control knobs
+</span>            <span class="n">req</span><span class="p">.</span><span class="nf">randomize</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">finish_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></code></pre></figure>
+
+<p>The example above shows how to use both the <code class="language-plaintext highlighter-rouge">pack</code> and <code class="language-plaintext highlighter-rouge">unpack</code> methods to 
+control randomization from Python using randomization control knobs. In this
+case, we want to control the address “page” – its upper bits. To do this,
+the sequence creates an instance of the request object, then calls <code class="language-plaintext highlighter-rouge">pack</code>
+to obtain a Python object containing the field values of the SystemVerilog
+sequence item. After setting the desired address page, the <code class="language-plaintext highlighter-rouge">unpack</code> 
+method is called to set the value of the SystemVerilog fields. Finally, 
+the standard <code class="language-plaintext highlighter-rouge">start_item</code>, <code class="language-plaintext highlighter-rouge">randomize</code>, <code class="language-plaintext highlighter-rouge">finish_item</code> sequence of calls
+is made to execute the sequence item on the driver.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>The <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library allows Python code to easily access both named UVM
+instance fields and data fields. This significantly enhances the type 
+of test and analysis behavior that can easily be implemented in Python.</p>
+
+<p>Thus far in this series of posts, we’ve seen how to launch Python behavior
+from SystemVerilog, interact with UVM APIs, and access fields declared in 
+SystemVerilog UVM classes. Next, we’ll take a look at UVM analysis ports.
+Analysis ports are critical for obtaining transactions for scoreboards and
+other analysis components. Working with them in a generic fashion is tricky.
+Next time, we’ll see how the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library makes them easily accessible
+from Python.</p>
+
+<h1 id="references">References</h1>
+<ul>
+  <li>PyHDL-IF library: <a href="https://github.com/fvutils/pyhdl-if">https://github.com/fvutils/pyhdl-if</a></li>
+  <li>Example: spi_reg_seq: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq</a></li>
+  <li>Example: sequence-item knobs: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs</a></li>
+</ul>
+
+
   </div>
 
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2025 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
   
-  <div class="related">
-    <h2>Related posts</h2>
-    <ul class="related-posts">
-      
-        <li>
-          <h3>
-            <a href="/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html">
-              Accessing User-Defined SV Data from Python
-              <small>08 Nov 2025</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html">
-              The Mechanics of UVM/Python Cross-Calling
-              <small>01 Nov 2025</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html">
-              Unlocking the Combined Strength of UVM and Python
-              <small>04 Oct 2025</small>
-            </a>
-          </h3>
-        </li>
-      
-    </ul>
-  </div>
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
   
 
   </body>

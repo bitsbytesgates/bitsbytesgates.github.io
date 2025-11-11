@@ -1,4 +1,243 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-11-03T15:54:29+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">The Mechanics of UVM/Python Cross-Calling</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html" rel="alternate" type="text/html" title="The Mechanics of UVM/Python Cross-Calling" /><published>2025-11-01T00:00:00+00:00</published><updated>2025-11-01T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html"><![CDATA[<p>It’s not necessary to understand very much about how PyHDL-IF implements
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-11-11T00:34:56+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Accessing User-Defined SV Data from Python</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html" rel="alternate" type="text/html" title="Accessing User-Defined SV Data from Python" /><published>2025-11-08T00:00:00+00:00</published><updated>2025-11-08T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html"><![CDATA[<p>We’ve seen how the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library makes it simple to implement UVM sequences 
+and components in Python, and how Python can call back into SystemVerilog. But,
+a significant part of a testbench deals with user-defined data, ranging from 
+named UVM instances, transaction fields in sequence items and control knobs on 
+sequences. Fortunately, UVM provides features that <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> uses to provide 
+dynamic and Pythonic access to user-defined data in UVM.</p>
+
+<!--more-->
+
+<h1 id="two-kinds-of-user-defined-data">Two Kinds of User-Defined Data</h1>
+
+<p>There are two key kinds of user-defined data that we care about in our UVM 
+environment: named UVM instances, and data fields. In both of these cases,
+a SystemVerilog environment typically references the named field directly.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="k">task</span> <span class="n">body</span><span class="p">();</span>
+      <span class="n">uvm_status_e</span>   <span class="n">status</span><span class="p">;</span>
+      <span class="n">uvm_reg_data_t</span> <span class="n">rd</span><span class="p">;</span>
+
+      <span class="c1">// Program CTRL / CLKDIV / SS</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">enable</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">master</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">CLKDIV</span><span class="p">.</span><span class="n">div</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mh">16'h0004</span><span class="p">);</span>
+      <span class="n">m_env</span><span class="p">.</span><span class="n">m_reg</span><span class="p">.</span><span class="n">SS</span><span class="p">.</span><span class="n">ss_mask</span><span class="p">.</span><span class="nb">write</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="mh">4'h1</span><span class="p">);</span>
+
+      <span class="c1">// ...</span>
+    <span class="k">endtask</span></code></pre></figure>
+
+<p>An example of using named instance fields, using registers, is shown
+above.  Our goal is to be able to access these fields just as easily in 
+Python, as well as plain data fields.</p>
+
+<h2 id="named-uvm-instances">Named UVM Instances</h2>
+
+<p>Named UVM instances are UVM objects registered with the UVM library using a name.
+User code typically accesses these objects via the SystemVerilog instance 
+fields, but they can also be obtained using UVM API methods. Fortunately, 
+Python provides specific functionality to enable us to do this.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">  <span class="kt">class</span> <span class="n">spi_reg_block</span> <span class="k">extends</span> <span class="n">uvm_reg_block</span><span class="p">;</span>
+    <span class="cp">`uvm_object_utils</span><span class="p">(</span><span class="n">spi_reg_block</span><span class="p">)</span>
+
+    <span class="k">rand</span> <span class="n">reg_CTRL</span>   <span class="n">CTRL</span><span class="p">;</span>
+    <span class="k">rand</span> <span class="n">reg_STATUS</span> <span class="n">STATUS</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+
+    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="o">=</span><span class="s">"spi_reg_block"</span><span class="p">);</span>
+      <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">UVM_NO_COVERAGE</span><span class="p">);</span>
+    <span class="k">endfunction</span>
+
+    <span class="kt">virtual</span> <span class="k">function</span> <span class="kt">void</span> <span class="n">build</span><span class="p">();</span>
+      <span class="c1">// ...</span>
+
+      <span class="n">CTRL</span>   <span class="o">=</span> <span class="n">reg_CTRL</span>  <span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"CTRL"</span><span class="p">);</span>
+      <span class="n">STATUS</span> <span class="o">=</span> <span class="n">reg_STATUS</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"STATUS"</span><span class="p">);</span>
+      <span class="c1">// ...</span>
+
+      <span class="n">CTRL</span>  <span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="s">""</span><span class="p">);</span>
+      <span class="n">STATUS</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="s">""</span><span class="p">);</span>
+      <span class="c1">// ...</span>
+    <span class="k">endfunction</span>
+
+  <span class="k">endclass</span></code></pre></figure>
+
+<p>Registers and register fields provide a good example of UVM named 
+instances. As shown above, register blocks (and registers) usually
+provide named SystemVerilog fields to represent registers and fields.
+But, the <code class="language-plaintext highlighter-rouge">configure</code> method also registers the object with the UVM
+API such that it can be found by name. In the case of the register
+block, the <code class="language-plaintext highlighter-rouge">get_registers</code> function returns a list of register objects.</p>
+
+<p>The Python <code class="language-plaintext highlighter-rouge">__getattr__</code> method allows us to access UVM named instances
+from Python just as easily as in SystemVerilog.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="o">@</span><span class="n">api</span>
+<span class="kt">class</span> <span class="n">uvm_reg_block</span><span class="p">(</span><span class="n">uvm_object</span><span class="p">)</span><span class="o">:</span>
+
+    <span class="n">def</span> <span class="mi">__</span><span class="n">init__</span><span class="p">(</span><span class="n">self</span><span class="p">)</span><span class="o">:</span>
+        <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span> <span class="o">=</span> <span class="n">None</span>
+
+    <span class="p">#</span> <span class="p">...</span>
+    <span class="o">@</span><span class="n">imp</span>
+    <span class="n">def</span> <span class="n">get_registers</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">uvm_reg_p</span><span class="p">]</span><span class="o">:</span>
+        <span class="n">raise</span> <span class="n">NotImplementedError</span><span class="p">()</span>
+    
+    <span class="n">def</span> <span class="mi">__</span><span class="n">getattr__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">if</span> <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span> <span class="n">is</span> <span class="n">None</span><span class="o">:</span>
+            <span class="n">regs</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">get_registers</span><span class="p">()</span>
+            <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span> <span class="o">=</span> <span class="o">{}</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="n">in</span> <span class="n">regs</span><span class="o">:</span>
+                <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span><span class="p">[</span><span class="n">r</span><span class="p">.</span><span class="n">get_name</span><span class="p">()]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="n">in</span> <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span><span class="p">.</span><span class="n">keys</span><span class="p">()</span><span class="o">:</span>
+            <span class="k">return</span> <span class="n">self</span><span class="mf">._</span><span class="n">reg_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="nl">else:</span>
+            <span class="n">raise</span> <span class="n">AttributeError</span><span class="p">(</span><span class="s">"No register %s in block %s"</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">get_name</span><span class="p">()))</span></code></pre></figure>
+
+<p>The Python code snippet above shows how this is implemented for the 
+<code class="language-plaintext highlighter-rouge">uvm_reg_block</code> class. Python calls the <code class="language-plaintext highlighter-rouge">__getattr__</code> class method
+any time an unknown class attribute is referenced. In a <code class="language-plaintext highlighter-rouge">uvm_reg_block</code>
+class, we build a map of the named register fields and return the
+proper one if it is available.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">PyRegSeq</span><span class="p">(</span><span class="n">uvm_sequence_impl</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="c1"># Obtain the register model from the sequencer
+</span>        <span class="n">seqr</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="n">m_sequencer</span>
+        <span class="n">_</span><span class="p">,</span><span class="n">spi_regs</span> <span class="o">=</span> <span class="n">seqr</span><span class="p">.</span><span class="nf">get_config_object</span><span class="p">(</span><span class="s">"spi_regs"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="s">"spi_regs: %s"</span> <span class="o">%</span> <span class="nf">str</span><span class="p">(</span><span class="n">spi_regs</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">enable</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="n">master</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">CTRL</span><span class="p">.</span><span class="nf">update</span><span class="p">()</span>
+
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">CLKDIV</span><span class="p">.</span><span class="n">div</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mh">0x4</span><span class="p">)</span>
+        <span class="n">spi_regs</span><span class="p">.</span><span class="n">SS</span><span class="p">.</span><span class="n">ss_mask</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="mh">0x1</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">CLKDIV</span><span class="p">.</span><span class="nf">update</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">SS</span><span class="p">.</span><span class="nf">update</span><span class="p">()</span>
+
+        <span class="k">await</span> <span class="n">spi_regs</span><span class="p">.</span><span class="n">TXDATA</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="mh">0xA5</span><span class="p">)</span></code></pre></figure>
+
+<p>Connecting <code class="language-plaintext highlighter-rouge">__getattr__</code> to a search of named UVM fields enables a 
+Python-implemented UVM sequence to access registers and register fields
+directly, as shown above.</p>
+
+<h2 id="plain-data-fields">Plain-Data Fields</h2>
+
+<p>Accessing UVM named-instance fields is useful in some cases, but there
+are many other cases where the fields are not named instances. UVM 
+sequence-item fields are a great example. Python code may wish to
+both read and write the value of these fields. While the path to accessing
+the value of these fields is a bit less direct, UVM absolutely provides
+a path for doing so.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="kt">class</span> <span class="n">seq_item</span> <span class="k">extends</span> <span class="n">uvm_sequence_item</span><span class="p">;</span>
+    <span class="kt">bit</span>              <span class="n">ctrl_addr_page</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">addr_page</span><span class="p">;</span>
+
+    <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">addr</span><span class="p">;</span>
+    <span class="k">rand</span> <span class="kt">bit</span>         <span class="nb">write</span><span class="p">;</span> <span class="c1">// 1=write, 0=read</span>
+    <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">data</span><span class="p">;</span>
+    <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">tid</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+
+    <span class="cp">`uvm_object_utils_begin</span><span class="p">(</span><span class="n">seq_item</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">ctrl_addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="nb">write</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">data</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">tid</span>  <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+    <span class="cp">`uvm_object_utils_end</span>
+    <span class="c1">// ...</span>
+<span class="k">endclass</span></code></pre></figure>
+
+<p>The code snippet above shows a typical UVM sequence item with random fields.
+This sequence item uses the UVM field macros (eg uvm_field_int) to register
+the user-defined fields with the UVM library. This enables the UVM library
+to automatically implement several pieces of functionality, such as 
+comparing the value of two objects and copying the field values of an object.
+Users can also implement these functions by hand-implementing methods such 
+as <code class="language-plaintext highlighter-rouge">do_copy</code> and <code class="language-plaintext highlighter-rouge">do_compare</code>, but that results in quite a bit of hand-created
+code and an increased risk of introducing errors.</p>
+
+<p>There are three key elements of functionality that the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library uses
+to enable user-defined data fields to be accessed from Python:</p>
+<ul>
+  <li><strong>sprint</strong> – Converts the class and its fields to a string representation</li>
+  <li><strong>pack_int</strong> – Packs the field values to an array of unsigned ints</li>
+  <li><strong>unpack_int</strong> – Sets the field values from an array of unsigned ints</li>
+</ul>
+
+<p>Used together, these three methods provide the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library everything
+it needs to allow Python to easily get and set the value of user-defined
+fields. If you’re interested in the details of how it works, see the
+<code class="language-plaintext highlighter-rouge">mk</code> method of the <a href="https://github.com/fvutils/pyhdl-if/blob/main/src/hdl_if/uvm/wrap/object_rgy.py">uvm_object_rgy</a>
+class.</p>
+
+<p>The short version is that type information is built each time a new type of 
+UVM object is passed from SystemVerilog to Python. The field names and
+types are extracted using the string representation provided by <code class="language-plaintext highlighter-rouge">sprint</code>.
+The field names and types are used to dynamically define a Python type.
+When Python code calls the <code class="language-plaintext highlighter-rouge">pack</code> method, an instance of this Python 
+type is constructed with field values provided by packing the SystemVerilog 
+field values. Setting the value of the SystemVerilog fields is done 
+by calling <code class="language-plaintext highlighter-rouge">unpack</code> in Python. Let’s see how it is used.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">PyRandSeq</span><span class="p">(</span><span class="n">uvm_sequence_impl</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="c1"># ...
+</span>
+        <span class="c1"># Now, exercise each page in turn 
+</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">create_req</span><span class="p">()</span>
+            
+            <span class="c1"># Get the current values
+</span>            <span class="n">val</span> <span class="o">=</span> <span class="n">req</span><span class="p">.</span><span class="nf">pack</span><span class="p">()</span>
+            <span class="n">val</span><span class="p">.</span><span class="n">ctrl_addr_page</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">val</span><span class="p">.</span><span class="n">addr_page</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="c1"># Set the field values
+</span>            <span class="n">req</span><span class="p">.</span><span class="nf">unpack</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">start_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+            <span class="c1"># Randomize with control knobs
+</span>            <span class="n">req</span><span class="p">.</span><span class="nf">randomize</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">finish_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></code></pre></figure>
+
+<p>The example above shows how to use both the <code class="language-plaintext highlighter-rouge">pack</code> and <code class="language-plaintext highlighter-rouge">unpack</code> methods to 
+control randomization from Python using randomization control knobs. In this
+case, we want to control the address “page” – its upper bits. To do this,
+the sequence creates an instance of the request object, then calls <code class="language-plaintext highlighter-rouge">pack</code>
+to obtain a Python object containing the field values of the SystemVerilog
+sequence item. After setting the desired address page, the <code class="language-plaintext highlighter-rouge">unpack</code> 
+method is called to set the value of the SystemVerilog fields. Finally, 
+the standard <code class="language-plaintext highlighter-rouge">start_item</code>, <code class="language-plaintext highlighter-rouge">randomize</code>, <code class="language-plaintext highlighter-rouge">finish_item</code> sequence of calls
+is made to execute the sequence item on the driver.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>The <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library allows Python code to easily access both named UVM
+instance fields and data fields. This significantly enhances the type 
+of test and analysis behavior that can easily be implemented in Python.</p>
+
+<p>Thus far in this series of posts, we’ve seen how to launch Python behavior
+from SystemVerilog, interact with UVM APIs, and access fields declared in 
+SystemVerilog UVM classes. Next, we’ll take a look at UVM analysis ports.
+Analysis ports are critical for obtaining transactions for scoreboards and
+other analysis components. Working with them in a generic fashion is tricky.
+Next time, we’ll see how the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library makes them easily accessible
+from Python.</p>
+
+<h1 id="references">References</h1>
+<ul>
+  <li>PyHDL-IF library: <a href="https://github.com/fvutils/pyhdl-if">https://github.com/fvutils/pyhdl-if</a></li>
+  <li>Example: spi_reg_seq: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq</a></li>
+  <li>Example: sequence-item knobs: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs</a></li>
+</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[We’ve seen how the PyHDL-IF library makes it simple to implement UVM sequences and components in Python, and how Python can call back into SystemVerilog. But, a significant part of a testbench deals with user-defined data, ranging from named UVM instances, transaction fields in sequence items and control knobs on sequences. Fortunately, UVM provides features that PyHDL-IF uses to provide dynamic and Pythonic access to user-defined data in UVM.]]></summary></entry><entry><title type="html">The Mechanics of UVM/Python Cross-Calling</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html" rel="alternate" type="text/html" title="The Mechanics of UVM/Python Cross-Calling" /><published>2025-11-01T00:00:00+00:00</published><updated>2025-11-01T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html"><![CDATA[<p>It’s not necessary to understand very much about how PyHDL-IF implements
 the bridge between Python and UVM, but useful to understand a bit. Doing 
 so helps to understand what this library is and is not intended to do,
 and how you can best use it in your verification environment.</p>
@@ -1789,226 +2028,4 @@ and verification. There is always something new to learn and explore!</p>
   <li>Accellera - https://accellera.org</li>
   <li>PSS Tutorial Video - https://www.accellera.org/resources/videos/portable-stimulus-tutorial-2024</li>
   <li>PSS LRM - https://www.accellera.org/downloads/standards/portable-stimulus</li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As the year winds down, it’s a good time to think about the coming year and the areas where I’d like to have an impact. One area of particular interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt fortunate to have been involved with PSS Working Group (PSWG) from its inception, and to see how the growing body of features in PSS have allowed the language to enable test-content portability across simulation, emulation, and post-silicon targets. The release of PSS 3.0 also provides an opportunity to step back and consider the future of PSS – not just incremental additions to its current field of use, but also how its use could expand to other portions of the design and verification process.]]></summary></entry><entry><title type="html">Easy Access to Python Libraries with a SystemVerilog Convenience API</title><link href="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html" rel="alternate" type="text/html" title="Easy Access to Python Libraries with a SystemVerilog Convenience API" /><published>2024-11-17T00:00:00+00:00</published><updated>2024-11-17T00:00:00+00:00</updated><id>https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API</id><content type="html" xml:base="https://bitsbytesgates.com/python/2024/11/17/PyHDL_Convenience_API.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/11/PyHDL_IF_Convenience_API.png" /> 
-</p>
-
-<p>In the last post 
-(<a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn’t Enough: Making Python Part of Your SV Testbench</a>), 
-we looked at how to use the <a href="https://fvutils.github.io/pyhdl-if">PyHDL-IF</a> library 
-to call SystemVerilog from Python. 
-This is, in some sense, the most challenging Python and SV interaction to implement. 
-And, as the title suggests, it’s something that definitely requires
-more than just the raw features of the SystemVerilog DPI.</p>
-
-<p>That said, there are many cases where we simply want to access some functionality
-that is readily-available in Python and not readily-available in SystemVerilog. 
-In these cases, we don’t need to call back into SystemVerilog from Python. 
-Arguably, we <strong>could</strong> simply use SystemVerilog DPI To call the relevant 
-<a href="https://docs.python.org/3/c-api/">Python C API</a>. The PyHDL-IF library uses the
-Python C API internally to implement cross-calling between SystemVerilog and
-Python, and it’s always good to have it as an option. The downside is that code that
-uses the C API tends to be rather verbose, so let’s see if we can improve the
-situation with a SystemVerilog convenience API.</p>
-
-<!--more-->
-
-<h1 id="pyhdl-if-architecture">PyHDL-IF Architecture</h1>
-
-<p>The PyHDL-IF implements the interface between Python and HDLs with a layered architecture.</p>
-
-<div class="mermaid" align="center">
-block-beta
-columns 1
-  block:UIApp
-  columns 1
-    TitleApp["App-Specific Interfaces"]
-    style TitleApp fill:transparent,stroke:transparent
-    block:UICodeAPIs
-      UICall["Method Call"]
-      UITlm["TLM"]
-    end
-  end
-  block:UIMid
-  columns 1
-    TitleMid["Convenience API"]
-  end
-  block:UIDirect
-  columns 1
-    TitleDirect["CPython API"]
-  end
-</div>
-
-<p>In the <a href="https://bitsbytesgates.com/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">last post</a>,
-we looked at an example built on top of the ‘Call’ API. This is the API that manages blocking cross-calling
-between Python and a HDL. Using this API requires us to mark up our Python API with decorators and generate
-SystemVerilog source to implement the API in the SystemVerilog environment.</p>
-
-<p>We could use this same approach to “wrap up” the API of a Python library and expose it to SystemVerilog. But,
-it often makes sense to use one of the lower-level interface APIs. Let’s look at an example.</p>
-
-<h1 id="loading-json-data">Loading JSON Data</h1>
-
-<p>UVM testbench environments can be highly-configurable when used for complex, configurable IPs. Capturing 
-the configuration data in a JSON or YAML file is helpful in keeping all the settings in one place. 
-The challenge arises when we want to acccess that data from our UVM environment. Current options include:</p>
-
-<ul>
-  <li><strong>Integrate a parser implemented in C via SV DPI</strong></li>
-  <li><strong>Implement a parser in SystemVerilog</strong></li>
-</ul>
-
-<p>Both of these involve a fair amount of (likely project-specific) work and debugging. In contrast, reading 
-a JSON file in Python and iterating through the top-level entries is trivial:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">json</span>
-
-<span class="n">datafile</span> <span class="o">=</span> <span class="s">"data1.json"</span>
-
-<span class="n">fp</span> <span class="o">=</span> <span class="nf">open</span><span class="p">(</span><span class="n">datafile</span><span class="p">,</span> <span class="s">"r"</span><span class="p">)</span>
-<span class="n">data_s</span> <span class="o">=</span> <span class="n">fp</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
-<span class="n">fp</span><span class="p">.</span><span class="nf">close</span><span class="p">()</span>
-
-<span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">data_s</span><span class="p">)</span>
-<span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="nf">keys</span><span class="p">()</span>
-
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="nf">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)):</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %d %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-
-<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-    <span class="nf">print</span><span class="p">(</span><span class="s">"Key: %s"</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span></code></pre></figure>
-
-<h1 id="svpython-convenience-api">SV/Python Convenience API</h1>
-<p>Using the PyHDL-IF library, we actually have several options for leveraging Python to access JSON data. 
-Let’s look at using <a href="https://fvutils.github.io/pyhdl-if/sv_api.html#systemverilog-api">SystemVerilog convenience API</a>. 
-This API is object-oriented and higher level than the raw CPython API (which we also can use).</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="k">import</span> <span class="n">pyhdl_if</span><span class="o">::*</span><span class="p">;</span>
-
-    <span class="k">initial</span> <span class="k">begin</span>
-        <span class="k">automatic</span> <span class="kt">string</span> <span class="n">datafile</span><span class="p">;</span>
-        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">json</span><span class="p">,</span> <span class="n">data_fp</span><span class="p">,</span> <span class="n">data_s</span><span class="p">;</span>
-        <span class="k">automatic</span> <span class="n">py_dict</span> <span class="n">data</span><span class="p">;</span>
-        <span class="k">automatic</span> <span class="n">py_list</span> <span class="n">keys</span><span class="p">;</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">$</span><span class="n">value</span><span class="p">$</span><span class="n">plusargs</span><span class="p">(</span><span class="s">"data=%s"</span><span class="p">,</span> <span class="n">datafile</span><span class="p">))</span> <span class="k">begin</span>
-            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Error: no datafile specified"</span><span class="p">);</span>
-            <span class="p">$</span><span class="nb">finish</span><span class="p">;</span>
-        <span class="k">end</span>
-
-        <span class="n">py_gil_enter</span><span class="p">();</span>
-
-        <span class="c1">// Import Python's 'json' package </span>
-        <span class="n">json</span> <span class="o">=</span> <span class="n">py_import</span><span class="p">(</span><span class="s">"json"</span><span class="p">);</span>
-
-        <span class="c1">// Open and read the specified data file</span>
-        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span>
-        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
-        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span>
-
-        <span class="c1">// Parse the data</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> 
-            <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span>
-
-        <span class="c1">// Get the list of keys</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
-
-        <span class="c1">// Iterate based on the list size</span>
-        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
-        <span class="k">end</span>
-
-        <span class="c1">// Use an iterator</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
-            <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
-            <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
-        <span class="k">end</span>
-
-        <span class="n">py_gil_leave</span><span class="p">();</span>
-    <span class="k">end</span></code></pre></figure>
-
-<p>The code above accomplishes the same thing as the pure-Python code that reads a JSON file. 
-While the SystemVerilog code involves roughly twice as many lines as the pure-Python code,
-it <em>is</em> pure SystemVerilog. And, it didn’t require us to do any code generation or any
-special “tagging” of Python code. Let’s look in more detail at what’s happening in this
-code, and how the PyHDL-IF convenience API helps us out.</p>
-
-<h2 id="calling-built-in-functions">Calling Built-in Functions</h2>
-<p>One of the first things we need to do is to read the contents of the JSON data file. 
-The Python <code class="language-plaintext highlighter-rouge">open</code> function is a built-in. This means that it’s not contained in 
-another package or module that needs to be imported.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_fp</span> <span class="o">=</span> <span class="n">py_call_builtin</span><span class="p">(</span><span class="s">"open"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="n">datafile</span><span class="p">),</span>
-            <span class="n">py_from_str</span><span class="p">(</span><span class="s">"r"</span><span class="p">)</span><span class="o">}</span><span class="p">));</span></code></pre></figure>
-
-<p>PyHDL-IF provides the <code class="language-plaintext highlighter-rouge">py_call_builtin</code> function to call built-ins. The PYthon C API
-requires function arguments to be Python objects, and to be packed in a Tuple. The
-<code class="language-plaintext highlighter-rouge">py_tuple::mk_init</code> function handles creating the properly-sized tuple. The helper
-function <code class="language-plaintext highlighter-rouge">py_from_str</code> creates a Python string object from a SystemVerilog string value.</p>
-
-<h2 id="calling-methods">Calling Methods</h2>
-<p>The <code class="language-plaintext highlighter-rouge">open</code> function returns a Python stream object. We want to read all the data from
-the file and then close the file.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="n">data_s</span> <span class="o">=</span> <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"read"</span><span class="p">);</span> 
-        <span class="n">data_fp</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"close"</span><span class="p">);</span></code></pre></figure>
-
-<p>The <code class="language-plaintext highlighter-rouge">call_attr</code> function implemented by the <code class="language-plaintext highlighter-rouge">py_object</code> SV class handles looking up the
-requested attribute within the Python object and calling it. In this case, 
-both <code class="language-plaintext highlighter-rouge">read</code> and <code class="language-plaintext highlighter-rouge">close</code> methods take no arguments.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">        <span class="c1">// Parse the data</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">py_dict</span><span class="o">::</span><span class="n">mk</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="n">call_attr</span><span class="p">(</span><span class="s">"loads"</span><span class="p">,</span> <span class="n">py_tuple</span><span class="o">::</span><span class="n">mk_init</span><span class="p">(</span><span class="err">'</span><span class="o">{</span><span class="n">data_s</span><span class="o">}</span><span class="p">)));</span></code></pre></figure>
-
-<p>Python views everything as an object. Consequently, the <code class="language-plaintext highlighter-rouge">loads</code> method within
-the <code class="language-plaintext highlighter-rouge">json</code> package is just an attribute with the json package object. This means
-that we can call it in the same way we would invoke a method on a class-type object.
-We happen to know that the return of the <code class="language-plaintext highlighter-rouge">loads</code> method is a Python dictionary (<code class="language-plaintext highlighter-rouge">dict).
-Therefore, we can directly convert the return value to a </code>py_dict` object. This allows
-us to use convenience methods to access the data.</p>
-
-<h2 id="iterating">Iterating</h2>
-<p>Now that we have a Python dictionary containing the JSON data, we likely will 
-want to iterate over it. The PyHDL-IF objects also provide some convenience 
-APIs to help simplify this process as well.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Get the list of keys</span>
-    <span class="n">keys</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">keys</span><span class="p">();</span>
-
-    <span class="c1">// Iterate based on the list size</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">keys</span><span class="p">.</span><span class="nb">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="k">begin</span>
-        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0d %0s"</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">keys</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">to_str</span><span class="p">());</span>
-    <span class="k">end</span></code></pre></figure>
-
-<p>A Python dictionary returns it key set as a list. Perhaps the simplest way
-to iterate over the items of list is to get each element via its index,
-as shown above.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="c1">// Use an iterator</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">py_iter</span> <span class="n">i</span><span class="o">=</span><span class="n">keys</span><span class="p">.</span><span class="n">iter</span><span class="p">();</span> <span class="n">i</span><span class="p">.</span><span class="n">valid</span><span class="p">();</span> <span class="p">)</span> <span class="k">begin</span>
-        <span class="k">automatic</span> <span class="n">py_object</span> <span class="n">it</span> <span class="o">=</span> <span class="n">i</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
-        <span class="p">$</span><span class="nb">display</span><span class="p">(</span><span class="s">"Key: %0s"</span><span class="p">,</span> <span class="n">it</span><span class="p">.</span><span class="n">to_str</span><span class="p">());</span>
-    <span class="k">end</span></code></pre></figure>
-
-<p>The list object also implements Python’s <em>iteration</em> interface. PyHDL-IF
-also provides helper types and functions around this interface. We can
-still use a SystemVerilog <em>for</em> loop. The difference is that the iteration
-variable is actually a Python iterator object. Here, again, the convenience
-API simplifies the user code compared to using the raw CPython API.</p>
-
-<h1 id="conclusion">Conclusion</h1>
-<p>The PyHDL-IF Python convenience API enables you to call Python code from
-SystemVerilog without the need to generate any application-specific 
-code, and with less work that directly using the CPython API would require.
-This reduction of effort makes is incredibly simple to augment the capabilities
-of your existing testbench with those of a library from the vast Python ecosystem.</p>
-
-<h1 id="resources">Resources</h1>
-<ul>
-  <li><a href="https://fvutils.github.io/pyhdl-if/">PyHDL-IF Documentation</a></li>
-  <li><a href="https://fvutils.github.io/pyhdl-if/sv_api.html">PyHDL-IF SV Convenience API</a></li>
-  <li><a href="https://docs.python.org/3/c-api/index.html">CPython API</a></li>
-</ul>]]></content><author><name></name></author><category term="Python" /><summary type="html"><![CDATA[In the last post (DPI Isn’t Enough: Making Python Part of Your SV Testbench), we looked at how to use the PyHDL-IF library to call SystemVerilog from Python. This is, in some sense, the most challenging Python and SV interaction to implement. And, as the title suggests, it’s something that definitely requires more than just the raw features of the SystemVerilog DPI. That said, there are many cases where we simply want to access some functionality that is readily-available in Python and not readily-available in SystemVerilog. In these cases, we don’t need to call back into SystemVerilog from Python. Arguably, we could simply use SystemVerilog DPI To call the relevant Python C API. The PyHDL-IF library uses the Python C API internally to implement cross-calling between SystemVerilog and Python, and it’s always good to have it as an option. The downside is that code that uses the C API tends to be rather verbose, so let’s see if we can improve the situation with a SystemVerilog convenience API.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As the year winds down, it’s a good time to think about the coming year and the areas where I’d like to have an impact. One area of particular interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt fortunate to have been involved with PSS Working Group (PSWG) from its inception, and to see how the growing body of features in PSS have allowed the language to enable test-content portability across simulation, emulation, and post-silicon targets. The release of PSS 3.0 also provides an opportunity to step back and consider the future of PSS – not just incremental additions to its current field of use, but also how its use could expand to other portions of the design and verification process.]]></summary></entry></feed>
