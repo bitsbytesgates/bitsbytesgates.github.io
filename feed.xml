@@ -1,4 +1,202 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-11-11T00:34:56+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Accessing User-Defined SV Data from Python</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html" rel="alternate" type="text/html" title="Accessing User-Defined SV Data from Python" /><published>2025-11-08T00:00:00+00:00</published><updated>2025-11-08T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html"><![CDATA[<p>We’ve seen how the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library makes it simple to implement UVM sequences 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-11-18T00:42:50+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Working with Analysis Ports</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html" rel="alternate" type="text/html" title="Working with Analysis Ports" /><published>2025-11-16T00:00:00+00:00</published><updated>2025-11-16T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html"><![CDATA[<p>For the most part, UVM and SystemVerilog make interactions with a 
+dynamically-typed language surprisingly easy. There are a few exceptions
+where the developer of the SystemVerilog UVM code must step in to enable
+access to certain testbench elements. Analysis ports are one case in point.
+Fortunately, there is a relatively non-invasive approach to allow Python
+to dynamically interact with UVM analysis ports. Let’s look more closely at 
+the details.</p>
+
+<h1 id="working-with-analysis-ports">Working with Analysis Ports</h1>
+
+<p>UVM testbench environments use analysis ports extensively. An <em>analysis port</em> 
+publishes data to zero or more listeners, and is used to route transactions 
+from interface monitors to scoreboards and other analysis components.</p>
+
+<p>Connecting to analysis ports from Python allows scoreboards and other analysis
+components to be implemented in Python. There are two technical requirements
+that enable Python to receive transactions published by analysis ports:</p>
+<ul>
+  <li>Be able to identify a uvm_analysis_port as a distinct type (vs, say, a uvm_object or uvm_component).</li>
+  <li>Be able to add a new listener to the analysis port</li>
+</ul>
+
+<h1 id="challenges-of-dynamically-using-analysis-ports">Challenges of Dynamically Using Analysis Ports</h1>
+<p>Each of these technical requirements poses its own challenge.</p>
+
+<div class="mermaid" align="center">
+classDiagram
+  uvm_analysis_port_base &lt;|-- uvm_analysis_port
+  uvm_tlm_if_base &lt;|-- uvm_analysis_port_base
+  uvm_component &lt;|-- uvm_tlm_if_base
+  class uvm_analysis_port["uvm_analysis_port #(T)"]
+  class uvm_analysis_port_base["uvm_analysis_port_base #(uvm_tlm_if_base #(T,T))"]
+  class uvm_tlm_if_base["uvm_tlm_if_base #(T,T)"]
+  class uvm_component["uvm_component"]
+</div>
+
+<p>SystemVerilog is a statically-typed language that provides minimal 
+<em>introspection</em> tools for looking at the internals of user-defined 
+classes. This is especially true when it comes to templated types. In 
+order to ask whether a given object <em>is an</em> instance of uvm_analysis_port,
+we need to ask about a specific specialization of that type – for example,
+“uvm_analysis_port #(my_special_transaction)”. As you might expect, this
+poses some challenges because the PyHDL-IF library only knows about concrete
+types defined by the UVM library, and doesn’t know anything about
+the transaction types used within a user’s testbench. As a consequence,
+when the PyHDL-IF library looks at an analysis port instance, 
+it just sees a <code class="language-plaintext highlighter-rouge">uvm_component</code> instance.</p>
+
+<p>One possible approach to this challenge is to have the user register each 
+of the transaction types that they might want to use with analysis ports 
+with the PyHDL-IF library. 
+For example:</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="kt">class</span> <span class="n">my_transaction</span> <span class="k">extends</span> <span class="n">uvm_sequence_item</span><span class="p">;</span>
+  <span class="c1">// ...</span>
+<span class="k">endclass</span>
+
+<span class="cp">`pyhdl_uvm_transaction_utils</span><span class="p">(</span><span class="n">my_transaction</span><span class="p">)</span></code></pre></figure>
+
+<p>This would allow the PyHDL-IF library to identify analysis-port instances,
+but wouldn’t help with the second challenge of working with 
+analysis ports.</p>
+
+<p>The second challenge comes when we want to add a new listener to an 
+analysis port. This must be done during <code class="language-plaintext highlighter-rouge">connect_phase</code>, and requires that 
+a properly-specialized <code class="language-plaintext highlighter-rouge">uvm_analysis_imp #(T)</code> class instance was 
+previously created during the build phase.</p>
+
+<h1 id="making-analysis-ports-visibile">Making Analysis Ports Visibile</h1>
+
+<p>While both of these challenges can be overcome independently, doing so 
+would require the user to make two independent sets of changes. 
+And, more troubling, wouldn’t provide a good way for VIP developers 
+to hide this complexity from users. 
+At minimum, the testbench developer would always need to pre-create
+<code class="language-plaintext highlighter-rouge">uvm_analysis_imp</code> instances for each analysis port to which they might
+subscribe.</p>
+
+<p>Instead, PyHDL-IF provides two classes that supports two paths for making
+analysis ports visible and accessible from Python:</p>
+<ul>
+  <li><em>pyhdl_uvm_analysis_port</em> – An alternative analysis port implementation intended for use by VIP authors</li>
+  <li><em>pyhdl_uvm_analysis_imp</em> – An analysis port listener intended to make existing analysis ports available to PyHDL-IF</li>
+</ul>
+
+<h2 id="example">Example</h2>
+
+<p>Let’s take a look at an example to understand how analysis ports are made 
+accessible to the PyHDL-IF library. The uvm/seq_item_scoreboard example
+shows how to make analysis ports accessible as well as how to receive
+transactions from analysis ports.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">  <span class="c1">// Producer component with two analysis ports</span>
+  <span class="kt">class</span> <span class="n">dual_producer</span> <span class="k">extends</span> <span class="n">uvm_component</span><span class="p">;</span>
+    <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">dual_producer</span><span class="p">)</span>
+
+    <span class="n">pyhdl_uvm_analysis_port</span> <span class="p">#(</span><span class="n">seq_item_a</span><span class="p">)</span> <span class="n">ap_a</span><span class="p">;</span>
+    <span class="n">uvm_analysis_port</span> <span class="p">#(</span><span class="n">seq_item_b</span><span class="p">)</span> <span class="n">ap_b</span><span class="p">;</span>
+
+    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="n">uvm_component</span> <span class="n">parent</span><span class="p">);</span>
+      <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">);</span>
+    <span class="k">endfunction</span>
+
+    <span class="k">function</span> <span class="kt">void</span> <span class="n">build_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
+      <span class="k">super</span><span class="p">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
+      <span class="n">ap_a</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="s">"ap_a"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+      <span class="n">ap_b</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="s">"ap_b"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+    <span class="k">endfunction</span></code></pre></figure>
+
+<p>The code snippet above shows how the pyhdl_uvm_analysis_port can be used
+instead of uvm_analysis_port to make an analysis port available to the
+PyHDL-IF library. The API of this class is identical to uvm_analysis_port,
+making this a good choice for VIP authors that want to automatically make 
+analysis ports accessible.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">  <span class="c1">// Environment tying producer to scoreboard</span>
+  <span class="kt">class</span> <span class="n">my_env</span> <span class="k">extends</span> <span class="n">uvm_env</span><span class="p">;</span>
+    <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">my_env</span><span class="p">)</span>
+
+    <span class="c1">// ...</span>
+    <span class="n">pyhdl_uvm_analysis_imp</span> <span class="p">#(</span><span class="n">seq_item_b</span><span class="p">)</span>    <span class="n">ap_b_proxy</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+
+    <span class="k">function</span> <span class="kt">void</span> <span class="n">build_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
+      <span class="k">super</span><span class="p">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
+      <span class="c1">// ...</span>
+      <span class="n">ap_b_proxy</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="s">"ap_b_proxy"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+    <span class="k">endfunction</span>
+
+    <span class="k">function</span> <span class="kt">void</span> <span class="n">connect_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
+      <span class="k">super</span><span class="p">.</span><span class="n">connect_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
+      <span class="c1">// ...</span>
+      <span class="n">prod</span><span class="p">.</span><span class="n">ap_b</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">ap_b_proxy</span><span class="p">.</span><span class="n">analysis_export</span><span class="p">);</span>
+    <span class="k">endfunction</span>
+  <span class="k">endclass</span></code></pre></figure>
+
+<p>Note that <code class="language-plaintext highlighter-rouge">ap_b</code> uses a normal uvm_analysis_port in the VIP. We can 
+make this analysis port accessible to the PyHDL-IF library by connecting
+an instance of <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> to it. While this could be done
+anywhere, it’s often done in the environment (as shown above).</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> instance is connected to the analysis port 
+in the same way that any other analysis port subscriber does. Doing 
+this allows Python code to receive transactions published by the 
+analysis port.</p>
+
+<p>Both <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_port</code> and <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> have a <code class="language-plaintext highlighter-rouge">proxy</code>
+field inside with a <code class="language-plaintext highlighter-rouge">add_listener</code> method that the Python environment 
+uses to register a listener. Let’s look at the Python environment now.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">PyComp</span><span class="p">(</span><span class="n">uvm_component_impl</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"build_phase"</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">connect_phase</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"connect_phase"</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">get_parent</span><span class="p">()</span>
+        <span class="n">env</span><span class="p">.</span><span class="n">prod</span><span class="p">.</span><span class="n">ap_a</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">add_listener</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">write_a</span><span class="p">)</span>
+        <span class="n">env</span><span class="p">.</span><span class="n">ap_b_proxy</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">add_listener</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">write_b</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_a</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"write_a %0s"</span> <span class="o">%</span> <span class="nf">str</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="nf">pack</span><span class="p">()),</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_b</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"write_b %0s"</span> <span class="o">%</span> <span class="nf">str</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="nf">pack</span><span class="p">()),</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
+
+<p>In this case, the component proxy is a child instance of the <code class="language-plaintext highlighter-rouge">env</code> class
+shown above. Consequently, to connect to the analysis ports, we first
+need to get a handle to the instance of the <code class="language-plaintext highlighter-rouge">env</code> class (our parent).
+After that, we need to access the analysis port <code class="language-plaintext highlighter-rouge">proxy</code> field inside
+the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_port</code> and <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> instances.
+We can pass any callable Python method or object to the <code class="language-plaintext highlighter-rouge">add_listener</code>
+method. In this case, we simply register two class methods. When simulation
+runs, <code class="language-plaintext highlighter-rouge">write_a</code> and <code class="language-plaintext highlighter-rouge">write_b</code> will be called whenever the analysis port
+that they monitor publishes a transaction.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+<p>The PyHDL-IF library allows analysis ports to be made visible and accessible 
+from Python with a small one-time investment. Verification IP (VIP) 
+developers can implement this support, allowing all users to benefit. 
+Testbench developers can also perform this work for VIP that isn’t pre-instrumented. 
+The result is that scoreboards and other analysis components can easily be developed in Python.</p>
+
+<p>Thus far in the series, we’ve seen how to run Python 
+behavior from SystemVerilog. We’ve seen how to interact with user-defined 
+UVM class fields, and we’ve now seen how to subscribe to analysis ports. 
+These technical capabilities make it easy for Python to dynamically interoperate 
+with an existing SystemVerilog/UVM testbench. But, thus far, these 
+capabilities don’t do much to support Python development tools. In the next
+post, we’ll see how the PyHDL-IF library provides a bridge from SystemVerilog/UVM
+to help Python development tools understand what is present in the UVM environment
+and make us more productive developing Python testbench components.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li>PyHDL-IF library - <a href="https://github.com/fvutils/pyhdl-if">https://github.com/fvutils/pyhdl-if</a></li>
+  <li>Analysis port example - <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard</a></li>
+</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[For the most part, UVM and SystemVerilog make interactions with a dynamically-typed language surprisingly easy. There are a few exceptions where the developer of the SystemVerilog UVM code must step in to enable access to certain testbench elements. Analysis ports are one case in point. Fortunately, there is a relatively non-invasive approach to allow Python to dynamically interact with UVM analysis ports. Let’s look more closely at the details. Working with Analysis Ports UVM testbench environments use analysis ports extensively. An analysis port publishes data to zero or more listeners, and is used to route transactions from interface monitors to scoreboards and other analysis components. Connecting to analysis ports from Python allows scoreboards and other analysis components to be implemented in Python. There are two technical requirements that enable Python to receive transactions published by analysis ports: Be able to identify a uvm_analysis_port as a distinct type (vs, say, a uvm_object or uvm_component). Be able to add a new listener to the analysis port Challenges of Dynamically Using Analysis Ports Each of these technical requirements poses its own challenge. classDiagram uvm_analysis_port_base &lt;|-- uvm_analysis_port uvm_tlm_if_base &lt;|-- uvm_analysis_port_base uvm_component &lt;|-- uvm_tlm_if_base class uvm_analysis_port["uvm_analysis_port #(T)"] class uvm_analysis_port_base["uvm_analysis_port_base #(uvm_tlm_if_base #(T,T))"] class uvm_tlm_if_base["uvm_tlm_if_base #(T,T)"] class uvm_component["uvm_component"] SystemVerilog is a statically-typed language that provides minimal introspection tools for looking at the internals of user-defined classes. This is especially true when it comes to templated types. In order to ask whether a given object is an instance of uvm_analysis_port, we need to ask about a specific specialization of that type – for example, “uvm_analysis_port #(my_special_transaction)”. As you might expect, this poses some challenges because the PyHDL-IF library only knows about concrete types defined by the UVM library, and doesn’t know anything about the transaction types used within a user’s testbench. As a consequence, when the PyHDL-IF library looks at an analysis port instance, it just sees a uvm_component instance. One possible approach to this challenge is to have the user register each of the transaction types that they might want to use with analysis ports with the PyHDL-IF library. For example: class my_transaction extends uvm_sequence_item; // ... endclass `pyhdl_uvm_transaction_utils(my_transaction) This would allow the PyHDL-IF library to identify analysis-port instances, but wouldn’t help with the second challenge of working with analysis ports. The second challenge comes when we want to add a new listener to an analysis port. This must be done during connect_phase, and requires that a properly-specialized uvm_analysis_imp #(T) class instance was previously created during the build phase. Making Analysis Ports Visibile While both of these challenges can be overcome independently, doing so would require the user to make two independent sets of changes. And, more troubling, wouldn’t provide a good way for VIP developers to hide this complexity from users. At minimum, the testbench developer would always need to pre-create uvm_analysis_imp instances for each analysis port to which they might subscribe. Instead, PyHDL-IF provides two classes that supports two paths for making analysis ports visible and accessible from Python: pyhdl_uvm_analysis_port – An alternative analysis port implementation intended for use by VIP authors pyhdl_uvm_analysis_imp – An analysis port listener intended to make existing analysis ports available to PyHDL-IF Example Let’s take a look at an example to understand how analysis ports are made accessible to the PyHDL-IF library. The uvm/seq_item_scoreboard example shows how to make analysis ports accessible as well as how to receive transactions from analysis ports. // Producer component with two analysis ports class dual_producer extends uvm_component; `uvm_component_utils(dual_producer) pyhdl_uvm_analysis_port #(seq_item_a) ap_a; uvm_analysis_port #(seq_item_b) ap_b; function new(string name, uvm_component parent); super.new(name, parent); endfunction function void build_phase(uvm_phase phase); super.build_phase(phase); ap_a = new("ap_a", this); ap_b = new("ap_b", this); endfunction The code snippet above shows how the pyhdl_uvm_analysis_port can be used instead of uvm_analysis_port to make an analysis port available to the PyHDL-IF library. The API of this class is identical to uvm_analysis_port, making this a good choice for VIP authors that want to automatically make analysis ports accessible. // Environment tying producer to scoreboard class my_env extends uvm_env; `uvm_component_utils(my_env) // ... pyhdl_uvm_analysis_imp #(seq_item_b) ap_b_proxy; // ... function void build_phase(uvm_phase phase); super.build_phase(phase); // ... ap_b_proxy = new("ap_b_proxy", this); endfunction function void connect_phase(uvm_phase phase); super.connect_phase(phase); // ... prod.ap_b.connect(ap_b_proxy.analysis_export); endfunction endclass Note that ap_b uses a normal uvm_analysis_port in the VIP. We can make this analysis port accessible to the PyHDL-IF library by connecting an instance of pyhdl_uvm_analysis_imp to it. While this could be done anywhere, it’s often done in the environment (as shown above). The pyhdl_uvm_analysis_imp instance is connected to the analysis port in the same way that any other analysis port subscriber does. Doing this allows Python code to receive transactions published by the analysis port. Both pyhdl_uvm_analysis_port and pyhdl_uvm_analysis_imp have a proxy field inside with a add_listener method that the Python environment uses to register a listener. Let’s look at the Python environment now. class PyComp(uvm_component_impl): def build_phase(self, phase): print("build_phase", flush=True) def connect_phase(self, phase): print("connect_phase", flush=True) env = self.proxy.get_parent() env.prod.ap_a.proxy.add_listener(self.write_a) env.ap_b_proxy.proxy.add_listener(self.write_b) def write_a(self, t): print("write_a %0s" % str(t.pack()), flush=True) def write_b(self, t): print("write_b %0s" % str(t.pack()), flush=True) In this case, the component proxy is a child instance of the env class shown above. Consequently, to connect to the analysis ports, we first need to get a handle to the instance of the env class (our parent). After that, we need to access the analysis port proxy field inside the pyhdl_uvm_analysis_port and pyhdl_uvm_analysis_imp instances. We can pass any callable Python method or object to the add_listener method. In this case, we simply register two class methods. When simulation runs, write_a and write_b will be called whenever the analysis port that they monitor publishes a transaction. Conclusions and Next Steps The PyHDL-IF library allows analysis ports to be made visible and accessible from Python with a small one-time investment. Verification IP (VIP) developers can implement this support, allowing all users to benefit. Testbench developers can also perform this work for VIP that isn’t pre-instrumented. The result is that scoreboards and other analysis components can easily be developed in Python. Thus far in the series, we’ve seen how to run Python behavior from SystemVerilog. We’ve seen how to interact with user-defined UVM class fields, and we’ve now seen how to subscribe to analysis ports. These technical capabilities make it easy for Python to dynamically interoperate with an existing SystemVerilog/UVM testbench. But, thus far, these capabilities don’t do much to support Python development tools. In the next post, we’ll see how the PyHDL-IF library provides a bridge from SystemVerilog/UVM to help Python development tools understand what is present in the UVM environment and make us more productive developing Python testbench components. References PyHDL-IF library - https://github.com/fvutils/pyhdl-if Analysis port example - https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard]]></summary></entry><entry><title type="html">Accessing User-Defined SV Data from Python</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html" rel="alternate" type="text/html" title="Accessing User-Defined SV Data from Python" /><published>2025-11-08T00:00:00+00:00</published><updated>2025-11-08T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html"><![CDATA[<p>We’ve seen how the <a href="http://github.com/fvutils/pyhdl-if">PyHDL-IF</a> library makes it simple to implement UVM sequences 
 and components in Python, and how Python can call back into SystemVerilog. But,
 a significant part of a testbench deals with user-defined data, ranging from 
 named UVM instances, transaction fields in sequence items and control knobs on 
@@ -1866,166 +2064,4 @@ at the instructions in the
 <p>The <code class="language-plaintext highlighter-rouge">Zuspec-SV</code> transpiler is under active development, but the approach 
 looks very promising.  Over the next few posts, we’ll have  look at 
 additional PSS constructs that we can implement in SystemVerilog and,
-more importantly, see how PSS interacts the testbench and design.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[You’re probably familiar with compilers. They take a high-level input description – typically a programming language – and distill it down to an efficient low-level implementation. Typically the implementation is machine code or bytecode. In other words, as close as possible to what will actually execute given the language ecosystem. You might be less familiar with transpilers (or source-to-source compilers, as they are also known). Transpilers convert an input in one programming language to output in another programming language with a similar level of abstraction. Transpilers have been in use for a very long time. For example, the C++ language was originally implemented with Cfront, a transpiler that converted C++ input to C code that any C compiler could process. More recently, the Typescript and Javascript/ECMAScript ecosystems have used transpilation extensively to allow the languages to evolve while maintaining an impressive level of backward compatibility with older implementations of the language. The next few posts will start to explore what we can do by transpiling test scenarios in PSS into implementations in existing programming languages.]]></summary></entry><entry><title type="html">What’s Next for PSS?</title><link href="https://bitsbytesgates.com/pss/2024/12/15/PSS_WhatsNext.html" rel="alternate" type="text/html" title="What’s Next for PSS?" /><published>2024-12-15T00:00:00+00:00</published><updated>2024-12-15T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2024/12/15/PSS_WhatsNext</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2024/12/15/PSS_WhatsNext.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/12/PSSFuture_splash.png" /> 
-</p>
-
-<p>As the year winds down, it’s a good time to think about the coming year and the
-areas where I’d like to have an impact. One area of particular
-interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera 
-PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt
-fortunate to have been involved with PSS Working Group (PSWG) from its inception,
-and to see how the growing body of features in PSS have allowed the language to 
-enable test-content portability across simulation, emulation, and post-silicon
-targets.</p>
-
-<p>The release of PSS 3.0 also provides an opportunity to step back and consider 
-the future of PSS – not just incremental additions to its current field of use,
-but also how its use could expand to other portions of the design and verification process.</p>
-
-<!--more-->
-
-<p>Today, the PSS language provides powerful features for capturing test 
-scenarios. It’s particularly adept at capturing IP programming sequences
-that are reusable from IP to system level.</p>
-
-<div class="mermaid" align="center">
-block-beta
-columns 1
-  block:Areas
-    A["Arch"]
-    B["Sw Models"]
-    C["Impl (RTL)"]
-    D["DV (Sim)"]
-    E["DV (Emu)"]
-    F["Prototying"]
-    G["Si Bring-Up"]
-    H["Si Validation"]
-  end
-</div>
-
-<p>Currently, the use of PSS centers around DV, prototyping, and silicon
-bring-up. PSS has plenty of room in which to expand adoption in 
-these areas, but there are also many others areas where PSS 
-could play and add value.</p>
-
-<p>Looking forward, there are three key areas where I’m looking to see growth
-in the PSS language and ecosystem:</p>
-
-<h2 id="develop-pss-core-language">Develop PSS Core Language</h2>
-
-<p>An evolving language is critical to maintaining interest and users. 
-Needs, styles, and approaches change over time, and a programming
-language must react to these changes in requirement in order to remain
-relevant. My informal observation is that, since the mid-2010s, more 
-programming languages are shortening the interval between updates
-to the language. I’m happy to see the PSS language continuing to
-grow and evolve in the context of the Accelera PSWG.</p>
-
-<h2 id="grow-pss-ecosystem">Grow PSS Ecosystem</h2>
-
-<p>Ecosystems are key to the success of any programming language. Having a 
-vibrant ecosystem means that users of a language will have access to 
-code snippets, expertise, and reusable libraries created by other users
-of the language. Vibrant ecosystems also act as a pipeline, getting 
-students interested in and familiar with the language.</p>
-
-<p>I’d also like to see more publicly-available examples and libraries. 
-Having real live code out there to play with is a critical part of
-learning a new technology.</p>
-
-<h2 id="exploration-of-new-applications">Exploration of New Applications</h2>
-
-<p>New applications and integrations is the area in which I most like to play.
-Each phase of the design process shown above has its own unique 
-requirements that it places – most often on <em>how</em> the language is 
-processed, but sometimes on the features provided by the language itself
-as well.</p>
-
-<p>There are key differences in test requirements across the different platforms
-shown in the diagram above, and worth exploring how that impacts how 
-tests are implemented. But, in addition, there might be some other interesting
-roles for PSS across the process. Could we use PSS, for example, to implement
-an architectural model of the design?</p>
-
-<h1 id="thinking-forward">Thinking Forward</h1>
-<p>Given these three areas, it’s reasonable to ask how we can “move the needle” 
-in each of them. To a certain extent, continued evolution of the core
-language might have the simplest answer since there’s a well-established 
-group (the Accellera PSWG) with members from across the industry that meet 
-weekly to discuss that topic.</p>
-
-<p>Advancing the other two areas poses a technology-access challenge. It’s 
-fine to speculate on how PSS might contribute to the design process, 
-for example. However, I’d argue that what most people really want to see
-are implementations (proof-of-concept or production) that deliver 
-concrete results.</p>
-
-<p>The same holds for building knowledge of PSS. It’s fine to read descriptions
-about how PSS works and how to use it to create test scenarios. Real learning
-takes places when people are able to work with the language themselves and
-internalize the key concepts of the language.</p>
-
-<h2 id="pss-and-open-source">PSS and Open Source</h2>
-<p>Open source software has been a powerful enabler of exploration in other ecosystems. 
-Having open source resources encourages people to learn about a technology. 
-It also provides a basis for experimentation that doesn’t require an interested
-party to start at zero.</p>
-
-<h2 id="zuspec">Zuspec</h2>
-<p>Starting in 2025, I’ll be starting to write more about components within the 
-<em>Zuspec</em> umbrella project. Consequently, it’s worth providing a brief 
-introduction to what <em>Zuspec</em> is, what it’s not, and what to expect.</p>
-
-<p>Zuspec is a collection of functionality for working with the style of
-action-centric dataflow descriptions used by the PSS language. The
-philosophy of the component libraries is to keep things as modular as
-possible to maximize the reuse opportunities even as we discover different
-ways in which to productively use and apply these descriptions.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/12/Zuspec_crop.png" style="width: 200px" />
-</p>
-
-<p>The <em>Zuspec</em> name is a portmanteau of zusammen (German for together) and ‘spec’,
-and reflects my ambition for PSS to be a specification that brings together
-disciplines such as design and verification that are quite separate today.</p>
-
-<p>From a technical perspective, the vast majority of Zuspec components are 
-implemented as C++ libraries (for speed) that also have Python bindings, 
-making it easy to use a small amount of Python to mix them together 
-into an application.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2024/12/ZuspecProjectMap.png" style="width: 800px" />
-</p>
-
-<p>Zuspec is much more of a technology framework than a tool today. You won’t find
-any fancy GUIs. And, it’s in an early state of development and testing: 
-you should expect to find bugs. That said, my hope is that if these 
-components can help me to explore new areas of PSS application they can
-enable others to do the same. Starting in the new year, I’ll be writing
-more about the components and what they allow us to do with a 
-PSS-based description</p>
-
-<h1 id="pss-looking-forward">PSS Looking Forward</h1>
-
-<p>I continue to see PSS as having a bright future. It’s providing strong value
-in the areas of test-content reuse, with a focus on simulation, emulation, 
-and silicon bring-up. And, as more people learn about PSS and get 
-hands-on experience with the language and its capabilities, I’m confident 
-that adoption will continue to grow. I also see great possibilities for the 
-language to expand its application space into domains adjacent to where it 
-is applied today.</p>
-
-<p>In the coming year, I’m looking forward to writing more about what PSS 
-enables today, and what it could enable in the future. And, of course,
-expect to hear more about other tools and technologies related to design
-and verification. There is always something new to learn and explore!</p>
-
-<h1 id="references">References</h1>
-<ul>
-  <li>Accellera - https://accellera.org</li>
-  <li>PSS Tutorial Video - https://www.accellera.org/resources/videos/portable-stimulus-tutorial-2024</li>
-  <li>PSS LRM - https://www.accellera.org/downloads/standards/portable-stimulus</li>
-</ul>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[As the year winds down, it’s a good time to think about the coming year and the areas where I’d like to have an impact. One area of particular interest this year is the Portable Test and Stimulus (PSS) standard. The Accellera PSS working group released the 3.0 version of the PSS LRM in August, and I’ve felt fortunate to have been involved with PSS Working Group (PSWG) from its inception, and to see how the growing body of features in PSS have allowed the language to enable test-content portability across simulation, emulation, and post-silicon targets. The release of PSS 3.0 also provides an opportunity to step back and consider the future of PSS – not just incremental additions to its current field of use, but also how its use could expand to other portions of the design and verification process.]]></summary></entry></feed>
+more importantly, see how PSS interacts the testbench and design.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[You’re probably familiar with compilers. They take a high-level input description – typically a programming language – and distill it down to an efficient low-level implementation. Typically the implementation is machine code or bytecode. In other words, as close as possible to what will actually execute given the language ecosystem. You might be less familiar with transpilers (or source-to-source compilers, as they are also known). Transpilers convert an input in one programming language to output in another programming language with a similar level of abstraction. Transpilers have been in use for a very long time. For example, the C++ language was originally implemented with Cfront, a transpiler that converted C++ input to C code that any C compiler could process. More recently, the Typescript and Javascript/ECMAScript ecosystems have used transpilation extensively to allow the languages to evolve while maintaining an impressive level of backward compatibility with older implementations of the language. The next few posts will start to explore what we can do by transpiling test scenarios in PSS into implementations in existing programming languages.]]></summary></entry></feed>
