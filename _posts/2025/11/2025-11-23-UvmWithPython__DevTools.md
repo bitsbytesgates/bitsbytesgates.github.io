@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Introducing UVM to Python Development Tools
+title: Introducing SV/UVM to Python Development Tools
 date: 2025-11-23
 categories: PythonUVM
 excerpt_separator: <!--more-->
