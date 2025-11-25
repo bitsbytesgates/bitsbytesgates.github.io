@@ -10,12 +10,12 @@
   <title>
     
     
-       &middot; Bits, Bytes, and Gates
+      Introducing UVM to Python Development Tools &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/code_html/2023/04/wb_dma_4_registers.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pythonuvm/2025/11/23/UvmWithPython__DevTools.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -27,6 +27,14 @@
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -719,12 +727,12 @@ class="jfk-button jfk-button-action " style="">
   <title>
     
     
-       &middot; Bits, Bytes, and Gates
+      Introducing UVM to Python Development Tools &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/code_html/2023/04/wb_dma_4_registers.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/pythonuvm/2025/11/23/UvmWithPython__DevTools.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -736,6 +744,14 @@ class="jfk-button jfk-button-action " style="">
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -765,187 +781,206 @@ Post-env
 </head>
 
 
+
   <body>
 
-    <div class="language-pss highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/****************************************************************************
- * wb_dma_4_registers.pss
- *
- * Copyright 2023 Matthew Ballance and Contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may 
- * not use this file except in compliance with the License.  
- * You may obtain a copy of the License at:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  
- * See the License for the specific language governing permissions and 
- * limitations under the License.
- *
- * Created on:
- *     Author: 
- ****************************************************************************/</span>
-<span class="k">import</span> <span class="nn">addr_reg_pkg</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
 
-<span class="kd">buffer</span> <span class="nc">MemBuf</span> <span class="p">{</span>
-    <span class="kd">rand</span> <span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>        <span class="n">size</span><span class="p">;</span> <span class="c1">// Size of the data</span>
-    <span class="n">addr_handle_t</span>       <span class="n">addr_h</span><span class="p">;</span>
-<span class="p">}</span>
+  <div class="post">
+    <h1 class="post-title">Introducing UVM to Python Development Tools</h1>
+    <span class="post-date">23 Nov 2025</span>
 
-<span class="kd">resource</span> <span class="nc">Channel</span> <span class="p">{</span> <span class="p">}</span>
+    <p>Over the past few posts, we’ve examined the details of dynamically interacting
+with a SystemVerilog/UVM environment from Python. We can access the 
+component hierarchy of a UVM testbench, read and write the value of sequence-item
+fields, and run sequences from Python – all without recompiling our UVM testbench
+or needing to generate any testbench-specific code. In this
+post, we’ll see how we can generate a Python view of key user-defined SystemVerilog 
+classes in the UVM testbench. The reason? To better support the operation of Python
+development tools.</p>
 
-<span class="kd">struct</span> <span class="nc">WbDmaChannelCSR</span> <span class="p">:</span> <span class="n">packed_s</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
-    <span class="kt">bit</span>               <span class="n">CH_EN</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">DST_SEL</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">SRC_SEL</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INC_DST</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INC_SRC</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">MODE</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">ARS</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">USE_ED</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">SZ_WB</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">STOP</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">BUSY</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">DONE</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">ERR</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>            <span class="n">PRI</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">REST_EN</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INE_ERR</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INE_DONE</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INE_CHK_DONE</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INT_ERROR</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INT_DONE</span><span class="p">;</span>
-    <span class="kt">bit</span>               <span class="n">INT_CHK_SZ</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>            <span class="n">RESERVED</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="kd">struct</span> <span class="nc">WbDmaChannelSZ</span> <span class="p">:</span> <span class="n">packed_s</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span>           <span class="n">TOT_SZ</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>            <span class="n">RESERVED_1</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>            <span class="n">CHK_SZ</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>            <span class="n">RESERVED_2</span><span class="p">;</span>
-<span class="p">}</span>
+<!--more-->
 
-<span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaChannelRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelSZ</span><span class="o">&gt;</span>          <span class="n">SZ</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddr</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddrMask</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddr</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddrMask</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">LinkListPtr</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SwPtr</span><span class="p">;</span>
-<span class="p">}</span>
+<h1 id="feeding-python-development-tools">Feeding Python Development Tools</h1>
 
-<span class="kd">struct</span> <span class="nc">WbDmaCSR</span> <span class="p">:</span> <span class="n">packed_s</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
-    <span class="kt">bit</span>                            <span class="n">PAUSE</span><span class="p">;</span>
-    <span class="kt">bit</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span>                        <span class="n">RESERVED</span><span class="p">;</span>
-<span class="p">}</span>
+<p>Python has a rich ecosystem of developer tools. There are IDE plug-ins that 
+assist developers in navigating around a codebase, and provide context-aware 
+editing capabilities.  There are static-checking tools (MyPy, Flake8, etc) that 
+identify coding mistakes before execution, saving iteration time. And, of course, 
+there are a collection of AI assistants (Copilot, Cline, Codex, Claude, etc) that 
+have proven very adept at writing Python code. The common factor with all of these 
+tools is that they all operate on Python source.</p>
 
-<span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_A</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_B</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_A</span><span class="p">;</span>
-    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_B</span><span class="p">;</span>
+<p>We’ve gotten this far without needing to generate any testbench-specific Python
+or SystemVerilog code to implement a general-purpose Python integration with
+a UVM testbench. Fortunately, the same dynamically-discovered data that enables ease 
+of integration can be used to generate the Python source that enables our 
+development tools.</p>
 
-    <span class="n">WbDmaChannelRegs</span>        <span class="n">channels</span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
-<span class="p">}</span>
+<h1 id="discovering-available-types">Discovering Available Types</h1>
 
-<span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+<p>PyHDL-IF already uses the vast majority of the data required to generate a Python 
+view of user-defined SV/UVM classes to implement the runtime integration 
+between Python and SystemVerilog – specifically, identifying and accessing 
+named component instances and fields registered with the UVM library. 
+The one piece that we’re missing is a list
+of all the classes registered with the UVM factory.</p>
 
-    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
+<p>Unfortunately, the UVM library doesn’t make this information available via
+a standard API. The good news is that there is a workaround. The UVM factory
+provides a <code class="language-plaintext highlighter-rouge">print</code> function that reports the names of registered classes via
+the UVM report infrastructure. Using a custom message handler, we can intercept
+and save this catalog of available choices. You can find the relevant 
+code in <a href="https://github.com/fvutils/pyhdl-if/blob/main/src/hdl_if/share/uvm/pyhdl_uvm_object_rgy.svh">src/hdl_if/share/uvm/pyhdl_uvm_object_rgy.svh</a>.</p>
 
-    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
-    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="cm">/** 
+ * Implements a report catcher to allow capturing the 
+ * list of object typenames printed by the factory
+ */</span>     
+<span class="kt">class</span> <span class="n">factory_print_catcher</span> <span class="k">extends</span> <span class="n">uvm_report_catcher</span><span class="p">;</span>
+    <span class="kt">string</span>  <span class="n">factory_print</span><span class="p">;</span>
 
-    <span class="c1">// DMA register model</span>
-    <span class="n">WbDmaRegs</span>                   <span class="n">regs</span><span class="p">;</span>
+    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="o">=</span><span class="s">"factory_print_catcher"</span><span class="p">);</span>
+        <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+    <span class="k">endfunction</span>
 
-    <span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">src_i</span><span class="p">;</span>
-        <span class="k">input</span> <span class="n">MemBuf</span>            <span class="n">dst_o</span><span class="p">;</span>
-        <span class="kd">rand</span> <span class="n">addr_claim_s</span><span class="o">&lt;&gt;</span>     <span class="n">dst_claim</span><span class="p">;</span>
-        <span class="k">lock</span> <span class="n">Channel</span>            <span class="n">channel</span><span class="p">;</span>
+    <span class="k">function</span> <span class="n">action_e</span> <span class="n">catch</span><span class="p">();</span>
+        <span class="n">factory_print</span> <span class="o">=</span> <span class="n">get_message</span><span class="p">();</span>
 
-        <span class="c1">// Input and output size must be the same</span>
-        <span class="k">constraint</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">src_i</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
+        <span class="c1">// Suppress the message</span>
+        <span class="k">return</span> <span class="n">CAUGHT</span><span class="p">;</span>
+    <span class="k">endfunction</span>
+<span class="k">endclass</span>
 
-        <span class="c1">// DMA only transfers words</span>
-        <span class="k">constraint</span> <span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span> 
+<span class="kt">class</span> <span class="n">pyhdl_uvm_object_rgy</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+    <span class="kt">virtual</span> <span class="k">function</span> <span class="kt">string</span> <span class="mi">_</span><span class="n">get_type_dump</span><span class="p">();</span>
+        <span class="n">factory_print_catcher</span> <span class="n">catcher</span> <span class="o">=</span> <span class="k">new</span><span class="p">;</span>
+        <span class="n">uvm_factory</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">uvm_factory</span><span class="o">::</span><span class="n">get</span><span class="p">();</span>
 
-        <span class="c1">// Specify size/alignment for allocation</span>
-        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span><span class="p">;</span>
-        <span class="k">constraint</span> <span class="n">dst_claim</span><span class="o">.</span><span class="n">alignment</span> <span class="o">==</span> <span class="mi">4</span><span class="p">;</span>
+        <span class="c1">// Attach our custom report catcher so we can </span>
+        <span class="c1">// save the message printed by factory.print()</span>
+        <span class="n">uvm_report_cb</span><span class="o">::</span><span class="n">add</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="n">catcher</span><span class="p">);</span>
 
-        <span class="k">exec</span> <span class="k">post_solve</span> <span class="p">{</span>
-            <span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span> <span class="o">=</span> <span class="n">make_handle_from_claim</span><span class="p">(</span><span class="n">dst_claim</span><span class="p">);</span>
-        <span class="p">}</span>
+        <span class="n">factory</span><span class="p">.</span><span class="n">print</span><span class="p">();</span>
 
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="c1">// Setup the transfer size</span>
-            <span class="n">WbDmaChannelSZ</span> <span class="n">sz</span><span class="p">;</span>
-            <span class="n">sz</span><span class="o">.</span><span class="n">CHK_SZ</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
-            <span class="n">sz</span><span class="o">.</span><span class="n">TOT_SZ</span> <span class="o">=</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">;</span> <span class="c1">// We always work in words</span>
-            <span class="n">regs</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sz</span><span class="p">);</span>
+        <span class="n">uvm_report_cb</span><span class="o">::</span><span class="n">delete</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="n">catcher</span><span class="p">);</span>
 
-            <span class="c1">// Configure source and destination addresses</span>
-            <span class="n">regs</span><span class="o">.</span><span class="n">INT_SRC_A</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">src_i</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
-            <span class="n">regs</span><span class="o">.</span><span class="n">INT_DST_A</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
+        <span class="k">return</span> <span class="n">catcher</span><span class="p">.</span><span class="n">factory_print</span><span class="p">;</span>
+    <span class="k">endfunction</span>
 
-            <span class="c1">// Enable the channel</span>
-            <span class="n">WbDmaChannelCSR</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
-            <span class="n">csr</span><span class="o">.</span><span class="n">CH_EN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-            <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">csr</span><span class="p">);</span>
+    <span class="c1">// ...</span>
+<span class="k">endclass</span></code></pre></figure>
 
-            <span class="c1">// Wait for the transfer to complete</span>
-            <span class="k">repeat</span> <span class="p">{</span>
-                <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
-                <span class="c1">// ...</span>
-            <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">DONE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<h1 id="the-pyhdl_uvm_pygen-uvm-test">The pyhdl_uvm_pygen UVM Test</h1>
 
-    <span class="kd">action</span> <span class="nc">Mem2Dev</span> <span class="p">{</span>
-        <span class="c1">// TODO: fill in later</span>
+<p>We need to run the simulator in order to load and execute code from the UVM
+testbench. In a UVM environment, the UVM test is the center of executing
+test behavior, so it makes sense to provide a UVM test that handles discovering
+the available user-defined UVM classes and generating a Python view. The 
+PyHDL-IF library provides the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_pygen</code> test for this purpose.</p>
 
-    <span class="p">}</span>
+<p>While the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_pygen</code> test is the entrypoint, the task of discovering
+available classes, processing them, and generating Python is all implemented
+in Python.</p>
 
-    <span class="kd">action</span> <span class="nc">Dev2Mem</span> <span class="p">{</span>
-        <span class="c1">// TODO: fill in later</span>
+<h1 id="example">Example</h1>
+<p>While all the details of <em>how</em> we extract information from SV/UVM classes is 
+interesting, pragmatic users will be much more interested in <em>applying</em> the
+workflow and using the result.</p>
 
-    <span class="p">}</span>
+<p>Let’s look at an example, which you can find in <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/pygen">examples/uvm/pygen</a>.</p>
 
-<span class="p">}</span>
+<p>This example consists of a simple UVM environment with a memory-oriented sequence 
+item, shown below:</p>
 
-<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
-    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="kt">class</span> <span class="n">seq_item</span> <span class="k">extends</span> <span class="n">uvm_sequence_item</span><span class="p">;</span>
+        <span class="kt">bit</span>              <span class="n">ctrl_addr_page</span><span class="p">;</span>
+        <span class="kt">bit</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">addr_page</span><span class="p">;</span>
 
-    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
+        <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">addr</span><span class="p">;</span>
+        <span class="k">rand</span> <span class="kt">bit</span>         <span class="nb">write</span><span class="p">;</span> <span class="c1">// 1=write, 0=read</span>
+        <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">data</span><span class="p">;</span>
+        <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">tid</span><span class="p">;</span>
 
-    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
-        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
+        <span class="c1">// ...</span>
 
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+        <span class="cp">`uvm_object_utils_begin</span><span class="p">(</span><span class="n">seq_item</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">ctrl_addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="nb">write</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">data</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">tid</span>  <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_object_utils_end</span>
 
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x0000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+        <span class="c1">// ...</span>
+    <span class="k">endclass</span></code></pre></figure>
 
-        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
-        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+<p>Our build/run-flow specification (flow.yaml) specifies how to build
+and run tests. This example also launches the PyHDL-IF-provided 
+UVM test that generates Python classes. Note how the task parameters
+specify a SystemVerilog plusarg (+pyhdl.outdir) to specify the destination directory
+for the generated Python classes.</p>
 
-        <span class="n">dma</span><span class="o">.</span><span class="n">regs</span><span class="o">.</span><span class="n">set_handle</span><span class="p">(</span><span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">mmio_h</span><span class="p">,</span> <span class="mh">0x0</span><span class="p">));</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml">  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">sim-run</span>
+    <span class="na">uses</span><span class="pi">:</span> <span class="s2">"</span><span class="s">hdlsim.$.SimRun"</span>
+    <span class="na">needs</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">sim-img</span>
+    <span class="pi">-</span> <span class="s">pyhdl-if.DpiLib</span>
+    <span class="na">with</span><span class="pi">:</span>
+      <span class="na">plusargs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">UVM_TESTNAME=pyhdl_uvm_pygen</span>
+      <span class="pi">-</span> <span class="s">pyhdl.python=$/../../packages/python/bin/python</span>
+      <span class="pi">-</span> <span class="s">pyhdl.debug=0</span>
+      <span class="pi">-</span> <span class="s">pygen.debug=1</span>
+      <span class="pi">-</span> <span class="s">pyhdl.outdir=$/env_classes/env</span></code></pre></figure>
 
-</code></pre></div></div>
+<p>Running the <code class="language-plaintext highlighter-rouge">sim-run</code> task runs the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_pygen</code> UVM test, which
+generates Python classes in the example directory. The class corresponding
+to the sequence item is shown below. You can find the full code in
+<a href="https://github.com/fvutils/pyhdl-if/blob/main/examples/uvm/pygen/env_classes/env/seq_item.py">examples/uvm/pygen/env_classes/env/seq_item.py</a>.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@dc.dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">seq_item_fields</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">ctrl_addr_page</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">addr_page</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">addr</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">write</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">data</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">tid</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nd">@dc.dataclass</span>
+<span class="k">class</span> <span class="nc">seq_item</span><span class="p">(</span><span class="n">uvm_object</span><span class="p">,</span> <span class="n">seq_item_fields</span><span class="p">):</span>
+    <span class="k">pass</span></code></pre></figure>
+
+<p>The class fields are declared in a pure-data class (seq_item_fields) to make 
+it easier to use just the data aspect of the class for unit testing.</p>
+
+<p>Once generated, these Python classes that mirror the user-defined 
+SystemVerilog/UVM classes can be supplied to all of our standard Python 
+development tools, allowing these tools to check and provide help working
+with the Python interface to our SystemVerilog/UVM testbench.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>The PyHDL-IF library provides an easy-to-use integration between Python and
+a SystemVerilog/UVM testbench environment. And, by generating a Python view
+of the SystemVerilog classes, supports Python development tools in providing
+a productive developer experience.</p>
+
+<p>We’ll look at other features of the PyHDL-IF library and its support for SV/UVM
+in future posts. But, more immediately, we’ll be looking at how recent changes in
+the open-source EDA ecosystem are changing what’s possible in a verification 
+flow that supports both open-source and closed-source tools.</p>
+
+<h1 id="references">References</h1>
+<ul>
+  <li><a href="https://github.com/fvutils/pyhdl-if/">PyHDL-IF</a></li>
+  <li><a href="https://mypy-lang.org/">MyPy</a></li>
+  <li><a href="https://flake8.pycqa.org/en/latest/">Flake8</a></li>
+</ul>
+
+
+  </div>
 
 
   <div/>
@@ -955,9 +990,28 @@ Post-env
   <em>The views and opinions expressed above are solely those of the author and do not 
       represent those of my employer or any other party.</em>
 
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
+  
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
+  
+
   </body>
 </html>
-
       </div>
     </div>
 

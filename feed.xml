@@ -1,4 +1,192 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-11-18T00:42:50+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Working with Analysis Ports</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html" rel="alternate" type="text/html" title="Working with Analysis Ports" /><published>2025-11-16T00:00:00+00:00</published><updated>2025-11-16T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html"><![CDATA[<p>For the most part, UVM and SystemVerilog make interactions with a 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2025-11-25T02:41:10+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Introducing UVM to Python Development Tools</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/23/UvmWithPython__DevTools.html" rel="alternate" type="text/html" title="Introducing UVM to Python Development Tools" /><published>2025-11-23T00:00:00+00:00</published><updated>2025-11-23T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/23/UvmWithPython__DevTools</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/23/UvmWithPython__DevTools.html"><![CDATA[<p>Over the past few posts, we’ve examined the details of dynamically interacting
+with a SystemVerilog/UVM environment from Python. We can access the 
+component hierarchy of a UVM testbench, read and write the value of sequence-item
+fields, and run sequences from Python – all without recompiling our UVM testbench
+or needing to generate any testbench-specific code. In this
+post, we’ll see how we can generate a Python view of key user-defined SystemVerilog 
+classes in the UVM testbench. The reason? To better support the operation of Python
+development tools.</p>
+
+<!--more-->
+
+<h1 id="feeding-python-development-tools">Feeding Python Development Tools</h1>
+
+<p>Python has a rich ecosystem of developer tools. There are IDE plug-ins that 
+assist developers in navigating around a codebase, and provide context-aware 
+editing capabilities.  There are static-checking tools (MyPy, Flake8, etc) that 
+identify coding mistakes before execution, saving iteration time. And, of course, 
+there are a collection of AI assistants (Copilot, Cline, Codex, Claude, etc) that 
+have proven very adept at writing Python code. The common factor with all of these 
+tools is that they all operate on Python source.</p>
+
+<p>We’ve gotten this far without needing to generate any testbench-specific Python
+or SystemVerilog code to implement a general-purpose Python integration with
+a UVM testbench. Fortunately, the same dynamically-discovered data that enables ease 
+of integration can be used to generate the Python source that enables our 
+development tools.</p>
+
+<h1 id="discovering-available-types">Discovering Available Types</h1>
+
+<p>PyHDL-IF already uses the vast majority of the data required to generate a Python 
+view of user-defined SV/UVM classes to implement the runtime integration 
+between Python and SystemVerilog – specifically, identifying and accessing 
+named component instances and fields registered with the UVM library. 
+The one piece that we’re missing is a list
+of all the classes registered with the UVM factory.</p>
+
+<p>Unfortunately, the UVM library doesn’t make this information available via
+a standard API. The good news is that there is a workaround. The UVM factory
+provides a <code class="language-plaintext highlighter-rouge">print</code> function that reports the names of registered classes via
+the UVM report infrastructure. Using a custom message handler, we can intercept
+and save this catalog of available choices. You can find the relevant 
+code in <a href="https://github.com/fvutils/pyhdl-if/blob/main/src/hdl_if/share/uvm/pyhdl_uvm_object_rgy.svh">src/hdl_if/share/uvm/pyhdl_uvm_object_rgy.svh</a>.</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="cm">/** 
+ * Implements a report catcher to allow capturing the 
+ * list of object typenames printed by the factory
+ */</span>     
+<span class="kt">class</span> <span class="n">factory_print_catcher</span> <span class="k">extends</span> <span class="n">uvm_report_catcher</span><span class="p">;</span>
+    <span class="kt">string</span>  <span class="n">factory_print</span><span class="p">;</span>
+
+    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="o">=</span><span class="s">"factory_print_catcher"</span><span class="p">);</span>
+        <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+    <span class="k">endfunction</span>
+
+    <span class="k">function</span> <span class="n">action_e</span> <span class="n">catch</span><span class="p">();</span>
+        <span class="n">factory_print</span> <span class="o">=</span> <span class="n">get_message</span><span class="p">();</span>
+
+        <span class="c1">// Suppress the message</span>
+        <span class="k">return</span> <span class="n">CAUGHT</span><span class="p">;</span>
+    <span class="k">endfunction</span>
+<span class="k">endclass</span>
+
+<span class="kt">class</span> <span class="n">pyhdl_uvm_object_rgy</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+    <span class="kt">virtual</span> <span class="k">function</span> <span class="kt">string</span> <span class="mi">_</span><span class="n">get_type_dump</span><span class="p">();</span>
+        <span class="n">factory_print_catcher</span> <span class="n">catcher</span> <span class="o">=</span> <span class="k">new</span><span class="p">;</span>
+        <span class="n">uvm_factory</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">uvm_factory</span><span class="o">::</span><span class="n">get</span><span class="p">();</span>
+
+        <span class="c1">// Attach our custom report catcher so we can </span>
+        <span class="c1">// save the message printed by factory.print()</span>
+        <span class="n">uvm_report_cb</span><span class="o">::</span><span class="n">add</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="n">catcher</span><span class="p">);</span>
+
+        <span class="n">factory</span><span class="p">.</span><span class="n">print</span><span class="p">();</span>
+
+        <span class="n">uvm_report_cb</span><span class="o">::</span><span class="n">delete</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="n">catcher</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="n">catcher</span><span class="p">.</span><span class="n">factory_print</span><span class="p">;</span>
+    <span class="k">endfunction</span>
+
+    <span class="c1">// ...</span>
+<span class="k">endclass</span></code></pre></figure>
+
+<h1 id="the-pyhdl_uvm_pygen-uvm-test">The pyhdl_uvm_pygen UVM Test</h1>
+
+<p>We need to run the simulator in order to load and execute code from the UVM
+testbench. In a UVM environment, the UVM test is the center of executing
+test behavior, so it makes sense to provide a UVM test that handles discovering
+the available user-defined UVM classes and generating a Python view. The 
+PyHDL-IF library provides the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_pygen</code> test for this purpose.</p>
+
+<p>While the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_pygen</code> test is the entrypoint, the task of discovering
+available classes, processing them, and generating Python is all implemented
+in Python.</p>
+
+<h1 id="example">Example</h1>
+<p>While all the details of <em>how</em> we extract information from SV/UVM classes is 
+interesting, pragmatic users will be much more interested in <em>applying</em> the
+workflow and using the result.</p>
+
+<p>Let’s look at an example, which you can find in <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/pygen">examples/uvm/pygen</a>.</p>
+
+<p>This example consists of a simple UVM environment with a memory-oriented sequence 
+item, shown below:</p>
+
+<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="kt">class</span> <span class="n">seq_item</span> <span class="k">extends</span> <span class="n">uvm_sequence_item</span><span class="p">;</span>
+        <span class="kt">bit</span>              <span class="n">ctrl_addr_page</span><span class="p">;</span>
+        <span class="kt">bit</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>         <span class="n">addr_page</span><span class="p">;</span>
+
+        <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">7</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">addr</span><span class="p">;</span>
+        <span class="k">rand</span> <span class="kt">bit</span>         <span class="nb">write</span><span class="p">;</span> <span class="c1">// 1=write, 0=read</span>
+        <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>  <span class="n">data</span><span class="p">;</span>
+        <span class="k">rand</span> <span class="kt">bit</span> <span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span>   <span class="n">tid</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+
+        <span class="cp">`uvm_object_utils_begin</span><span class="p">(</span><span class="n">seq_item</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">ctrl_addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr_page</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">addr</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="nb">write</span><span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">data</span> <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+            <span class="cp">`uvm_field_int</span><span class="p">(</span><span class="n">tid</span>  <span class="p">,</span> <span class="n">UVM_ALL_ON</span><span class="p">)</span>
+        <span class="cp">`uvm_object_utils_end</span>
+
+        <span class="c1">// ...</span>
+    <span class="k">endclass</span></code></pre></figure>
+
+<p>Our build/run-flow specification (flow.yaml) specifies how to build
+and run tests. This example also launches the PyHDL-IF-provided 
+UVM test that generates Python classes. Note how the task parameters
+specify a SystemVerilog plusarg (+pyhdl.outdir) to specify the destination directory
+for the generated Python classes.</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml">  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">sim-run</span>
+    <span class="na">uses</span><span class="pi">:</span> <span class="s2">"</span><span class="s">hdlsim.$.SimRun"</span>
+    <span class="na">needs</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">sim-img</span>
+    <span class="pi">-</span> <span class="s">pyhdl-if.DpiLib</span>
+    <span class="na">with</span><span class="pi">:</span>
+      <span class="na">plusargs</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">UVM_TESTNAME=pyhdl_uvm_pygen</span>
+      <span class="pi">-</span> <span class="s">pyhdl.python=$/../../packages/python/bin/python</span>
+      <span class="pi">-</span> <span class="s">pyhdl.debug=0</span>
+      <span class="pi">-</span> <span class="s">pygen.debug=1</span>
+      <span class="pi">-</span> <span class="s">pyhdl.outdir=$/env_classes/env</span></code></pre></figure>
+
+<p>Running the <code class="language-plaintext highlighter-rouge">sim-run</code> task runs the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_pygen</code> UVM test, which
+generates Python classes in the example directory. The class corresponding
+to the sequence item is shown below. You can find the full code in
+<a href="https://github.com/fvutils/pyhdl-if/blob/main/examples/uvm/pygen/env_classes/env/seq_item.py">examples/uvm/pygen/env_classes/env/seq_item.py</a>.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@dc.dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">seq_item_fields</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">ctrl_addr_page</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">addr_page</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">addr</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">write</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">data</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">tid</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">dc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nd">@dc.dataclass</span>
+<span class="k">class</span> <span class="nc">seq_item</span><span class="p">(</span><span class="n">uvm_object</span><span class="p">,</span> <span class="n">seq_item_fields</span><span class="p">):</span>
+    <span class="k">pass</span></code></pre></figure>
+
+<p>The class fields are declared in a pure-data class (seq_item_fields) to make 
+it easier to use just the data aspect of the class for unit testing.</p>
+
+<p>Once generated, these Python classes that mirror the user-defined 
+SystemVerilog/UVM classes can be supplied to all of our standard Python 
+development tools, allowing these tools to check and provide help working
+with the Python interface to our SystemVerilog/UVM testbench.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>The PyHDL-IF library provides an easy-to-use integration between Python and
+a SystemVerilog/UVM testbench environment. And, by generating a Python view
+of the SystemVerilog classes, supports Python development tools in providing
+a productive developer experience.</p>
+
+<p>We’ll look at other features of the PyHDL-IF library and its support for SV/UVM
+in future posts. But, more immediately, we’ll be looking at how recent changes in
+the open-source EDA ecosystem are changing what’s possible in a verification 
+flow that supports both open-source and closed-source tools.</p>
+
+<h1 id="references">References</h1>
+<ul>
+  <li><a href="https://github.com/fvutils/pyhdl-if/">PyHDL-IF</a></li>
+  <li><a href="https://mypy-lang.org/">MyPy</a></li>
+  <li><a href="https://flake8.pycqa.org/en/latest/">Flake8</a></li>
+</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[Over the past few posts, we’ve examined the details of dynamically interacting with a SystemVerilog/UVM environment from Python. We can access the component hierarchy of a UVM testbench, read and write the value of sequence-item fields, and run sequences from Python – all without recompiling our UVM testbench or needing to generate any testbench-specific code. In this post, we’ll see how we can generate a Python view of key user-defined SystemVerilog classes in the UVM testbench. The reason? To better support the operation of Python development tools.]]></summary></entry><entry><title type="html">Working with Analysis Ports</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html" rel="alternate" type="text/html" title="Working with Analysis Ports" /><published>2025-11-16T00:00:00+00:00</published><updated>2025-11-16T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html"><![CDATA[<p>For the most part, UVM and SystemVerilog make interactions with a 
 dynamically-typed language surprisingly easy. There are a few exceptions
 where the developer of the SystemVerilog UVM code must step in to enable
 access to certain testbench elements. Analysis ports are one case in point.
@@ -1872,196 +2060,4 @@ approach supports multiple indepdent PSS model instances. But,
 how does it support API implementations coming from different
 sources, and multiple independent streams of activity within
 one PSS model? In the next post, we’ll start to dig into how
-to interface PSS to verifcation IP (VIP) and bus functional models (BFMs).</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[In the last post, we showed a SystemVerilog implementation of a PSS model that printed “Hello World!”. Interesting, perhaps, but quite a ways from being useful. In order to be useful, our PSS model needs to interact with the environment surrounding it. This post will cover more details about how a PSS model interacts with the environment around it, and look at an object-oriented interface between PSS and a SystemVerilog environment.]]></summary></entry><entry><title type="html">Transpilation and PSS</title><link href="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html" rel="alternate" type="text/html" title="Transpilation and PSS" /><published>2025-02-04T00:00:00+00:00</published><updated>2025-02-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS</id><content type="html" xml:base="https://bitsbytesgates.com/pss/2025/02/04/Transpilation_and_PSS.html"><![CDATA[<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/02/PSSTranspilation_splash.png" /> 
-</p>
-
-<p>You’re probably familiar with compilers. They take a high-level input description – 
-typically a programming language – and distill it down to an efficient 
-low-level implementation. Typically the implementation is machine code or 
-bytecode. In other words, as close as possible to what will actually execute 
-given the language ecosystem.</p>
-
-<p>You might be less familiar with transpilers (or 
-source-to-source compilers, as they are <a href="https://en.wikipedia.org/wiki/Source-to-source_compiler">also known</a>). Transpilers convert
-an input in one programming language to output in another programming language
-with a similar level of abstraction. Transpilers have been in use for a very 
-long time. For example, the C++ language was originally implemented with 
-<a href="https://en.wikipedia.org/wiki/Cfront">Cfront</a>, a transpiler that converted
-C++ input to C code that any C compiler could process. More recently, the 
-<a href="https://www.typescriptlang.org/">Typescript</a> and 
-<a href="https://en.wikipedia.org/wiki/ECMAScript">Javascript/ECMAScript</a> ecosystems
-have used transpilation extensively to allow the languages to evolve while
-maintaining an impressive level of backward compatibility with older 
-implementations of the language.</p>
-
-<p>The next few posts will start to explore what we can do by transpiling
-test scenarios in PSS into implementations in existing programming languages.</p>
-
-<!--more-->
-
-<h1 id="is-pss-a-programming-language">Is PSS a Programming Language?</h1>
-<p>Both compilers and transpilers are software concepts, so it’s worth asking
-whether PSS language is a programming language. Portions of the language 
-do provide the features of a standard programming language – if/else,
-loops, functions, and data structures. In this portion of the language,
-these constructs retain the same <em>imperative</em> semantics as the 
-equivalent constructs in software programming languages.</p>
-
-<p>The other major portion of the language has <em>declarative</em> semantics.
-This means that we focus on capturing the <em>rules</em> of our test scenarios
-instead of capturing how we will <em>implement</em> our test scenarios.</p>
-
-<h2 id="why-be-declarative">Why be declarative?</h2>
-
-<p>Take, for example, test scenarios that exercise a multi-channel DMA
-controller. When our test exercises multiple channels at the same
-time, it needs to use unique channels. With PSS, we can simply 
-state that this is a rule: DMA channels are <em>resources</em> that 
-can only be used by a single behavior at a time.</p>
-
-<p>In contrast, if we are writing our tests in a regular programming 
-language, we would need to design a channel-allocation algorithm 
-to manage DMA channels for our tests. Actually, we would
-probably need several algorithms to handle all the corner cases
-that our tests need to cover.</p>
-
-<p>The declarative nature of the PSS language increases our testing
-productivity by allowing us to capture the rules of our scenarios
-and automate the work of implementing tests.</p>
-
-<h1 id="creating-model-implementations">Creating Model Implementations</h1>
-<p>Capturing tests in this way has huge productivity benefits. It also
-has a (subjective) downside: we need to use a <em>constraint solver</em> 
-to evaluate the model and select the data and operation schedule 
-that will be used to exercise the design. Constraints solvers are 
-marvelous tools for ripping through reams of constraints, but 
-they’re not considered <em>fast</em> when compared to the execution speed 
-of regular procedural programming languages. In addition, 
-constraint solvers typically require substantial resources to run.</p>
-
-<p>This need to <em>solve</em> the PSS model to generate specific tests, 
-along with different verification-platform characteristics,
-has resulted in two common ways to produce tests from a PSS model:</p>
-
-<ul>
-  <li><strong>On-the-Fly Solving</strong> - This model is typically used in simulation.
-A special PSS interpreter and constraint solver run in parallel with
-the simulation and make choices as they are needed.</li>
-  <li><strong>Pre-Run Test Generation</strong> - This model is typically used when 
-the test will run on a processor core within the design. In this model,
-the entire test is produced as source code prior to the start of 
-test execution.  We want to keep the code that runs on the processor 
-core simple for many reasons, and pre-solving the PSS model allows 
-us to do this.</li>
-</ul>
-
-<p>Both of these models are useful and important, but the on-the-fly
-model is very interesting because it suggests that we might be able
-to leverage the constraint solver within our SystemVerilog simulators
-to provide the solving needed to evaluate our PSS models.</p>
-
-<h1 id="transpiling-pss-to-systemverilog">Transpiling PSS to SystemVerilog</h1>
-<p>I’ve been working PSS infrastructure, in general, for a while. More
-recently, I’ve focused on using that infrastructure to implement the
-beginnings of a PSS to SystemVerilog transpiler.</p>
-
-<p>The general flow is shown below.</p>
-
-<div class="mermaid" align="center">
-block-beta
-%% columns 5
-  block:Source
-    columns 1
-    PssFiles["PSS Files"]
-    Files1
-    Files2
-    Files3
-    Files["PSS Source"]
-    style Files1 fill:transparent,stroke:transparent,color:transparent
-    style Files2 fill:transparent,stroke:transparent,color:transparent
-    style Files3 fill:transparent,stroke:transparent,color:transparent
-    style Files fill:transparent,stroke:transparent
-  end
-  block:Pkgs
-    columns 1
-    ScenarioPkg["Scenario-Specific Types"]
-    ModelPkg["Model-Specific Shared Types"]
-    Spacer1
-    Spacer2
-    Spacer3["Generated SV"]
-    style Spacer1 fill:transparent,stroke:transparent,color:transparent
-    style Spacer2 fill:transparent,stroke:transparent,color:transparent
-    style Spacer3 fill:transparent,stroke:transparent
-  end
-  block:Runtime
-    columns 1
-    ScenarioPkg2["Scenario-Specific Types"]
-    ModelPkg2["Model-Specific Shared Types"]
-    ClassLib["Shared Class Library"]
-    SVSolver["SystemVerilog Runtime"]
-    Runtime1["Runtime"]
-    style Runtime1 fill:transparent,stroke:transparent
-  end
-  Source--&gt;Pkgs
-  Pkgs--&gt;Runtime
-</div>
-
-<p>Specifically:</p>
-<ul>
-  <li>The <a href="https://github.com/zuspec/zuspec-sv/">Zuspec-SV</a> tool processes the PSS model 
-source to produce an implementation 
-for an Action</li>
-  <li>It produces two SystemVerilog packages. The first contains types specific to the action 
-being implemented. The second contains types shared across all actions captured in the model</li>
-  <li>These packages are compiled along with a supporting class library and the user’s testbench,
-and executed by a SystemVerilog simulator.</li>
-</ul>
-
-<h1 id="a-simple-example">A simple example</h1>
-
-<p>Let’s take a look at a tiny example from the 
-<a href="https://github.com/zuspec/zuspec-examples">Zuspec Examples</a> project.</p>
-
-<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="k">import</span> <span class="nn">std_pkg</span><span class="p">::</span><span class="o">*</span><span class="p">;</span>
-
-<span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
-    <span class="kd">action</span> <span class="nc">Hello</span> <span class="p">{</span>
-        <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
-            <span class="n">message</span><span class="p">(</span><span class="n">LOW</span><span class="p">,</span> <span class="s">"Hello World!"</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>You can find the soure <a href="https://github.com/zuspec/zuspec-examples/blob/main/sv/hello_world/hello_world.pss">here</a>.</p>
-
-<p>This extremely-simple PSS model prints ‘Hello World!’ to the simulation log.</p>
-
-<p>Have a look at the root SystemVerilog module to see how the SystemVerilog
-model implementation is invoked:</p>
-
-<figure class="highlight"><pre><code class="language-systemverilog" data-lang="systemverilog">module top;
-    import pss_top__Entry_pkg::*;
-
-    initial begin
-        automatic pss_top__Entry actor = new();
-        actor.run();
-        $finish;
-    end
-
-endmodule</code></pre></figure>
-
-<h1 id="where-do-we-go-from-here">Where do we go from here?</h1>
-
-<p>Transpiling PSS to SystemVerilog provides a useful interesting implementation 
-option for PSS, both because of the solver within the simulator and because
-PSS is frequently used with UVM testbenches.</p>
-
-<p>If you’re interested in trying out the PSS ‘Hello World’ example, have a look
-at the instructions in the 
-<a href="https://github.com/zuspec/zuspec-examples/blob/main/README.md">README</a> file.</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">Zuspec-SV</code> transpiler is under active development, but the approach 
-looks very promising.  Over the next few posts, we’ll have  look at 
-additional PSS constructs that we can implement in SystemVerilog and,
-more importantly, see how PSS interacts the testbench and design.</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[You’re probably familiar with compilers. They take a high-level input description – typically a programming language – and distill it down to an efficient low-level implementation. Typically the implementation is machine code or bytecode. In other words, as close as possible to what will actually execute given the language ecosystem. You might be less familiar with transpilers (or source-to-source compilers, as they are also known). Transpilers convert an input in one programming language to output in another programming language with a similar level of abstraction. Transpilers have been in use for a very long time. For example, the C++ language was originally implemented with Cfront, a transpiler that converted C++ input to C code that any C compiler could process. More recently, the Typescript and Javascript/ECMAScript ecosystems have used transpilation extensively to allow the languages to evolve while maintaining an impressive level of backward compatibility with older implementations of the language. The next few posts will start to explore what we can do by transpiling test scenarios in PSS into implementations in existing programming languages.]]></summary></entry></feed>
+to interface PSS to verifcation IP (VIP) and bus functional models (BFMs).</p>]]></content><author><name></name></author><category term="PSS" /><summary type="html"><![CDATA[In the last post, we showed a SystemVerilog implementation of a PSS model that printed “Hello World!”. Interesting, perhaps, but quite a ways from being useful. In order to be useful, our PSS model needs to interact with the environment surrounding it. This post will cover more details about how a PSS model interacts with the environment around it, and look at an object-oriented interface between PSS and a SystemVerilog environment.]]></summary></entry></feed>
