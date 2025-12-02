@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Embracing UVM for FOSSi Design Verification
-date: 2025-11-01
+date: 2025-11-28
 categories: FOSSiDV
 excerpt_separator: <!--more-->
 mermaid: true
@@ -12,18 +12,10 @@ open and standard data formats. While open source communities do exist in
 cases where closed-source tools provide the sole implementation of a standard,
 these communities have significant challenges compared to communities with 
 access to open-source tools. The Free and Open Source 
-Silicon (FOSSi) community recently gained the ability to run SystemVerilog/UVM
-code on the Verilator open-source simulator, significantly increasing the ability
+Silicon (FOSSi) community [recently gained the ability](https://antmicro.com/blog/2025/10/support-for-upstream-uvm-2017-in-verilator/) 
+to run SystemVerilog/UVM code on the Verilator open-source simulator, bringing significant new opportunities
 to share reusable testbench components across flows running on open- and closed-source
 tool flows.
-
-creation of UVM
-testbench environments that are aligned with thoseallows ability opens the door to new
-opportunities to collaborate and share open-source SystemVerilog UVM verification 
-infrastructure
-and the ability to use that UVM infrastructure with open source tools.
-- Significantly increases the ability to share 
-- Increases our ability to share and collaborate
 
 <!--more-->
 
@@ -33,12 +25,16 @@ development in the software world. Students and hobbyists gain critical skills
 working with open-source tools, with the understanding that the same languages, 
 methodologies, and tools are used in environments where the work product may 
 not be open source. Companies that produce closed-source software often contribute 
-to open-source libraries and tools that they use interanlly, and benefit from a 
+to open-source libraries and tools that they use internally, and benefit from a 
 larger community of users and developers. 
 
 By and large, this holds true in the FOSSi community when it comes to hardware 
 design. SystemVerilog and VHDL are used to capture hardware designs, with full
-open- and closed-source tool stacks to simulate and synthesize. This consistency 
+open- and closed-source tool stacks to simulate and synthesize. Innovative
+methodologies and tools, such as CHISEL and Amaranth HDL, increase productivity
+while still connecting to existing tools using standard hardware description languages (HDLs). 
+
+Support for standard languages and a standard design methodology 
 has been critical in fostering a sizable ecosystem of available and reusable 
 open-source hardware designs. Because these open-source hardware components 
 use the same standard interchange formats used for closed-source development,
@@ -48,7 +44,7 @@ design are straightforward.
 # FOSSi and Functional Verification
 Until recently, the picture was quite different for functional verification. 
 Functional verification is the systematic process of confirming that the
-implemention of a hardware design matches the intended functionality, as 
+implementation of a hardware design matches the intended functionality, as 
 described by the functional specification. Due to tool capabilities, what
 is common when developing with closed-source tools differs significantly
 from what is common when developing with open-source tools.
@@ -73,45 +69,40 @@ techniques on top.
 <img src="{{ '/imgs/2025/11/portable_dv_flow.png' | absolute_url }}" />
 </p>
 
-This allows students and hobbyists to hone their skills in dominant industry
-practices, while also enabling them to explore emerging new verification 
+A portable verification stack allows students and hobbyists to hone their skills 
+in dominant industry practices, while also enabling them to explore emerging new verification 
 approaches and technologies. A portable verification stack also makes it 
 easier for industrial users to incorporate new technologies into their 
 existing SystemVerilog/UVM environments.
 
-- Base of SystemVerilog/UVM -- reusable protocol Veriifcation IP
-- Option of what goes on top
-  - SystemVerilog tests
-  - Python tests
-  - ???
-- Option of what else to connect
+Leveraging SV/UVM in a portable verification flow has other highly-desirable
+side effects as well. Having more open-source verification collateral written
+in SystemVerilog will help to increase Verilator's support for the language, 
+and will result in increased testing of Verilator due to the prevalence of 
+continuous-integration flows used for open source.
 
-Impact:
-- Increased opportunity for sharing -- especially around protocol verification IP
-  - Speeds environment creation, and how quickly 
-- As a library developer, provides a consistent base on which to build
-- Provides a critical component of a continuous integration flow, automatically 
-  ensuring quality and enabling a larger group of contributors since all can
-  access 
+# Why Focus on Verification IP?
 
-# Looking Forward
-Supporting 
-- Leverage existing community of engineers that use UVM
-- Increase Verilator feature support and stability by increasing how much content, and the complexity of the content, that runs on Verilator.
+Protocol Verification IP (VIP) is the nexus of the various flows shown above
+for good reason.  Hardware designs interact with the outside world via their interfaces. 
+Using standard interfaces vastly simplifies the task of integrating designs. Standard
+interface protocols range from quite simple to incredibly complex. Most importantly,
+the most critical aspects to verify in a hardware design are typically not the
+implementation of the interface protocols. And, what's more, the way our tests
+wish to interact with the design is typically at the software level -- for example,
+memory reads and writes -- not at the detailed level of the interface protocol.
 
-- Open-source communities spring up around all open 
-- Focusing on standards pays off: if you're a student, knowing standards helps you 
-  get a job. If you're a FOSSi hobbyist, focusing on standards means a larger pool
-  of potential collaborators that also know the standards that that you're using.
+That's where protocol Verification IP comes into the picture. Just like other 
+reusable design IP, protocol verification IPs are pre-verified components of
+the testbench environment that exist to translate between the software-level 
+activity of our tests and the detailed signal-level implementation of a standard
+protocol. 
 
-# Changes in How We Collaborate
-Increased connectivity has fundamentally changed the way that these communities collaborate,
-especially with respect to how software-like infrastructure is developed. Greater 
-connectivity and automation has enabled development to be effectively and 
-productively carried out by a distributed team. In a space like design verification,
-it's unlikely that all collaborators will have access to the same closed-source tools.
-Open-source tool implementations are critical in providing a set of tools that, by definition,
-all collaborators can freely access. 
+Verification IP allow us to start testing the unique aspects of our design
+more quickly, since we can interact with the 'test' side of the VIP at a high
+level, with confidence that the VIP will translate to the details of the standard
+protocol. Being able to use UVM in our verification flow gives us access
+to a much wider set of reusable verification IP.
 
 # Conclusion
 Support for SystemVerilog/UVM in open-source tools opens up new possibilities for 
@@ -127,26 +118,11 @@ the suite of PyHDL-IF examples and how to run them.
 
 
 # References
+- [Support for upstream UVM 2017 in Verilator](https://antmicro.com/blog/2025/10/support-for-upstream-uvm-2017-in-verilator/)
+- [CHISEL](https://www.chisel-lang.org/)
+- [Amaranth HDL](https://github.com/amaranth-lang)
 - [2024 Wilson Research Group Functional Verification Study](https://verificationacademy.com/topics/planning-measurement-and-analysis/wrg-industry-data-and-trends/2024-siemens-eda-and-wilson-research-group-ic-asic-functional-verification-trend-report/)
 - [Verilator](https://www.veripool.org/verilator/)
 - [UVM](https://www.accellera.org/downloads/standards/uvm)
 
 
-Using innovative technologies and techniques is a great thing. The inability
-to use an industry-standard methodology 
-unable 
-though, it would be
-needing to 
-
-Ideally, though, using 
-When the choice of verification tool stack and methodology divides the 
-community, it becomes a problem.
-
-Impact:
-- Splits community -- can learn theory of dominant industry methodology
-  with libraries like PyUVM, but can't actually practice SystemVerilog/UVM
-  with open source tools
-- Imposes a barrier for contributing to SystemVerilog/UVM open source 
-  projects, since must have access to closed-source tools
-- Limits distributed development by limiting what can be validated with
-  continuous integration flows. 
