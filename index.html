@@ -90,6 +90,26 @@ Post-env
     
     <ul class="BlogPostTreeUL" list-style-type="none">
     
+        <li list-style-type="none"><span class="caret">2026</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2026</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/zuspec/2026/01/04/BestOfLanguageAndClassLib.html">The Best of a Language and a Class Library</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
         <li list-style-type="none"><span class="caret">2025</span>
         <!--
         <a class="sidebar-nav-item active" href="">2025</a>
@@ -697,7 +717,7 @@ class="jfk-button jfk-button-action " style="">
 
 
     <p>
-      &copy; 2014-2025 Matthew Ballance. 
+      &copy; 2014-2026 Matthew Ballance. 
       <br/>
       All rights reserved.
     </p>
@@ -726,126 +746,202 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/fossidv/2025/11/28/EmbracingUvmFossiDV.html">Embracing UVM for FOSSi Design Verification</a>
+    <a href="/zuspec/2026/01/04/BestOfLanguageAndClassLib.html">The Best of a Language and a Class Library</a>
   </h1>      
 
-<div class="entry-content"><p>Open source communities emphasize reuse and collaboration centered around
-open and standard data formats. While open source communities do exist in 
-cases where closed-source tools provide the sole implementation of a standard,
-these communities have significant challenges compared to communities with 
-access to open-source tools. The Free and Open Source 
-Silicon (FOSSi) community <a href="https://antmicro.com/blog/2025/10/support-for-upstream-uvm-2017-in-verilator/">recently gained the ability</a> 
-to run SystemVerilog/UVM code on the Verilator open-source simulator, bringing significant new opportunities
-to share reusable testbench components across flows running on open- and closed-source
-tool flows.</p>
+<div class="entry-content"><p>In hardware design and verification, we’re used to working with domain-specific
+languages (DSLs), such as SystemVerilog, VHDL, and PSS, as well as class libraries, such as
+UVM, SystemC, and CHISEL. We use these DSLs and class libraries to capture key 
+semantics of hardware design ; each have their costs and benefits. A language, of course,
+offers ultimate flexibility with significant implementation cost. Class libraries reduce
+that implementation cost significantly by leveraging the capabilities of a host language,
+but often lack expressive capability and portability. The <a href="https://github.com/zuspec">Zuspec</a> 
+project that I’ve been working on takes a different approach, with the goal of getting the 
+benefits (and avoiding most drawbacks) of both approaches.</p>
 
 <!--more-->
 
-<h1 id="the-value-of-consistency">The Value of Consistency</h1>
-<p>There has always been significant cross-over between open source and closed-source
-development in the software world. Students and hobbyists gain critical skills 
-working with open-source tools, with the understanding that the same languages, 
-methodologies, and tools are used in environments where the work product may 
-not be open source. Companies that produce closed-source software often contribute 
-to open-source libraries and tools that they use internally, and benefit from a 
-larger community of users and developers.</p>
+<h1 id="dsl-or-class-library">DSL or Class Library?</h1>
+<p>In my experience, the use of hardware modeling varies widely across project teams. At the
+extremes, some attempt to maintain a consistent set of models across various abstraction 
+levels, while others focus on producing RTL for their piece of the design and create 
+models on an as-needed basis to achieve that task. While these approaches seem very 
+different there are points of intersection. For example, both teams will likely have a 
+predictor model for use in verification. Both teams will likely find that model creation
+is time consuming and, depending on their choice of modeling language, both may have 
+challenges integrating a predictor model into their verification environment.</p>
 
-<p>By and large, this holds true in the FOSSi community when it comes to hardware 
-design. SystemVerilog and VHDL are used to capture hardware designs, with full
-open- and closed-source tool stacks to simulate and synthesize. Innovative
-methodologies and tools, such as CHISEL and Amaranth HDL, increase productivity
-while still connecting to existing tools using standard hardware description languages (HDLs).</p>
+<p>Modeling language is one of the first choices to be made when creating a hardware model.
+In general, there are two choices: select a domain-specific language such as SystemVerilog, 
+or select a class library, such as SystemC, that is implemented in terms of a 
+general-purpose language.</p>
 
-<p>Support for standard languages and a standard design methodology 
-has been critical in fostering a sizable ecosystem of available and reusable 
-open-source hardware designs. Because these open-source hardware components 
-use the same standard interchange formats used for closed-source development,
-the technical aspects of integrating an open-source component into a closed-source 
-design are straightforward.</p>
+<p>Both of these approaches have benefits and drawbacks.</p>
 
-<h1 id="fossi-and-functional-verification">FOSSi and Functional Verification</h1>
-<p>Until recently, the picture was quite different for functional verification. 
-Functional verification is the systematic process of confirming that the
-implementation of a hardware design matches the intended functionality, as 
-described by the functional specification. Due to tool capabilities, what
-is common when developing with closed-source tools differs significantly
-from what is common when developing with open-source tools.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/11/open_vs_closed_dv_flow.png" />
-</p>
-
-<p>Across the industry, <a href="https://verificationacademy.com/topics/planning-measurement-and-analysis/wrg-industry-data-and-trends/2024-siemens-eda-and-wilson-research-group-ic-asic-functional-verification-trend-report/">SystemVerilog/UVM</a> 
-is the most-prevalent infrastructure used to create verification environments.
-Until recently, only closed-source tools could run SystemVerilog/UVM testbench environments. 
-Thus, content intended to run with a pure open-source tool stack had to 
-use a different testbench methodology.</p>
-
-<h1 id="toward-a-portable-verification-methodology">Toward a Portable Verification Methodology</h1>
-<p>Ideally, as a community, we can have the best of both worlds: the ability
-to use prevalent industry libraries and methodologies with open- and 
-closed-source tool chains, and the ability to add new technologies and
-techniques on top.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/11/portable_dv_flow.png" />
-</p>
-
-<p>A portable verification stack allows students and hobbyists to hone their skills 
-in dominant industry practices, while also enabling them to explore emerging new verification 
-approaches and technologies. A portable verification stack also makes it 
-easier for industrial users to incorporate new technologies into their 
-existing SystemVerilog/UVM environments.</p>
-
-<p>Leveraging SV/UVM in a portable verification flow has other highly-desirable
-side effects as well. Having more open-source verification collateral written
-in SystemVerilog will help to increase Verilator’s support for the language, 
-and will result in increased testing of Verilator due to the prevalence of 
-continuous-integration flows used for open source.</p>
-
-<h1 id="why-focus-on-verification-ip">Why Focus on Verification IP?</h1>
-
-<p>Protocol Verification IP (VIP) is the nexus of the various flows shown above
-for good reason.  Hardware designs interact with the outside world via their interfaces. 
-Using standard interfaces vastly simplifies the task of integrating designs. Standard
-interface protocols range from quite simple to incredibly complex. Most importantly,
-the most critical aspects to verify in a hardware design are typically not the
-implementation of the interface protocols. And, what’s more, the way our tests
-wish to interact with the design is typically at the software level – for example,
-memory reads and writes – not at the detailed level of the interface protocol.</p>
-
-<p>That’s where protocol Verification IP comes into the picture. Just like other 
-reusable design IP, protocol verification IPs are pre-verified components of
-the testbench environment that exist to translate between the software-level 
-activity of our tests and the detailed signal-level implementation of a standard
-protocol.</p>
-
-<p>Verification IP allow us to start testing the unique aspects of our design
-more quickly, since we can interact with the ‘test’ side of the VIP at a high
-level, with confidence that the VIP will translate to the details of the standard
-protocol. Being able to use UVM in our verification flow gives us access
-to a much wider set of reusable verification IP.</p>
-
-<h1 id="conclusion">Conclusion</h1>
-<p>Support for SystemVerilog/UVM in open-source tools opens up new possibilities for 
-sharing within the FOSSi community and with the closed-source silicon development 
-industry. It allows students and professional hobbyists to hone their skills with
-common industrial practice using open source tools and collateral. And, it enables
-far better distributed development by allowing all contributors to access the same
-continuous integration (CI) flow.</p>
-
-<p>We’ll look at an architecture for modular multi-language/multi-environment UVM 
-protocol VIP in a future series of posts. But, next week, we’ll spend some time looking at 
-the suite of PyHDL-IF examples and how to run them.</p>
-
-<h1 id="references">References</h1>
+<h3 id="benefits">Benefits</h3>
 <ul>
-  <li><a href="https://antmicro.com/blog/2025/10/support-for-upstream-uvm-2017-in-verilator/">Support for upstream UVM 2017 in Verilator</a></li>
-  <li><a href="https://www.chisel-lang.org/">CHISEL</a></li>
-  <li><a href="https://github.com/amaranth-lang">Amaranth HDL</a></li>
-  <li><a href="https://verificationacademy.com/topics/planning-measurement-and-analysis/wrg-industry-data-and-trends/2024-siemens-eda-and-wilson-research-group-ic-asic-functional-verification-trend-report/">2024 Wilson Research Group Functional Verification Study</a></li>
-  <li><a href="https://www.veripool.org/verilator/">Verilator</a></li>
-  <li><a href="https://www.accellera.org/downloads/standards/uvm">UVM</a></li>
+  <li>Language
+    <ul>
+      <li>Full flexibility to have domain-specific features</li>
+      <li>Clear boundaries between what is the ‘language’ and the rest of the</li>
+      <li>Full flexibility to process a model</li>
+    </ul>
+  </li>
+  <li>Class Library
+    <ul>
+      <li>Leverage existing tools (compilers, editors, linters, debuggers) for the base language</li>
+      <li>Leverage existing expertise in the base language</li>
+      <li>Easily expand the class library to add new capabilities</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="drawbacks">Drawbacks</h3>
+<ul>
+  <li>Language
+    <ul>
+      <li>Expensive to implement and add new features</li>
+      <li>Must convince users to learn and become proficient in the language</li>
+      <li>Interoperability with existing languages and tools can be a challenge</li>
+    </ul>
+  </li>
+  <li>Class Library
+    <ul>
+      <li>Existing tools don’t comprehend domain-specifics encoded by the library</li>
+      <li>The need to work with base-language compilers limits how the model can be processed</li>
+      <li>The base language often limits how easily/naturally domain-specific features can be described</li>
+    </ul>
+  </li>
+</ul>
+
+<p>We currently use a variety of domain-specific languages across the design and verification
+process. Ideally, we could apply a modeling approach that retains the key benefits of 
+both approaches much more broadly.</p>
+
+<h1 id="zuspec-a-dsl--class-library-hybrid">Zuspec: A DSL / Class Library Hybrid</h1>
+
+<p><a href="https://github.com/zuspec/">Zuspec</a> is a Python class library with a twist. 
+A model described with Zuspec dataclasses is completely valid Python syntax, and can 
+be validated with existing Python static checkers.  But, due to some key Python 
+capabilities, a Zuspec model can also be processed as if it were a domain-specific language.</p>
+
+<p>Python offers benefits both to the Zuspec users (ie the author of a Zuspec model) and 
+to tool implementors. For users, large portions of the existing tool ecosystem can
+be leveraged natively with a Zuspec description. Because the Zuspec library adheres
+to Python type rules, content-assist and navigation features in integrated developement
+environments, such as <a href="https://code.visualstudio.com/">VSCode</a>, work properly. 
+For the same reason, static type checkers can help detect issues, such as incorrect 
+use of functions, early.</p>
+
+<p>But, what’s even more attractive about Python is that it provides parsing infrastructure
+that helps Zuspec construct an intermediate-representation (IR) data model that captures
+details that would impossible for a pure class library to capture. This IR also 
+allows Zuspec to map a Zuspec model to a variety of implementations.</p>
+
+<p>Let’s look at a simple example:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python">    <span class="nd">@zdc.dataclass</span>
+    <span class="k">class</span> <span class="nc">Prod</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">p</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">PutIF</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">port</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+                <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="nf">wait</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Time</span><span class="p">.</span><span class="nf">ns</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+
+    <span class="nd">@zdc.dataclass</span>
+    <span class="k">class</span> <span class="nc">Cons</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">c</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">GetIF</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">port</span><span class="p">()</span>
+
+        <span class="nd">@zdc.process</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">_recv</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="nf">get</span><span class="p">()</span>
+                <span class="nf">print</span><span class="p">(</span><span class="s">"Received %d"</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+
+    <span class="nd">@zdc.dataclass</span>
+    <span class="k">class</span> <span class="nc">Top</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">p</span> <span class="p">:</span> <span class="n">Prod</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">inst</span><span class="p">()</span>
+        <span class="n">c</span> <span class="p">:</span> <span class="n">Cons</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">inst</span><span class="p">()</span>
+        <span class="n">ch</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Channel</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">inst</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">__bind__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span> <span class="nf">return </span><span class="p">(</span>
+            <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">ch</span><span class="p">.</span><span class="n">put</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">ch</span><span class="p">.</span><span class="n">get</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="nc">Top</span><span class="p">()</span>
+
+    <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="nf">_send</span><span class="p">())</span></code></pre></figure>
+
+<p>This is a simple producer-consumer model. The producer and consumer 
+communicate via a channel, and the testbench is responsible for activating
+the producer. As a side-note, a comparable case in SystemC is roughly twice
+as many lines of code, so there are already some measurable efficiencies.</p>
+
+<p>Staying inside Python early in the model-development process is attractive 
+due to the fast turnaround time and access to existing Python libraries. 
+Any Zuspec model can be run directly in Python and can access all Python 
+language and library features.</p>
+
+<p>If you look closely at the description above, you might find yourself 
+wondering how it executes. For example, how are ports connected? This is 
+where some of the ‘declarative’ aspects of this description come into play.
+Despite the description looking and behaving like a class library, there is
+still some “magic” behind the scenes. In the case of port connections, the
+Zuspec library takes the user’s bind specification and determines how to
+properly connect ports and channels. And, of course, there are many other
+cases where Zuspec allows the user to specify <em>what</em> is desired and have
+the library determine <em>how</em> that intent is implemented.</p>
+
+<h1 id="beyond-pure-python">Beyond Pure Python</h1>
+
+<p>There are quite a few projects that seek to translate Python to a more-performant
+implementation. Python ahead-of-time (AOT) compilers typically work with a Python
+script (and it dependent libraries) as a whole. Zuspec looks at the world 
+differently.</p>
+
+<h2 id="identifying-the-model-boundary">Identifying the Model Boundary</h2>
+<p>Zuspec uses types defined in zuspec.dataclasses to identify the boundary of
+a model. For example, in the example above, the ‘Top’ class defines such
+a boundary. Tools that map a Zuspec description to a non-Python implementation
+operate on such boundaries.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/zuspec_diagram_2.png" />
+</p>
+
+<h2 id="pure-python-vs-retargetable">Pure Python vs Retargetable</h2>
+
+<p>The other place where Zuspec is a bit different is in defining ‘Profiles’
+for content. This has significant similarities to the SystemVerilog “synthesizable” 
+subset. The first choice is whether a model is <em>Retargetable</em> or not. 
+<em>Retargetable</em> models can be mapped to non-Python implementations.</p>
+
+<p>In order to be <em>retargetable</em>, a model can only contain elements of Zuspec-recognized
+types. The ‘Top’ class above matches this criteria. That said, as long as running 
+in Python is sufficient, a Zuspec model is free to use any Python construct.</p>
+
+<p>Checking <em>Profile</em> compliance is another place where the Python ecosystem helps.
+Zuspec implements a plug-in to the <a href="https://flake8.pycqa.org/en/latest/">flake8</a> 
+linter that allows Zuspec to check profile compliance along with other Python
+rules that flake8 checks. This allows Zuspec-specific checks to be performed
+on-the-fly as code is developed, providing much faster feedback to the developer 
+(or LLM, as is often the case today).</p>
+
+<p>The diagram above shows several options for how a <em>Retargetable</em> Zuspec model 
+might be implemented. Several of these targets, such as SystemVerilog RTL,
+have their own <em>Profile</em> that further restricts available features.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+<p>Zuspec is showing early promise in simplifying hardware model creation, and allowing
+those models to be reused and retargeted to a variety of environments. Next time,
+we’ll look at modeling abstraction-level methodology, and how this helps humans (and LLMs)
+to more-effectively discuss and implement the hardware models they care about.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://bitsbytesgates.com/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html">Zuspec: Pythonic Model-Driven Hardware Development</a></li>
 </ul>
 
 </div>
@@ -855,7 +951,7 @@ the suite of PyHDL-IF examples and how to run them.</p>
 <div />
 
 <center>
-  <b>Copyright 2014-2025 Matthew Ballance. All Rights Reserved</b>
+  <b>Copyright 2014-2026 Matthew Ballance. All Rights Reserved</b>
   </center>
 <p><em>The views and opinions expressed above are solely those of the author and do not 
       represent those of my employer or any other party.</em></p>
