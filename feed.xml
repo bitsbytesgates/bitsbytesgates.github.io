@@ -1,4 +1,182 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-01-13T01:42:18+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">The Best of a Language and a Class Library</title><link href="https://bitsbytesgates.com/zuspec/2026/01/04/BestOfLanguageAndClassLib.html" rel="alternate" type="text/html" title="The Best of a Language and a Class Library" /><published>2026-01-04T00:00:00+00:00</published><updated>2026-01-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/04/BestOfLanguageAndClassLib</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/04/BestOfLanguageAndClassLib.html"><![CDATA[<p>In hardware design and verification, we’re used to working with domain-specific
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-01-13T01:47:58+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Shifting Left with Hardware Model Abstractions</title><link href="https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html" rel="alternate" type="text/html" title="Shifting Left with Hardware Model Abstractions" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html"><![CDATA[<p>“Shift-Left” is a strategy to reorganize processes to enable more parallelism 
+by adjusting dependencies. Hardware model abstractions provide a key tool to
+shifting tasks left in the silicon design process.</p>
+
+<!--more-->
+
+<h1 id="a-simplified-silicon-design-process">A simplified silicon design process</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/simplified_si_design_process.png" />
+</p>
+
+<p>The gantt chart above illustrates a simplified silicon design process. It
+deliberately makes no attempt to assign accurate relative times to any step
+in the process. The key challenge is that starting most steps is gated by
+the previous step either completing, or reaching some fairly advanced state
+of readiness. For example, the DV team can’t really start verifying the 
+design until RTL is available. They can study the spec and, perhaps even,
+write some tests speculatively while the RTL is under development. But, 
+validating assumptions must wait until RTL exists.</p>
+
+<p>Note that these tasks are grouped by the design-model abstraction
+level, with most activity centering around a register-transfer-level (RTL) 
+model of the design. This poses several challenges, but one of the biggest
+is that the abstraction difference between Spec and RTL is enormous.</p>
+
+<h1 id="a-closer-look">A closer look</h1>
+
+<p>While the diagram above is straightforward, it hides some useful details
+about what is actually happening during each of the steps above.</p>
+
+<pre><code class="language-mermaid">gantt
+    title Elaborated Silicon Design Process
+    dateFormat YYYY-MM-DD
+    axisFormat x
+    Start            :start, 2000-01-12, 1d
+    section Spec
+        Spec Development :spec_devel, after start, 24d
+        Arch Choices      :arch, after start, 12d
+    section Algorithmic
+        Statistical Model :static_validate, after arch, 12d
+        Dynamic Model     :dynamic_validate, after arch, 12d
+        Spec Ready        :spec_ready, after dynamic_validate, 2d
+    section Cycle Accurate
+        Reference Model      :ref_model, after bring_up, 16d
+    section RTL
+        Impl Structure       :rtl_structure, after spec_ready, 8d
+        Impl Sub-IP          :rtl_subip, after rtl_structure, 8d
+        Sub-IP Integ         :rtl_integ, after rtl_subip, 8d
+        RTL Ready            :rtl_ready, after rtl_integ, 2d
+        Bring-up             :bring_up, after rtl_ready, 8d
+        Spec Cov             :spec_coverage, after bring_up, 8d
+        Impl Cov             :impl_coverage, after spec_coverage, 8d
+        RTL Verified         :rtl_verified, after impl_coverage, 2d
+        Develop Firmware     :dev_firmware, after rtl_verified, 24dj
+</code></pre>
+
+<p>Let’s walk through to look at the changes. First, you’ll notice that 
+there are now four abstraction levels:</p>
+<ul>
+  <li><strong>Spec</strong> - Typically a natural-language description</li>
+  <li><strong>Algorithmic</strong> - A behavioral model with limited timing fidelity</li>
+  <li><strong>Cycle Accurate</strong> - A behavioral (non-synthesizable) model that reflects the 
+intended micro-architecture of the design</li>
+  <li><strong>RTL</strong> - Synthesizable model</li>
+</ul>
+
+<h2 id="spec-development">Spec Development</h2>
+
+<p>During spec development, it’s natural to use some high-level models to
+validate assumptions. These models are captured at a high level of
+abstraction, and support one of two methods of evaluation. A model
+intended for dynamic evaluation will be behavioral, and supports 
+activities such as running existing software workloads. A statistical
+model (e.g. an Excel sheet) enables what-if analysis by adjusting 
+control parameters. These are typically two distinct models because 
+of the two different evaluation approaches.</p>
+
+<h2 id="rtl-implementation">RTL Implementation</h2>
+
+<p>The RTL development process is also not a monolith. Generally, you could
+think of a process by which the design is partitioned into independent
+sub-IP that can be implemented by different engineers. Once the design
+is partitioned, engineers can work in parallel to implement and test
+their assigned sub-IP. Finally, sub-IPs are integrated back into the
+overall structure of the design.</p>
+
+<h2 id="design-verification">Design Verification</h2>
+
+<p>The design verification process is also step-wise, typically starting
+with basic bring-up tests to ensure that simple operations, such as 
+register accesses, make it past the interfaces and properly interact 
+with the design. Verification then proceeds to exercise key device
+usescases and, finally, exercise key implementation details.</p>
+
+<p>The DV team will often create some type of reference model or predictor
+to use in checking results from the design. Sometimes this will be 
+cycle accurate, but it might also be at an algorithmic level of abstraction.</p>
+
+<p>Looking in more detail, it becomes clear that modeling at different abstarction
+levels is being done. But, too often, these models are only used within a specific
+silo. There are many reasons for this, including the language(s) used to implement
+models and integration challenges.</p>
+
+<h1 id="shifting-left-with-model-reuse">Shifting Left with Model Reuse</h1>
+
+<p>The Zuspec ‘bet’ is that we can reorganize the silicon development process by making models
+easier to create, easier to reuse and transform, and easier to integrate. Future posts will
+go into more depth on how Zuspec enables this. For now, let’s look at how different modeling
+abstractions are used across the silicon development process.</p>
+
+<pre><code class="language-mermaid">gantt
+    title Ideal Design Implementation Process
+    dateFormat YYYY-MM-DD
+    axisFormat x
+    Start            :start, 2000-01-12, 1d
+    section Spec
+        Spec Development :spec_devel, after start, 24d
+        Arch Choices      :arch, after start, 12d
+    section Algorithmic
+        Alg Model            :alg_model, after arch, 12d
+        Spec Ready           :spec_ready, after alg_model, 2d
+    section Cycle Accurate
+        CA Model (Structure) :ca_model, after spec_ready, 16d
+    section RTL
+        Impl Sub-IP          :rtl_subip, after ca_model, 8d
+        Sub-IP Integ         :rtl_integ, after rtl_subip, 8d
+        RTL Ready            :rtl_ready, after rtl_integ, 2d
+        Spec Cov             :spec_coverage, after spec_ready, 8d
+        Impl Cov             :impl_coverage, after ca_model, 8d
+        Bring-up             :bring_up, after rtl_ready, 8d
+        RTL Verified         :rtl_verified, after bring_up, 2d
+        Develop Firmware     :dev_firmware, after spec_ready, 24d
+</code></pre>
+
+<p>Let’s look at some of the key points:</p>
+<ul>
+  <li>A single algorithmic model is used to serve both dynamic (simulation) and
+static/formal evaluation during the spec development process.
+    <ul>
+      <li>The DV team can use this algorithmic model, with a few modifications, as a 
+substitute for RTL while they setup the testbench environment and write 
+tests that exercise the specified design behavior.</li>
+      <li>The Firmware team can also get started writing firmware using the 
+algorithmic model.</li>
+    </ul>
+  </li>
+  <li>The RTL implementation team develops a cycle-accurate model of the design
+as part of the process of partitioning the design.
+    <ul>
+      <li>The RTL implementation team selectively replaces sub-IPs within the 
+cycle-accurate model to test a particular sub-IP’s implementation together
+with the more-abstract remainder of the design model.</li>
+      <li>The DV team can move to running their tests against the more-accurate 
+model. This helps to highlight different interpretations of the spec 
+much earlier.</li>
+      <li>The DV team can also run their tests against various configurations
+of the hybrid cycle accurate / RTL model of the device to begin 
+exercising sub-IPs prior to availability of the fully-integrated RTL.
+Doing this can also enable tests that target implementation coverage 
+to be developed incrementally as the relevant sub-IPs are ready.</li>
+    </ul>
+  </li>
+  <li>Once the RTL is ready, the DV team proceeds to run bring-up activities. 
+Final issues are much easier to track down because the tests are known
+to run against the cycle-accurate model and various combinations of
+RTL sub-IPs.</li>
+</ul>
+
+<p>So, how much time will we save? That, of course, heavily depends on the 
+relative size of the tasks shown above, as well as on the cost
+of creating the set of models used above. But, the savings should be
+significant.</p>
+
+<h1 id="next-stes">Next Stes</h1>
+
+<p>We’ve looked at several implementation abstraction levels for device models. 
+In the next post, we’ll dig into interface abstraction levels and see how
+these enable incremental refinement of models.</p>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[“Shift-Left” is a strategy to reorganize processes to enable more parallelism by adjusting dependencies. Hardware model abstractions provide a key tool to shifting tasks left in the silicon design process.]]></summary></entry><entry><title type="html">The Best of a Language and a Class Library</title><link href="https://bitsbytesgates.com/zuspec/2026/01/04/BestOfLanguageAndClassLib.html" rel="alternate" type="text/html" title="The Best of a Language and a Class Library" /><published>2026-01-04T00:00:00+00:00</published><updated>2026-01-04T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/04/BestOfLanguageAndClassLib</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/04/BestOfLanguageAndClassLib.html"><![CDATA[<p>In hardware design and verification, we’re used to working with domain-specific
 languages (DSLs), such as SystemVerilog, VHDL, and PSS, as well as class libraries, such as
 UVM, SystemC, and CHISEL. We use these DSLs and class libraries to capture key 
 semantics of hardware design ; each have their costs and benefits. A language, of course,
@@ -1736,158 +1914,4 @@ language. I’m planning to take a documentation-first approach, and am interest
 to evaluate the impact this has on the development process itself and my ability
 to leverage AI assistants along the way.</p>
 
-<p>.</p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[There’s been lots of discussion about the future of writing in the AI age. LLMs have shown their potential as a tool by helping authors of many genres brainstorm ideas, rough out content, and more. But, this automation comes with questions attached. If writing can be automated, what is the writer’s role? If LLMs only deliver the illusion of producing useful content, are we about to experience a deluge of unintelligible slop masquerading as useful documentation? I’ve done my share of hand wringing while reviewing AI-created code commands and documentation that had the form of useful information, but little insightful content. A recent coding experience has me seeing an opportunity for a developer-docs renaissance driven by the needs of LLMs. Developer Docs and why we don’t create them I define developer docs as the set of documentation that helps a developer navigate a technical project and understand things like: How to build the project from source How to run tests on the project Basic structure and architecture of the project Examples of how to interact with the API Any special structures used by the project Notes like this have several possible audiences Colleagues Open source project: potential contributors Future you I suspect most of us agree that this information is useful, and don’t truly feel that our code is self-documenting. But, it always seems difficult to devote time to writing good developer documentation. Why? I think it’s because, no matter the audience, developer docs are for the future – a future colleague, future collaborator, or future you. And it’s always tempting to prioritize the ‘now’ when it comes to choosing between ‘now’ and ‘future’. LLMs shift that equation by making developer docs immediately actionable, and I’m optimistic that this may actually shift our behavior. Working with Complex Projects I was recently working on one of my open source projects. The structure is a bit complicated due to some of the requirements. Specifically, I have library projects that consist of: C++ API consisting of pure-virtual interface classes Core implementation in C++ A Cython wrapper API implemented in terms of the pure-virtual interface classes This structure enables the libraries to be used effiently from C++ and Python, and allows the library native code to interact directly whether called from C++ or Python. The downside, of course, is that adding a new class or method involves changes across several source locations: C++ interface, C++ implementation, and several locations across the Python interface. I’ve been using AI assistants (Cline, Copilot) to make modifications to this codebase with varying success. On one hand, the results were quite good given that the only data it had was the code. On the other hand, there were many cases where the model (gpt-4.1 in this case) would only perform a subset of the required changes. In one case, it decided to create a new Cython extension file entirely. Developer Docs as LLM Instructions I had independently started to write down some notes about the structure of this code. You can find the notes here if you’re interested. Not too complicated, and much more needed of course. But, when I included this as context for the LLM, the results from the AI assistant improved dramatically. Still not perfect, but sufficiently better that I feel more motivated to start a task by writing out some notes. Because, after all, these notes will be immediately useful as I start working on the implementation. Looking Forward Writing developer docs and writing code is too-often seen as a zero-sum game: I can write code or I can write developer documentation. LLMs change this by blurring the line between writing docs and code. Writing docs, in fact, may provide greater leverage by allowing you to drive automation of the more-tedious aspects of writing code directly from developer docs. Looking forward, I’m very interested in what standardization emerges around capturing and curating context documentation intended for LLMs. Specifically, I’m watching Agents.md and llms.txt. Even more immediately, I’m revisiting how I build out the Zuspec Python-embedded language. I’m planning to take a documentation-first approach, and am interested to evaluate the impact this has on the development process itself and my ability to leverage AI assistants along the way. .]]></summary></entry><entry><title type="html">Re-Evaluating EDA DSLs: Becoming the Compiler</title><link href="https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html" rel="alternate" type="text/html" title="Re-Evaluating EDA DSLs: Becoming the Compiler" /><published>2025-08-23T00:00:00+00:00</published><updated>2025-08-23T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html"><![CDATA[<p>A key benefit of full languages is having full control over processing
-the language: being the compiler.  Having full control over language
-processing is exactly what enables us target simulation and FPGA bitstream
-with the same SystemVerilog source simply by specifying the same source
-to different toolchains. Fortunately, Python’s dynamic nature gives us 
-all the tools we need to “become the compiler” for portions of the 
-Python description that we care about.</p>
-
-<!-- more -->
-
-<h1 id="a-simple-counter">A Simple Counter</h1>
-
-<p>Let’s start with an example. The code below represents the behavior of 
-a very simple counter in Verilog:</p>
-
-<figure class="highlight"><pre><code class="language-systenverilog" data-lang="systenverilog">module counter(
-  input             clock,
-  input             reset,
-  output reg[31:0]  count);
-
-  always @(posedge clock or posedge reset) begin
-    if (reset) begin
-      count &lt;= {32{1'b0}};
-    end else begin
-      count &lt;= count + 1;
-    end
-  end
-
-endmodule</code></pre></figure>
-
-<p>When we process this description to create an implementation, there
-are a few things that we need to know:</p>
-
-<ul>
-  <li>The region of interest – what is a class, module, interface, etc?</li>
-  <li>Data member types and kinds – local data vs port with directionality</li>
-  <li>Logic/behavior inside the region and when it’s activated</li>
-</ul>
-
-<p>A Verilog-based tool establishes these key attributes by lexically processing
-the input text.</p>
-
-<p>Let’s create an equivalent representation in Python using our Zuspec 
-library.</p>
-
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">import zuspec.dataclasses as zdc
-
-@zdc.dataclass
-class Counter(zdc.Component):
-    clock : zdc.Bit = zdc.input()
-    reset : zdc.Bit = zdc.input()
-    count : zdc.Bit[32] = zdc.output()
-
-    @zdc.sync(clock=lambda s:s.reset, reset=lambda s:s.clock):
-    def inc(self):
-        if self.reset:
-            self.count = 0
-        else:
-            self.count += 1</code></pre></figure>
-
-<p>From one perspective, this is just a Python class that conforms to
-the Python’s syntactic and semantic rules. But, we’ve also encoded
-some special domain-specific information:</p>
-
-<ul>
-  <li>The base class is <code class="language-plaintext highlighter-rouge">Component</code>. A processing tool can identify the “kind” 
-of region based on the base type.</li>
-  <li>We have typed fields that have direction information attached to them.</li>
-  <li>We have tagged a method with a <code class="language-plaintext highlighter-rouge">decorator</code> named “sync”. This identifies
-the method as being evaluated with synchronous semantics.</li>
-</ul>
-
-<p>You might be asking how this is any different from a class library,
-such as SystemC or pyuvm. This is exactly the right question to ask, since
-it’s at the crux of how this approach is different.</p>
-
-<h1 id="becoming-the-compiler">Becoming the Compiler</h1>
-
-<p>If we were implementing the Zuspec library as a class library, we would have
-each of the key elements above (Component, @sync, input, output) construct
-a portion of a description that we could execute. For example, we might 
-create an implementation to generate Verilog source. But, committing to 
-an implementation is limiting. What if we, instead, wanted to test the 
-Python model by simulating it in Python? We would probably need a 
-different class library implementation. We’ll definitely want to use 
-different implementations for different modules in the system across the
-design cycle. Managing which class library implementation each module 
-uses gets complicated very quickly.</p>
-
-<p>How else can we approach this problem? Like a compiler, of course. And, Python’s
-dynamic programming aspects make this much more straightforward than any other
-language that I’m currently aware of.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/08/model_transform.png" /> 
-</p>
-
-<p>So, what does this look like?</p>
-<ul>
-  <li>Treat user input (Counter class above) as having no implementation</li>
-  <li>Doing something with the input requires a transformation – a “compiler”</li>
-  <li>Transformers take the user-specified class as input and return
-    <ul>
-      <li>Another Python class type</li>
-      <li>A Python data structure with information about a non-Python implementation</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Using this approach allows different transformations to be used for 
-different modules in the design.</p>
-
-<h1 id="anatomy-of-a-type-transformer">Anatomy of a Type Transformer</h1>
-
-<p>Type transformers typically use the visitor pattern, using a visitor that
-is aware of key elements of the domain-specific specification.</p>
-
-<figure class="highlight"><pre><code class="language-python3" data-lang="python3">    class MyTransform(api.Visitor):
-        _result : str = ""
-
-        def transform(self, t) -&gt; str:
-            self._result = ""
-            self.visit(t)
-            return self._result
-
-        def visitComponentType(self, t):
-            self.print("MyV.visitComponentType")
-            return super().visitComponentType(t)
-        
-        def visitInput(self, f):
-            self.print("visitInput: %s" % f.name)
-
-        def visitOutput(self, f):
-            self.print("visitOutput: %s" % f.name)
-
-        def visitExec(self, name, e):
-            self.print("visitExec: %s" % name)
-
-        def print(self, m):
-            self._result += m + "\n"</code></pre></figure>
-
-<p>In this case, we’re simply transforming a type model into a string 
-that displays the content of the model. But, we could use the same
-approach to transform the type to Verilog. And, because the model 
-is a specification without a class-library implementation, both
-of these implementations (and more) can easily co-exist.</p>
-
-<h1 id="next-steps">Next Steps</h1>
-
-<p>In this post, we’ve looked at an approach to capturing hardware domain
-semantics in Python such that we keep the description independent 
-of the implementation in the same way a full-custom domain-specific
-language does. Moving forward, we’ll focus on getting an implementation
-path in place that will let us create Verilog and start to explore
-some of the ways that capturing RTL in Python boosts our productivity.</p>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[A key benefit of full languages is having full control over processing the language: being the compiler. Having full control over language processing is exactly what enables us target simulation and FPGA bitstream with the same SystemVerilog source simply by specifying the same source to different toolchains. Fortunately, Python’s dynamic nature gives us all the tools we need to “become the compiler” for portions of the Python description that we care about. A Simple Counter Let’s start with an example. The code below represents the behavior of a very simple counter in Verilog: module counter( input clock, input reset, output reg[31:0] count); always @(posedge clock or posedge reset) begin if (reset) begin count &lt;= {32{1'b0}}; end else begin count &lt;= count + 1; end end endmodule When we process this description to create an implementation, there are a few things that we need to know: The region of interest – what is a class, module, interface, etc? Data member types and kinds – local data vs port with directionality Logic/behavior inside the region and when it’s activated A Verilog-based tool establishes these key attributes by lexically processing the input text. Let’s create an equivalent representation in Python using our Zuspec library. import zuspec.dataclasses as zdc @zdc.dataclass class Counter(zdc.Component): clock : zdc.Bit = zdc.input() reset : zdc.Bit = zdc.input() count : zdc.Bit[32] = zdc.output() @zdc.sync(clock=lambda s:s.reset, reset=lambda s:s.clock): def inc(self): if self.reset: self.count = 0 else: self.count += 1 From one perspective, this is just a Python class that conforms to the Python’s syntactic and semantic rules. But, we’ve also encoded some special domain-specific information: The base class is Component. A processing tool can identify the “kind” of region based on the base type. We have typed fields that have direction information attached to them. We have tagged a method with a decorator named “sync”. This identifies the method as being evaluated with synchronous semantics. You might be asking how this is any different from a class library, such as SystemC or pyuvm. This is exactly the right question to ask, since it’s at the crux of how this approach is different. Becoming the Compiler If we were implementing the Zuspec library as a class library, we would have each of the key elements above (Component, @sync, input, output) construct a portion of a description that we could execute. For example, we might create an implementation to generate Verilog source. But, committing to an implementation is limiting. What if we, instead, wanted to test the Python model by simulating it in Python? We would probably need a different class library implementation. We’ll definitely want to use different implementations for different modules in the system across the design cycle. Managing which class library implementation each module uses gets complicated very quickly. How else can we approach this problem? Like a compiler, of course. And, Python’s dynamic programming aspects make this much more straightforward than any other language that I’m currently aware of. So, what does this look like? Treat user input (Counter class above) as having no implementation Doing something with the input requires a transformation – a “compiler” Transformers take the user-specified class as input and return Another Python class type A Python data structure with information about a non-Python implementation Using this approach allows different transformations to be used for different modules in the design. Anatomy of a Type Transformer Type transformers typically use the visitor pattern, using a visitor that is aware of key elements of the domain-specific specification. class MyTransform(api.Visitor): _result : str = "" def transform(self, t) -&gt; str: self._result = "" self.visit(t) return self._result def visitComponentType(self, t): self.print("MyV.visitComponentType") return super().visitComponentType(t) def visitInput(self, f): self.print("visitInput: %s" % f.name) def visitOutput(self, f): self.print("visitOutput: %s" % f.name) def visitExec(self, name, e): self.print("visitExec: %s" % name) def print(self, m): self._result += m + "\n" In this case, we’re simply transforming a type model into a string that displays the content of the model. But, we could use the same approach to transform the type to Verilog. And, because the model is a specification without a class-library implementation, both of these implementations (and more) can easily co-exist. Next Steps In this post, we’ve looked at an approach to capturing hardware domain semantics in Python such that we keep the description independent of the implementation in the same way a full-custom domain-specific language does. Moving forward, we’ll focus on getting an implementation path in place that will let us create Verilog and start to explore some of the ways that capturing RTL in Python boosts our productivity.]]></summary></entry></feed>
+<p>.</p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[There’s been lots of discussion about the future of writing in the AI age. LLMs have shown their potential as a tool by helping authors of many genres brainstorm ideas, rough out content, and more. But, this automation comes with questions attached. If writing can be automated, what is the writer’s role? If LLMs only deliver the illusion of producing useful content, are we about to experience a deluge of unintelligible slop masquerading as useful documentation? I’ve done my share of hand wringing while reviewing AI-created code commands and documentation that had the form of useful information, but little insightful content. A recent coding experience has me seeing an opportunity for a developer-docs renaissance driven by the needs of LLMs. Developer Docs and why we don’t create them I define developer docs as the set of documentation that helps a developer navigate a technical project and understand things like: How to build the project from source How to run tests on the project Basic structure and architecture of the project Examples of how to interact with the API Any special structures used by the project Notes like this have several possible audiences Colleagues Open source project: potential contributors Future you I suspect most of us agree that this information is useful, and don’t truly feel that our code is self-documenting. But, it always seems difficult to devote time to writing good developer documentation. Why? I think it’s because, no matter the audience, developer docs are for the future – a future colleague, future collaborator, or future you. And it’s always tempting to prioritize the ‘now’ when it comes to choosing between ‘now’ and ‘future’. LLMs shift that equation by making developer docs immediately actionable, and I’m optimistic that this may actually shift our behavior. Working with Complex Projects I was recently working on one of my open source projects. The structure is a bit complicated due to some of the requirements. Specifically, I have library projects that consist of: C++ API consisting of pure-virtual interface classes Core implementation in C++ A Cython wrapper API implemented in terms of the pure-virtual interface classes This structure enables the libraries to be used effiently from C++ and Python, and allows the library native code to interact directly whether called from C++ or Python. The downside, of course, is that adding a new class or method involves changes across several source locations: C++ interface, C++ implementation, and several locations across the Python interface. I’ve been using AI assistants (Cline, Copilot) to make modifications to this codebase with varying success. On one hand, the results were quite good given that the only data it had was the code. On the other hand, there were many cases where the model (gpt-4.1 in this case) would only perform a subset of the required changes. In one case, it decided to create a new Cython extension file entirely. Developer Docs as LLM Instructions I had independently started to write down some notes about the structure of this code. You can find the notes here if you’re interested. Not too complicated, and much more needed of course. But, when I included this as context for the LLM, the results from the AI assistant improved dramatically. Still not perfect, but sufficiently better that I feel more motivated to start a task by writing out some notes. Because, after all, these notes will be immediately useful as I start working on the implementation. Looking Forward Writing developer docs and writing code is too-often seen as a zero-sum game: I can write code or I can write developer documentation. LLMs change this by blurring the line between writing docs and code. Writing docs, in fact, may provide greater leverage by allowing you to drive automation of the more-tedious aspects of writing code directly from developer docs. Looking forward, I’m very interested in what standardization emerges around capturing and curating context documentation intended for LLMs. Specifically, I’m watching Agents.md and llms.txt. Even more immediately, I’m revisiting how I build out the Zuspec Python-embedded language. I’m planning to take a documentation-first approach, and am interested to evaluate the impact this has on the development process itself and my ability to leverage AI assistants along the way. .]]></summary></entry></feed>

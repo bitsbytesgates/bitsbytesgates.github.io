@@ -100,6 +100,8 @@ Post-env
         <li><span class="caret">Jan</span>
         <ul class="nested" list-style-type="none">
         
+        <li><a href="/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html">Shifting Left with Hardware Model Abstractions</a></li>
+        
         <li><a href="/zuspec/2026/01/04/BestOfLanguageAndClassLib.html">The Best of a Language and a Class Library</a></li>
         
         <!--
@@ -746,204 +748,188 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/zuspec/2026/01/04/BestOfLanguageAndClassLib.html">The Best of a Language and a Class Library</a>
+    <a href="/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html">Shifting Left with Hardware Model Abstractions</a>
   </h1>      
 
-<div class="entry-content"><p>In hardware design and verification, we’re used to working with domain-specific
-languages (DSLs), such as SystemVerilog, VHDL, and PSS, as well as class libraries, such as
-UVM, SystemC, and CHISEL. We use these DSLs and class libraries to capture key 
-semantics of hardware design ; each have their costs and benefits. A language, of course,
-offers ultimate flexibility with significant implementation cost. Class libraries reduce
-that implementation cost significantly by leveraging the capabilities of a host language,
-but often lack expressive capability and portability. The <a href="https://github.com/zuspec">Zuspec</a> 
-project that I’ve been working on takes a different approach, with the goal of getting the 
-benefits (and avoiding most drawbacks) of both approaches.</p>
+<div class="entry-content"><p>“Shift-Left” is a strategy to reorganize processes to enable more parallelism 
+by adjusting dependencies. Hardware model abstractions provide a key tool to
+shifting tasks left in the silicon design process.</p>
 
 <!--more-->
 
-<h1 id="dsl-or-class-library">DSL or Class Library?</h1>
-<p>In my experience, the use of hardware modeling varies widely across project teams. At the
-extremes, some attempt to maintain a consistent set of models across various abstraction 
-levels, while others focus on producing RTL for their piece of the design and create 
-models on an as-needed basis to achieve that task. While these approaches seem very 
-different there are points of intersection. For example, both teams will likely have a 
-predictor model for use in verification. Both teams will likely find that model creation
-is time consuming and, depending on their choice of modeling language, both may have 
-challenges integrating a predictor model into their verification environment.</p>
-
-<p>Modeling language is one of the first choices to be made when creating a hardware model.
-In general, there are two choices: select a domain-specific language such as SystemVerilog, 
-or select a class library, such as SystemC, that is implemented in terms of a 
-general-purpose language.</p>
-
-<p>Both of these approaches have benefits and drawbacks.</p>
-
-<h3 id="benefits">Benefits</h3>
-<ul>
-  <li>Language
-    <ul>
-      <li>Full flexibility to have domain-specific features</li>
-      <li>Clear boundaries between what is the ‘language’ and the rest of the</li>
-      <li>Full flexibility to process a model</li>
-    </ul>
-  </li>
-  <li>Class Library
-    <ul>
-      <li>Leverage existing tools (compilers, editors, linters, debuggers) for the base language</li>
-      <li>Leverage existing expertise in the base language</li>
-      <li>Easily expand the class library to add new capabilities</li>
-    </ul>
-  </li>
-</ul>
-
-<h3 id="drawbacks">Drawbacks</h3>
-<ul>
-  <li>Language
-    <ul>
-      <li>Expensive to implement and add new features</li>
-      <li>Must convince users to learn and become proficient in the language</li>
-      <li>Interoperability with existing languages and tools can be a challenge</li>
-    </ul>
-  </li>
-  <li>Class Library
-    <ul>
-      <li>Existing tools don’t comprehend domain-specifics encoded by the library</li>
-      <li>The need to work with base-language compilers limits how the model can be processed</li>
-      <li>The base language often limits how easily/naturally domain-specific features can be described</li>
-    </ul>
-  </li>
-</ul>
-
-<p>We currently use a variety of domain-specific languages across the design and verification
-process. Ideally, we could apply a modeling approach that retains the key benefits of 
-both approaches much more broadly.</p>
-
-<h1 id="zuspec-a-dsl--class-library-hybrid">Zuspec: A DSL / Class Library Hybrid</h1>
-
-<p><a href="https://github.com/zuspec/">Zuspec</a> is a Python class library with a twist. 
-A model described with Zuspec dataclasses is completely valid Python syntax, and can 
-be validated with existing Python static checkers.  But, due to some key Python 
-capabilities, a Zuspec model can also be processed as if it were a domain-specific language.</p>
-
-<p>Python offers benefits both to the Zuspec users (ie the author of a Zuspec model) and 
-to tool implementors. For users, large portions of the existing tool ecosystem can
-be leveraged natively with a Zuspec description. Because the Zuspec library adheres
-to Python type rules, content-assist and navigation features in integrated developement
-environments, such as <a href="https://code.visualstudio.com/">VSCode</a>, work properly. 
-For the same reason, static type checkers can help detect issues, such as incorrect 
-use of functions, early.</p>
-
-<p>But, what’s even more attractive about Python is that it provides parsing infrastructure
-that helps Zuspec construct an intermediate-representation (IR) data model that captures
-details that would impossible for a pure class library to capture. This IR also 
-allows Zuspec to map a Zuspec model to a variety of implementations.</p>
-
-<p>Let’s look at a simple example:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python">    <span class="nd">@zdc.dataclass</span>
-    <span class="k">class</span> <span class="nc">Prod</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
-        <span class="n">p</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">PutIF</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">port</span><span class="p">()</span>
-
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
-                <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="nf">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-                <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="nf">wait</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Time</span><span class="p">.</span><span class="nf">ns</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
-
-    <span class="nd">@zdc.dataclass</span>
-    <span class="k">class</span> <span class="nc">Cons</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
-        <span class="n">c</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">GetIF</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">port</span><span class="p">()</span>
-
-        <span class="nd">@zdc.process</span>
-        <span class="k">async</span> <span class="k">def</span> <span class="nf">_recv</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-                <span class="n">i</span> <span class="o">=</span> <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="nf">get</span><span class="p">()</span>
-                <span class="nf">print</span><span class="p">(</span><span class="s">"Received %d"</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
-
-    <span class="nd">@zdc.dataclass</span>
-    <span class="k">class</span> <span class="nc">Top</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
-        <span class="n">p</span> <span class="p">:</span> <span class="n">Prod</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">inst</span><span class="p">()</span>
-        <span class="n">c</span> <span class="p">:</span> <span class="n">Cons</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">inst</span><span class="p">()</span>
-        <span class="n">ch</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Channel</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">inst</span><span class="p">()</span>
-
-        <span class="k">def</span> <span class="nf">__bind__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span> <span class="nf">return </span><span class="p">(</span>
-            <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">ch</span><span class="p">.</span><span class="n">put</span><span class="p">),</span>
-            <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">c</span><span class="p">.</span><span class="n">c</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">ch</span><span class="p">.</span><span class="n">get</span><span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="n">t</span> <span class="o">=</span> <span class="nc">Top</span><span class="p">()</span>
-
-    <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="nf">_send</span><span class="p">())</span></code></pre></figure>
-
-<p>This is a simple producer-consumer model. The producer and consumer 
-communicate via a channel, and the testbench is responsible for activating
-the producer. As a side-note, a comparable case in SystemC is roughly twice
-as many lines of code, so there are already some measurable efficiencies.</p>
-
-<p>Staying inside Python early in the model-development process is attractive 
-due to the fast turnaround time and access to existing Python libraries. 
-Any Zuspec model can be run directly in Python and can access all Python 
-language and library features.</p>
-
-<p>If you look closely at the description above, you might find yourself 
-wondering how it executes. For example, how are ports connected? This is 
-where some of the ‘declarative’ aspects of this description come into play.
-Despite the description looking and behaving like a class library, there is
-still some “magic” behind the scenes. In the case of port connections, the
-Zuspec library takes the user’s bind specification and determines how to
-properly connect ports and channels. And, of course, there are many other
-cases where Zuspec allows the user to specify <em>what</em> is desired and have
-the library determine <em>how</em> that intent is implemented.</p>
-
-<h1 id="beyond-pure-python">Beyond Pure Python</h1>
-
-<p>There are quite a few projects that seek to translate Python to a more-performant
-implementation. Python ahead-of-time (AOT) compilers typically work with a Python
-script (and it dependent libraries) as a whole. Zuspec looks at the world 
-differently.</p>
-
-<h2 id="identifying-the-model-boundary">Identifying the Model Boundary</h2>
-<p>Zuspec uses types defined in zuspec.dataclasses to identify the boundary of
-a model. For example, in the example above, the ‘Top’ class defines such
-a boundary. Tools that map a Zuspec description to a non-Python implementation
-operate on such boundaries.</p>
+<h1 id="a-simplified-silicon-design-process">A simplified silicon design process</h1>
 
 <p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/01/zuspec_diagram_2.png" />
+<img src="https://bitsbytesgates.com/imgs/2026/01/simplified_si_design_process.png" />
 </p>
 
-<h2 id="pure-python-vs-retargetable">Pure Python vs Retargetable</h2>
+<p>The gantt chart above illustrates a simplified silicon design process. It
+deliberately makes no attempt to assign accurate relative times to any step
+in the process. The key challenge is that starting most steps is gated by
+the previous step either completing, or reaching some fairly advanced state
+of readiness. For example, the DV team can’t really start verifying the 
+design until RTL is available. They can study the spec and, perhaps even,
+write some tests speculatively while the RTL is under development. But, 
+validating assumptions must wait until RTL exists.</p>
 
-<p>The other place where Zuspec is a bit different is in defining ‘Profiles’
-for content. This has significant similarities to the SystemVerilog “synthesizable” 
-subset. The first choice is whether a model is <em>Retargetable</em> or not. 
-<em>Retargetable</em> models can be mapped to non-Python implementations.</p>
+<p>Note that these tasks are grouped by the design-model abstraction
+level, with most activity centering around a register-transfer-level (RTL) 
+model of the design. This poses several challenges, but one of the biggest
+is that the abstraction difference between Spec and RTL is enormous.</p>
 
-<p>In order to be <em>retargetable</em>, a model can only contain elements of Zuspec-recognized
-types. The ‘Top’ class above matches this criteria. That said, as long as running 
-in Python is sufficient, a Zuspec model is free to use any Python construct.</p>
+<h1 id="a-closer-look">A closer look</h1>
 
-<p>Checking <em>Profile</em> compliance is another place where the Python ecosystem helps.
-Zuspec implements a plug-in to the <a href="https://flake8.pycqa.org/en/latest/">flake8</a> 
-linter that allows Zuspec to check profile compliance along with other Python
-rules that flake8 checks. This allows Zuspec-specific checks to be performed
-on-the-fly as code is developed, providing much faster feedback to the developer 
-(or LLM, as is often the case today).</p>
+<p>While the diagram above is straightforward, it hides some useful details
+about what is actually happening during each of the steps above.</p>
 
-<p>The diagram above shows several options for how a <em>Retargetable</em> Zuspec model 
-might be implemented. Several of these targets, such as SystemVerilog RTL,
-have their own <em>Profile</em> that further restricts available features.</p>
+<pre><code class="language-mermaid">gantt
+    title Elaborated Silicon Design Process
+    dateFormat YYYY-MM-DD
+    axisFormat x
+    Start            :start, 2000-01-12, 1d
+    section Spec
+        Spec Development :spec_devel, after start, 24d
+        Arch Choices      :arch, after start, 12d
+    section Algorithmic
+        Statistical Model :static_validate, after arch, 12d
+        Dynamic Model     :dynamic_validate, after arch, 12d
+        Spec Ready        :spec_ready, after dynamic_validate, 2d
+    section Cycle Accurate
+        Reference Model      :ref_model, after bring_up, 16d
+    section RTL
+        Impl Structure       :rtl_structure, after spec_ready, 8d
+        Impl Sub-IP          :rtl_subip, after rtl_structure, 8d
+        Sub-IP Integ         :rtl_integ, after rtl_subip, 8d
+        RTL Ready            :rtl_ready, after rtl_integ, 2d
+        Bring-up             :bring_up, after rtl_ready, 8d
+        Spec Cov             :spec_coverage, after bring_up, 8d
+        Impl Cov             :impl_coverage, after spec_coverage, 8d
+        RTL Verified         :rtl_verified, after impl_coverage, 2d
+        Develop Firmware     :dev_firmware, after rtl_verified, 24dj
+</code></pre>
 
-<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
-<p>Zuspec is showing early promise in simplifying hardware model creation, and allowing
-those models to be reused and retargeted to a variety of environments. Next time,
-we’ll look at modeling abstraction-level methodology, and how this helps humans (and LLMs)
-to more-effectively discuss and implement the hardware models they care about.</p>
-
-<h2 id="references">References</h2>
+<p>Let’s walk through to look at the changes. First, you’ll notice that 
+there are now four abstraction levels:</p>
 <ul>
-  <li><a href="https://bitsbytesgates.com/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html">Zuspec: Pythonic Model-Driven Hardware Development</a></li>
+  <li><strong>Spec</strong> - Typically a natural-language description</li>
+  <li><strong>Algorithmic</strong> - A behavioral model with limited timing fidelity</li>
+  <li><strong>Cycle Accurate</strong> - A behavioral (non-synthesizable) model that reflects the 
+intended micro-architecture of the design</li>
+  <li><strong>RTL</strong> - Synthesizable model</li>
 </ul>
 
+<h2 id="spec-development">Spec Development</h2>
+
+<p>During spec development, it’s natural to use some high-level models to
+validate assumptions. These models are captured at a high level of
+abstraction, and support one of two methods of evaluation. A model
+intended for dynamic evaluation will be behavioral, and supports 
+activities such as running existing software workloads. A statistical
+model (e.g. an Excel sheet) enables what-if analysis by adjusting 
+control parameters. These are typically two distinct models because 
+of the two different evaluation approaches.</p>
+
+<h2 id="rtl-implementation">RTL Implementation</h2>
+
+<p>The RTL development process is also not a monolith. Generally, you could
+think of a process by which the design is partitioned into independent
+sub-IP that can be implemented by different engineers. Once the design
+is partitioned, engineers can work in parallel to implement and test
+their assigned sub-IP. Finally, sub-IPs are integrated back into the
+overall structure of the design.</p>
+
+<h2 id="design-verification">Design Verification</h2>
+
+<p>The design verification process is also step-wise, typically starting
+with basic bring-up tests to ensure that simple operations, such as 
+register accesses, make it past the interfaces and properly interact 
+with the design. Verification then proceeds to exercise key device
+usescases and, finally, exercise key implementation details.</p>
+
+<p>The DV team will often create some type of reference model or predictor
+to use in checking results from the design. Sometimes this will be 
+cycle accurate, but it might also be at an algorithmic level of abstraction.</p>
+
+<p>Looking in more detail, it becomes clear that modeling at different abstarction
+levels is being done. But, too often, these models are only used within a specific
+silo. There are many reasons for this, including the language(s) used to implement
+models and integration challenges.</p>
+
+<h1 id="shifting-left-with-model-reuse">Shifting Left with Model Reuse</h1>
+
+<p>The Zuspec ‘bet’ is that we can reorganize the silicon development process by making models
+easier to create, easier to reuse and transform, and easier to integrate. Future posts will
+go into more depth on how Zuspec enables this. For now, let’s look at how different modeling
+abstractions are used across the silicon development process.</p>
+
+<pre><code class="language-mermaid">gantt
+    title Ideal Design Implementation Process
+    dateFormat YYYY-MM-DD
+    axisFormat x
+    Start            :start, 2000-01-12, 1d
+    section Spec
+        Spec Development :spec_devel, after start, 24d
+        Arch Choices      :arch, after start, 12d
+    section Algorithmic
+        Alg Model            :alg_model, after arch, 12d
+        Spec Ready           :spec_ready, after alg_model, 2d
+    section Cycle Accurate
+        CA Model (Structure) :ca_model, after spec_ready, 16d
+    section RTL
+        Impl Sub-IP          :rtl_subip, after ca_model, 8d
+        Sub-IP Integ         :rtl_integ, after rtl_subip, 8d
+        RTL Ready            :rtl_ready, after rtl_integ, 2d
+        Spec Cov             :spec_coverage, after spec_ready, 8d
+        Impl Cov             :impl_coverage, after ca_model, 8d
+        Bring-up             :bring_up, after rtl_ready, 8d
+        RTL Verified         :rtl_verified, after bring_up, 2d
+        Develop Firmware     :dev_firmware, after spec_ready, 24d
+</code></pre>
+
+<p>Let’s look at some of the key points:</p>
+<ul>
+  <li>A single algorithmic model is used to serve both dynamic (simulation) and
+static/formal evaluation during the spec development process.
+    <ul>
+      <li>The DV team can use this algorithmic model, with a few modifications, as a 
+substitute for RTL while they setup the testbench environment and write 
+tests that exercise the specified design behavior.</li>
+      <li>The Firmware team can also get started writing firmware using the 
+algorithmic model.</li>
+    </ul>
+  </li>
+  <li>The RTL implementation team develops a cycle-accurate model of the design
+as part of the process of partitioning the design.
+    <ul>
+      <li>The RTL implementation team selectively replaces sub-IPs within the 
+cycle-accurate model to test a particular sub-IP’s implementation together
+with the more-abstract remainder of the design model.</li>
+      <li>The DV team can move to running their tests against the more-accurate 
+model. This helps to highlight different interpretations of the spec 
+much earlier.</li>
+      <li>The DV team can also run their tests against various configurations
+of the hybrid cycle accurate / RTL model of the device to begin 
+exercising sub-IPs prior to availability of the fully-integrated RTL.
+Doing this can also enable tests that target implementation coverage 
+to be developed incrementally as the relevant sub-IPs are ready.</li>
+    </ul>
+  </li>
+  <li>Once the RTL is ready, the DV team proceeds to run bring-up activities. 
+Final issues are much easier to track down because the tests are known
+to run against the cycle-accurate model and various combinations of
+RTL sub-IPs.</li>
+</ul>
+
+<p>So, how much time will we save? That, of course, heavily depends on the 
+relative size of the tasks shown above, as well as on the cost
+of creating the set of models used above. But, the savings should be
+significant.</p>
+
+<h1 id="next-stes">Next Stes</h1>
+
+<p>We’ve looked at several implementation abstraction levels for device models. 
+In the next post, we’ll dig into interface abstraction levels and see how
+these enable incremental refinement of models.</p>
 </div>
 
 </div>
