@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Shifting Left with Hardware Model Abstractions
-date: 2026-11-01
+date: 2026-01-11
 categories: Zuspec
 excerpt_separator: <!--more-->
 mermaid: true
