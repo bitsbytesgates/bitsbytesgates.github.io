@@ -57,7 +57,7 @@ is that the abstraction difference between Spec and RTL is enormous.
 While the diagram above is straightforward, it hides some useful details
 about what is actually happening during each of the steps above.
 
-```mermaid
+<div class="mermaid">
 gantt
     title Elaborated Silicon Design Process
     dateFormat YYYY-MM-DD
@@ -82,7 +82,7 @@ gantt
         Impl Cov             :impl_coverage, after spec_coverage, 8d
         RTL Verified         :rtl_verified, after impl_coverage, 2d
         Develop Firmware     :dev_firmware, after rtl_verified, 24dj
-```
+</div>
 
 Let's walk through to look at the changes. First, you'll notice that 
 there are now four abstraction levels:
@@ -136,7 +136,7 @@ easier to create, easier to reuse and transform, and easier to integrate. Future
 go into more depth on how Zuspec enables this. For now, let's look at how different modeling
 abstractions are used across the silicon development process.
 
-```mermaid
+<div class="mermaid">
 gantt
     title Ideal Design Implementation Process
     dateFormat YYYY-MM-DD
@@ -159,7 +159,7 @@ gantt
         Bring-up             :bring_up, after rtl_ready, 8d
         RTL Verified         :rtl_verified, after bring_up, 2d
         Develop Firmware     :dev_firmware, after spec_ready, 24d
-```
+</div>
 
 Let's look at some of the key points:
 - A single algorithmic model is used to serve both dynamic (simulation) and
