@@ -7,6 +7,10 @@ excerpt_separator: <!--more-->
 mermaid: true
 ---
 
+<p align="center">
+<img src="{{ '/imgs/2026/01/design_abstraction.png' | absolute_url }}"/>
+</p>
+
 The most difficult transition in hardware modeling is the transition from
 natural-language to executable specification. It is during this transition
 that the ambiguities inherent in natural-language descriptions are resolved.
@@ -16,10 +20,6 @@ Zuspec defines interface abstraction levels that provide a basis for comparing
 implementations with different abstraction levels.
 
 <!--more-->
-
-<p align="center">
-<img src="{{ '/imgs/2026/01/design_abstraction.png' | absolute_url }}"/>
-</p>
 
 # Connecting Modeling Abstractions
 
