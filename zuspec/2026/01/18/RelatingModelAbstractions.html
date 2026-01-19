@@ -10,12 +10,12 @@
   <title>
     
     
-      The Mechanics of UVM/Python Cross-Calling &middot; Bits, Bytes, and Gates
+      Relating Hardware Model Abstractions &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -753,12 +753,12 @@ class="jfk-button jfk-button-action " style="">
   <title>
     
     
-      The Mechanics of UVM/Python Cross-Calling &middot; Bits, Bytes, and Gates
+      Relating Hardware Model Abstractions &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -812,219 +812,184 @@ Post-env
 
 
   <div class="post">
-    <h1 class="post-title">The Mechanics of UVM/Python Cross-Calling</h1>
-    <span class="post-date">01 Nov 2025</span>
+    <h1 class="post-title">Relating Hardware Model Abstractions</h1>
+    <span class="post-date">18 Jan 2026</span>
 
-    <p>It’s not necessary to understand very much about how PyHDL-IF implements
-the bridge between Python and UVM, but useful to understand a bit. Doing 
-so helps to understand what this library is and is not intended to do,
-and how you can best use it in your verification environment.</p>
+    <p>The most difficult transition in hardware modeling is the transition from
+natural-language to executable specification. It is during this transition
+that the ambiguities inherent in natural-language descriptions are resolved.
+Maximizing value from a multi-abstraction hardware modeling strategy requires
+minimizing the number of times a natural-language spec is converted to executable.
+Zuspec defines interface abstraction levels that provide a basis for comparing
+implementations with different abstraction levels.</p>
 
 <!--more-->
 
-<h1 id="an-interface-not-a-uvm-library">An Interface, not a UVM Library</h1>
-
 <p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/11/pyhdl_if_uvm_wrapper.png" />
+<img src="https://bitsbytesgates.com/imgs/2026/01/design_abstraction.png" />
 </p>
 
-<p>One important thing to understand is that PyHDL-IF is an interface library,
-and not a full testbench library. The UVM portion of PyHDL-IF is intended to 
-make it easy to call SystemVerilog/UVM APIs from Python, and vice versa. 
-Consequently, it is only
-useful if a SystemVerilog/UVM testbench is a part of your verification environment.
-If you want to create a UVM testbench in Python, the <a href="https://github.com/pyuvm/pyuvm">pyuvm</a>
-library is more likely to be what you’re looking for. You can even use 
-<code class="language-plaintext highlighter-rouge">pyuvm</code> with PyHDL-IF to provide structure to the Python portion of the testbench
-that leverages your existing UVM-SV testbench.</p>
+<h1 id="connecting-modeling-abstractions">Connecting Modeling Abstractions</h1>
 
-<p>Limiting the scope in this way has its advantages, though. While the UVM library
-is quite large, the APIs that test writers and scoreboard developers use is 
-a much smaller subset. Prioritizing this much-smaller subset very quickly 
-provides an interface library that covers a large percentage of usecases.</p>
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/spec_model_relationship.png" />
+</p>
 
-<h1 id="initiating-behavior-from-uvm">Initiating Behavior from UVM</h1>
+<p>In the previous post, we looked at several internal-implementation abstraction
+levels. These help us explore the architecture and micro-architecture of the
+design with different cost and performance tradeoffs. However, the internal 
+implementation doesn’t provide a good basis for comparing models. 
+In essence, this means that 
+the natural-language to executable spec translation happens for each model.
+This raises the cost of modeling, but also increases the risk that each model
+implements a slightly different interpretation of the original spec.</p>
 
-<p>One implication of PyHDL-IF being an interface library is that all 
-PyHDL-IF UVM objects are wrappers to access SystemVerilog UVM objects. 
-While it is possible (and common!) to create instances of UVM objects
-from Python, what happens under the hood as the following:</p>
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/spec_model_model_relationship.png" />
+</p>
+
+<p>Ideally, we want some basis for mechanically comparing two models with different
+implementations such that we can easily establish whether they are equivalent 
+according to that basis. Each
+model still needs to incorporate abstraction-specific details from the spec, but 
+isn’t a full from-spec implementation.</p>
+
+<h1 id="breaking-down-device-abstraction">Breaking Down Device Abstraction</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/design_abstraction.png" />
+</p>
+
+<p>Zuspec uses interface abstraction levels as this basis of comparison. 
+The first thing to note is that there are two levels of interface: logical and physical.</p>
+
+<p>The same set of interface abstractions apply to logical and physical interfaces, so
+let’s explore the abstraction levels first.</p>
+
+<h2 id="abstraction-scenario">Abstraction: Scenario</h2>
+<p>A scenario-level interface captures rules about how a device may be used. The 
+<a href="https://www.accellera.org/downloads/standards/portable-stimulus">Portable Test and Stimulus (PSS) standard</a> 
+is likely the best-known example of a scenario-level interface abstraction.
+PSS uses scheduling rules and constraints to specify data, data-flow, and 
+resource utilization rules. The rules of a scenario-level description assist
+in automating test creation and simplifying the integration of content 
+from multiple IPs.</p>
+
+<h2 id="abstraction-operation">Abstraction: Operation</h2>
+<p>An operation-level interface captures the device interface in terms of 
+operations that the device can perform. Think of the API of a software driver
+for a device. An operation-level interface lets us exercise key functions
+of a device without worrying too much about the details.</p>
+
+<h2 id="abstraction-mmio">Abstraction: MMIO</h2>
+<p>A memory-mapped I/O (MMIO) interface uses memory-mapped registers and 
+interrupts as the device interface.</p>
+
+<h2 id="abstraction-tlm">Abstraction: TLM</h2>
+<p>A transaction-level modeling (TLM) interface uses packet-like messages. 
+The <a href="https://www.accellera.org/images/downloads/standards/systemc/TLM_2_0_LRM.pdf">TLM 1.0 and 2.0 standards</a> 
+provide good examples of this level of modeling. TLM is also heavily
+used in <a href="https://www.accellera.org/downloads/standards/uvm">UVM</a> testbench 
+environments.</p>
+
+<h2 id="abstraction-protocol">Abstraction: Protocol</h2>
+<p>Protocol-level interfaces are the familiar signal-level interfaces used
+in register-transfer level (RTL) designs.</p>
+
+<h2 id="physical-interfaces">Physical Interfaces</h2>
+
+<p>We’re all familiar with physical device interfaces. In RTL, these are the Protocol-level
+interfaces with signal-level ports at the boundary of the device. Every hardware model has physical interfaces,
+and these typically</p>
+
+<h2 id="logical-interfaces">Logical Interfaces</h2>
+
+<p>A logical interface is typically a software interface. Software, firmware, and 
+test environments interact with a device via logical interfaces. A key attribute
+of a logical interface is that it is independent of the physical interface 
+and can be virtualized.</p>
+
+<h2 id="useful-combinations">Useful Combinations</h2>
+
+<p>The combination of logical and physical interface abstraction levels, combined with
+internal implementation abstraction level, provides a flexible way to characterize
+a given model. The table below summarizes how the abstraction levels apply to
+logical and physical interfaces.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Abstraction</th>
+      <th>Logical</th>
+      <th>Physical</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Scenario</td>
+      <td>Yes</td>
+      <td>Maybe</td>
+    </tr>
+    <tr>
+      <td>Operation</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>MMIO</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>TLM</td>
+      <td>Maybe</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Protocol</td>
+      <td>No</td>
+      <td>Yes</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="interface-roles">Interface Roles</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/interface_roles.png" />
+</p>
+
+<p>In addition to abstraction level and interface type, interface roles are also worth
+considering when characterizing a device.</p>
 <ul>
-  <li>Python (via the PyHDL-IF library) calls a UVM method, creating a new UVM object</li>
-  <li>The PyHDL-IF library creates a SystemVerilog and Python object pair with a handle to the UVM object</li>
-  <li>This ‘wrapper’ Python object is returned to the caller.</li>
+  <li>Initiator interfaces make requests to targets. Think: memory interface on a RISC-V core</li>
+  <li>Target interfaces respond to requests from an initiator. Think: register interface on a UART</li>
+  <li>Monitor interfaces passively view interaction between initiator and target</li>
 </ul>
 
-<p>So, how do we initiate Python behavior from a UVM testbench? There are 
-two special PyHDL-IF “proxy” classes that provide a Python implementation
-for <code class="language-plaintext highlighter-rouge">uvm_component</code> and <code class="language-plaintext highlighter-rouge">uvm_sequence</code>: <code class="language-plaintext highlighter-rouge">pyhdl_uvm_component_proxy</code> and <code class="language-plaintext highlighter-rouge">pyhdl_uvm_sequence_proxy</code>.</p>
+<h1 id="relating-interface-abstractions">Relating Interface Abstractions</h1>
 
-<h1 id="interface-structure">Interface Structure</h1>
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/abstractors.png" />
+</p>
 
-<p>The PyHDL-IF library provides infrastructure that connects a Python object and 
-a SystemVerilog object via method calls. Specially-decorated classes define
-the shared API. For example, the code snippet below defines the API of the 
-UvmSequenceProxy:</p>
+<p>Abstractors, a term used by the <a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a>
+standard, provide a mechanism for bridging abstraction levels in a reusable way. An abstractor
+has two or more physical interfaces with different abstraction levels and different roles. 
+Specific kinds of abstractors often go by names like bus functional model or transactor.</p>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@api</span>
-<span class="k">class</span> <span class="nc">UvmSequenceProxy</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<p>With the right set of abstractors, we can provide multiple views of the same model implementation.
+For example, an algorithmic implementation of a device with MMIO physical interfaces can 
+be used as a stand-in for the RTL implementation of the device with protocol-level interfaces 
+in a verification testbench simply by adding the right protocol transactors from a library.</p>
 
-    <span class="nd">@exp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">def</span> <span class="nf">get_userdata</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">def</span> <span class="nf">create_req</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">def</span> <span class="nf">create_rsp</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">start_item</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">:</span> <span class="nb">object</span><span class="p">):</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">finish_item</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">:</span> <span class="nb">object</span><span class="p">):</span> <span class="p">...</span></code></pre></figure>
-
-<p><strong>exp</strong> methods are ones that will be implemented in Python and will
-be called from SystemVerilog. Likewise, <strong>imp</strong> methods will be implemented
-in SystemVerilog and called from Python.</p>
-
-<p>The PyHDL-IF code generator creates a SystemVerilog class that implements
-this protocol – calling the Python method when an <strong>exp</strong> method is
-called in SystemVerilog and calling a SystemVerilog when an <strong>imp</strong> method
-is called in Python.</p>
-
-<p>When a new instance of the generated SystemVerilog is created, it results 
-in a pair of objects: one in SystemVerilog and a connected peer Python object.</p>
-
-<h1 id="initiating-behavior">Initiating Behavior</h1>
-
-<p>Starting Python behavior from a UVM-SV environment is as simple as selecting
-the right <code class="language-plaintext highlighter-rouge">proxy</code> class, creating an instance, and using the <code class="language-plaintext highlighter-rouge">proxy</code> class
-object within the UVM-SV environment as if it were a regular UVM object.</p>
-
-<p>Let’s look at an example that implements a UVM sequence in Python.
-Let’s look at the Python class before seeing how it is used. The
-code below is from the <code class="language-plaintext highlighter-rouge">uvm/sequence_rand_item</code> example:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="n">hdl_if.uvm</span> <span class="kn">import</span> <span class="n">uvm_sequence_impl</span>
-
-<span class="k">class</span> <span class="nc">PyRandSeq</span><span class="p">(</span><span class="n">uvm_sequence_impl</span><span class="p">):</span> 
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-        <span class="c1"># Send a small burst of randomized items
-</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="n">req</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">create_req</span><span class="p">()</span>
-            <span class="c1"># Randomize sequence item
-</span>            <span class="n">req</span><span class="p">.</span><span class="nf">randomize</span><span class="p">()</span>
-
-            <span class="c1"># Optional visibility
-</span>            <span class="k">try</span><span class="p">:</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="n">req</span><span class="p">.</span><span class="nf">sprint</span><span class="p">()</span>
-            <span class="k">except</span> <span class="nb">Exception</span><span class="p">:</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="s">"&lt;no sprint available&gt;"</span>
-            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"PyRandSeq: sending item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
-
-            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">start_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">finish_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></code></pre></figure>
-
-<p>On a side note, I’ve been finding that AI assistants like Copilot and 
-Cline are extremely helpful in creating tests and examples. I created
-the code above, along with the rest of the example, using 
-<a href="https://cline.bot/">Cline</a>. While the current set of models 
-(GPT-5 in this case) does well with many types of code, the only 
-mistakes I had to hand-correct were in the SystemVerilog code.</p>
-
-<p>If you look closely, there are two APIs used here that aren’t 
-technically UVM APIs: <code class="language-plaintext highlighter-rouge">randomize</code> and <code class="language-plaintext highlighter-rouge">create_req</code>. All the other APIs 
-are standard UVM.</p>
-
-<p>Now let’s see how we launch this code from UVM.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="kt">class</span> <span class="n">base_test</span> <span class="k">extends</span> <span class="n">uvm_test</span><span class="p">;</span>
-        <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">base_test</span><span class="p">)</span>
-        <span class="c1">// ...</span>
-
-        <span class="k">task</span> <span class="n">run_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
-            <span class="c1">// Python-driven sequence proxy</span>
-            <span class="k">typedef</span> <span class="n">pyhdl_uvm_sequence_proxy</span> <span class="p">#(</span>
-                <span class="p">.</span><span class="n">REQ</span><span class="p">(</span><span class="n">seq_item</span><span class="p">))</span> <span class="n">py_seq_t</span><span class="p">;</span>
-            <span class="n">py_seq_t</span> <span class="n">seq</span><span class="p">;</span>
-
-            <span class="n">phase</span><span class="p">.</span><span class="n">raise_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-            <span class="n">seq</span> <span class="o">=</span> <span class="n">py_seq_t</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"seq"</span><span class="p">);</span>
-            <span class="n">seq</span><span class="p">.</span><span class="n">pyclass</span> <span class="o">=</span> <span class="s">"pyseq::PyRandSeq"</span><span class="p">;</span>
-            <span class="n">seq</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">m_env</span><span class="p">.</span><span class="n">m_seqr</span><span class="p">);</span>
-            <span class="n">phase</span><span class="p">.</span><span class="n">drop_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-        <span class="k">endtask</span>
-    <span class="k">endclass</span></code></pre></figure>
-
-<p>In the abbreviated snippet above, the test <code class="language-plaintext highlighter-rouge">run_phase</code> task creates an
-instance of <code class="language-plaintext highlighter-rouge">pyhdl_uvm_sequence_proxy</code> that is properly specialized
-for the request sequence item type and the Python class, then starts 
-the sequence on the sequencer. UVM’s object-oriented nature lets us 
-create and use a sequence without caring whether it’s implemented in
-Python or SystemVerilog.</p>
-
-<h1 id="pyhdl-if-uvm-api-specifics">PYHDL-IF UVM API Specifics</h1>
-
-<p>Let’s use this example to look more closely at the API exposed by
-PYHDL-IF. There are three core categories:</p>
-<ul>
-  <li>UVM methods that are exposed to Python as-is</li>
-  <li>UVM methods whose signature is slightly altered</li>
-  <li>Utility methods that are not part of UVM</li>
-</ul>
-
-<p>The <code class="language-plaintext highlighter-rouge">get_name</code> method is an example of a UVM method that is exposed
-to Python as-is.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">function</span> <span class="kt">string</span> <span class="n">get_name</span><span class="p">();</span></code></pre></figure>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="p">...</span></code></pre></figure>
-
-<p>While there are a few cosmetic differences, these functions are
-practically identical: same user-specified parameters and same 
-return type.</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">get_config_object</code> method is an example of a UVM method that
-is exposed to Python with slight alterations due to the language.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">function</span> <span class="kt">bit</span> <span class="n">get_config_object</span><span class="p">(</span><span class="kt">string</span> <span class="n">field_name</span><span class="p">,</span>
-                               <span class="kt">inout</span> <span class="n">uvm_object</span> <span class="n">value</span><span class="p">,</span>
-                               <span class="kt">input</span> <span class="kt">bit</span> <span class="n">clone</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span></code></pre></figure>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_config_object</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> 
-    <span class="n">field_name</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
-    <span class="n">clone</span> <span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">UvmObject</span><span class="p">]:</span></code></pre></figure>
-
-<p>The key differences are in the return type and whether in-out
-parameters are used. Python discourages returning values via
-reference parameters, while this is a common pattern in SystemVerilog.
-We follow the Python pattern to better-align with common practice there.</p>
-
-<p>The final category are utility methods that aren’t present in UVM 
-at all. Two examples are the <code class="language-plaintext highlighter-rouge">randomize</code> method and the <code class="language-plaintext highlighter-rouge">create_req</code>
-method in the UVM sequence Python class. While <code class="language-plaintext highlighter-rouge">randomize</code> isn’t 
-part of the UVM API, Python test content benefits from having it.
-<code class="language-plaintext highlighter-rouge">create_req</code> exists for similar reasons. In SystemVerilog, we could
-refer to the <code class="language-plaintext highlighter-rouge">REQ</code> type parameter of the sequence class to create 
-a new request sequence item. In Python, it makes sense to expose
-this functionality via a method.</p>
-
-<h1 id="beyond-uvm-methods">Beyond UVM Methods</h1>
-
-<p>The combination of exposing UVM-defined methods to Python, along with and 
-two <code class="language-plaintext highlighter-rouge">proxy</code> classes to initiate behavior, makes it simple to run Python 
-behavior and interact with the UVM testbench.</p>
-
-<p>One thing you’ve probably noticed about the examples is that user-defined
-data isn’t accessed from Python. While we call the <code class="language-plaintext highlighter-rouge">randomize</code> method from 
-Python, we aren’t directly controlling the sequence-item fields. In the next 
-post, we’ll take a look at how we can get and set the value of SystemVerilog
-class fields from Python.</p>
+<h1 id="next-steps">Next Steps</h1>
+<p>Interface abstraction levels and interface types (logical, physical) enable 
+model reuse and provide a basis for comparing models with very different
+internal implementations. While there are many legal combinations of logical interface,
+physical interface, and internal implementation, there are a few key combinations. 
+In the next post, we’ll start to look at how some of these key combinations, and
+how they are captured and evaluated in Zuspec.</p>
 
 
   </div>

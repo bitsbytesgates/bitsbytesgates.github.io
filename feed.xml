@@ -1,4 +1,178 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-01-14T22:42:08+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Shifting Left with Hardware Model Abstractions</title><link href="https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html" rel="alternate" type="text/html" title="Shifting Left with Hardware Model Abstractions" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html"><![CDATA[<p>“Shift-Left” is a strategy to reorganize processes to enable more parallelism 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-01-19T21:22:46+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Relating Hardware Model Abstractions</title><link href="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html" rel="alternate" type="text/html" title="Relating Hardware Model Abstractions" /><published>2026-01-18T00:00:00+00:00</published><updated>2026-01-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html"><![CDATA[<p>The most difficult transition in hardware modeling is the transition from
+natural-language to executable specification. It is during this transition
+that the ambiguities inherent in natural-language descriptions are resolved.
+Maximizing value from a multi-abstraction hardware modeling strategy requires
+minimizing the number of times a natural-language spec is converted to executable.
+Zuspec defines interface abstraction levels that provide a basis for comparing
+implementations with different abstraction levels.</p>
+
+<!--more-->
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/design_abstraction.png" />
+</p>
+
+<h1 id="connecting-modeling-abstractions">Connecting Modeling Abstractions</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/spec_model_relationship.png" />
+</p>
+
+<p>In the previous post, we looked at several internal-implementation abstraction
+levels. These help us explore the architecture and micro-architecture of the
+design with different cost and performance tradeoffs. However, the internal 
+implementation doesn’t provide a good basis for comparing models. 
+In essence, this means that 
+the natural-language to executable spec translation happens for each model.
+This raises the cost of modeling, but also increases the risk that each model
+implements a slightly different interpretation of the original spec.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/spec_model_model_relationship.png" />
+</p>
+
+<p>Ideally, we want some basis for mechanically comparing two models with different
+implementations such that we can easily establish whether they are equivalent 
+according to that basis. Each
+model still needs to incorporate abstraction-specific details from the spec, but 
+isn’t a full from-spec implementation.</p>
+
+<h1 id="breaking-down-device-abstraction">Breaking Down Device Abstraction</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/design_abstraction.png" />
+</p>
+
+<p>Zuspec uses interface abstraction levels as this basis of comparison. 
+The first thing to note is that there are two levels of interface: logical and physical.</p>
+
+<p>The same set of interface abstractions apply to logical and physical interfaces, so
+let’s explore the abstraction levels first.</p>
+
+<h2 id="abstraction-scenario">Abstraction: Scenario</h2>
+<p>A scenario-level interface captures rules about how a device may be used. The 
+<a href="https://www.accellera.org/downloads/standards/portable-stimulus">Portable Test and Stimulus (PSS) standard</a> 
+is likely the best-known example of a scenario-level interface abstraction.
+PSS uses scheduling rules and constraints to specify data, data-flow, and 
+resource utilization rules. The rules of a scenario-level description assist
+in automating test creation and simplifying the integration of content 
+from multiple IPs.</p>
+
+<h2 id="abstraction-operation">Abstraction: Operation</h2>
+<p>An operation-level interface captures the device interface in terms of 
+operations that the device can perform. Think of the API of a software driver
+for a device. An operation-level interface lets us exercise key functions
+of a device without worrying too much about the details.</p>
+
+<h2 id="abstraction-mmio">Abstraction: MMIO</h2>
+<p>A memory-mapped I/O (MMIO) interface uses memory-mapped registers and 
+interrupts as the device interface.</p>
+
+<h2 id="abstraction-tlm">Abstraction: TLM</h2>
+<p>A transaction-level modeling (TLM) interface uses packet-like messages. 
+The <a href="https://www.accellera.org/images/downloads/standards/systemc/TLM_2_0_LRM.pdf">TLM 1.0 and 2.0 standards</a> 
+provide good examples of this level of modeling. TLM is also heavily
+used in <a href="https://www.accellera.org/downloads/standards/uvm">UVM</a> testbench 
+environments.</p>
+
+<h2 id="abstraction-protocol">Abstraction: Protocol</h2>
+<p>Protocol-level interfaces are the familiar signal-level interfaces used
+in register-transfer level (RTL) designs.</p>
+
+<h2 id="physical-interfaces">Physical Interfaces</h2>
+
+<p>We’re all familiar with physical device interfaces. In RTL, these are the Protocol-level
+interfaces with signal-level ports at the boundary of the device. Every hardware model has physical interfaces,
+and these typically</p>
+
+<h2 id="logical-interfaces">Logical Interfaces</h2>
+
+<p>A logical interface is typically a software interface. Software, firmware, and 
+test environments interact with a device via logical interfaces. A key attribute
+of a logical interface is that it is independent of the physical interface 
+and can be virtualized.</p>
+
+<h2 id="useful-combinations">Useful Combinations</h2>
+
+<p>The combination of logical and physical interface abstraction levels, combined with
+internal implementation abstraction level, provides a flexible way to characterize
+a given model. The table below summarizes how the abstraction levels apply to
+logical and physical interfaces.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Abstraction</th>
+      <th>Logical</th>
+      <th>Physical</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Scenario</td>
+      <td>Yes</td>
+      <td>Maybe</td>
+    </tr>
+    <tr>
+      <td>Operation</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>MMIO</td>
+      <td>Yes</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>TLM</td>
+      <td>Maybe</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Protocol</td>
+      <td>No</td>
+      <td>Yes</td>
+    </tr>
+  </tbody>
+</table>
+
+<h1 id="interface-roles">Interface Roles</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/interface_roles.png" />
+</p>
+
+<p>In addition to abstraction level and interface type, interface roles are also worth
+considering when characterizing a device.</p>
+<ul>
+  <li>Initiator interfaces make requests to targets. Think: memory interface on a RISC-V core</li>
+  <li>Target interfaces respond to requests from an initiator. Think: register interface on a UART</li>
+  <li>Monitor interfaces passively view interaction between initiator and target</li>
+</ul>
+
+<h1 id="relating-interface-abstractions">Relating Interface Abstractions</h1>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/01/abstractors.png" />
+</p>
+
+<p>Abstractors, a term used by the <a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a>
+standard, provide a mechanism for bridging abstraction levels in a reusable way. An abstractor
+has two or more physical interfaces with different abstraction levels and different roles. 
+Specific kinds of abstractors often go by names like bus functional model or transactor.</p>
+
+<p>With the right set of abstractors, we can provide multiple views of the same model implementation.
+For example, an algorithmic implementation of a device with MMIO physical interfaces can 
+be used as a stand-in for the RTL implementation of the device with protocol-level interfaces 
+in a verification testbench simply by adding the right protocol transactors from a library.</p>
+
+<h1 id="next-steps">Next Steps</h1>
+<p>Interface abstraction levels and interface types (logical, physical) enable 
+model reuse and provide a basis for comparing models with very different
+internal implementations. While there are many legal combinations of logical interface,
+physical interface, and internal implementation, there are a few key combinations. 
+In the next post, we’ll start to look at how some of these key combinations, and
+how they are captured and evaluated in Zuspec.</p>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[The most difficult transition in hardware modeling is the transition from natural-language to executable specification. It is during this transition that the ambiguities inherent in natural-language descriptions are resolved. Maximizing value from a multi-abstraction hardware modeling strategy requires minimizing the number of times a natural-language spec is converted to executable. Zuspec defines interface abstraction levels that provide a basis for comparing implementations with different abstraction levels.]]></summary></entry><entry><title type="html">Shifting Left with Hardware Model Abstractions</title><link href="https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html" rel="alternate" type="text/html" title="Shifting Left with Hardware Model Abstractions" /><published>2026-01-11T00:00:00+00:00</published><updated>2026-01-11T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html"><![CDATA[<p>“Shift-Left” is a strategy to reorganize processes to enable more parallelism 
 by adjusting dependencies. Hardware model abstractions provide a key tool to
 shifting tasks left in the silicon design process.</p>
 
@@ -1816,104 +1990,4 @@ innovations can be explored along with integrated existing technologies.</p>
   <li>https://en.wikipedia.org/wiki/TIOBE_index</li>
   <li>https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA</li>
   <li>https://www.veripool.org/verilator/</li>
-</ol>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[Designing and implementing hardware is challenging, and is getting more difficult each year as systems become more complex. Design and verification teams are looking to boost productivity as a way to keep pace, while also looking for ways to provide models of the design behavior to software teams earlier. The fragmented and esoteric nature of the languages and methodologies used for design and verification only make this more difficult. Zuspec aspires to provide a unified, extensible Pythonic framework for multi-abstraction hardware modeling that simplifies the design and verification process and enables traditional and AI-driven automation. The abstraction gap and model fragmentation are two key drivers of hardware design-flow complexity. The abstraction difference between a natural-language design specification and the register-transfer-level (RTL) model that implements it is enormous, and only increasing as designs become larger and more complex. It’s natural to prioritize the RTL model, since that is required to get to implementation. However, because RTL models are detailed and execute slowly, they don’t do a good job of meeting the needs of adjacent disciplines, such as firmware. This delays how early software teams obtain access to a representation of the design, and limits the platforms on which they can work to fast hardware emulation or prototyping environments. Over time, new requirements have resulted in the development of new domain-specific languages and language-like class libraries. SystemVerilog, PSS, UPF, IP-XACT, SystemC, and others all provide features that address pain points of hardware development. Unfortunately, this has also led to a very fragmented ecosystem with loosely-integrated languages and methodologies and complex build flows. Considering the Ecosystem All of these innovations have primarily come from a hardware-design perspective, and focus on enabling hardware-design flows. That, in itself, is a challenge given the relative sizes of the hardware- and software-engineering ecosystems. While it’s difficult to find accurate detailed data, US Bureau of Labor Statistics reports a labor-market size of 76,800 for hardware engineers vs a labor-market size of 1,534,790 for software engineers (inclusive of all sub-disciplines in both cases). Given that the collective challenge is a combined hardware and software system, getting buy-in from both disciplines is critical. It seems quite unlikely that a language created to serve the unique requirements of the ecosystem’s minority can serve the combined needs and gain the acceptance of the majority. Zuspec Zuspec1 adopts Python as its starting point, and embeds hardware semantics into that ecosystem. The result is a platform that is familiar to software engineers, offers high productivity for hardware engineering, and has the goal of increasing the ability to share artifacts across the disciplines. Why Python? Many factors are involved in selecting a language for any purpose: key language features, tool ecosystem, relevant libraries, as well as the community around the language. Applying an existing language to the semantics of another domains raises another factor to consider: flexibility of the language. Popularity can be Self-Reinforcing Python is a popular language overall, holding the top spot in many rankings for several consecutive years, and being ranked highly for many years before that. Language popularity may not seem relevant compared to the technical features of a language. Not only it is relevant, popularity has a direct bearing on language technical features. TIOBE [2])(https://www.tiobe.com/tiobe-index/), for example, measures language rank in terms of searches via a range of internet search engines 3. This is, of course, a rough measure a the size of a language’s community. Larger communities produce more ideas for using a language and, thus, a a larger library ecosystem. Larger communities more-rapidly produce and refine adjacent technologies, such as code development and package management tools, and new language features. Popularity often builds upon itself, and there is evidence that AI is acting as a driver of Python’s popularity. Specifically, AI assistants are often reported to be more effective with Python than with other languages 4. This has the effect of drawing more developers to Python, which increases the available code in Python, which more-rapidly increases the quality of results with Python. But, language popularity is only relevant for the set of languages that can be used to capture relevant domain semantics. Fortunately, Python measures up very well here again. Technical Arguments for Python There are strong technical arguments for the Python language as well. As a dynamic language, Python provides excellent facilities for introspecting and manipulating a Python description. import zuspec.dataclasses as zdc @zdc.dataclass class SendPacket(zdc.Struct): sz : zdc.Bit[8] = zdc.rand() @zdc.constraint def valid_sz(self): self.sz in [1, 2, 4, 8, 16] Python decorators can be used to annotate elements of the description, identifying specific semantics to be applied to an element or attaching special processing instructions. For example, the constraint decorator above marks the body of the valid_sz method as having constraint semantics. Python also allows inheritance relationships to be inspected at any point in time. The base type controls capabilities and restrictions of the derived type. While Python can be used as a purely dynamically-typed language, it also provides the ability to associate type “hints” with variables. The sz field in the example above specifies that it is an unsigned 8-bit field. This enables the modeler to control how data in the model will be represented in the implementation. Finally, Python supports AST introspection and transformation. This capability allows tools to access the raw AST for code, such as the constraint method above, without needing to use tricks like operator overloading. Statically-typed languages often provide some introspection facilities that are available during the compilation phase. In contrast, Python allows these facilities to be applied to a Python description at any point in time, providing much more flexibility in processing flows. Effectively, Python allows libraries like Zuspec to act as a compiler within the Python interpreter. Python also offers a strong set of system-programming features. Combined with Python’s dynamic language features, these dramatically simplify the process of integrating external tools and systems. Python also specifies a package specification and provides tools for producing, discovering, and consuming packages. Together, these capabilities make Python a very compelling platform for developing, verifying, and publishing hardware models. What does this look like? All languages are a combination of syntax and semantics. Syntax governs the lexical aspects of a language: the keywords, operators, and legal ways of arranging them. Semantics governs the meanings of those statements – for example, whether a = b changes the value of the a variable, changes the a variable to reference the b variable, or something entirely different. Zuspec proposes a way to adopt full Python syntax, while identifying key regions in which different semantics apply to this syntax. These new semantics are always more restrictive than native Python semantics, allowing existing code checkers (eg mypy) to work unmodified. Zuspec divides a Python description into two core region kinds: Pure Python regions Python regions with domain-specific semantics Even a simple binary counter highlights several unique semantics that a hardware description must capture: Bit width of the count field When the count should be incremented Hardware-specific notions like reset Zuspec identifies regions with these semantics using a combination of Python decorators and base classes. The example below shows a 32-bit counter modeled using the Zuspec library. import zuspec.dataclasses as zdc @zdc.dataclass class Counter(zdc.Component): clock : zdc.Bit = zdc.input() reset : zdc.Bit = zdc.input() count : zdc.Bit[32] = zdc.output() @zdc.sync(clock=lambda s:s.clock, reset=lambda s:s.reset) def inc(self): if self.reset: self.count = 0 else: self.count += 1 The Counter example above illustrates these two regions. By default, pure Python semantics are used. Consequently, the import statement at the top uses pure Python semantics. The Counter class inherits from the Zuspec Component class, which designates it as a class with specific capabilities. The inc method is decorated with the sync decorator. This marks it as a method that is automatically evaluated on the active edge of the specified clock or reset signals, and a method where deferred assignment is used. It also marks it as a method that may not be invoked directly. A class domain with special semantics is a model of implementation, and cannot be used directly. Instead, a Transformer class must first be used to create an implementation. In this case, the implementation could be pure-Python, Verilog, or something entirely different like documentation. import asyncio from zuspec.be.py import ComponentFactory import zuspec.dataclasses as zdc @zdc.dataclass class CountTB(zdc.Component): clkrst : zdc.ClockReset = zdc.field(init={period=10}) counter : Counter = zdc.field( bind=lambda s:{ s.counter.clock : s.clkrst.clock, s.counter.reset : s.clkrst.reset }) def test_smoke(self): tb = ComponentFactory(CountTB) asyncio.run(tb.clkrst.do_reset(count=10)) assert tb.counter.count == 0 asyncio.run(tb.clkrst.wait(count=10)) assert tb.counter.count == 10 The example above shows a small testbench around the Counter component with a simple Pytest unit test. The type transformer creates a Python object that is used to dynamically evaluate the model. While the interface is Python, the implementation may or may not be Python. For example, the transformer might, instead, transform the model to Verilog and create a Verilator 5 simulator executable that evaluates the model much faster than a pure-Python implementation, while still exposing a Python interface to the signals. module Counter( input clock, input reset, output reg[31:0] count); always @(posedge clock or posedge reset) begin if (reset) begin count &lt;= {32{1'b0}}; end else begin count &lt;= count + 1; end end endmodule Another transformer might convert the model to the synthesizable Verilog shown above to be used as input to existing synthesis or simulation flows. The User-Extensible Language The Counter example is quite simple, and at the register-transfer level (RTL). Zuspec is designed to be able to capture a broad range of hardware-centric semantics that cover: Verification Constrained randomization and functional coverage Portable test and stimulus (PSS) Assertions (SVA) Hardware design RTL Medium-level synthesis Transaction-level modeling (TLM) Register modeling Clock and power domains Physical design Firmware Register interface Specialized memory management Zuspec brings a new approach to domain-specific languages that leverages the popularity and ecosystem of Python, and embeds domain-specific semantics from hardware design, verification, and firmware. The big “bet” is that educating humans and LLMs on the delta between a Python and a set of domain-specific semantics is far easier than doing the same with a completely new language. While Zuspec models are captured in Python, processing tools may transform Zuspec models into appropriate non-Python implementations such as embedded C or synthesizable Verilog. Zuspec encourages a Pythonic development process for hardware that is code-centric, AI-friendly, and nimble. And, most importantly, Zuspec provides togetherness: a common environment in which new language innovations can be explored along with integrated existing technologies. References https://zuspec.github.io https://www.tiobe.com/tiobe-index/ https://en.wikipedia.org/wiki/TIOBE_index https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA https://www.veripool.org/verilator/]]></summary></entry><entry><title type="html">AI: Instigating a Developer Docs Renaissance?</title><link href="https://bitsbytesgates.com/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html" rel="alternate" type="text/html" title="AI: Instigating a Developer Docs Renaissance?" /><published>2025-08-30T00:00:00+00:00</published><updated>2025-08-30T00:00:00+00:00</updated><id>https://bitsbytesgates.com/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance</id><content type="html" xml:base="https://bitsbytesgates.com/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html"><![CDATA[<p>There’s been lots of discussion about the future of writing in the AI age.
-LLMs have shown their potential as a tool by helping authors of many genres 
-brainstorm ideas, rough out content, and more. But, this automation comes
-with questions attached. If writing can be automated, 
-what is the writer’s role? If LLMs only deliver the illusion of
-producing useful content, are we about to experience a deluge of 
-unintelligible <a href="https://simonwillison.net/2024/May/8/slop/">slop</a> 
-masquerading as useful documentation? I’ve done my share of 
-hand wringing while reviewing AI-created code commands and documentation 
-that had the form of useful information, but little insightful content. 
-A recent coding experience has me seeing an opportunity for a 
-developer-docs renaissance driven by the needs of LLMs.</p>
-
-<!-- more -->
-
-<h1 id="developer-docs-and-why-we-dont-create-them">Developer Docs and why we don’t create them</h1>
-
-<p>I define developer docs as the set of documentation that helps a
-developer navigate a technical project and understand things like:</p>
-<ul>
-  <li>How to build the project from source</li>
-  <li>How to run tests on the project</li>
-  <li>Basic structure and architecture of the project</li>
-  <li>Examples of how to interact with the API</li>
-  <li>Any special structures used by the project</li>
-</ul>
-
-<p>Notes like this have several possible audiences</p>
-<ul>
-  <li>Colleagues</li>
-  <li>Open source project: potential contributors</li>
-  <li>Future you</li>
-</ul>
-
-<p>I suspect most of us agree that this information is useful,
-and don’t truly feel that our code is self-documenting. 
-But, it always seems difficult to devote time to writing good 
-developer documentation. Why? I think it’s because, 
-no matter the audience, developer docs are for the future – 
-a future colleague, future collaborator, or future you. And
-it’s always tempting to prioritize the ‘now’ when it comes
-to choosing between ‘now’ and ‘future’.</p>
-
-<p>LLMs shift that equation by making developer docs immediately 
-actionable, and I’m optimistic that this may actually shift 
-our behavior.</p>
-
-<h1 id="working-with-complex-projects">Working with Complex Projects</h1>
-
-<p>I was recently working on one of my open source projects. The structure
-is a bit complicated due to some of the requirements. Specifically,
-I have library projects that consist of:</p>
-<ul>
-  <li>C++ API consisting of pure-virtual interface classes</li>
-  <li>Core implementation in C++</li>
-  <li>A Cython wrapper API implemented in terms of the pure-virtual interface classes</li>
-</ul>
-
-<p>This structure enables the libraries to be used effiently from C++ and Python,
-and allows the library native code to interact directly whether called from
-C++ or Python. The downside, of course, is that adding a new class or method
-involves changes across several source locations: C++ interface, C++ implementation,
-and several locations across the Python interface.</p>
-
-<p>I’ve been using AI assistants (Cline, Copilot) to make modifications to 
-this codebase with varying success. On one hand, the results were quite
-good given that the only data it had was the code. On the other hand,
-there were many cases where the model (gpt-4.1 in this case) would only 
-perform a subset of the required changes. In one case, it decided to 
-create a new Cython extension file entirely.</p>
-
-<h1 id="developer-docs-as-llm-instructions">Developer Docs as LLM Instructions</h1>
-
-<p>I had independently started to write down some notes about the structure 
-of this code. You can find the notes <a href="https://github.com/zuspec/zuspec-dev-docs/blob/main/docs/python_ext_structure.md">here</a>
-if you’re interested. Not too complicated, and much more needed of course.</p>
-
-<p>But, when I included this as context for the LLM, the results from the AI assistant
-improved dramatically. Still not perfect, but sufficiently better that
-I feel more motivated to start a task by writing out some notes. Because,
-after all, these notes will be immediately useful as I start working on
-the implementation.</p>
-
-<h1 id="looking-forward">Looking Forward</h1>
-
-<p>Writing developer docs and writing code is too-often seen as a zero-sum game:
-I can write code <em>or</em> I can write developer documentation. LLMs change this 
-by blurring the line between writing docs and code. Writing docs, in fact,
-may provide greater leverage by allowing you to drive automation of the 
-more-tedious aspects of writing code directly from developer docs.</p>
-
-<p>Looking forward, I’m very interested in what standardization emerges around
-capturing and curating context documentation intended for LLMs. Specifically,
-I’m watching <a href="https://agents.md/">Agents.md</a> and <a href="https://llmstxt.org/">llms.txt</a>.</p>
-
-<p>Even more immediately, I’m revisiting how I build out the Zuspec Python-embedded
-language. I’m planning to take a documentation-first approach, and am interested
-to evaluate the impact this has on the development process itself and my ability
-to leverage AI assistants along the way.</p>
-
-<p>.</p>]]></content><author><name></name></author><category term="AI" /><summary type="html"><![CDATA[There’s been lots of discussion about the future of writing in the AI age. LLMs have shown their potential as a tool by helping authors of many genres brainstorm ideas, rough out content, and more. But, this automation comes with questions attached. If writing can be automated, what is the writer’s role? If LLMs only deliver the illusion of producing useful content, are we about to experience a deluge of unintelligible slop masquerading as useful documentation? I’ve done my share of hand wringing while reviewing AI-created code commands and documentation that had the form of useful information, but little insightful content. A recent coding experience has me seeing an opportunity for a developer-docs renaissance driven by the needs of LLMs. Developer Docs and why we don’t create them I define developer docs as the set of documentation that helps a developer navigate a technical project and understand things like: How to build the project from source How to run tests on the project Basic structure and architecture of the project Examples of how to interact with the API Any special structures used by the project Notes like this have several possible audiences Colleagues Open source project: potential contributors Future you I suspect most of us agree that this information is useful, and don’t truly feel that our code is self-documenting. But, it always seems difficult to devote time to writing good developer documentation. Why? I think it’s because, no matter the audience, developer docs are for the future – a future colleague, future collaborator, or future you. And it’s always tempting to prioritize the ‘now’ when it comes to choosing between ‘now’ and ‘future’. LLMs shift that equation by making developer docs immediately actionable, and I’m optimistic that this may actually shift our behavior. Working with Complex Projects I was recently working on one of my open source projects. The structure is a bit complicated due to some of the requirements. Specifically, I have library projects that consist of: C++ API consisting of pure-virtual interface classes Core implementation in C++ A Cython wrapper API implemented in terms of the pure-virtual interface classes This structure enables the libraries to be used effiently from C++ and Python, and allows the library native code to interact directly whether called from C++ or Python. The downside, of course, is that adding a new class or method involves changes across several source locations: C++ interface, C++ implementation, and several locations across the Python interface. I’ve been using AI assistants (Cline, Copilot) to make modifications to this codebase with varying success. On one hand, the results were quite good given that the only data it had was the code. On the other hand, there were many cases where the model (gpt-4.1 in this case) would only perform a subset of the required changes. In one case, it decided to create a new Cython extension file entirely. Developer Docs as LLM Instructions I had independently started to write down some notes about the structure of this code. You can find the notes here if you’re interested. Not too complicated, and much more needed of course. But, when I included this as context for the LLM, the results from the AI assistant improved dramatically. Still not perfect, but sufficiently better that I feel more motivated to start a task by writing out some notes. Because, after all, these notes will be immediately useful as I start working on the implementation. Looking Forward Writing developer docs and writing code is too-often seen as a zero-sum game: I can write code or I can write developer documentation. LLMs change this by blurring the line between writing docs and code. Writing docs, in fact, may provide greater leverage by allowing you to drive automation of the more-tedious aspects of writing code directly from developer docs. Looking forward, I’m very interested in what standardization emerges around capturing and curating context documentation intended for LLMs. Specifically, I’m watching Agents.md and llms.txt. Even more immediately, I’m revisiting how I build out the Zuspec Python-embedded language. I’m planning to take a documentation-first approach, and am interested to evaluate the impact this has on the development process itself and my ability to leverage AI assistants along the way. .]]></summary></entry></feed>
+</ol>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[Designing and implementing hardware is challenging, and is getting more difficult each year as systems become more complex. Design and verification teams are looking to boost productivity as a way to keep pace, while also looking for ways to provide models of the design behavior to software teams earlier. The fragmented and esoteric nature of the languages and methodologies used for design and verification only make this more difficult. Zuspec aspires to provide a unified, extensible Pythonic framework for multi-abstraction hardware modeling that simplifies the design and verification process and enables traditional and AI-driven automation. The abstraction gap and model fragmentation are two key drivers of hardware design-flow complexity. The abstraction difference between a natural-language design specification and the register-transfer-level (RTL) model that implements it is enormous, and only increasing as designs become larger and more complex. It’s natural to prioritize the RTL model, since that is required to get to implementation. However, because RTL models are detailed and execute slowly, they don’t do a good job of meeting the needs of adjacent disciplines, such as firmware. This delays how early software teams obtain access to a representation of the design, and limits the platforms on which they can work to fast hardware emulation or prototyping environments. Over time, new requirements have resulted in the development of new domain-specific languages and language-like class libraries. SystemVerilog, PSS, UPF, IP-XACT, SystemC, and others all provide features that address pain points of hardware development. Unfortunately, this has also led to a very fragmented ecosystem with loosely-integrated languages and methodologies and complex build flows. Considering the Ecosystem All of these innovations have primarily come from a hardware-design perspective, and focus on enabling hardware-design flows. That, in itself, is a challenge given the relative sizes of the hardware- and software-engineering ecosystems. While it’s difficult to find accurate detailed data, US Bureau of Labor Statistics reports a labor-market size of 76,800 for hardware engineers vs a labor-market size of 1,534,790 for software engineers (inclusive of all sub-disciplines in both cases). Given that the collective challenge is a combined hardware and software system, getting buy-in from both disciplines is critical. It seems quite unlikely that a language created to serve the unique requirements of the ecosystem’s minority can serve the combined needs and gain the acceptance of the majority. Zuspec Zuspec1 adopts Python as its starting point, and embeds hardware semantics into that ecosystem. The result is a platform that is familiar to software engineers, offers high productivity for hardware engineering, and has the goal of increasing the ability to share artifacts across the disciplines. Why Python? Many factors are involved in selecting a language for any purpose: key language features, tool ecosystem, relevant libraries, as well as the community around the language. Applying an existing language to the semantics of another domains raises another factor to consider: flexibility of the language. Popularity can be Self-Reinforcing Python is a popular language overall, holding the top spot in many rankings for several consecutive years, and being ranked highly for many years before that. Language popularity may not seem relevant compared to the technical features of a language. Not only it is relevant, popularity has a direct bearing on language technical features. TIOBE [2])(https://www.tiobe.com/tiobe-index/), for example, measures language rank in terms of searches via a range of internet search engines 3. This is, of course, a rough measure a the size of a language’s community. Larger communities produce more ideas for using a language and, thus, a a larger library ecosystem. Larger communities more-rapidly produce and refine adjacent technologies, such as code development and package management tools, and new language features. Popularity often builds upon itself, and there is evidence that AI is acting as a driver of Python’s popularity. Specifically, AI assistants are often reported to be more effective with Python than with other languages 4. This has the effect of drawing more developers to Python, which increases the available code in Python, which more-rapidly increases the quality of results with Python. But, language popularity is only relevant for the set of languages that can be used to capture relevant domain semantics. Fortunately, Python measures up very well here again. Technical Arguments for Python There are strong technical arguments for the Python language as well. As a dynamic language, Python provides excellent facilities for introspecting and manipulating a Python description. import zuspec.dataclasses as zdc @zdc.dataclass class SendPacket(zdc.Struct): sz : zdc.Bit[8] = zdc.rand() @zdc.constraint def valid_sz(self): self.sz in [1, 2, 4, 8, 16] Python decorators can be used to annotate elements of the description, identifying specific semantics to be applied to an element or attaching special processing instructions. For example, the constraint decorator above marks the body of the valid_sz method as having constraint semantics. Python also allows inheritance relationships to be inspected at any point in time. The base type controls capabilities and restrictions of the derived type. While Python can be used as a purely dynamically-typed language, it also provides the ability to associate type “hints” with variables. The sz field in the example above specifies that it is an unsigned 8-bit field. This enables the modeler to control how data in the model will be represented in the implementation. Finally, Python supports AST introspection and transformation. This capability allows tools to access the raw AST for code, such as the constraint method above, without needing to use tricks like operator overloading. Statically-typed languages often provide some introspection facilities that are available during the compilation phase. In contrast, Python allows these facilities to be applied to a Python description at any point in time, providing much more flexibility in processing flows. Effectively, Python allows libraries like Zuspec to act as a compiler within the Python interpreter. Python also offers a strong set of system-programming features. Combined with Python’s dynamic language features, these dramatically simplify the process of integrating external tools and systems. Python also specifies a package specification and provides tools for producing, discovering, and consuming packages. Together, these capabilities make Python a very compelling platform for developing, verifying, and publishing hardware models. What does this look like? All languages are a combination of syntax and semantics. Syntax governs the lexical aspects of a language: the keywords, operators, and legal ways of arranging them. Semantics governs the meanings of those statements – for example, whether a = b changes the value of the a variable, changes the a variable to reference the b variable, or something entirely different. Zuspec proposes a way to adopt full Python syntax, while identifying key regions in which different semantics apply to this syntax. These new semantics are always more restrictive than native Python semantics, allowing existing code checkers (eg mypy) to work unmodified. Zuspec divides a Python description into two core region kinds: Pure Python regions Python regions with domain-specific semantics Even a simple binary counter highlights several unique semantics that a hardware description must capture: Bit width of the count field When the count should be incremented Hardware-specific notions like reset Zuspec identifies regions with these semantics using a combination of Python decorators and base classes. The example below shows a 32-bit counter modeled using the Zuspec library. import zuspec.dataclasses as zdc @zdc.dataclass class Counter(zdc.Component): clock : zdc.Bit = zdc.input() reset : zdc.Bit = zdc.input() count : zdc.Bit[32] = zdc.output() @zdc.sync(clock=lambda s:s.clock, reset=lambda s:s.reset) def inc(self): if self.reset: self.count = 0 else: self.count += 1 The Counter example above illustrates these two regions. By default, pure Python semantics are used. Consequently, the import statement at the top uses pure Python semantics. The Counter class inherits from the Zuspec Component class, which designates it as a class with specific capabilities. The inc method is decorated with the sync decorator. This marks it as a method that is automatically evaluated on the active edge of the specified clock or reset signals, and a method where deferred assignment is used. It also marks it as a method that may not be invoked directly. A class domain with special semantics is a model of implementation, and cannot be used directly. Instead, a Transformer class must first be used to create an implementation. In this case, the implementation could be pure-Python, Verilog, or something entirely different like documentation. import asyncio from zuspec.be.py import ComponentFactory import zuspec.dataclasses as zdc @zdc.dataclass class CountTB(zdc.Component): clkrst : zdc.ClockReset = zdc.field(init={period=10}) counter : Counter = zdc.field( bind=lambda s:{ s.counter.clock : s.clkrst.clock, s.counter.reset : s.clkrst.reset }) def test_smoke(self): tb = ComponentFactory(CountTB) asyncio.run(tb.clkrst.do_reset(count=10)) assert tb.counter.count == 0 asyncio.run(tb.clkrst.wait(count=10)) assert tb.counter.count == 10 The example above shows a small testbench around the Counter component with a simple Pytest unit test. The type transformer creates a Python object that is used to dynamically evaluate the model. While the interface is Python, the implementation may or may not be Python. For example, the transformer might, instead, transform the model to Verilog and create a Verilator 5 simulator executable that evaluates the model much faster than a pure-Python implementation, while still exposing a Python interface to the signals. module Counter( input clock, input reset, output reg[31:0] count); always @(posedge clock or posedge reset) begin if (reset) begin count &lt;= {32{1'b0}}; end else begin count &lt;= count + 1; end end endmodule Another transformer might convert the model to the synthesizable Verilog shown above to be used as input to existing synthesis or simulation flows. The User-Extensible Language The Counter example is quite simple, and at the register-transfer level (RTL). Zuspec is designed to be able to capture a broad range of hardware-centric semantics that cover: Verification Constrained randomization and functional coverage Portable test and stimulus (PSS) Assertions (SVA) Hardware design RTL Medium-level synthesis Transaction-level modeling (TLM) Register modeling Clock and power domains Physical design Firmware Register interface Specialized memory management Zuspec brings a new approach to domain-specific languages that leverages the popularity and ecosystem of Python, and embeds domain-specific semantics from hardware design, verification, and firmware. The big “bet” is that educating humans and LLMs on the delta between a Python and a set of domain-specific semantics is far easier than doing the same with a completely new language. While Zuspec models are captured in Python, processing tools may transform Zuspec models into appropriate non-Python implementations such as embedded C or synthesizable Verilog. Zuspec encourages a Pythonic development process for hardware that is code-centric, AI-friendly, and nimble. And, most importantly, Zuspec provides togetherness: a common environment in which new language innovations can be explored along with integrated existing technologies. References https://zuspec.github.io https://www.tiobe.com/tiobe-index/ https://en.wikipedia.org/wiki/TIOBE_index https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA https://www.veripool.org/verilator/]]></summary></entry></feed>
