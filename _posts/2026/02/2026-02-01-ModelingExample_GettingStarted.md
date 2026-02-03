@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Modeling Example: Getting Started
+title: Getting Started with Executable Specs
 date: 2026-02-01
 categories: Zuspec
 excerpt_separator: <!--more-->
