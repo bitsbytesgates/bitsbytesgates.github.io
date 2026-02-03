@@ -10,12 +10,12 @@
   <title>
     
     
-      Modeling Random Stimulus and Functional Coverage in Python &middot; Bits, Bytes, and Gates
+      Getting Started with Executable Specs &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2020/03/27/modeling-random-stimulus-and-functional.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/zuspec/2026/02/01/ModelingExample_GettingStarted.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -27,6 +27,14 @@
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -755,12 +763,12 @@ class="jfk-button jfk-button-action " style="">
   <title>
     
     
-      Modeling Random Stimulus and Functional Coverage in Python &middot; Bits, Bytes, and Gates
+      Getting Started with Executable Specs &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2020/03/27/modeling-random-stimulus-and-functional.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/zuspec/2026/02/01/ModelingExample_GettingStarted.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -772,6 +780,14 @@ class="jfk-button jfk-button-action " style="">
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -801,49 +817,326 @@ Post-env
 </head>
 
 
+
   <body>
-    
+
 
   <div class="post">
-    <h1 class="post-title">Modeling Random Stimulus and Functional Coverage in Python</h1>
-    <span class="post-date">27 Mar 2020</span>
-    <div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-3xDfd2VYh08/Xn5nbRvUAUI/AAAAAAAAC4M/LF-klZXXRdY45dulHRG4k1iyXbeFy1EBQCLcBGAsYHQ/s1600/ModelingRandomStimulusSplash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://1.bp.blogspot.com/-3xDfd2VYh08/Xn5nbRvUAUI/AAAAAAAAC4M/LF-klZXXRdY45dulHRG4k1iyXbeFy1EBQCLcBGAsYHQ/s1600/ModelingRandomStimulusSplash.png" /></a></div><div style="text-align: center;"><br /></div><br />If you've been following the blog over the last year, you've probably noticed that I've spent quite a bit of time over the last year learning and using Python. For several reasons, it's become my new favorite programming language. Until recently, I've mostly used Python as an implementation language. However, I've been curious as to how well Python works for implementing an embedded domain-specific language (eDSL). Most of my experience in this space has been with C++, so I was looking for an excuse to experiment.<br /><br />In addition to using Python as a general programming language, I've also been using it as a testbench language for functional verification. I've spent time learning about the cocotb library that interfaces Python to a simulation engine, and in building an efficient task-based interface between Python and BFMs in simulation. With a decade or so developing OVM and UVM testbench environments, one thing I found myself missing in Python were the constraint and functional coverage modeling features that SystemVerilog provides. Now, to be clear, there is at least one existing Python library that provides random stimulus in Python, but after evaluating the approach and supported features against commonly-used SystemVerilog features, I decided to proceed in a different direction.<br /><br /><b>Functional Verification and Constrained Random Stimulus</b><br />Constrained-random stimulus and functional coverage have become well-ingrained in functional verification practice over the last decade or more. SystemVerilog, of course, embeds this functionality in the language, SystemC offers two libraries (SCV and CRAVE) for randomization. The Accellera Portable Test and Stimulus (PSS) language also specifies constrained-randomization and functional coverage features. These existing specifications all overlap on a few key features, though they also each have some unique features.<br /><br />From a requirements perspective, I wanted to support a super-set of the constraint and functional coverage features from these existing sources to the extent possible. In addition to wanting to support as many useful features as possible, reuse was a key consideration. We're also beginning to see some open-source UVM-based libraries, such as the <a href="https://github.com/google/riscv-dv">riscv-dv</a> project from Google for generating RISC-V instruction streams, that include constraints and functional coverage. This library and others are implemented in SystemVerilog, of course, but could be translated to Python. The porting task is definitely eased if the constraints and coverage can simply be mechanically translated instead of being reworked and remodeled to target a different set of supported constructs.<br /><br /><b>Key Requirements</b><br />After a bit of investigation, I settled on the following requirements for my library, and decided to name it Python Verification Stimulus and Coverage (PyVSC).<br /><br /><ul><li>Keep the user-visible modeling constructs as syntactically similar to SystemVerilog as possible and practical</li><li>Provide an underlying data model that can be programmatically processed to support static analysis, checking, and visualization of the user-specified constraints and coverage.</li><li>Allow users to capture simple features in natural syntax, while allowing them to programmatically build up the model for more-complex applications.&nbsp;</li><li>Be able to take advantage of the availability and high performance of existing SMT solvers&nbsp;</li></ul><div><br /></div><div><b>PyVSC Basics</b></div><div>The code below shows a simple example of capturing a class with random fields using the PyVSC library.</div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"><span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">randobj</span><br /><span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_item_c</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br />    <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">):</span><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">rand_bit_t</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">)</span><br />        <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">rand_bit_t</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">)</span><br /><br />     <span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">constraint</span><br />     <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">ab_c</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">):</span><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a</span> <span class="o" style="box-sizing: border-box; color: #666666;">!=</span> <span class="mi" style="box-sizing: border-box; color: #208050;">0</span><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a</span> <span class="o" style="box-sizing: border-box; color: #666666;">&lt;=</span> <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b</span><br />         <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b</span> <span class="ow" style="box-sizing: border-box; color: #007020; font-weight: bold;">in</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">rangelist</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">2</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">)</span></pre></div><div>Note that the class is identified as a randomizable class via the <i>vsc.randobj</i>&nbsp;decorator. Decorators, which Python supports as a first-class construct, enable classes and methods to be tagged as having special significance. They also allow additional functionality to be layered on. In this case, functions for randomization will be added to the class. The class inheritance hierarchy will also be altered slightly, to allow constraints and random fields to be configured after construction of a class instance. However,&nbsp;</div><div><br /></div><div>Class fields (both random and non-random) that will participate in randomization are declared using VSC types. This enables information on bit-width and randomizable status to be associated with class fields.&nbsp;</div><div><br /></div><div>Now, let's have a look at functional coverage.</div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;">  <span class="nd" style="box-sizing: border-box; color: #555555; font-weight: bold;">@vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">covergroup</span><br />  <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">class</span> <span class="nc" style="box-sizing: border-box; color: #0e84b5; font-weight: bold;">my_cg</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">object</span><span class="p" style="box-sizing: border-box;">):</span><br /><br />      <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">def</span> <span class="nf" style="box-sizing: border-box; color: #06287e;">__init__</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="p" style="box-sizing: border-box;">):</span><br />          <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Define the parameters accepted by the sample function</span><br />          <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">with_sample</span><span class="p" style="box-sizing: border-box;">(</span><span class="nb" style="box-sizing: border-box; color: #007020;">dict</span><span class="p" style="box-sizing: border-box;">(</span><br />              <span class="n" style="box-sizing: border-box;">it</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="n" style="box-sizing: border-box;">my_item_c</span><span class="p" style="box-sizing: border-box;">()</span><br />           <span class="p" style="box-sizing: border-box;">))</span><br /><br />           <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a_cp</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span> <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">it</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="nb" style="box-sizing: border-box; color: #007020;">dict</span><span class="p" style="box-sizing: border-box;">(</span><br />              <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Create 4 bins across the space 0..255</span><br />              <span class="n" style="box-sizing: border-box;">a_bins</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([</span><span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">],</span> <span class="p" style="box-sizing: border-box;">[</span><span class="mi" style="box-sizing: border-box; color: #208050;">0</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">255</span><span class="p" style="box-sizing: border-box;">])</span><br />           <span class="p" style="box-sizing: border-box;">)</span><br />           <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b_cp</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">coverpoint</span><span class="p" style="box-sizing: border-box;">(</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">it</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b</span><span class="p" style="box-sizing: border-box;">,</span> <span class="n" style="box-sizing: border-box;">bins</span><span class="o" style="box-sizing: border-box; color: #666666;">=</span><span class="nb" style="box-sizing: border-box; color: #007020;">dict</span><span class="p" style="box-sizing: border-box;">(</span><br />              <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Create one bin for each value (1,2,4,8)</span><br />              <span class="n" style="box-sizing: border-box;">b_bins</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">bin_array</span><span class="p" style="box-sizing: border-box;">([],</span> <span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">2</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">4</span><span class="p" style="box-sizing: border-box;">,</span> <span class="mi" style="box-sizing: border-box; color: #208050;">8</span><span class="p" style="box-sizing: border-box;">)</span><br />           <span class="p" style="box-sizing: border-box;">)</span><br />           <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">ab_cross</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">cross</span><span class="p" style="box-sizing: border-box;">([</span><span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">a_cp</span><span class="p" style="box-sizing: border-box;">,</span> <span class="bp" style="box-sizing: border-box; color: #007020;">self</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b_cp</span><span class="p" style="box-sizing: border-box;">])</span></pre></div><div>A covergroup is a class decorated with the <i>vsc.covergroup</i>&nbsp;decorator. As with a randomizable class, the decorator implements proper construction order, and adds methods to the target class.&nbsp;</div><div><br /></div><div>There are several ways that coverage data can be provided to a covergroup class. In the example above, coverage data will be passed as parameters to the 'sample' method. In order to do this, we must specify the sample-method parameter names and types. This is done by calling the <i>with_sample</i>&nbsp;method and passing a Python dictionary with parameter name and type.&nbsp;</div><div><br /></div><div>Coverpoints and crosses are defined using the <i>coverpoint </i>and <i>cross</i>&nbsp;methods. Coverpoint bins are declared as shown above, and support the set of value bins supported by SystemVerilog -- individual bins containing individual values and ranges of values, and bin arrays containing values partitioned across the bins.</div><div><br /></div><div>Okay, let's put it all together. The code below creates an instance of the covergroup, an instance of the randomizable class, randomizes the class, and samples the data in the covergroup.</div><div><pre style="box-sizing: border-box; color: #404040; font-family: SFMono-Regular, Menlo, Monaco, Consolas, &quot;Liberation Mono&quot;, &quot;Courier New&quot;, Courier, monospace; font-size: 12px; line-height: 1.4; overflow: auto; padding: 12px;"> <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Create an instance of the covergroup</span><br />  <span class="n" style="box-sizing: border-box;">my_cg_i</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">my_cg</span><span class="p" style="box-sizing: border-box;">()</span><br /><br />  <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Create an instance of the item class</span><br />  <span class="n" style="box-sizing: border-box;">my_item_i</span> <span class="o" style="box-sizing: border-box; color: #666666;">=</span> <span class="n" style="box-sizing: border-box;">my_item_c</span><span class="p" style="box-sizing: border-box;">()</span><br /><br />  <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Randomize and sample coverage</span><br />  <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">for</span> <span class="n" style="box-sizing: border-box;">i</span> <span class="ow" style="box-sizing: border-box; color: #007020; font-weight: bold;">in</span> <span class="nb" style="box-sizing: border-box; color: #007020;">range</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">16</span><span class="p" style="box-sizing: border-box;">):</span><br />      <span class="n" style="box-sizing: border-box;">my_item_i</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">randomize</span><span class="p" style="box-sizing: border-box;">()</span><br />      <span class="n" style="box-sizing: border-box;">my_cg_i</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">sample</span><span class="p" style="box-sizing: border-box;">(</span><span class="n" style="box-sizing: border-box;">my_item_i</span><span class="p" style="box-sizing: border-box;">)</span><br /><br />  <span class="c1" style="box-sizing: border-box; color: #408090; font-style: italic;"># Now, randomize keeping b in the range [1,2]</span><br />  <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">for</span> <span class="n" style="box-sizing: border-box;">i</span> <span class="ow" style="box-sizing: border-box; color: #007020; font-weight: bold;">in</span> <span class="nb" style="box-sizing: border-box; color: #007020;">range</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">16</span><span class="p" style="box-sizing: border-box;">):</span><br />      <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">with</span> <span class="n" style="box-sizing: border-box;">my_item_i</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">randomize_with</span><span class="p" style="box-sizing: border-box;">()</span> <span class="k" style="box-sizing: border-box; color: #007020; font-weight: bold;">as</span> <span class="n" style="box-sizing: border-box;">it</span><span class="p" style="box-sizing: border-box;">:</span><br />          <span class="n" style="box-sizing: border-box;">it</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">b</span> <span class="ow" style="box-sizing: border-box; color: #007020; font-weight: bold;">in</span> <span class="n" style="box-sizing: border-box;">vsc</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">rangelist</span><span class="p" style="box-sizing: border-box;">(</span><span class="mi" style="box-sizing: border-box; color: #208050;">1</span><span class="p" style="box-sizing: border-box;">,</span><span class="mi" style="box-sizing: border-box; color: #208050;">2</span><span class="p" style="box-sizing: border-box;">)</span><br />      <span class="n" style="box-sizing: border-box;">my_cg_i</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">sample</span><span class="p" style="box-sizing: border-box;">(</span><span class="n" style="box-sizing: border-box;">my_item_i</span><span class="p" style="box-sizing: border-box;">)</span><br /><br />  <span class="nb" style="box-sizing: border-box; color: #007020;">print</span><span class="p" style="box-sizing: border-box;">(</span><span class="s2" style="box-sizing: border-box; color: #4070a0;">"Coverage: </span><span class="si" style="box-sizing: border-box; color: #70a0d0; font-style: italic;">%f</span><span class="s2" style="box-sizing: border-box; color: #4070a0;"> \%"</span> <span class="o" style="box-sizing: border-box; color: #666666;">%</span> <span class="p" style="box-sizing: border-box;">(</span><span class="n" style="box-sizing: border-box;">my_cg_i</span><span class="o" style="box-sizing: border-box; color: #666666;">.</span><span class="n" style="box-sizing: border-box;">get_coverage</span><span class="p" style="box-sizing: border-box;">()))</span></pre></div><div><br /></div><div>The first randomization loop randomizes the class using constraints declared in the class. The second randomization loop adds an additional inline constraint.</div><br /><b>Looking Forward</b><br />Over the next couple of posts, I'll go through the stimulus-generation and functional coverage features of PyVSC in more detail. Future posts will also tackle what to we can do in terms of static analysis of constraint models, as well as what to do with functional coverage data once we've collected it. Until then, feel free to have a look at the early documentation on <a href="https://py-vsc.readthedocs.io/en/latest">readthedocs.io</a>, and have a look at the PyVSC project on <a href="https://github.com/fvutils/pyvsc">GitHub</a>.<br /><br /><br /><div class="separator" style="clear: both;"><b><i>Disclaimer</i></b></div><div class="separator" style="clear: both;"><i>The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</i></div>
+    <h1 class="post-title">Getting Started with Executable Specs</h1>
+    <span class="post-date">01 Feb 2026</span>
+
+    <p>Hardware engineers spend their lives working with specifications, both
+natual language (“paper”) and executable. We’ve been looking at 
+characterizing the interfaces and internal implementation of executable
+specifications – models. But, enough theory. Let’s look at specifications
+and specification refinement through an example. Throughout the process,
+we can see how the <a href="https://github.com/zuspec/">Zuspec</a> ecosystem helps to 
+speed and simplify the modeling process, as well as increasing our ability 
+to reuse models.</p>
+
+<!--more-->
+
+<h1 id="example-vehicle-dma-engine">Example Vehicle: DMA Engine</h1>
+
+<p>A DMA engine is one of my favorite examples to use. It’s relatively simple,
+yet highlights several key aspects of a range of hardware devices:</p>
+<ul>
+  <li>It is controlled via a software interface (mmio)</li>
+  <li>It has characteristics of other bulk data movers, such as accelerators and high-speed communications interfaces</li>
+  <li>Its operation often involves arbitration and resource contention</li>
+</ul>
+
+<p><img /></p>
+
+<p>Let’s walk through the process of developing a series of executable and
+natural-language specifications that will allow us to refine a high-level
+natural-language specification for a DMA device to a synthesizable
+executable specification. I’ll store all of the models in the
+<a href="https://github.com/zuspec/zuspec-example-dma/">zuspec-example-dma</a> 
+repo so you can follow along if you’re interested.</p>
+
+<h1 id="dma-high-level-specification">DMA High-Level Specification</h1>
+
+<p>Let’s start with a simple natural-language spec for what we want. You can find 
+the file here: <a href="https://github.com/zuspec/zuspec-example-dma/blob/main/docs/spec/01_highlevel_spec.md">01_highlevel_spec.md</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># DMA: High-Level Requirements
+
+The DMA engine supports fast memory transfer between two 
+memory regions. It is intended for use with both storage
+and memory-mapped I/O devices.
+
+## Transfer Requirements: General
+- Each transfer shall have an associated priority (0..15)
+- Each transfer shall have non-overlapping source and destination addresses
+- Each transfer shall specifies the total number of bytes to transfer
+
+## Transfer Requirements: Device
+In addition to the requirements above:
+- Each transfer shall specify an access size (eg 1, 2, 4, 8)
+- Each transfer shall specify a chunk size, denominated in &lt;accesses&gt;
+- The total transfer size is in bytes, and must be a multiple of &lt;access-size&gt;
+- The source and destination addresses shall be aligned to &lt;access-size&gt;
+- Each transfer specifies whether the source/dest addresses are incremented
+- Device I/O is generally controlled by requests from the device itself
+  - Request a chunk -&gt; DMA engine performs &lt;chunk-size&gt; &lt;access-size&gt; accesses
+
+## Transfer Requirements: Chaining
+- It shall be possible to specify lists of both general and device transfers
+</code></pre></div></div>
+
+<p>So, these are quite high-level. They focus on the required functionality, while
+spending little time on how we might implement this.</p>
+
+<p>Already, though, we might want to do some experiments with different executable
+specifications that implement the natural language one above.</p>
+
+<h1 id="dma-algorithmic-model">DMA Algorithmic Model</h1>
+
+<p>Our first step is to define an algorithmic model with interfaces that satisfy
+the requirements above. Let’s start with the Logical Interface, since that is 
+often how we phrase high-level requirements.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
+<span class="kn">from</span> <span class="n">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Protocol</span>
+
+<span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">MemCpy</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Struct</span><span class="p">):</span>
+    <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+<span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">DevCpy</span><span class="p">(</span><span class="n">MemCpy</span><span class="p">):</span>
+    <span class="n">acc_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u8</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">chk_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">inc_src</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">inc_dst</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">DmaOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy_chain</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">xfers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MemCpy</span><span class="p">],</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">devcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">acc_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u8</span><span class="p">,</span>
+            <span class="n">chk_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">inc_src</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">inc_dst</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">devcpy_chain</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">xfers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DevCpy</span><span class="p">],</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p>The API definition above captures how software would interact with the
+DMA engine. But, we also care about how the DMA engine accesses memory 
+in the environment, and how devices in the environment request service
+from the DMA engine.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">MemoryOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="s">"""Memory interface for DMA to access system memory."""</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">:</span>
+        <span class="s">"""Read a word from memory.
+
+        Args:
+            addr: Memory address (word-aligned)
+
+        Returns:
+            Data value read
+        """</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i8</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="s">"""Write a word to memory.
+
+        Args:
+            addr: Memory address (word-aligned)
+            data: Data value to write
+        """</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p><a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/mem.py">mem.py</a> 
+defines a memory-access interface that the DMA model implementation will
+use to access memory in the system.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">ReqOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">req_transfer</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span><span class="p">):</span>
+        <span class="s">"""Request a transfer"""</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p><a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/req.py">req.py</a>
+defines the API used by devices to request data transfers from the DMA engine.</p>
+
+<p>In total, we’ve define the key operations used to interact with the DMA engine
+in less than 100 lines of code. Now, to do something with these operations.</p>
+
+<h1 id="algorithmic-model-implementation">Algorithmic Model Implementation</h1>
+<p>Now that we’ve defined our abstract interfaces, we can create an <em>algorithmic</em> 
+implementation of the DMA engine.</p>
+
+<p>You can find the algorithmic implementation of the DMA engine model here:
+<a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/impl/op_op_alg.py">op_op_alg.py</a>.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">DmaOpOpAlg</span><span class="p">(</span><span class="n">DmaOp</span><span class="p">,</span> <span class="n">ReqOp</span><span class="p">,</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+    <span class="s">"""DMA engine with no fixed channels. Uses MemoryOp for memory access
+    and implements ReqOp for device transfer request control."""</span>
+    
+    <span class="n">mem</span><span class="p">:</span> <span class="n">MemoryOp</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">port</span><span class="p">()</span></code></pre></figure>
+
+<p>The interface to the model is shown above. Because we’ve deliberately been
+abstract about the device’s structure – for example, how many channels
+it contains – the model simply implements both the DmaOp and ReqOp 
+interfaces.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python">    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="s">"""Copy memory from src to dst.
+        
+        Performs narrow accesses until 8-byte aligned, then wide accesses.
+        """</span>
+        <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">_mem_l</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="n">sz</span>
+            <span class="k">while</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Determine access size based on alignment and remaining bytes
+</span>                <span class="c1"># Use the largest power-of-2 size that is both aligned and fits
+</span>                <span class="n">align</span> <span class="o">=</span> <span class="n">src</span> <span class="o">&amp;</span> <span class="mh">0x7</span>  <span class="c1"># Low 3 bits give alignment
+</span>                <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">8</span>
+                <span class="nf">elif </span><span class="p">(</span><span class="n">align</span> <span class="o">&amp;</span> <span class="mh">0x3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">4</span>
+                <span class="nf">elif </span><span class="p">(</span><span class="n">align</span> <span class="o">&amp;</span> <span class="mh">0x1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">1</span>
+                
+                <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">xfer_sz</span><span class="p">)</span>
+                <span class="n">src</span> <span class="o">+=</span> <span class="n">xfer_sz</span>
+                <span class="n">dst</span> <span class="o">+=</span> <span class="n">xfer_sz</span>
+                <span class="n">remaining</span> <span class="o">-=</span> <span class="n">xfer_sz</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">_mem_l</span><span class="p">.</span><span class="nf">release</span><span class="p">()</span></code></pre></figure>
+
+<p>The implementation of the ‘memcpy’ operation is shown above. The implementation
+is simple and brief, aside from a little complexity with respect to aligning 
+the address. The total model implementation is ~150 lines of Python code, 
+which is just about 6x the length of the original high-level spec.</p>
+
+<h1 id="tests-and-test-fixture">Tests and Test Fixture</h1>
+
+<p>Now that we have a behavioral model, we need a way to exercise it. Fortunately,
+we have a couple of tools that simplify the process. <a href="https://docs.pytest.org/en/stable/">pytest</a> is used as the
+testing framework, and AI assistants are proving to be incredibly capable at
+creating test fixtures and tests from the behavioral model that we created.</p>
+
+<p>You can find the tests in <a href="https://github.com/zuspec/zuspec-example-dma/blob/main/tests/unit/test_op_op_alg.py">test_op_op_alg.py</a>.
+The vast majority of the code was created using an AI assistant: copilot cli and Sonnet 4.5 in this case.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_memcpy_basic</span><span class="p">():</span>
+    <span class="s">"""Test basic memcpy operation."""</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">=== Test: Basic memcpy ==="</span><span class="p">)</span>
+
+    <span class="nd">@zdc.dataclass</span>
+    <span class="k">class</span> <span class="nc">Top</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">fixture</span><span class="p">:</span> <span class="n">DmaTestFixture</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+            <span class="c1"># Initialize source memory
+</span>            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">]</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="nf">init_memory</span><span class="p">(</span><span class="mh">0x1000</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># Perform memcpy
+</span>            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="n">dma</span><span class="p">.</span><span class="nf">memcpy</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="mh">0x1000</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="mh">0x2000</span><span class="p">,</span>
+                <span class="n">sz</span><span class="o">=</span><span class="mi">32</span>  <span class="c1"># 4 words * 8 bytes
+</span>            <span class="p">)</span>
+
+            <span class="c1"># Verify destination
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="nf">read_memory</span><span class="p">(</span><span class="mh">0x2000</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="n">data</span><span class="p">,</span> <span class="sa">f</span><span class="s">"Data mismatch: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s"> != </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s">"</span>
+
+            <span class="nf">print</span><span class="p">(</span><span class="s">"  Basic memcpy test PASSED"</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="nc">Top</span><span class="p">()</span>
+    <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="nf">run</span><span class="p">())</span>
+    <span class="n">t</span><span class="p">.</span><span class="nf">shutdown</span><span class="p">()</span></code></pre></figure>
+
+<p>A basic transfer test is shown above, showing how the ‘memcpy’ operation is 
+used, and how results are checked.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+<p>Engineers spend significant time working with natural-language and executable
+specifications. Zuspec simplifies the process of creating and testing 
+executable specifications (models) at multiple abstraction levels, which
+enables greater use of executable models to help refine our natural-language
+specifications.</p>
+
+<p>Algorithmic modeling of this style is done today – and, often, in Python. 
+The difference with Zuspec is that the models are designed to be reusable
+for multiple purposes. Over the next few posts, we’ll look at how we continue
+to refine, reuse, and retarget our DMA model.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li><a href="">zuspec-example-dma</a></li>
+</ul>
+
   </div>
 
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2026 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
   
-  <div class="related">
-    <h2>Related posts</h2>
-    <ul class="related-posts">
-      
-        <li>
-          <h3>
-            <a href="/zuspec/2026/02/01/ModelingExample_GettingStarted.html">
-              Getting Started with Executable Specs
-              <small>01 Feb 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/zuspec/2026/01/18/RelatingModelAbstractions.html">
-              Relating Hardware Model Abstractions
-              <small>18 Jan 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html">
-              Shifting Left with Hardware Model Abstractions
-              <small>11 Jan 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-    </ul>
-  </div>
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
   
 
   </body>
