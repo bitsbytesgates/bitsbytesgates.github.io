@@ -97,6 +97,16 @@ Post-env
         <ul class="nested" list-style-type="none">
         
         
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2026/02/03/2026-02-01-ModelingExample_GettingStarted.html"></a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
         <li><span class="caret">Jan</span>
         <ul class="nested" list-style-type="none">
         
@@ -749,186 +759,289 @@ class="jfk-button jfk-button-action " style="">
     <a href="/"></a>
 </h1>
 
-  <h1 class="entry-title">
-    <a href="/zuspec/2026/01/18/RelatingModelAbstractions.html">Relating Hardware Model Abstractions</a>
-  </h1>      
-
-<div class="entry-content"><p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/01/design_abstraction.png" />
-</p>
-
-<p>The most difficult transition in hardware modeling is the transition from
-natural-language to executable specification. It is during this transition
-that the ambiguities inherent in natural-language descriptions are resolved.
-Maximizing value from a multi-abstraction hardware modeling strategy requires
-minimizing the number of times a natural-language spec is converted to executable.
-Zuspec defines interface abstraction levels that provide a basis for comparing
-implementations with different abstraction levels.</p>
+<div class="entry-content"><p>Hardware engineers spend their lives working with specifications, both
+natual language (“paper”) and executable. We’ve been looking at 
+characterizing the interfaces and internal implementation of executable
+specifications – models. But, enough theory. Let’s look at specifications
+and specification refinement through an example. Throughout the process,
+we can see how the <a href="https://github.com/zuspec/">Zuspec</a> ecosystem helps to 
+speed and simplify the modeling process, as well as increasing our ability 
+to reuse models.</p>
 
 <!--more-->
 
-<h1 id="connecting-modeling-abstractions">Connecting Modeling Abstractions</h1>
+<h1 id="example-vehicle-dma-engine">Example Vehicle: DMA Engine</h1>
 
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/01/spec_model_relationship.png" />
-</p>
-
-<p>In the previous post, we looked at several internal-implementation abstraction
-levels. These help us explore the architecture and micro-architecture of the
-design with different cost and performance tradeoffs. However, the internal 
-implementation doesn’t provide a good basis for comparing models. 
-In essence, this means that 
-the natural-language to executable spec translation happens for each model.
-This raises the cost of modeling, but also increases the risk that each model
-implements a slightly different interpretation of the original spec.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/01/spec_model_model_relationship.png" />
-</p>
-
-<p>Ideally, we want some basis for mechanically comparing two models with different
-implementations such that we can easily establish whether they are equivalent 
-according to that basis. Each
-model still needs to incorporate abstraction-specific details from the spec, but 
-isn’t a full from-spec implementation.</p>
-
-<h1 id="breaking-down-device-abstraction">Breaking Down Device Abstraction</h1>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/01/design_abstraction.png" />
-</p>
-
-<p>Zuspec uses interface abstraction levels as this basis of comparison. 
-The first thing to note is that there are two levels of interface: logical and physical.</p>
-
-<p>The same set of interface abstractions apply to logical and physical interfaces, so
-let’s explore the abstraction levels first.</p>
-
-<h2 id="abstraction-scenario">Abstraction: Scenario</h2>
-<p>A scenario-level interface captures rules about how a device may be used. The 
-<a href="https://www.accellera.org/downloads/standards/portable-stimulus">Portable Test and Stimulus (PSS) standard</a> 
-is likely the best-known example of a scenario-level interface abstraction.
-PSS uses scheduling rules and constraints to specify data, data-flow, and 
-resource utilization rules. The rules of a scenario-level description assist
-in automating test creation and simplifying the integration of content 
-from multiple IPs.</p>
-
-<h2 id="abstraction-operation">Abstraction: Operation</h2>
-<p>An operation-level interface captures the device interface in terms of 
-operations that the device can perform. Think of the API of a software driver
-for a device. An operation-level interface lets us exercise key functions
-of a device without worrying too much about the details.</p>
-
-<h2 id="abstraction-mmio">Abstraction: MMIO</h2>
-<p>A memory-mapped I/O (MMIO) interface uses memory-mapped registers and 
-interrupts as the device interface.</p>
-
-<h2 id="abstraction-tlm">Abstraction: TLM</h2>
-<p>A transaction-level modeling (TLM) interface uses packet-like messages. 
-The <a href="https://www.accellera.org/images/downloads/standards/systemc/TLM_2_0_LRM.pdf">TLM 1.0 and 2.0 standards</a> 
-provide good examples of this level of modeling. TLM is also heavily
-used in <a href="https://www.accellera.org/downloads/standards/uvm">UVM</a> testbench 
-environments.</p>
-
-<h2 id="abstraction-protocol">Abstraction: Protocol</h2>
-<p>Protocol-level interfaces are the familiar signal-level interfaces used
-in register-transfer level (RTL) designs.</p>
-
-<h2 id="physical-interfaces">Physical Interfaces</h2>
-
-<p>We’re all familiar with physical device interfaces. In RTL, these are the Protocol-level
-interfaces with signal-level ports at the boundary of the device. Every hardware model has physical interfaces,
-and these typically</p>
-
-<h2 id="logical-interfaces">Logical Interfaces</h2>
-
-<p>A logical interface is typically a software interface. Software, firmware, and 
-test environments interact with a device via logical interfaces. A key attribute
-of a logical interface is that it is independent of the physical interface 
-and can be virtualized.</p>
-
-<h2 id="useful-combinations">Useful Combinations</h2>
-
-<p>The combination of logical and physical interface abstraction levels, combined with
-internal implementation abstraction level, provides a flexible way to characterize
-a given model. The table below summarizes how the abstraction levels apply to
-logical and physical interfaces.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Abstraction</th>
-      <th>Logical</th>
-      <th>Physical</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Scenario</td>
-      <td>Yes</td>
-      <td>Maybe</td>
-    </tr>
-    <tr>
-      <td>Operation</td>
-      <td>Yes</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>MMIO</td>
-      <td>Yes</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>TLM</td>
-      <td>Maybe</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td>Protocol</td>
-      <td>No</td>
-      <td>Yes</td>
-    </tr>
-  </tbody>
-</table>
-
-<h1 id="interface-roles">Interface Roles</h1>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/01/interface_roles.png" />
-</p>
-
-<p>In addition to abstraction level and interface type, interface roles are also worth
-considering when characterizing a device.</p>
+<p>A DMA engine is one of my favorite examples to use. It’s relatively simple,
+yet highlights several key aspects of a range of hardware devices:</p>
 <ul>
-  <li>Initiator interfaces make requests to targets. Think: memory interface on a RISC-V core</li>
-  <li>Target interfaces respond to requests from an initiator. Think: register interface on a UART</li>
-  <li>Monitor interfaces passively view interaction between initiator and target</li>
+  <li>It is controlled via a software interface (mmio)</li>
+  <li>It has characteristics of other bulk data movers, such as accelerators and high-speed communications interfaces</li>
+  <li>Its operation often involves arbitration and resource contention</li>
 </ul>
 
-<h1 id="relating-interface-abstractions">Relating Interface Abstractions</h1>
+<p><img /></p>
 
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/01/abstractors.png" />
-</p>
+<p>Let’s walk through the process of developing a series of executable and
+natural-language specifications that will allow us to refine a high-level
+natural-language specification for a DMA device to a synthesizable
+executable specification. I’ll store all of the models in the
+<a href="https://github.com/zuspec/zuspec-example-dma/">zuspec-example-dma</a> 
+repo so you can follow along if you’re interested.</p>
 
-<p>Abstractors, a term used by the <a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a>
-standard, provide a mechanism for bridging abstraction levels in a reusable way. An abstractor
-has two or more physical interfaces with different abstraction levels and different roles. 
-Specific kinds of abstractors often go by names like bus functional model or transactor.</p>
+<h1 id="dma-high-level-specification">DMA High-Level Specification</h1>
 
-<p>With the right set of abstractors, we can provide multiple views of the same model implementation.
-For example, an algorithmic implementation of a device with MMIO physical interfaces can 
-be used as a stand-in for the RTL implementation of the device with protocol-level interfaces 
-in a verification testbench simply by adding the right protocol transactors from a library.</p>
+<p>Let’s start with a simple natural-language spec for what we want. You can find 
+the file here: <a href="https://github.com/zuspec/zuspec-example-dma/blob/main/docs/spec/01_highlevel_spec.md">01_highlevel_spec.md</a></p>
 
-<h1 id="next-steps">Next Steps</h1>
-<p>Interface abstraction levels and interface types (logical, physical) enable 
-model reuse and provide a basis for comparing models with very different
-internal implementations. While there are many legal combinations of logical interface,
-physical interface, and internal implementation, there are a few key combinations. 
-In the next post, we’ll start to look at how some of these key combinations, and
-how they are captured and evaluated in Zuspec.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># DMA: High-Level Requirements
 
+The DMA engine supports fast memory transfer between two 
+memory regions. It is intended for use with both storage
+and memory-mapped I/O devices.
+
+## Transfer Requirements: General
+- Each transfer shall have an associated priority (0..15)
+- Each transfer shall have non-overlapping source and destination addresses
+- Each transfer shall specifies the total number of bytes to transfer
+
+## Transfer Requirements: Device
+In addition to the requirements above:
+- Each transfer shall specify an access size (eg 1, 2, 4, 8)
+- Each transfer shall specify a chunk size, denominated in &lt;accesses&gt;
+- The total transfer size is in bytes, and must be a multiple of &lt;access-size&gt;
+- The source and destination addresses shall be aligned to &lt;access-size&gt;
+- Each transfer specifies whether the source/dest addresses are incremented
+- Device I/O is generally controlled by requests from the device itself
+  - Request a chunk -&gt; DMA engine performs &lt;chunk-size&gt; &lt;access-size&gt; accesses
+
+## Transfer Requirements: Chaining
+- It shall be possible to specify lists of both general and device transfers
+</code></pre></div></div>
+
+<p>So, these are quite high-level. They focus on the required functionality, while
+spending little time on how we might implement this.</p>
+
+<p>Already, though, we might want to do some experiments with different executable
+specifications that implement the natural language one above.</p>
+
+<h1 id="dma-algorithmic-model">DMA Algorithmic Model</h1>
+
+<p>Our first step is to define an algorithmic model with interfaces that satisfy
+the requirements above. Let’s start with the Logical Interface, since that is 
+often how we phrase high-level requirements.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
+<span class="kn">from</span> <span class="n">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Protocol</span>
+
+<span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">MemCpy</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Struct</span><span class="p">):</span>
+    <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+<span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">DevCpy</span><span class="p">(</span><span class="n">MemCpy</span><span class="p">):</span>
+    <span class="n">acc_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u8</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">chk_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">inc_src</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">inc_dst</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">DmaOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy_chain</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">xfers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MemCpy</span><span class="p">],</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">devcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">acc_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u8</span><span class="p">,</span>
+            <span class="n">chk_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">inc_src</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">inc_dst</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">devcpy_chain</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">xfers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DevCpy</span><span class="p">],</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p>The API definition above captures how software would interact with the
+DMA engine. But, we also care about how the DMA engine accesses memory 
+in the environment, and how devices in the environment request service
+from the DMA engine.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">MemoryOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="s">"""Memory interface for DMA to access system memory."""</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">:</span>
+        <span class="s">"""Read a word from memory.
+
+        Args:
+            addr: Memory address (word-aligned)
+
+        Returns:
+            Data value read
+        """</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i8</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="s">"""Write a word to memory.
+
+        Args:
+            addr: Memory address (word-aligned)
+            data: Data value to write
+        """</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p><a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/mem.py">mem.py</a> 
+defines a memory-access interface that the DMA model implementation will
+use to access memory in the system.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">ReqOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">req_transfer</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span><span class="p">):</span>
+        <span class="s">"""Request a transfer"""</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p><a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/req.py">req.py</a>
+defines the API used by devices to request data transfers from the DMA engine.</p>
+
+<p>In total, we’ve define the key operations used to interact with the DMA engine
+in less than 100 lines of code. Now, to do something with these operations.</p>
+
+<h1 id="algorithmic-model-implementation">Algorithmic Model Implementation</h1>
+<p>Now that we’ve defined our abstract interfaces, we can create an <em>algorithmic</em> 
+implementation of the DMA engine.</p>
+
+<p>You can find the algorithmic implementation of the DMA engine model here:
+<a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/impl/op_op_alg.py">op_op_alg.py</a>.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">DmaOpOpAlg</span><span class="p">(</span><span class="n">DmaOp</span><span class="p">,</span> <span class="n">ReqOp</span><span class="p">,</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+    <span class="s">"""DMA engine with no fixed channels. Uses MemoryOp for memory access
+    and implements ReqOp for device transfer request control."""</span>
+    
+    <span class="n">mem</span><span class="p">:</span> <span class="n">MemoryOp</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">port</span><span class="p">()</span></code></pre></figure>
+
+<p>The interface to the model is shown above. Because we’ve deliberately been
+abstract about the device’s structure – for example, how many channels
+it contains – the model simply implements both the DmaOp and ReqOp 
+interfaces.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python">    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="s">"""Copy memory from src to dst.
+        
+        Performs narrow accesses until 8-byte aligned, then wide accesses.
+        """</span>
+        <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">_mem_l</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="n">sz</span>
+            <span class="k">while</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Determine access size based on alignment and remaining bytes
+</span>                <span class="c1"># Use the largest power-of-2 size that is both aligned and fits
+</span>                <span class="n">align</span> <span class="o">=</span> <span class="n">src</span> <span class="o">&amp;</span> <span class="mh">0x7</span>  <span class="c1"># Low 3 bits give alignment
+</span>                <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">8</span>
+                <span class="nf">elif </span><span class="p">(</span><span class="n">align</span> <span class="o">&amp;</span> <span class="mh">0x3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">4</span>
+                <span class="nf">elif </span><span class="p">(</span><span class="n">align</span> <span class="o">&amp;</span> <span class="mh">0x1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">1</span>
+                
+                <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">xfer_sz</span><span class="p">)</span>
+                <span class="n">src</span> <span class="o">+=</span> <span class="n">xfer_sz</span>
+                <span class="n">dst</span> <span class="o">+=</span> <span class="n">xfer_sz</span>
+                <span class="n">remaining</span> <span class="o">-=</span> <span class="n">xfer_sz</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">_mem_l</span><span class="p">.</span><span class="nf">release</span><span class="p">()</span></code></pre></figure>
+
+<p>The implementation of the ‘memcpy’ operation is shown above. The implementation
+is simple and brief, aside from a little complexity with respect to aligning 
+the address. The total model implementation is ~150 lines of Python code, 
+which is just about 6x the length of the original high-level spec.</p>
+
+<h1 id="tests-and-test-fixture">Tests and Test Fixture</h1>
+
+<p>Now that we have a behavioral model, we need a way to exercise it. Fortunately,
+we have a couple of tools that simplify the process. <a href="https://docs.pytest.org/en/stable/">pytest</a> is used as the
+testing framework, and AI assistants are proving to be incredibly capable at
+creating test fixtures and tests from the behavioral model that we created.</p>
+
+<p>You can find the tests in <a href="https://github.com/zuspec/zuspec-example-dma/blob/main/tests/unit/test_op_op_alg.py">test_op_op_alg.py</a>.
+The vast majority of the code was created using an AI assistant: copilot cli and Sonnet 4.5 in this case.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_memcpy_basic</span><span class="p">():</span>
+    <span class="s">"""Test basic memcpy operation."""</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">=== Test: Basic memcpy ==="</span><span class="p">)</span>
+
+    <span class="nd">@zdc.dataclass</span>
+    <span class="k">class</span> <span class="nc">Top</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">fixture</span><span class="p">:</span> <span class="n">DmaTestFixture</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+            <span class="c1"># Initialize source memory
+</span>            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">]</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="nf">init_memory</span><span class="p">(</span><span class="mh">0x1000</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># Perform memcpy
+</span>            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="n">dma</span><span class="p">.</span><span class="nf">memcpy</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="mh">0x1000</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="mh">0x2000</span><span class="p">,</span>
+                <span class="n">sz</span><span class="o">=</span><span class="mi">32</span>  <span class="c1"># 4 words * 8 bytes
+</span>            <span class="p">)</span>
+
+            <span class="c1"># Verify destination
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="nf">read_memory</span><span class="p">(</span><span class="mh">0x2000</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="n">data</span><span class="p">,</span> <span class="sa">f</span><span class="s">"Data mismatch: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s"> != </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s">"</span>
+
+            <span class="nf">print</span><span class="p">(</span><span class="s">"  Basic memcpy test PASSED"</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="nc">Top</span><span class="p">()</span>
+    <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="nf">run</span><span class="p">())</span>
+    <span class="n">t</span><span class="p">.</span><span class="nf">shutdown</span><span class="p">()</span></code></pre></figure>
+
+<p>A basic transfer test is shown above, showing how the ‘memcpy’ operation is 
+used, and how results are checked.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+<p>Engineers spend significant time working with natural-language and executable
+specifications. Zuspec simplifies the process of creating and testing 
+executable specifications (models) at multiple abstraction levels, which
+enables greater use of executable models to help refine our natural-language
+specifications.</p>
+
+<p>Algorithmic modeling of this style is done today – and, often, in Python. 
+The difference with Zuspec is that the models are designed to be reusable
+for multiple purposes. Over the next few posts, we’ll look at how we continue
+to refine, reuse, and retarget our DMA model.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li><a href="">zuspec-example-dma</a></li>
+</ul>
 </div>
 
 </div>

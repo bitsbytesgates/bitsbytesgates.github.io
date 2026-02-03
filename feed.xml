@@ -1,4 +1,286 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-01-19T21:27:05+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Relating Hardware Model Abstractions</title><link href="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html" rel="alternate" type="text/html" title="Relating Hardware Model Abstractions" /><published>2026-01-18T00:00:00+00:00</published><updated>2026-01-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html"><![CDATA[<p align="center">
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-02-03T01:40:16+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html"></title><link href="https://bitsbytesgates.com/2026/02/03/2026-02-01-ModelingExample_GettingStarted.html" rel="alternate" type="text/html" title="" /><published>2026-02-03T01:40:16+00:00</published><updated>2026-02-03T01:40:16+00:00</updated><id>https://bitsbytesgates.com/2026/02/03/2026-02-01-ModelingExample_GettingStarted</id><content type="html" xml:base="https://bitsbytesgates.com/2026/02/03/2026-02-01-ModelingExample_GettingStarted.html"><![CDATA[<p>Hardware engineers spend their lives working with specifications, both
+natual language (“paper”) and executable. We’ve been looking at 
+characterizing the interfaces and internal implementation of executable
+specifications – models. But, enough theory. Let’s look at specifications
+and specification refinement through an example. Throughout the process,
+we can see how the <a href="https://github.com/zuspec/">Zuspec</a> ecosystem helps to 
+speed and simplify the modeling process, as well as increasing our ability 
+to reuse models.</p>
+
+<!--more-->
+
+<h1 id="example-vehicle-dma-engine">Example Vehicle: DMA Engine</h1>
+
+<p>A DMA engine is one of my favorite examples to use. It’s relatively simple,
+yet highlights several key aspects of a range of hardware devices:</p>
+<ul>
+  <li>It is controlled via a software interface (mmio)</li>
+  <li>It has characteristics of other bulk data movers, such as accelerators and high-speed communications interfaces</li>
+  <li>Its operation often involves arbitration and resource contention</li>
+</ul>
+
+<p><img /></p>
+
+<p>Let’s walk through the process of developing a series of executable and
+natural-language specifications that will allow us to refine a high-level
+natural-language specification for a DMA device to a synthesizable
+executable specification. I’ll store all of the models in the
+<a href="https://github.com/zuspec/zuspec-example-dma/">zuspec-example-dma</a> 
+repo so you can follow along if you’re interested.</p>
+
+<h1 id="dma-high-level-specification">DMA High-Level Specification</h1>
+
+<p>Let’s start with a simple natural-language spec for what we want. You can find 
+the file here: <a href="https://github.com/zuspec/zuspec-example-dma/blob/main/docs/spec/01_highlevel_spec.md">01_highlevel_spec.md</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># DMA: High-Level Requirements
+
+The DMA engine supports fast memory transfer between two 
+memory regions. It is intended for use with both storage
+and memory-mapped I/O devices.
+
+## Transfer Requirements: General
+- Each transfer shall have an associated priority (0..15)
+- Each transfer shall have non-overlapping source and destination addresses
+- Each transfer shall specifies the total number of bytes to transfer
+
+## Transfer Requirements: Device
+In addition to the requirements above:
+- Each transfer shall specify an access size (eg 1, 2, 4, 8)
+- Each transfer shall specify a chunk size, denominated in &lt;accesses&gt;
+- The total transfer size is in bytes, and must be a multiple of &lt;access-size&gt;
+- The source and destination addresses shall be aligned to &lt;access-size&gt;
+- Each transfer specifies whether the source/dest addresses are incremented
+- Device I/O is generally controlled by requests from the device itself
+  - Request a chunk -&gt; DMA engine performs &lt;chunk-size&gt; &lt;access-size&gt; accesses
+
+## Transfer Requirements: Chaining
+- It shall be possible to specify lists of both general and device transfers
+</code></pre></div></div>
+
+<p>So, these are quite high-level. They focus on the required functionality, while
+spending little time on how we might implement this.</p>
+
+<p>Already, though, we might want to do some experiments with different executable
+specifications that implement the natural language one above.</p>
+
+<h1 id="dma-algorithmic-model">DMA Algorithmic Model</h1>
+
+<p>Our first step is to define an algorithmic model with interfaces that satisfy
+the requirements above. Let’s start with the Logical Interface, since that is 
+often how we phrase high-level requirements.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
+<span class="kn">from</span> <span class="n">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Protocol</span>
+
+<span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">MemCpy</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Struct</span><span class="p">):</span>
+    <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+<span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">DevCpy</span><span class="p">(</span><span class="n">MemCpy</span><span class="p">):</span>
+    <span class="n">acc_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u8</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">chk_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">inc_src</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+    <span class="n">inc_dst</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">DmaOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy_chain</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">xfers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MemCpy</span><span class="p">],</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">devcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">acc_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u8</span><span class="p">,</span>
+            <span class="n">chk_sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">inc_src</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">inc_dst</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">devcpy_chain</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">xfers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DevCpy</span><span class="p">],</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p>The API definition above captures how software would interact with the
+DMA engine. But, we also care about how the DMA engine accesses memory 
+in the environment, and how devices in the environment request service
+from the DMA engine.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">MemoryOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="s">"""Memory interface for DMA to access system memory."""</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">:</span>
+        <span class="s">"""Read a word from memory.
+
+        Args:
+            addr: Memory address (word-aligned)
+
+        Returns:
+            Data value read
+        """</span>
+        <span class="p">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u64</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i8</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="s">"""Write a word to memory.
+
+        Args:
+            addr: Memory address (word-aligned)
+            data: Data value to write
+        """</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p><a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/mem.py">mem.py</a> 
+defines a memory-access interface that the DMA model implementation will
+use to access memory in the system.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">ReqOp</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">req_transfer</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span><span class="p">):</span>
+        <span class="s">"""Request a transfer"""</span>
+        <span class="p">...</span></code></pre></figure>
+
+<p><a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/req.py">req.py</a>
+defines the API used by devices to request data transfers from the DMA engine.</p>
+
+<p>In total, we’ve define the key operations used to interact with the DMA engine
+in less than 100 lines of code. Now, to do something with these operations.</p>
+
+<h1 id="algorithmic-model-implementation">Algorithmic Model Implementation</h1>
+<p>Now that we’ve defined our abstract interfaces, we can create an <em>algorithmic</em> 
+implementation of the DMA engine.</p>
+
+<p>You can find the algorithmic implementation of the DMA engine model here:
+<a href="https://github.com/zuspec/zuspec-example-dma/blob/main/src/org/zuspec/example/dma/impl/op_op_alg.py">op_op_alg.py</a>.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@zdc.dataclass</span>
+<span class="k">class</span> <span class="nc">DmaOpOpAlg</span><span class="p">(</span><span class="n">DmaOp</span><span class="p">,</span> <span class="n">ReqOp</span><span class="p">,</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+    <span class="s">"""DMA engine with no fixed channels. Uses MemoryOp for memory access
+    and implements ReqOp for device transfer request control."""</span>
+    
+    <span class="n">mem</span><span class="p">:</span> <span class="n">MemoryOp</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">port</span><span class="p">()</span></code></pre></figure>
+
+<p>The interface to the model is shown above. Because we’ve deliberately been
+abstract about the device’s structure – for example, how many channels
+it contains – the model simply implements both the DmaOp and ReqOp 
+interfaces.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python">    <span class="k">async</span> <span class="k">def</span> <span class="nf">memcpy</span><span class="p">(</span>
+            <span class="n">self</span><span class="p">,</span>
+            <span class="n">src</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">dst</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">uptr</span><span class="p">,</span>
+            <span class="n">sz</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">u32</span><span class="p">,</span>
+            <span class="n">pri</span><span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="s">"""Copy memory from src to dst.
+        
+        Performs narrow accesses until 8-byte aligned, then wide accesses.
+        """</span>
+        <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">_mem_l</span><span class="p">.</span><span class="nf">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="n">sz</span>
+            <span class="k">while</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Determine access size based on alignment and remaining bytes
+</span>                <span class="c1"># Use the largest power-of-2 size that is both aligned and fits
+</span>                <span class="n">align</span> <span class="o">=</span> <span class="n">src</span> <span class="o">&amp;</span> <span class="mh">0x7</span>  <span class="c1"># Low 3 bits give alignment
+</span>                <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">8</span>
+                <span class="nf">elif </span><span class="p">(</span><span class="n">align</span> <span class="o">&amp;</span> <span class="mh">0x3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">4</span>
+                <span class="nf">elif </span><span class="p">(</span><span class="n">align</span> <span class="o">&amp;</span> <span class="mh">0x1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">remaining</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">xfer_sz</span> <span class="o">=</span> <span class="mi">1</span>
+                
+                <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">xfer_sz</span><span class="p">)</span>
+                <span class="n">src</span> <span class="o">+=</span> <span class="n">xfer_sz</span>
+                <span class="n">dst</span> <span class="o">+=</span> <span class="n">xfer_sz</span>
+                <span class="n">remaining</span> <span class="o">-=</span> <span class="n">xfer_sz</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">_mem_l</span><span class="p">.</span><span class="nf">release</span><span class="p">()</span></code></pre></figure>
+
+<p>The implementation of the ‘memcpy’ operation is shown above. The implementation
+is simple and brief, aside from a little complexity with respect to aligning 
+the address. The total model implementation is ~150 lines of Python code, 
+which is just about 6x the length of the original high-level spec.</p>
+
+<h1 id="tests-and-test-fixture">Tests and Test Fixture</h1>
+
+<p>Now that we have a behavioral model, we need a way to exercise it. Fortunately,
+we have a couple of tools that simplify the process. <a href="https://docs.pytest.org/en/stable/">pytest</a> is used as the
+testing framework, and AI assistants are proving to be incredibly capable at
+creating test fixtures and tests from the behavioral model that we created.</p>
+
+<p>You can find the tests in <a href="https://github.com/zuspec/zuspec-example-dma/blob/main/tests/unit/test_op_op_alg.py">test_op_op_alg.py</a>.
+The vast majority of the code was created using an AI assistant: copilot cli and Sonnet 4.5 in this case.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">test_memcpy_basic</span><span class="p">():</span>
+    <span class="s">"""Test basic memcpy operation."""</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">=== Test: Basic memcpy ==="</span><span class="p">)</span>
+
+    <span class="nd">@zdc.dataclass</span>
+    <span class="k">class</span> <span class="nc">Top</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
+        <span class="n">fixture</span><span class="p">:</span> <span class="n">DmaTestFixture</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+            <span class="c1"># Initialize source memory
+</span>            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mh">0x10</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">,</span> <span class="mh">0x30</span><span class="p">,</span> <span class="mh">0x40</span><span class="p">]</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="nf">init_memory</span><span class="p">(</span><span class="mh">0x1000</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># Perform memcpy
+</span>            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="n">dma</span><span class="p">.</span><span class="nf">memcpy</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="mh">0x1000</span><span class="p">,</span>
+                <span class="n">dst</span><span class="o">=</span><span class="mh">0x2000</span><span class="p">,</span>
+                <span class="n">sz</span><span class="o">=</span><span class="mi">32</span>  <span class="c1"># 4 words * 8 bytes
+</span>            <span class="p">)</span>
+
+            <span class="c1"># Verify destination
+</span>            <span class="n">result</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">fixture</span><span class="p">.</span><span class="nf">read_memory</span><span class="p">(</span><span class="mh">0x2000</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">result</span> <span class="o">==</span> <span class="n">data</span><span class="p">,</span> <span class="sa">f</span><span class="s">"Data mismatch: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s"> != </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s">"</span>
+
+            <span class="nf">print</span><span class="p">(</span><span class="s">"  Basic memcpy test PASSED"</span><span class="p">)</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="nc">Top</span><span class="p">()</span>
+    <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="nf">run</span><span class="p">())</span>
+    <span class="n">t</span><span class="p">.</span><span class="nf">shutdown</span><span class="p">()</span></code></pre></figure>
+
+<p>A basic transfer test is shown above, showing how the ‘memcpy’ operation is 
+used, and how results are checked.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+<p>Engineers spend significant time working with natural-language and executable
+specifications. Zuspec simplifies the process of creating and testing 
+executable specifications (models) at multiple abstraction levels, which
+enables greater use of executable models to help refine our natural-language
+specifications.</p>
+
+<p>Algorithmic modeling of this style is done today – and, often, in Python. 
+The difference with Zuspec is that the models are designed to be reusable
+for multiple purposes. Over the next few posts, we’ll look at how we continue
+to refine, reuse, and retarget our DMA model.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li><a href="">zuspec-example-dma</a></li>
+</ul>]]></content><author><name></name></author></entry><entry><title type="html">Relating Hardware Model Abstractions</title><link href="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html" rel="alternate" type="text/html" title="Relating Hardware Model Abstractions" /><published>2026-01-18T00:00:00+00:00</published><updated>2026-01-18T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2026/01/18/RelatingModelAbstractions.html"><![CDATA[<p align="center">
 <img src="https://bitsbytesgates.com/imgs/2026/01/design_abstraction.png" />
 </p>
 
@@ -1674,320 +1956,4 @@ lines a code needed to get something running.</p>
 <p>Of course, the example above only shows how to get started. 
 Over the next few posts, we’ll dive into more detail on the capabilities of the
 <code class="language-plaintext highlighter-rouge">pyhdl-if</code> library UVM integration. We’ll also look at usecases for Python in 
-a verification environment.</p>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[UVM and Python are often positioned as rivals when it comes to their role in functional verification, with teams picking one or the other as the basis for a verification environments. Each have strengths, though, and using them together produces much stronger results. In fact, building on the popularity of UVM and the availability of UVM verification components provides a significant boost to the process of introducing Python to an existing UVM environment.]]></summary></entry><entry><title type="html">Zuspec: Pythonic Model-Driven Hardware Development</title><link href="https://bitsbytesgates.com/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html" rel="alternate" type="text/html" title="Zuspec: Pythonic Model-Driven Hardware Development" /><published>2025-09-22T00:00:00+00:00</published><updated>2025-09-22T00:00:00+00:00</updated><id>https://bitsbytesgates.com/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment</id><content type="html" xml:base="https://bitsbytesgates.com/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html"><![CDATA[<p>Designing and implementing hardware is challenging, and is getting more 
-difficult each year as systems become more complex. Design and verification 
-teams are looking to boost productivity as a way to keep pace, 
-while also looking for ways to provide models of the design behavior to 
-software teams earlier. The fragmented and esoteric nature of the languages 
-and methodologies used for design and verification only make this more difficult. 
-Zuspec aspires to provide a unified, extensible Pythonic framework for multi-abstraction 
-hardware modeling that simplifies the design and verification process and 
-enables traditional and AI-driven automation.</p>
-
-<!-- more -->
-
-<p>The abstraction gap and model fragmentation are two key drivers of hardware
-design-flow complexity. The abstraction difference between a 
-natural-language design specification and the register-transfer-level (RTL) 
-model that implements it is enormous, and only increasing as designs 
-become larger and more complex. It’s natural to prioritize the 
-RTL model, since that is required to get to implementation. However, 
-because RTL models are detailed and execute slowly, they don’t do a good job of
-meeting the needs of adjacent disciplines, such as firmware. 
-This delays how early software teams obtain access to a representation of the design,
-and limits the platforms on which they can work to fast hardware emulation
-or prototyping environments.</p>
-
-<p>Over time, new requirements have resulted in the development of new 
-domain-specific languages and language-like class libraries. SystemVerilog, 
-PSS, UPF, IP-XACT, SystemC, and others all provide features that address pain 
-points of hardware development.  Unfortunately, this has also led to a very 
-fragmented ecosystem with loosely-integrated languages and methodologies and 
-complex build flows.</p>
-
-<h1 id="considering-the-ecosystem">Considering the Ecosystem</h1>
-
-<p>All of these innovations have primarily come from a hardware-design 
-perspective, and focus on enabling hardware-design flows. That,
-in itself, is a challenge given the relative sizes of the 
-hardware- and software-engineering ecosystems. While it’s 
-difficult to find accurate detailed data, US Bureau of Labor 
-Statistics reports a labor-market size of 76,800 for hardware 
-engineers vs a labor-market size of 1,534,790 for software 
-engineers (inclusive of all sub-disciplines in both cases).</p>
-
-<p>Given that the collective challenge is a combined hardware and 
-software system, getting buy-in from both disciplines is critical.
-It seems quite unlikely that a language created to serve the unique
-requirements of the ecosystem’s minority can serve the combined
-needs and gain the acceptance of the majority.</p>
-
-<h1 id="zuspec">Zuspec</h1>
-
-<p>Zuspec<a href="https://zuspec.github.io/">1</a> adopts Python as its starting 
-point, and embeds hardware semantics into that ecosystem. The result 
-is a platform that is familiar to software engineers, offers 
-high productivity for hardware engineering, and has the goal of 
-increasing the ability to share artifacts across the disciplines.</p>
-
-<h2 id="why-python">Why Python?</h2>
-
-<p>Many factors are involved in selecting a language for any purpose: 
-key language features, tool ecosystem, relevant libraries, as well
-as the community around the language. Applying an existing language to the 
-semantics of another  domains raises another factor to consider: 
-flexibility of the language.</p>
-
-<h3 id="popularity-can-be-self-reinforcing">Popularity can be Self-Reinforcing</h3>
-
-<p>Python is a popular language overall, holding the top spot in many
-rankings for several consecutive years, and being ranked highly 
-for many years before that. Language popularity may not seem relevant
-compared to the technical features of a language. Not only it is 
-relevant, popularity has a direct bearing on language technical
-features. TIOBE [2])(https://www.tiobe.com/tiobe-index/), for example, 
-measures language rank in terms of searches via a range of internet 
-search engines <a href="https://en.wikipedia.org/wiki/TIOBE_index">3</a>. This is, 
-of course, a rough measure a the size of a language’s community. Larger
-communities produce more ideas for using a language and, thus,
-a a larger library ecosystem. Larger communities more-rapidly
-produce and refine adjacent technologies, such as code 
-development and package management tools, and new language features.</p>
-
-<p>Popularity often builds upon itself, and there is evidence that 
-AI is acting as a driver of Python’s popularity.
-Specifically, AI assistants are often reported to be more 
-effective with Python than with other languages <a href="https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA">4</a>.
-This has the effect of drawing more developers to Python, which
-increases the available code in Python, which more-rapidly
-increases the quality of results with Python.</p>
-
-<p>But, language popularity is only relevant for the set of languages
-that can be used to capture relevant domain semantics. Fortunately,
-Python measures up very well here again.</p>
-
-<h3 id="technical-arguments-for-python">Technical Arguments for Python</h3>
-
-<p>There are strong technical arguments for the Python language as well.
-As a dynamic language, Python provides excellent facilities for 
-introspecting and manipulating a Python description.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
-
-<span class="nd">@zdc.dataclass</span>
-<span class="k">class</span> <span class="nc">SendPacket</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Struct</span><span class="p">):</span>
-  <span class="n">sz</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">rand</span><span class="p">()</span>
-
-  <span class="nd">@zdc.constraint</span>
-  <span class="k">def</span> <span class="nf">valid_sz</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-    <span class="n">self</span><span class="p">.</span><span class="n">sz</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">]</span>
-</code></pre></div></div>
-
-<p>Python <code class="language-plaintext highlighter-rouge">decorators</code> can be used to annotate elements of the description,
-identifying specific semantics to be applied to an element or attaching
-special processing instructions. For example, the <code class="language-plaintext highlighter-rouge">constraint</code> decorator
-above marks the body of the <code class="language-plaintext highlighter-rouge">valid_sz</code> method as having constraint 
-semantics.</p>
-
-<p>Python also allows inheritance relationships to be inspected at any
-point in time. The base type controls capabilities and restrictions
-of the derived type.</p>
-
-<p>While Python can be used as a purely dynamically-typed language, it 
-also provides the ability to associate type “hints” with variables. 
-The <code class="language-plaintext highlighter-rouge">sz</code> field in the example above specifies that it is an unsigned
-8-bit field. This enables the modeler to control how data in the
-model will be represented in the implementation.</p>
-
-<p>Finally, Python supports AST introspection and transformation. This 
-capability allows tools to access the raw AST for code, such as 
-the constraint method above, without needing to use tricks like 
-operator overloading.</p>
-
-<p>Statically-typed languages often provide some introspection facilities
-that are available during the compilation phase. In contrast, Python 
-allows these facilities to be applied to a Python description at any 
-point in time, providing much more flexibility in processing flows. 
-Effectively, Python allows libraries like Zuspec to act as a compiler
-within the Python interpreter.</p>
-
-<p>Python also offers a strong set of system-programming features.
-Combined with Python’s dynamic language features, these dramatically
-simplify the process of integrating external tools and systems.</p>
-
-<p>Python also specifies a package specification and provides tools
-for producing, discovering, and consuming packages.</p>
-
-<p>Together, these capabilities make Python a very compelling platform 
-for developing, verifying, and publishing hardware models.</p>
-
-<h1 id="what-does-this-look-like">What does this look like?</h1>
-
-<p>All languages are a combination of syntax and semantics. Syntax 
-governs the lexical aspects of a language: the keywords, operators,
-and legal ways of arranging them. Semantics governs the meanings of
-those statements – for example, whether <code class="language-plaintext highlighter-rouge">a = b</code> changes the value
-of the <code class="language-plaintext highlighter-rouge">a</code> variable, changes the <code class="language-plaintext highlighter-rouge">a</code> variable to reference
-the <code class="language-plaintext highlighter-rouge">b</code> variable, or something entirely different. Zuspec proposes
-a way to adopt full Python syntax, while identifying key regions
-in which different semantics apply to this syntax. These new semantics
-are always more restrictive than native Python semantics, allowing
-existing code checkers (eg mypy) to work unmodified.</p>
-
-<p>Zuspec divides a Python description into two core region kinds:</p>
-
-<ul>
-  <li>Pure Python regions</li>
-  <li>Python regions with domain-specific semantics</li>
-</ul>
-
-<p>Even a simple binary counter highlights several unique semantics that 
-a hardware description must capture:</p>
-
-<ul>
-  <li>Bit width of the <code class="language-plaintext highlighter-rouge">count</code> field</li>
-  <li>When the count should be incremented</li>
-  <li>Hardware-specific notions like reset</li>
-</ul>
-
-<p>Zuspec identifies regions with these semantics using a combination of
-Python <code class="language-plaintext highlighter-rouge">decorators</code> and base classes. The example below shows a 
-32-bit counter modeled using the Zuspec library.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
-
-<span class="nd">@zdc.dataclass</span>
-<span class="k">class</span> <span class="nc">Counter</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
-  <span class="n">clock</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">input</span><span class="p">()</span>
-  <span class="n">reset</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">input</span><span class="p">()</span>
-  <span class="n">count</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">Bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">output</span><span class="p">()</span>
-
-  <span class="nd">@zdc.sync</span><span class="p">(</span><span class="n">clock</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span><span class="n">s</span><span class="p">.</span><span class="n">clock</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span><span class="n">s</span><span class="p">.</span><span class="n">reset</span><span class="p">)</span> 
-  <span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">reset</span><span class="p">:</span>
-      <span class="n">self</span><span class="p">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">else</span><span class="p">:</span>
-      <span class="n">self</span><span class="p">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-</code></pre></div></div>
-
-<p>The <code class="language-plaintext highlighter-rouge">Counter</code> example above illustrates these two regions. By default,
-pure Python semantics are used. Consequently, the <code class="language-plaintext highlighter-rouge">import</code> statement
-at the top uses pure Python semantics.</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">Counter</code> class inherits from the Zuspec <code class="language-plaintext highlighter-rouge">Component</code> class, which
-designates it as a class with specific capabilities.  The <code class="language-plaintext highlighter-rouge">inc</code> method
-is decorated with the <code class="language-plaintext highlighter-rouge">sync</code> decorator. This marks it as a method that
-is automatically evaluated on the active edge of the specified 
-clock or reset signals, and a method where deferred assignment is used.
-It also marks it as a method that may not be invoked directly.</p>
-
-<p>A class domain with special semantics is a model of implementation, 
-and cannot be used directly. Instead, a <code class="language-plaintext highlighter-rouge">Transformer</code> class 
-must first be used to create an implementation. In this case, the 
-implementation could be pure-Python, Verilog, or something entirely 
-different like documentation.</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">asyncio</span>
-<span class="kn">from</span> <span class="n">zuspec.be.py</span> <span class="kn">import</span> <span class="n">ComponentFactory</span>
-<span class="kn">import</span> <span class="n">zuspec.dataclasses</span> <span class="k">as</span> <span class="n">zdc</span>
-
-<span class="nd">@zdc.dataclass</span>
-<span class="k">class</span> <span class="nc">CountTB</span><span class="p">(</span><span class="n">zdc</span><span class="p">.</span><span class="n">Component</span><span class="p">):</span>
-  <span class="n">clkrst</span> <span class="p">:</span> <span class="n">zdc</span><span class="p">.</span><span class="n">ClockReset</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="p">{</span><span class="n">period</span><span class="o">=</span><span class="mi">10</span><span class="p">})</span>
-  <span class="n">counter</span> <span class="p">:</span> <span class="n">Counter</span> <span class="o">=</span> <span class="n">zdc</span><span class="p">.</span><span class="nf">field</span><span class="p">(</span>
-      <span class="n">bind</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:{</span>
-          <span class="n">s</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">clock</span> <span class="p">:</span> <span class="n">s</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="n">clock</span><span class="p">,</span>
-          <span class="n">s</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">reset</span> <span class="p">:</span> <span class="n">s</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="n">reset</span>
-      <span class="p">})</span>
-
-<span class="k">def</span> <span class="nf">test_smoke</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-  <span class="n">tb</span> <span class="o">=</span> <span class="nc">ComponentFactory</span><span class="p">(</span><span class="n">CountTB</span><span class="p">)</span>
-  <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">tb</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="nf">do_reset</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
-  <span class="k">assert</span> <span class="n">tb</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span>
-  <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="n">tb</span><span class="p">.</span><span class="n">clkrst</span><span class="p">.</span><span class="nf">wait</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
-  <span class="k">assert</span> <span class="n">tb</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">10</span>
-</code></pre></div></div>
-
-<p>The example above shows a small testbench around the <code class="language-plaintext highlighter-rouge">Counter</code> 
-component with a simple <code class="language-plaintext highlighter-rouge">Pytest</code> unit test. The type transformer 
-creates a Python object that is used to dynamically evaluate
-the model. While the interface is Python, the implementation
-may or may not be Python. For example, the transformer might, 
-instead, transform the model to Verilog and create a Verilator 
-<a href="https://www.veripool.org/verilator/">5</a>
-simulator executable that evaluates the model much faster than
-a pure-Python implementation, while still exposing a Python 
-interface to the signals.</p>
-
-<div class="language-verilog highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">module</span> <span class="n">Counter</span><span class="p">(</span>
-    <span class="kt">input</span>            <span class="n">clock</span><span class="p">,</span>
-    <span class="kt">input</span>            <span class="n">reset</span><span class="p">,</span>
-    <span class="kt">output</span> <span class="kt">reg</span><span class="p">[</span><span class="mi">31</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">count</span><span class="p">);</span>
-
-    <span class="k">always</span> <span class="o">@</span><span class="p">(</span><span class="kt">posedge</span> <span class="n">clock</span> <span class="kt">or</span> <span class="kt">posedge</span> <span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">reset</span><span class="p">)</span> <span class="k">begin</span>
-        <span class="n">count</span> <span class="o">&lt;=</span> <span class="o">{</span><span class="mi">32</span><span class="o">{</span><span class="mb">1'b0</span><span class="o">}}</span><span class="p">;</span>
-      <span class="k">end</span> <span class="k">else</span> <span class="k">begin</span>
-        <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-<span class="k">endmodule</span>
-</code></pre></div></div>
-
-<p>Another transformer might convert the model to the synthesizable
-Verilog shown above to be used as input to existing 
-synthesis or simulation flows.</p>
-
-<h1 id="the-user-extensible-language">The User-Extensible Language</h1>
-
-<p>The <code class="language-plaintext highlighter-rouge">Counter</code> example is quite simple, and at the register-transfer level (RTL).
-Zuspec is designed to be able to capture a broad range of 
-hardware-centric semantics that cover:</p>
-
-<ul>
-  <li>Verification
-    <ul>
-      <li>Constrained randomization and functional coverage</li>
-      <li>Portable test and stimulus (PSS)</li>
-      <li>Assertions (SVA)</li>
-    </ul>
-  </li>
-  <li>Hardware design
-    <ul>
-      <li>RTL</li>
-      <li>Medium-level synthesis</li>
-      <li>Transaction-level modeling (TLM)</li>
-      <li>Register modeling</li>
-      <li>Clock and power domains</li>
-      <li>Physical design</li>
-    </ul>
-  </li>
-  <li>Firmware
-    <ul>
-      <li>Register interface</li>
-      <li>Specialized memory management</li>
-    </ul>
-  </li>
-</ul>
-
-<p>Zuspec brings a new approach to domain-specific languages that leverages the 
-popularity and ecosystem of Python, and embeds domain-specific semantics from
-hardware design, verification, and firmware. The big “bet” is that educating
-humans and LLMs on the delta between a Python and a set of domain-specific
-semantics is far easier than doing the same with a completely new language.</p>
-
-<p>While Zuspec models are captured in Python, processing tools may transform Zuspec 
-models into appropriate non-Python implementations such as embedded C or 
-synthesizable Verilog.  Zuspec encourages a Pythonic development process for 
-hardware that is code-centric, AI-friendly, and nimble. And, most importantly, 
-Zuspec provides togetherness: a common environment in which new language 
-innovations can be explored along with integrated existing technologies.</p>
-
-<h3 id="references">References</h3>
-<ol>
-  <li>https://zuspec.github.io</li>
-  <li>https://www.tiobe.com/tiobe-index/</li>
-  <li>https://en.wikipedia.org/wiki/TIOBE_index</li>
-  <li>https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA</li>
-  <li>https://www.veripool.org/verilator/</li>
-</ol>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[Designing and implementing hardware is challenging, and is getting more difficult each year as systems become more complex. Design and verification teams are looking to boost productivity as a way to keep pace, while also looking for ways to provide models of the design behavior to software teams earlier. The fragmented and esoteric nature of the languages and methodologies used for design and verification only make this more difficult. Zuspec aspires to provide a unified, extensible Pythonic framework for multi-abstraction hardware modeling that simplifies the design and verification process and enables traditional and AI-driven automation. The abstraction gap and model fragmentation are two key drivers of hardware design-flow complexity. The abstraction difference between a natural-language design specification and the register-transfer-level (RTL) model that implements it is enormous, and only increasing as designs become larger and more complex. It’s natural to prioritize the RTL model, since that is required to get to implementation. However, because RTL models are detailed and execute slowly, they don’t do a good job of meeting the needs of adjacent disciplines, such as firmware. This delays how early software teams obtain access to a representation of the design, and limits the platforms on which they can work to fast hardware emulation or prototyping environments. Over time, new requirements have resulted in the development of new domain-specific languages and language-like class libraries. SystemVerilog, PSS, UPF, IP-XACT, SystemC, and others all provide features that address pain points of hardware development. Unfortunately, this has also led to a very fragmented ecosystem with loosely-integrated languages and methodologies and complex build flows. Considering the Ecosystem All of these innovations have primarily come from a hardware-design perspective, and focus on enabling hardware-design flows. That, in itself, is a challenge given the relative sizes of the hardware- and software-engineering ecosystems. While it’s difficult to find accurate detailed data, US Bureau of Labor Statistics reports a labor-market size of 76,800 for hardware engineers vs a labor-market size of 1,534,790 for software engineers (inclusive of all sub-disciplines in both cases). Given that the collective challenge is a combined hardware and software system, getting buy-in from both disciplines is critical. It seems quite unlikely that a language created to serve the unique requirements of the ecosystem’s minority can serve the combined needs and gain the acceptance of the majority. Zuspec Zuspec1 adopts Python as its starting point, and embeds hardware semantics into that ecosystem. The result is a platform that is familiar to software engineers, offers high productivity for hardware engineering, and has the goal of increasing the ability to share artifacts across the disciplines. Why Python? Many factors are involved in selecting a language for any purpose: key language features, tool ecosystem, relevant libraries, as well as the community around the language. Applying an existing language to the semantics of another domains raises another factor to consider: flexibility of the language. Popularity can be Self-Reinforcing Python is a popular language overall, holding the top spot in many rankings for several consecutive years, and being ranked highly for many years before that. Language popularity may not seem relevant compared to the technical features of a language. Not only it is relevant, popularity has a direct bearing on language technical features. TIOBE [2])(https://www.tiobe.com/tiobe-index/), for example, measures language rank in terms of searches via a range of internet search engines 3. This is, of course, a rough measure a the size of a language’s community. Larger communities produce more ideas for using a language and, thus, a a larger library ecosystem. Larger communities more-rapidly produce and refine adjacent technologies, such as code development and package management tools, and new language features. Popularity often builds upon itself, and there is evidence that AI is acting as a driver of Python’s popularity. Specifically, AI assistants are often reported to be more effective with Python than with other languages 4. This has the effect of drawing more developers to Python, which increases the available code in Python, which more-rapidly increases the quality of results with Python. But, language popularity is only relevant for the set of languages that can be used to capture relevant domain semantics. Fortunately, Python measures up very well here again. Technical Arguments for Python There are strong technical arguments for the Python language as well. As a dynamic language, Python provides excellent facilities for introspecting and manipulating a Python description. import zuspec.dataclasses as zdc @zdc.dataclass class SendPacket(zdc.Struct): sz : zdc.Bit[8] = zdc.rand() @zdc.constraint def valid_sz(self): self.sz in [1, 2, 4, 8, 16] Python decorators can be used to annotate elements of the description, identifying specific semantics to be applied to an element or attaching special processing instructions. For example, the constraint decorator above marks the body of the valid_sz method as having constraint semantics. Python also allows inheritance relationships to be inspected at any point in time. The base type controls capabilities and restrictions of the derived type. While Python can be used as a purely dynamically-typed language, it also provides the ability to associate type “hints” with variables. The sz field in the example above specifies that it is an unsigned 8-bit field. This enables the modeler to control how data in the model will be represented in the implementation. Finally, Python supports AST introspection and transformation. This capability allows tools to access the raw AST for code, such as the constraint method above, without needing to use tricks like operator overloading. Statically-typed languages often provide some introspection facilities that are available during the compilation phase. In contrast, Python allows these facilities to be applied to a Python description at any point in time, providing much more flexibility in processing flows. Effectively, Python allows libraries like Zuspec to act as a compiler within the Python interpreter. Python also offers a strong set of system-programming features. Combined with Python’s dynamic language features, these dramatically simplify the process of integrating external tools and systems. Python also specifies a package specification and provides tools for producing, discovering, and consuming packages. Together, these capabilities make Python a very compelling platform for developing, verifying, and publishing hardware models. What does this look like? All languages are a combination of syntax and semantics. Syntax governs the lexical aspects of a language: the keywords, operators, and legal ways of arranging them. Semantics governs the meanings of those statements – for example, whether a = b changes the value of the a variable, changes the a variable to reference the b variable, or something entirely different. Zuspec proposes a way to adopt full Python syntax, while identifying key regions in which different semantics apply to this syntax. These new semantics are always more restrictive than native Python semantics, allowing existing code checkers (eg mypy) to work unmodified. Zuspec divides a Python description into two core region kinds: Pure Python regions Python regions with domain-specific semantics Even a simple binary counter highlights several unique semantics that a hardware description must capture: Bit width of the count field When the count should be incremented Hardware-specific notions like reset Zuspec identifies regions with these semantics using a combination of Python decorators and base classes. The example below shows a 32-bit counter modeled using the Zuspec library. import zuspec.dataclasses as zdc @zdc.dataclass class Counter(zdc.Component): clock : zdc.Bit = zdc.input() reset : zdc.Bit = zdc.input() count : zdc.Bit[32] = zdc.output() @zdc.sync(clock=lambda s:s.clock, reset=lambda s:s.reset) def inc(self): if self.reset: self.count = 0 else: self.count += 1 The Counter example above illustrates these two regions. By default, pure Python semantics are used. Consequently, the import statement at the top uses pure Python semantics. The Counter class inherits from the Zuspec Component class, which designates it as a class with specific capabilities. The inc method is decorated with the sync decorator. This marks it as a method that is automatically evaluated on the active edge of the specified clock or reset signals, and a method where deferred assignment is used. It also marks it as a method that may not be invoked directly. A class domain with special semantics is a model of implementation, and cannot be used directly. Instead, a Transformer class must first be used to create an implementation. In this case, the implementation could be pure-Python, Verilog, or something entirely different like documentation. import asyncio from zuspec.be.py import ComponentFactory import zuspec.dataclasses as zdc @zdc.dataclass class CountTB(zdc.Component): clkrst : zdc.ClockReset = zdc.field(init={period=10}) counter : Counter = zdc.field( bind=lambda s:{ s.counter.clock : s.clkrst.clock, s.counter.reset : s.clkrst.reset }) def test_smoke(self): tb = ComponentFactory(CountTB) asyncio.run(tb.clkrst.do_reset(count=10)) assert tb.counter.count == 0 asyncio.run(tb.clkrst.wait(count=10)) assert tb.counter.count == 10 The example above shows a small testbench around the Counter component with a simple Pytest unit test. The type transformer creates a Python object that is used to dynamically evaluate the model. While the interface is Python, the implementation may or may not be Python. For example, the transformer might, instead, transform the model to Verilog and create a Verilator 5 simulator executable that evaluates the model much faster than a pure-Python implementation, while still exposing a Python interface to the signals. module Counter( input clock, input reset, output reg[31:0] count); always @(posedge clock or posedge reset) begin if (reset) begin count &lt;= {32{1'b0}}; end else begin count &lt;= count + 1; end end endmodule Another transformer might convert the model to the synthesizable Verilog shown above to be used as input to existing synthesis or simulation flows. The User-Extensible Language The Counter example is quite simple, and at the register-transfer level (RTL). Zuspec is designed to be able to capture a broad range of hardware-centric semantics that cover: Verification Constrained randomization and functional coverage Portable test and stimulus (PSS) Assertions (SVA) Hardware design RTL Medium-level synthesis Transaction-level modeling (TLM) Register modeling Clock and power domains Physical design Firmware Register interface Specialized memory management Zuspec brings a new approach to domain-specific languages that leverages the popularity and ecosystem of Python, and embeds domain-specific semantics from hardware design, verification, and firmware. The big “bet” is that educating humans and LLMs on the delta between a Python and a set of domain-specific semantics is far easier than doing the same with a completely new language. While Zuspec models are captured in Python, processing tools may transform Zuspec models into appropriate non-Python implementations such as embedded C or synthesizable Verilog. Zuspec encourages a Pythonic development process for hardware that is code-centric, AI-friendly, and nimble. And, most importantly, Zuspec provides togetherness: a common environment in which new language innovations can be explored along with integrated existing technologies. References https://zuspec.github.io https://www.tiobe.com/tiobe-index/ https://en.wikipedia.org/wiki/TIOBE_index https://www.perplexity.ai/page/ai-generates-up-to-30-of-micro-Iy6zscIfSy6miYtIqvrsMA https://www.veripool.org/verilator/]]></summary></entry></feed>
+a verification environment.</p>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[UVM and Python are often positioned as rivals when it comes to their role in functional verification, with teams picking one or the other as the basis for a verification environments. Each have strengths, though, and using them together produces much stronger results. In fact, building on the popularity of UVM and the availability of UVM verification components provides a significant boost to the process of introducing Python to an existing UVM environment.]]></summary></entry></feed>
