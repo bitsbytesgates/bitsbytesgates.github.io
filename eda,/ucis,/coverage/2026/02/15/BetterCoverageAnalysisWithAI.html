@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Better Coverage Analysis with AI &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2026</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2026</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html">Better Coverage Analysis with AI</a></li>
+        
+        <li><a href="/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html">Open Source EDA in the AI Era</a></li>
+        
+        <li><a href="/zuspec/2026/02/01/ModelingExample_GettingStarted.html">Getting Started with Executable Specs</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/zuspec/2026/01/18/RelatingModelAbstractions.html">Relating Hardware Model Abstractions</a></li>
+        
+        <li><a href="/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html">Shifting Left with Hardware Model Abstractions</a></li>
+        
+        <li><a href="/zuspec/2026/01/04/BestOfLanguageAndClassLib.html">The Best of a Language and a Class Library</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2025</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2025</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/fossidv/2025/11/28/EmbracingUvmFossiDV.html">Embracing UVM for FOSSi Design Verification</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/23/UvmWithPython__DevTools.html">Introducing SV/UVM to Python Development Tools</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html">Working with Analysis Ports</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html">Accessing User-Defined SV Data from Python</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html">The Mechanics of UVM/Python Cross-Calling</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html">Unlocking the Combined Strength of UVM and Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html">Zuspec: Pythonic Model-Driven Hardware Development</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html">AI: Instigating a Developer Docs Renaissance?</a></li>
+        
+        <li><a href="/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html">Re-Evaluating EDA DSLs: Becoming the Compiler</a></li>
+        
+        <li><a href="/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html">Re-Evaluating EDA DSLs in the AI Era</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2025/02/11/PSS_GettingOutsideTheBox.html">PSS: Getting Outside the Box</a></li>
+        
+        <li><a href="/pss/2025/02/04/Transpilation_and_PSS.html">Transpilation and PSS</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2024</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2024</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2024/12/15/PSS_WhatsNext.html">What's Next for PSS?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/python/2024/11/17/PyHDL_Convenience_API.html">Easy Access to Python Libraries with a SystemVerilog Convenience API</a></li>
+        
+        <li><a href="/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn't Enough: Making Python Part of Your SV Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/10/31/OfRegisters_and_Standards.html">Of Register Models and Standards</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">Relating Actions with Dataflow Part2 -- Parallelism</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">Interacting with Devices via PSS Registers</a></li>
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <div class="hbox">
+        <div class="image">
+            <a href="https://bitsbytesgates.com/feed.xml"><img src="https://bitsbytesgates.com/imgs/rss_16_16.png"/></a>
+        </div>
+        <div class="text">
+            <a href="https://bitsbytesgates.com/feed.xml">RSS Feed</a>
+        </div>
+    </div>
+    <br/>
+    <p>
+        Subscribe to Bits, Bytes, and Gates
+    </p>
+    
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+
+    <p>
+      &copy; 2014-2026 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Better Coverage Analysis with AI &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+
+  <body>
+
+
+  <div class="post">
+    <h1 class="post-title">Better Coverage Analysis with AI</h1>
+    <span class="post-date">15 Feb 2026</span>
+
+    <p>One near-term outcome of AI’s <a href="https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html">impact on open source EDA</a> 
+is that I’ve been revisiting and enhancing some of my older projects. <a href="https://fvutils.github.io/pyucis/">PyUCIS</a>, a set of tools for working with 
+verification coverage, is one of those. Over the next few posts, we’ll look at the impact
+AI is having on both EDA developers and users via this project.</p>
+
+<!--more-->
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/02/coverage_tui.png" />
+</p>
+
+<h1 id="verification-and-coverage">Verification and Coverage</h1>
+<p>Coverage is a key metric we use to evaluate how well-verified a design is. We collect 
+and analyze code coverage to identify areas of the design that aren’t exercised. We
+use assertion and functional coverage to ensure that key conditions are exercised. Combined
+with the right meta-data, such as test name, we can derive higher-level information such as
+a small set of tests that will exercise a design change.</p>
+
+<p>Many design verification tools and frameworks support capturing and working with coverage 
+metrics. For example, <a href="https://cocotb-coverage.readthedocs.io/en/latest/">cocotb-coverage</a> and 
+<a href="https://fvutils.github.io/pyucis/">AVL</a> each support capturing functional 
+coverage data, saving it to a file, and performing post-processing. <a href="https://www.veripool.org/verilator/">Verilator</a> 
+supports capturing code and assertion coverage, and the major EDA companies have solutions as well.</p>
+
+<p>But, all of these are independent. How can I view and analyze Verilator code coverage and AVL functional coverage
+together?</p>
+
+<h1 id="standards-ucis">Standards: UCIS</h1>
+
+<p>A unique aspect of verification coverage is that we have are larger set of metrics than software
+projects typically use. Software projects tend to focus on code coverage, while design verification
+is also interested in functional coverage, FSM coverage, and assertion coverage.</p>
+
+<p>Back in 2012, the Accellera EDA standards body released <a href="https://www.accellera.org/downloads/standards/ucis">UCIS</a>,
+the Unified Coverage Interoperability Standard. UCIS defines a data model and an API for interacting with 
+all the types of coverage data that verification engineers work with. It also defines an XML interchange
+format supported by some tools and the <a href="https://github.com/accellera-official/fc4sc">FC4SC</a> library that
+implements functional coverage for SystemC.</p>
+
+<p>Having a common API enables the classic separation of concerns that other common APIs, such as 
+<a href="https://microsoft.github.io/language-server-protocol/">LSP</a> and <a href="https://modelcontextprotocol.io/docs/getting-started/intro">MCP</a> 
+enable. Instead of developing analysis capabilities for each and every coverage format, we can 
+create tools that use the UCIS API, and converters to map coverage formats into the UCIS data model.</p>
+
+<h1 id="open-source-pyucis">Open Source: PyUCIS</h1>
+
+<p>I initially created the <a href="https://fvutils.github.io/pyucis">PyUCIS</a> project because I needed a way to work with coverage data
+captured by the <a href="https://fvutils.github.io/pyvsc/">PyVSC</a> library that I was also working on. At the time, I focused
+on support for functional coverage (coverpoints, cross-coverage, etc) since that was the data PyVSC produced.</p>
+
+<p>As I noted in the introduction, AI-driven productivity gains have me revisiting projects like PyUCIS 
+to add new features and provide more-comprehensive support. But, also, to ensure that the libraries
+are properly AI-enabled for users.  We’ll cover some of these new feature areas in future posts, but 
+this post focuses on AI enablement.</p>
+
+<h1 id="three-levels-of-ai-enablement">Three Levels of AI Enablement</h1>
+<p>I’ve gradually come to apply a three-level approach for enabling a tool for AI agent access
+that reflect successively-deeper levels of integration with the tool.</p>
+
+<h2 id="ai-friendly-cli">AI-Friendly CLI</h2>
+<p>The first level of integration is via the command-line interface (CLI). AI agents, such 
+as Copilot, Codex, and Claude Code, excel at using command-line tools. Best practices 
+for enhancing the CLI to be AI-friendly include:</p>
+<ul>
+  <li>Providing granular data-manipulation commands with good help messages</li>
+  <li>Providing JSON output</li>
+  <li>Providing a pointer to a SKILL.md file</li>
+</ul>
+
+<p>In the case of PyUCIS, our primary interest is in enabling an AI agent to analyze 
+coverage data, so we focus most of our efforts on the <code class="language-plaintext highlighter-rouge">show</code> sub-commands.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage: ucis show [-h]
+                 ...
+
+positional arguments:
+    summary             Display overall coverage summary
+    gaps                Display coverage gaps (uncovered bins and coverpoints)
+    covergroups         Display detailed covergroup information
+    bins                Display bin-level coverage details
+    tests               Display test execution information
+    hierarchy           Display design hierarchy structure
+    metrics             Display coverage metrics and statistics
+    compare             Compare coverage between two databases
+    hotspots            Identify coverage hotspots and high-value targets
+    code-coverage       Display code coverage with support for LCOV/Cobertura formats
+    assertions          Display assertion coverage information
+    toggle              Display toggle coverage information
+
+options:
+  -h, --help            show this help message and exit
+</code></pre></div></div>
+
+<p>LLMs often work more effectively with JSON data vs unstructured 
+(or, arbitrarily-structured) text. JSON data has a regular structure and 
+associates meta-data with various elements of the output (eg ‘name’, ‘id’, etc). 
+In addition, an LLM can leverage tools like <code class="language-plaintext highlighter-rouge">jq</code> to efficiently slice and
+dice it. Consequently, it’s a very good practice to support JSON output. 
+Enabling this with a specific switch is fine, since most humans won’t want
+to see JSON.</p>
+
+<p><a href="https://agentskills.io/home">Agent Skills</a> is an emerging standard for providing
+instructions to agents.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>======================================================================
+PyUCIS AgentSkills Information
+======================================================================
+
+Skill Definition: /home/.../ucis/share/SKILL.md
+
+Note for LLM Agents:
+  This file contains detailed information about PyUCIS capabilities,
+  usage patterns, and best practices. LLM agents should reference
+  this skill to better understand how to work with UCIS coverage
+  databases and leverage PyUCIS tools effectively.
+
+For more information, visit: https://agentskills.io
+======================================================================
+</code></pre></div></div>
+
+<p>A <code class="language-plaintext highlighter-rouge">skill</code> for a tool provides examples and more in-depth
+instructions on tool workflows. I like to advertise how to find the 
+tool’s <code class="language-plaintext highlighter-rouge">skill</code> in the help message, since AI agents often check this first.</p>
+
+<h2 id="model-context-protocol">Model Context Protocol</h2>
+<p>The Model Context Protocol (<a href="https://modelcontextprotocol.io/docs/getting-started/intro">MCP</a>) 
+is a JSON RPC-based communication protocol that allows AI agents to run external operations. 
+MCP excels in situations where operation setup times are long. For example, loading a waveform
+database often takes significant time. The overhead of doing so every time the Agent wishes
+to look at a waveform value is prohibitive. A waveform <code class="language-plaintext highlighter-rouge">MCP server</code>, such as 
+<a href="https://fvutils.github.io/pywellen-mcp">pywellen-mcp</a>, loads the waveform database once and
+allows the Agent to perform many queries.</p>
+
+<p>PyUCIS provides a <a href="https://fvutils.github.io/pyucis/mcp_server.html">MCP server</a> with a 
+range of tools, including:</p>
+
+<h3 id="database-operations">Database Operations</h3>
+<ul>
+  <li>open_database: Load UCIS databases in XML, YAML, or UCIS binary formats</li>
+  <li>close_database: Clean up database resources</li>
+  <li>list_databases: List all currently open databases</li>
+  <li>get_database_info: Retrieve database metadata and statistics</li>
+</ul>
+
+<h3 id="coverage-analysis-tools">Coverage Analysis Tools</h3>
+<ul>
+  <li>get_coverage_summary: Overall coverage statistics by type (statement, branch, etc.)</li>
+  <li>get_coverage_gaps: Identify uncovered or low-coverage items with configurable thresholds</li>
+  <li>get_covergroups: Retrieve covergroup details with optional bin information</li>
+  <li>get_bins: Detailed bin-level coverage with advanced filtering capabilities</li>
+  <li>get_tests: Test execution information and results</li>
+  <li>get_hierarchy: Navigate and explore the design hierarchy</li>
+  <li>get_metrics: Advanced coverage metrics and analysis</li>
+</ul>
+
+<h3 id="advanced-features">Advanced Features</h3>
+<ul>
+  <li>compare_databases: Compare two databases for regression analysis and coverage deltas</li>
+  <li>get_hotspots: Identify high-value coverage targets for optimization</li>
+  <li>get_code_coverage: Export code coverage in multiple formats (LCOV, Cobertura, JaCoCo, Clover)</li>
+  <li>get_assertions: SVA/PSL assertion coverage details</li>
+  <li>get_toggle_coverage: Signal toggle coverage information</li>
+</ul>
+
+<p>Given the speed of the PyUCIS SQLite database, I’ll be interested in point at which
+using the MCP server becomes beneficial.</p>
+
+<h2 id="api">API</h2>
+<p>An API provides an AI agent the most-detailed access to a tool’s capabilities.
+Both the difficulty of producing an API and the difficult of an AI agent using it
+depends heavily on the tool’s implementation language. For example, Python is often
+fairly easy on both counts, since producing an API typically means documenting functions
+that we’ve already created to implement the tool, and AI agents can simply load the 
+module and go. On the other hand, a compiled languages like C/C++ will likely require
+explicit action to define and expose an API, and AI agents will need to use the language
+toolchain to compile, link, and run with the API.</p>
+
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+<p>Design verification heavily relies on good coverage data to assess completeness, 
+and AI can play a critical role in analysis. PyUCIS implements the Accellera UCIS
+API, and supports AI agents via the CLI and a built-in MCP server. 
+As previously mentioned, you can look at the <a href="https://github.com/fvutils/pyucis/tree/master/examples/ai_assisted_workflow">AI-assisted workflow example</a> 
+in the PyUCIS repository to get ideas of how to work with coverage data using
+the PyUCIS library and AI agents. Next time, we’ll
+shift focus to look at some of the other new and improved features in PyUCIS that
+AI agents are helping to rapidly develop.</p>
+
+
+  </div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2026 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
+  
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>

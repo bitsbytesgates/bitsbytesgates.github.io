@@ -1,4 +1,189 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-02-10T03:21:35+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Open Source EDA in the AI Era</title><link href="https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html" rel="alternate" type="text/html" title="Open Source EDA in the AI Era" /><published>2026-02-07T00:00:00+00:00</published><updated>2026-02-07T00:00:00+00:00</updated><id>https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era</id><content type="html" xml:base="https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html"><![CDATA[<p>AI is changing the world in many ways. This is particularly visible in the 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-02-16T21:36:14+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Better Coverage Analysis with AI</title><link href="https://bitsbytesgates.com/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html" rel="alternate" type="text/html" title="Better Coverage Analysis with AI" /><published>2026-02-15T00:00:00+00:00</published><updated>2026-02-15T00:00:00+00:00</updated><id>https://bitsbytesgates.com/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI</id><content type="html" xml:base="https://bitsbytesgates.com/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html"><![CDATA[<p>One near-term outcome of AI’s <a href="https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html">impact on open source EDA</a> 
+is that I’ve been revisiting and enhancing some of my older projects. <a href="https://fvutils.github.io/pyucis/">PyUCIS</a>, a set of tools for working with 
+verification coverage, is one of those. Over the next few posts, we’ll look at the impact
+AI is having on both EDA developers and users via this project.</p>
+
+<!--more-->
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/02/coverage_tui.png" />
+</p>
+
+<h1 id="verification-and-coverage">Verification and Coverage</h1>
+<p>Coverage is a key metric we use to evaluate how well-verified a design is. We collect 
+and analyze code coverage to identify areas of the design that aren’t exercised. We
+use assertion and functional coverage to ensure that key conditions are exercised. Combined
+with the right meta-data, such as test name, we can derive higher-level information such as
+a small set of tests that will exercise a design change.</p>
+
+<p>Many design verification tools and frameworks support capturing and working with coverage 
+metrics. For example, <a href="https://cocotb-coverage.readthedocs.io/en/latest/">cocotb-coverage</a> and 
+<a href="https://fvutils.github.io/pyucis/">AVL</a> each support capturing functional 
+coverage data, saving it to a file, and performing post-processing. <a href="https://www.veripool.org/verilator/">Verilator</a> 
+supports capturing code and assertion coverage, and the major EDA companies have solutions as well.</p>
+
+<p>But, all of these are independent. How can I view and analyze Verilator code coverage and AVL functional coverage
+together?</p>
+
+<h1 id="standards-ucis">Standards: UCIS</h1>
+
+<p>A unique aspect of verification coverage is that we have are larger set of metrics than software
+projects typically use. Software projects tend to focus on code coverage, while design verification
+is also interested in functional coverage, FSM coverage, and assertion coverage.</p>
+
+<p>Back in 2012, the Accellera EDA standards body released <a href="https://www.accellera.org/downloads/standards/ucis">UCIS</a>,
+the Unified Coverage Interoperability Standard. UCIS defines a data model and an API for interacting with 
+all the types of coverage data that verification engineers work with. It also defines an XML interchange
+format supported by some tools and the <a href="https://github.com/accellera-official/fc4sc">FC4SC</a> library that
+implements functional coverage for SystemC.</p>
+
+<p>Having a common API enables the classic separation of concerns that other common APIs, such as 
+<a href="https://microsoft.github.io/language-server-protocol/">LSP</a> and <a href="https://modelcontextprotocol.io/docs/getting-started/intro">MCP</a> 
+enable. Instead of developing analysis capabilities for each and every coverage format, we can 
+create tools that use the UCIS API, and converters to map coverage formats into the UCIS data model.</p>
+
+<h1 id="open-source-pyucis">Open Source: PyUCIS</h1>
+
+<p>I initially created the <a href="https://fvutils.github.io/pyucis">PyUCIS</a> project because I needed a way to work with coverage data
+captured by the <a href="https://fvutils.github.io/pyvsc/">PyVSC</a> library that I was also working on. At the time, I focused
+on support for functional coverage (coverpoints, cross-coverage, etc) since that was the data PyVSC produced.</p>
+
+<p>As I noted in the introduction, AI-driven productivity gains have me revisiting projects like PyUCIS 
+to add new features and provide more-comprehensive support. But, also, to ensure that the libraries
+are properly AI-enabled for users.  We’ll cover some of these new feature areas in future posts, but 
+this post focuses on AI enablement.</p>
+
+<h1 id="three-levels-of-ai-enablement">Three Levels of AI Enablement</h1>
+<p>I’ve gradually come to apply a three-level approach for enabling a tool for AI agent access
+that reflect successively-deeper levels of integration with the tool.</p>
+
+<h2 id="ai-friendly-cli">AI-Friendly CLI</h2>
+<p>The first level of integration is via the command-line interface (CLI). AI agents, such 
+as Copilot, Codex, and Claude Code, excel at using command-line tools. Best practices 
+for enhancing the CLI to be AI-friendly include:</p>
+<ul>
+  <li>Providing granular data-manipulation commands with good help messages</li>
+  <li>Providing JSON output</li>
+  <li>Providing a pointer to a SKILL.md file</li>
+</ul>
+
+<p>In the case of PyUCIS, our primary interest is in enabling an AI agent to analyze 
+coverage data, so we focus most of our efforts on the <code class="language-plaintext highlighter-rouge">show</code> sub-commands.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage: ucis show [-h]
+                 ...
+
+positional arguments:
+    summary             Display overall coverage summary
+    gaps                Display coverage gaps (uncovered bins and coverpoints)
+    covergroups         Display detailed covergroup information
+    bins                Display bin-level coverage details
+    tests               Display test execution information
+    hierarchy           Display design hierarchy structure
+    metrics             Display coverage metrics and statistics
+    compare             Compare coverage between two databases
+    hotspots            Identify coverage hotspots and high-value targets
+    code-coverage       Display code coverage with support for LCOV/Cobertura formats
+    assertions          Display assertion coverage information
+    toggle              Display toggle coverage information
+
+options:
+  -h, --help            show this help message and exit
+</code></pre></div></div>
+
+<p>LLMs often work more effectively with JSON data vs unstructured 
+(or, arbitrarily-structured) text. JSON data has a regular structure and 
+associates meta-data with various elements of the output (eg ‘name’, ‘id’, etc). 
+In addition, an LLM can leverage tools like <code class="language-plaintext highlighter-rouge">jq</code> to efficiently slice and
+dice it. Consequently, it’s a very good practice to support JSON output. 
+Enabling this with a specific switch is fine, since most humans won’t want
+to see JSON.</p>
+
+<p><a href="https://agentskills.io/home">Agent Skills</a> is an emerging standard for providing
+instructions to agents.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>======================================================================
+PyUCIS AgentSkills Information
+======================================================================
+
+Skill Definition: /home/.../ucis/share/SKILL.md
+
+Note for LLM Agents:
+  This file contains detailed information about PyUCIS capabilities,
+  usage patterns, and best practices. LLM agents should reference
+  this skill to better understand how to work with UCIS coverage
+  databases and leverage PyUCIS tools effectively.
+
+For more information, visit: https://agentskills.io
+======================================================================
+</code></pre></div></div>
+
+<p>A <code class="language-plaintext highlighter-rouge">skill</code> for a tool provides examples and more in-depth
+instructions on tool workflows. I like to advertise how to find the 
+tool’s <code class="language-plaintext highlighter-rouge">skill</code> in the help message, since AI agents often check this first.</p>
+
+<h2 id="model-context-protocol">Model Context Protocol</h2>
+<p>The Model Context Protocol (<a href="https://modelcontextprotocol.io/docs/getting-started/intro">MCP</a>) 
+is a JSON RPC-based communication protocol that allows AI agents to run external operations. 
+MCP excels in situations where operation setup times are long. For example, loading a waveform
+database often takes significant time. The overhead of doing so every time the Agent wishes
+to look at a waveform value is prohibitive. A waveform <code class="language-plaintext highlighter-rouge">MCP server</code>, such as 
+<a href="https://fvutils.github.io/pywellen-mcp">pywellen-mcp</a>, loads the waveform database once and
+allows the Agent to perform many queries.</p>
+
+<p>PyUCIS provides a <a href="https://fvutils.github.io/pyucis/mcp_server.html">MCP server</a> with a 
+range of tools, including:</p>
+
+<h3 id="database-operations">Database Operations</h3>
+<ul>
+  <li>open_database: Load UCIS databases in XML, YAML, or UCIS binary formats</li>
+  <li>close_database: Clean up database resources</li>
+  <li>list_databases: List all currently open databases</li>
+  <li>get_database_info: Retrieve database metadata and statistics</li>
+</ul>
+
+<h3 id="coverage-analysis-tools">Coverage Analysis Tools</h3>
+<ul>
+  <li>get_coverage_summary: Overall coverage statistics by type (statement, branch, etc.)</li>
+  <li>get_coverage_gaps: Identify uncovered or low-coverage items with configurable thresholds</li>
+  <li>get_covergroups: Retrieve covergroup details with optional bin information</li>
+  <li>get_bins: Detailed bin-level coverage with advanced filtering capabilities</li>
+  <li>get_tests: Test execution information and results</li>
+  <li>get_hierarchy: Navigate and explore the design hierarchy</li>
+  <li>get_metrics: Advanced coverage metrics and analysis</li>
+</ul>
+
+<h3 id="advanced-features">Advanced Features</h3>
+<ul>
+  <li>compare_databases: Compare two databases for regression analysis and coverage deltas</li>
+  <li>get_hotspots: Identify high-value coverage targets for optimization</li>
+  <li>get_code_coverage: Export code coverage in multiple formats (LCOV, Cobertura, JaCoCo, Clover)</li>
+  <li>get_assertions: SVA/PSL assertion coverage details</li>
+  <li>get_toggle_coverage: Signal toggle coverage information</li>
+</ul>
+
+<p>Given the speed of the PyUCIS SQLite database, I’ll be interested in point at which
+using the MCP server becomes beneficial.</p>
+
+<h2 id="api">API</h2>
+<p>An API provides an AI agent the most-detailed access to a tool’s capabilities.
+Both the difficulty of producing an API and the difficult of an AI agent using it
+depends heavily on the tool’s implementation language. For example, Python is often
+fairly easy on both counts, since producing an API typically means documenting functions
+that we’ve already created to implement the tool, and AI agents can simply load the 
+module and go. On the other hand, a compiled languages like C/C++ will likely require
+explicit action to define and expose an API, and AI agents will need to use the language
+toolchain to compile, link, and run with the API.</p>
+
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+<p>Design verification heavily relies on good coverage data to assess completeness, 
+and AI can play a critical role in analysis. PyUCIS implements the Accellera UCIS
+API, and supports AI agents via the CLI and a built-in MCP server. 
+As previously mentioned, you can look at the <a href="https://github.com/fvutils/pyucis/tree/master/examples/ai_assisted_workflow">AI-assisted workflow example</a> 
+in the PyUCIS repository to get ideas of how to work with coverage data using
+the PyUCIS library and AI agents. Next time, we’ll
+shift focus to look at some of the other new and improved features in PyUCIS that
+AI agents are helping to rapidly develop.</p>]]></content><author><name></name></author><category term="EDA," /><category term="UCIS," /><category term="Coverage" /><summary type="html"><![CDATA[One near-term outcome of AI’s impact on open source EDA is that I’ve been revisiting and enhancing some of my older projects. PyUCIS, a set of tools for working with verification coverage, is one of those. Over the next few posts, we’ll look at the impact AI is having on both EDA developers and users via this project.]]></summary></entry><entry><title type="html">Open Source EDA in the AI Era</title><link href="https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html" rel="alternate" type="text/html" title="Open Source EDA in the AI Era" /><published>2026-02-07T00:00:00+00:00</published><updated>2026-02-07T00:00:00+00:00</updated><id>https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era</id><content type="html" xml:base="https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html"><![CDATA[<p>AI is changing the world in many ways. This is particularly visible in the 
 commercial software-development space, where AI is often credited with 
 <a href="https://techcrunch.com/2025/04/29/microsoft-ceo-says-up-to-30-of-the-companys-code-was-written-by-ai/">developing significant portions of new code</a>. 
 But, what about the impact on open source software and, much more specifically, open source
@@ -1770,213 +1955,4 @@ from Python.</p>
   <li>PyHDL-IF library: <a href="https://github.com/fvutils/pyhdl-if">https://github.com/fvutils/pyhdl-if</a></li>
   <li>Example: spi_reg_seq: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq</a></li>
   <li>Example: sequence-item knobs: <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs</a></li>
-</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[We’ve seen how the PyHDL-IF library makes it simple to implement UVM sequences and components in Python, and how Python can call back into SystemVerilog. But, a significant part of a testbench deals with user-defined data, ranging from named UVM instances, transaction fields in sequence items and control knobs on sequences. Fortunately, UVM provides features that PyHDL-IF uses to provide dynamic and Pythonic access to user-defined data in UVM.]]></summary></entry><entry><title type="html">The Mechanics of UVM/Python Cross-Calling</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html" rel="alternate" type="text/html" title="The Mechanics of UVM/Python Cross-Calling" /><published>2025-11-01T00:00:00+00:00</published><updated>2025-11-01T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html"><![CDATA[<p>It’s not necessary to understand very much about how PyHDL-IF implements
-the bridge between Python and UVM, but useful to understand a bit. Doing 
-so helps to understand what this library is and is not intended to do,
-and how you can best use it in your verification environment.</p>
-
-<!--more-->
-
-<h1 id="an-interface-not-a-uvm-library">An Interface, not a UVM Library</h1>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/11/pyhdl_if_uvm_wrapper.png" />
-</p>
-
-<p>One important thing to understand is that PyHDL-IF is an interface library,
-and not a full testbench library. The UVM portion of PyHDL-IF is intended to 
-make it easy to call SystemVerilog/UVM APIs from Python, and vice versa. 
-Consequently, it is only
-useful if a SystemVerilog/UVM testbench is a part of your verification environment.
-If you want to create a UVM testbench in Python, the <a href="https://github.com/pyuvm/pyuvm">pyuvm</a>
-library is more likely to be what you’re looking for. You can even use 
-<code class="language-plaintext highlighter-rouge">pyuvm</code> with PyHDL-IF to provide structure to the Python portion of the testbench
-that leverages your existing UVM-SV testbench.</p>
-
-<p>Limiting the scope in this way has its advantages, though. While the UVM library
-is quite large, the APIs that test writers and scoreboard developers use is 
-a much smaller subset. Prioritizing this much-smaller subset very quickly 
-provides an interface library that covers a large percentage of usecases.</p>
-
-<h1 id="initiating-behavior-from-uvm">Initiating Behavior from UVM</h1>
-
-<p>One implication of PyHDL-IF being an interface library is that all 
-PyHDL-IF UVM objects are wrappers to access SystemVerilog UVM objects. 
-While it is possible (and common!) to create instances of UVM objects
-from Python, what happens under the hood as the following:</p>
-<ul>
-  <li>Python (via the PyHDL-IF library) calls a UVM method, creating a new UVM object</li>
-  <li>The PyHDL-IF library creates a SystemVerilog and Python object pair with a handle to the UVM object</li>
-  <li>This ‘wrapper’ Python object is returned to the caller.</li>
-</ul>
-
-<p>So, how do we initiate Python behavior from a UVM testbench? There are 
-two special PyHDL-IF “proxy” classes that provide a Python implementation
-for <code class="language-plaintext highlighter-rouge">uvm_component</code> and <code class="language-plaintext highlighter-rouge">uvm_sequence</code>: <code class="language-plaintext highlighter-rouge">pyhdl_uvm_component_proxy</code> and <code class="language-plaintext highlighter-rouge">pyhdl_uvm_sequence_proxy</code>.</p>
-
-<h1 id="interface-structure">Interface Structure</h1>
-
-<p>The PyHDL-IF library provides infrastructure that connects a Python object and 
-a SystemVerilog object via method calls. Specially-decorated classes define
-the shared API. For example, the code snippet below defines the API of the 
-UvmSequenceProxy:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="nd">@api</span>
-<span class="k">class</span> <span class="nc">UvmSequenceProxy</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="nd">@exp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">def</span> <span class="nf">get_userdata</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">def</span> <span class="nf">create_req</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">def</span> <span class="nf">create_rsp</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UvmObject</span><span class="p">:</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">start_item</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">:</span> <span class="nb">object</span><span class="p">):</span> <span class="p">...</span>
-
-    <span class="nd">@imp</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">finish_item</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">item</span> <span class="p">:</span> <span class="nb">object</span><span class="p">):</span> <span class="p">...</span></code></pre></figure>
-
-<p><strong>exp</strong> methods are ones that will be implemented in Python and will
-be called from SystemVerilog. Likewise, <strong>imp</strong> methods will be implemented
-in SystemVerilog and called from Python.</p>
-
-<p>The PyHDL-IF code generator creates a SystemVerilog class that implements
-this protocol – calling the Python method when an <strong>exp</strong> method is
-called in SystemVerilog and calling a SystemVerilog when an <strong>imp</strong> method
-is called in Python.</p>
-
-<p>When a new instance of the generated SystemVerilog is created, it results 
-in a pair of objects: one in SystemVerilog and a connected peer Python object.</p>
-
-<h1 id="initiating-behavior">Initiating Behavior</h1>
-
-<p>Starting Python behavior from a UVM-SV environment is as simple as selecting
-the right <code class="language-plaintext highlighter-rouge">proxy</code> class, creating an instance, and using the <code class="language-plaintext highlighter-rouge">proxy</code> class
-object within the UVM-SV environment as if it were a regular UVM object.</p>
-
-<p>Let’s look at an example that implements a UVM sequence in Python.
-Let’s look at the Python class before seeing how it is used. The
-code below is from the <code class="language-plaintext highlighter-rouge">uvm/sequence_rand_item</code> example:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="n">hdl_if.uvm</span> <span class="kn">import</span> <span class="n">uvm_sequence_impl</span>
-
-<span class="k">class</span> <span class="nc">PyRandSeq</span><span class="p">(</span><span class="n">uvm_sequence_impl</span><span class="p">):</span> 
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
-        <span class="c1"># Send a small burst of randomized items
-</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="n">req</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">create_req</span><span class="p">()</span>
-            <span class="c1"># Randomize sequence item
-</span>            <span class="n">req</span><span class="p">.</span><span class="nf">randomize</span><span class="p">()</span>
-
-            <span class="c1"># Optional visibility
-</span>            <span class="k">try</span><span class="p">:</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="n">req</span><span class="p">.</span><span class="nf">sprint</span><span class="p">()</span>
-            <span class="k">except</span> <span class="nb">Exception</span><span class="p">:</span>
-                <span class="n">s</span> <span class="o">=</span> <span class="s">"&lt;no sprint available&gt;"</span>
-            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"PyRandSeq: sending item </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
-
-            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">start_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-            <span class="k">await</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">finish_item</span><span class="p">(</span><span class="n">req</span><span class="p">)</span></code></pre></figure>
-
-<p>On a side note, I’ve been finding that AI assistants like Copilot and 
-Cline are extremely helpful in creating tests and examples. I created
-the code above, along with the rest of the example, using 
-<a href="https://cline.bot/">Cline</a>. While the current set of models 
-(GPT-5 in this case) does well with many types of code, the only 
-mistakes I had to hand-correct were in the SystemVerilog code.</p>
-
-<p>If you look closely, there are two APIs used here that aren’t 
-technically UVM APIs: <code class="language-plaintext highlighter-rouge">randomize</code> and <code class="language-plaintext highlighter-rouge">create_req</code>. All the other APIs 
-are standard UVM.</p>
-
-<p>Now let’s see how we launch this code from UVM.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">    <span class="kt">class</span> <span class="n">base_test</span> <span class="k">extends</span> <span class="n">uvm_test</span><span class="p">;</span>
-        <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">base_test</span><span class="p">)</span>
-        <span class="c1">// ...</span>
-
-        <span class="k">task</span> <span class="n">run_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
-            <span class="c1">// Python-driven sequence proxy</span>
-            <span class="k">typedef</span> <span class="n">pyhdl_uvm_sequence_proxy</span> <span class="p">#(</span>
-                <span class="p">.</span><span class="n">REQ</span><span class="p">(</span><span class="n">seq_item</span><span class="p">))</span> <span class="n">py_seq_t</span><span class="p">;</span>
-            <span class="n">py_seq_t</span> <span class="n">seq</span><span class="p">;</span>
-
-            <span class="n">phase</span><span class="p">.</span><span class="n">raise_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-            <span class="n">seq</span> <span class="o">=</span> <span class="n">py_seq_t</span><span class="o">::</span><span class="n">type_id</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">"seq"</span><span class="p">);</span>
-            <span class="n">seq</span><span class="p">.</span><span class="n">pyclass</span> <span class="o">=</span> <span class="s">"pyseq::PyRandSeq"</span><span class="p">;</span>
-            <span class="n">seq</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="n">m_env</span><span class="p">.</span><span class="n">m_seqr</span><span class="p">);</span>
-            <span class="n">phase</span><span class="p">.</span><span class="n">drop_objection</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-        <span class="k">endtask</span>
-    <span class="k">endclass</span></code></pre></figure>
-
-<p>In the abbreviated snippet above, the test <code class="language-plaintext highlighter-rouge">run_phase</code> task creates an
-instance of <code class="language-plaintext highlighter-rouge">pyhdl_uvm_sequence_proxy</code> that is properly specialized
-for the request sequence item type and the Python class, then starts 
-the sequence on the sequencer. UVM’s object-oriented nature lets us 
-create and use a sequence without caring whether it’s implemented in
-Python or SystemVerilog.</p>
-
-<h1 id="pyhdl-if-uvm-api-specifics">PYHDL-IF UVM API Specifics</h1>
-
-<p>Let’s use this example to look more closely at the API exposed by
-PYHDL-IF. There are three core categories:</p>
-<ul>
-  <li>UVM methods that are exposed to Python as-is</li>
-  <li>UVM methods whose signature is slightly altered</li>
-  <li>Utility methods that are not part of UVM</li>
-</ul>
-
-<p>The <code class="language-plaintext highlighter-rouge">get_name</code> method is an example of a UVM method that is exposed
-to Python as-is.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">function</span> <span class="kt">string</span> <span class="n">get_name</span><span class="p">();</span></code></pre></figure>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="n">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="p">...</span></code></pre></figure>
-
-<p>While there are a few cosmetic differences, these functions are
-practically identical: same user-specified parameters and same 
-return type.</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">get_config_object</code> method is an example of a UVM method that
-is exposed to Python with slight alterations due to the language.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="k">function</span> <span class="kt">bit</span> <span class="n">get_config_object</span><span class="p">(</span><span class="kt">string</span> <span class="n">field_name</span><span class="p">,</span>
-                               <span class="kt">inout</span> <span class="n">uvm_object</span> <span class="n">value</span><span class="p">,</span>
-                               <span class="kt">input</span> <span class="kt">bit</span> <span class="n">clone</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span></code></pre></figure>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">get_config_object</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> 
-    <span class="n">field_name</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
-    <span class="n">clone</span> <span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">UvmObject</span><span class="p">]:</span></code></pre></figure>
-
-<p>The key differences are in the return type and whether in-out
-parameters are used. Python discourages returning values via
-reference parameters, while this is a common pattern in SystemVerilog.
-We follow the Python pattern to better-align with common practice there.</p>
-
-<p>The final category are utility methods that aren’t present in UVM 
-at all. Two examples are the <code class="language-plaintext highlighter-rouge">randomize</code> method and the <code class="language-plaintext highlighter-rouge">create_req</code>
-method in the UVM sequence Python class. While <code class="language-plaintext highlighter-rouge">randomize</code> isn’t 
-part of the UVM API, Python test content benefits from having it.
-<code class="language-plaintext highlighter-rouge">create_req</code> exists for similar reasons. In SystemVerilog, we could
-refer to the <code class="language-plaintext highlighter-rouge">REQ</code> type parameter of the sequence class to create 
-a new request sequence item. In Python, it makes sense to expose
-this functionality via a method.</p>
-
-<h1 id="beyond-uvm-methods">Beyond UVM Methods</h1>
-
-<p>The combination of exposing UVM-defined methods to Python, along with and 
-two <code class="language-plaintext highlighter-rouge">proxy</code> classes to initiate behavior, makes it simple to run Python 
-behavior and interact with the UVM testbench.</p>
-
-<p>One thing you’ve probably noticed about the examples is that user-defined
-data isn’t accessed from Python. While we call the <code class="language-plaintext highlighter-rouge">randomize</code> method from 
-Python, we aren’t directly controlling the sequence-item fields. In the next 
-post, we’ll take a look at how we can get and set the value of SystemVerilog
-class fields from Python.</p>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[It’s not necessary to understand very much about how PyHDL-IF implements the bridge between Python and UVM, but useful to understand a bit. Doing so helps to understand what this library is and is not intended to do, and how you can best use it in your verification environment.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[We’ve seen how the PyHDL-IF library makes it simple to implement UVM sequences and components in Python, and how Python can call back into SystemVerilog. But, a significant part of a testbench deals with user-defined data, ranging from named UVM instances, transaction fields in sequence items and control knobs on sequences. Fortunately, UVM provides features that PyHDL-IF uses to provide dynamic and Pythonic access to user-defined data in UVM.]]></summary></entry></feed>
