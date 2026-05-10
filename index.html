@@ -97,6 +97,16 @@ Post-env
         <ul class="nested" list-style-type="none">
         
         
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html">Managing DV Project Dependencies - Now with FuseSoc</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
         <li><span class="caret">Feb</span>
         <ul class="nested" list-style-type="none">
         
@@ -764,195 +774,117 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html">Better Coverage Analysis with AI</a>
+    <a href="/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html">Managing DV Project Dependencies - Now with FuseSoc</a>
   </h1>      
 
-<div class="entry-content"><p>One near-term outcome of AI’s <a href="https://bitsbytesgates.com/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html">impact on open source EDA</a> 
-is that I’ve been revisiting and enhancing some of my older projects. <a href="https://fvutils.github.io/pyucis/">PyUCIS</a>, a set of tools for working with 
-verification coverage, is one of those. Over the next few posts, we’ll look at the impact
-AI is having on both EDA developers and users via this project.</p>
+<div class="entry-content"><p>I had the pleasure of attending <a href="https://fossi-foundation.org/latch-up/2026">LatchUp</a> 
+this past weekend. Conferences invariably 
+spark new ideas and new perspectives, and this past weekend was no different. 
+Specifically, I found a new perspective on interoperability between two free and 
+open source silicon (FOSSi) tools that I’ve known about for quite some time:
+<a href="https://fusesoc.readthedocs.io/en/stable/user/overview.html">FuseSoc</a>, a package management tool for design 
+and verification created by Olof Kindren,
+and <a href="https://fvutils.github.io/ivpm/">IVPM</a>, a polyglot project-local package manager that I created and maintain.</p>
 
 <!--more-->
 
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2026/02/coverage_tui.png" />
-</p>
+<h2 id="dependencies-in-dv-projects">Dependencies in DV Projects</h2>
 
-<h1 id="verification-and-coverage">Verification and Coverage</h1>
-<p>Coverage is a key metric we use to evaluate how well-verified a design is. We collect 
-and analyze code coverage to identify areas of the design that aren’t exercised. We
-use assertion and functional coverage to ensure that key conditions are exercised. Combined
-with the right meta-data, such as test name, we can derive higher-level information such as
-a small set of tests that will exercise a design change.</p>
+<p>Design and verification projects are unique in the diversity of their dependencies.
+Mono-language projects tend to have package-management tools focused on the unique
+aspects of that programming language – for example, Python has <code class="language-plaintext highlighter-rouge">pypi</code> and <code class="language-plaintext highlighter-rouge">pip</code>/<code class="language-plaintext highlighter-rouge">uv</code>. 
+In contrast, design and verification projects
+tend to leverage artifacts in multiple languages from a variety of sources. You’ll 
+certainly have SystemVerilog and/or VHDL sources, but you might also depend on one or more
+Python libraries. This can make dependency management cumbersome, since
+initializing a project involves using all the relevant packages managers to fetch
+dependencies from those particular ecosystems – in addition to potentially downloading
+some files not managed by any package manager. Either way, you’ll likely need some
+sort of project-specific section in your README or a <code class="language-plaintext highlighter-rouge">bootstrap.sh</code> script to tie it all together.</p>
 
-<p>Many design verification tools and frameworks support capturing and working with coverage 
-metrics. For example, <a href="https://cocotb-coverage.readthedocs.io/en/latest/">cocotb-coverage</a> and 
-<a href="https://fvutils.github.io/pyucis/">AVL</a> each support capturing functional 
-coverage data, saving it to a file, and performing post-processing. <a href="https://www.veripool.org/verilator/">Verilator</a> 
-supports capturing code and assertion coverage, and the major EDA companies have solutions as well.</p>
+<h2 id="ivpm---a-polyglot-package-manager">IVPM - A Polyglot Package Manager</h2>
 
-<p>But, all of these are independent. How can I view and analyze Verilator code coverage and AVL functional coverage
-together?</p>
-
-<h1 id="standards-ucis">Standards: UCIS</h1>
-
-<p>A unique aspect of verification coverage is that we have are larger set of metrics than software
-projects typically use. Software projects tend to focus on code coverage, while design verification
-is also interested in functional coverage, FSM coverage, and assertion coverage.</p>
-
-<p>Back in 2012, the Accellera EDA standards body released <a href="https://www.accellera.org/downloads/standards/ucis">UCIS</a>,
-the Unified Coverage Interoperability Standard. UCIS defines a data model and an API for interacting with 
-all the types of coverage data that verification engineers work with. It also defines an XML interchange
-format supported by some tools and the <a href="https://github.com/accellera-official/fc4sc">FC4SC</a> library that
-implements functional coverage for SystemC.</p>
-
-<p>Having a common API enables the classic separation of concerns that other common APIs, such as 
-<a href="https://microsoft.github.io/language-server-protocol/">LSP</a> and <a href="https://modelcontextprotocol.io/docs/getting-started/intro">MCP</a> 
-enable. Instead of developing analysis capabilities for each and every coverage format, we can 
-create tools that use the UCIS API, and converters to map coverage formats into the UCIS data model.</p>
-
-<h1 id="open-source-pyucis">Open Source: PyUCIS</h1>
-
-<p>I initially created the <a href="https://fvutils.github.io/pyucis">PyUCIS</a> project because I needed a way to work with coverage data
-captured by the <a href="https://fvutils.github.io/pyvsc/">PyVSC</a> library that I was also working on. At the time, I focused
-on support for functional coverage (coverpoints, cross-coverage, etc) since that was the data PyVSC produced.</p>
-
-<p>As I noted in the introduction, AI-driven productivity gains have me revisiting projects like PyUCIS 
-to add new features and provide more-comprehensive support. But, also, to ensure that the libraries
-are properly AI-enabled for users.  We’ll cover some of these new feature areas in future posts, but 
-this post focuses on AI enablement.</p>
-
-<h1 id="three-levels-of-ai-enablement">Three Levels of AI Enablement</h1>
-<p>I’ve gradually come to apply a three-level approach for enabling a tool for AI agent access
-that reflect successively-deeper levels of integration with the tool.</p>
-
-<h2 id="ai-friendly-cli">AI-Friendly CLI</h2>
-<p>The first level of integration is via the command-line interface (CLI). AI agents, such 
-as Copilot, Codex, and Claude Code, excel at using command-line tools. Best practices 
-for enhancing the CLI to be AI-friendly include:</p>
+<p>Integrated-View Package Manager (IVPM) provides another approach. IVPM is a 
+project-local dependency manager whose
+genesis was my frustration with the limitations of using git submodules to manage
+DV project source dependencies. IVPM started off as a relatively simple 
+Python script that created local clones of git projects, driven by a manifest file. 
+As new requirements came along, IVPM gradually evolved to where it is today: a 
+flexible and extensible package manager that supports fetching 
+dependencies from a wide variety of sources 
+and synthesizing unified views from a variety of package artifacts, including:</p>
 <ul>
-  <li>Providing granular data-manipulation commands with good help messages</li>
-  <li>Providing JSON output</li>
-  <li>Providing a pointer to a SKILL.md file</li>
+  <li>Python virtual environment from Python packages</li>
+  <li>node_modules install from Node.js packages</li>
+  <li>Links to available AI agent skills</li>
+  <li>… and more</li>
 </ul>
 
-<p>In the case of PyUCIS, our primary interest is in enabling an AI agent to analyze 
-coverage data, so we focus most of our efforts on the <code class="language-plaintext highlighter-rouge">show</code> sub-commands.</p>
+<p>What occurred to me last weekend was to enable IVPM to fetch FuseSoc packages and
+assemble a unified view of the available FuseSoc libraries inside a project.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>usage: ucis show [-h]
-                 ...
+<h2 id="ivpm-in-action">IVPM In Action</h2>
 
-positional arguments:
-    summary             Display overall coverage summary
-    gaps                Display coverage gaps (uncovered bins and coverpoints)
-    covergroups         Display detailed covergroup information
-    bins                Display bin-level coverage details
-    tests               Display test execution information
-    hierarchy           Display design hierarchy structure
-    metrics             Display coverage metrics and statistics
-    compare             Compare coverage between two databases
-    hotspots            Identify coverage hotspots and high-value targets
-    code-coverage       Display code coverage with support for LCOV/Cobertura formats
-    assertions          Display assertion coverage information
-    toggle              Display toggle coverage information
+<p>Let’s look at a small example just to get a sense of what this looks like in practice.
+Let’s say that we’re developing a little open-source RISC-V core. While developing 
+our project, we benefit from having access to a few things:</p>
+<ul>
+  <li>RISC-V ISA manual</li>
+  <li>Verilator for simulation</li>
+  <li>Common definitions (Verilog packaged with .core files)</li>
+  <li>cocotb, fusesoc, and pyelftools for automating tests</li>
+</ul>
 
-options:
-  -h, --help            show this help message and exit
+<p>While our project README.md will describe what is required in order to 
+work on the core, we also provide an ivpm.yaml file that IVPM uses
+to automate setup:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package:
+  name: my-risc-v
+
+  dep-sets:
+  - name: default
+    deps:
+    - name: riscv-isa-manual
+      url: https://github.com/riscv/riscv-isa-manual.git
+      anonymous: true
+    - name: verilator
+      url: https://github.com/edapack/verilator-bin
+      src: gh-rls
+      cache: true
+    - name: fwprotocol-defs.git
+      url: https://github.com/featherweight-ip/fwprotocol-defs.git
+    - name: cocotb
+      src: pypi
+    - name: fusesoc
+      src: pypi
+    - name: pyelftools
+      src: pypi
 </code></pre></div></div>
 
-<p>LLMs often work more effectively with JSON data vs unstructured 
-(or, arbitrarily-structured) text. JSON data has a regular structure and 
-associates meta-data with various elements of the output (eg ‘name’, ‘id’, etc). 
-In addition, an LLM can leverage tools like <code class="language-plaintext highlighter-rouge">jq</code> to efficiently slice and
-dice it. Consequently, it’s a very good practice to support JSON output. 
-Enabling this with a specific switch is fine, since most humans won’t want
-to see JSON.</p>
-
-<p><a href="https://agentskills.io/home">Agent Skills</a> is an emerging standard for providing
-instructions to agents.</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>======================================================================
-PyUCIS AgentSkills Information
-======================================================================
-
-Skill Definition: /home/.../ucis/share/SKILL.md
-
-Note for LLM Agents:
-  This file contains detailed information about PyUCIS capabilities,
-  usage patterns, and best practices. LLM agents should reference
-  this skill to better understand how to work with UCIS coverage
-  databases and leverage PyUCIS tools effectively.
-
-For more information, visit: https://agentskills.io
-======================================================================
-</code></pre></div></div>
-
-<p>A <code class="language-plaintext highlighter-rouge">skill</code> for a tool provides examples and more in-depth
-instructions on tool workflows. I like to advertise how to find the 
-tool’s <code class="language-plaintext highlighter-rouge">skill</code> in the help message, since AI agents often check this first.</p>
-
-<h2 id="model-context-protocol">Model Context Protocol</h2>
-<p>The Model Context Protocol (<a href="https://modelcontextprotocol.io/docs/getting-started/intro">MCP</a>) 
-is a JSON RPC-based communication protocol that allows AI agents to run external operations. 
-MCP excels in situations where operation setup times are long. For example, loading a waveform
-database often takes significant time. The overhead of doing so every time the Agent wishes
-to look at a waveform value is prohibitive. A waveform <code class="language-plaintext highlighter-rouge">MCP server</code>, such as 
-<a href="https://fvutils.github.io/pywellen-mcp">pywellen-mcp</a>, loads the waveform database once and
-allows the Agent to perform many queries.</p>
-
-<p>PyUCIS provides a <a href="https://fvutils.github.io/pyucis/mcp_server.html">MCP server</a> with a 
-range of tools, including:</p>
-
-<h3 id="database-operations">Database Operations</h3>
+<p>When we run <code class="language-plaintext highlighter-rouge">ivpm update</code> in the project, the tool:</p>
 <ul>
-  <li>open_database: Load UCIS databases in XML, YAML, or UCIS binary formats</li>
-  <li>close_database: Clean up database resources</li>
-  <li>list_databases: List all currently open databases</li>
-  <li>get_database_info: Retrieve database metadata and statistics</li>
+  <li>Clones the git repos and downloads the Verilator binary release</li>
+  <li>Creates a Python virtual environment and installs packages from <code class="language-plaintext highlighter-rouge">pypi</code></li>
+  <li>Creates <code class="language-plaintext highlighter-rouge">packages.envrc</code> that adds Python and Verilator to the path</li>
+  <li>Updates <code class="language-plaintext highlighter-rouge">fusesoc.conf</code> with paths to the protocol defs .core file</li>
 </ul>
 
-<h3 id="coverage-analysis-tools">Coverage Analysis Tools</h3>
-<ul>
-  <li>get_coverage_summary: Overall coverage statistics by type (statement, branch, etc.)</li>
-  <li>get_coverage_gaps: Identify uncovered or low-coverage items with configurable thresholds</li>
-  <li>get_covergroups: Retrieve covergroup details with optional bin information</li>
-  <li>get_bins: Detailed bin-level coverage with advanced filtering capabilities</li>
-  <li>get_tests: Test execution information and results</li>
-  <li>get_hierarchy: Navigate and explore the design hierarchy</li>
-  <li>get_metrics: Advanced coverage metrics and analysis</li>
-</ul>
+<p>When <code class="language-plaintext highlighter-rouge">ivpm update</code> completes, the project is ready to run. The environment
+is configured, required open source software is installed, and FuseSoc is
+configured to be able to find the installed .core files.</p>
 
-<h3 id="advanced-features">Advanced Features</h3>
-<ul>
-  <li>compare_databases: Compare two databases for regression analysis and coverage deltas</li>
-  <li>get_hotspots: Identify high-value coverage targets for optimization</li>
-  <li>get_code_coverage: Export code coverage in multiple formats (LCOV, Cobertura, JaCoCo, Clover)</li>
-  <li>get_assertions: SVA/PSL assertion coverage details</li>
-  <li>get_toggle_coverage: Signal toggle coverage information</li>
-</ul>
+<h2 id="conclusions-and-next-steps">Conclusions and Next Steps</h2>
 
-<p>Given the speed of the PyUCIS SQLite database, I’ll be interested in point at which
-using the MCP server becomes beneficial.</p>
+<p>IVPM provides a way to unify your project dependencies and you and your 
+users get up-and-running fast. And, now, it supports FuseSoc-packaged 
+IP as well. If you’re interested in experimenting a bit more, you can
+find two examples showing IVPM’s support for FuseSoc 
+<a href="https://github.com/fvutils/ivpm/tree/master/examples/fusesoc">here</a>.</p>
 
-<h2 id="api">API</h2>
-<p>An API provides an AI agent the most-detailed access to a tool’s capabilities.
-Both the difficulty of producing an API and the difficult of an AI agent using it
-depends heavily on the tool’s implementation language. For example, Python is often
-fairly easy on both counts, since producing an API typically means documenting functions
-that we’ve already created to implement the tool, and AI agents can simply load the 
-module and go. On the other hand, a compiled languages like C/C++ will likely require
-explicit action to define and expose an API, and AI agents will need to use the language
-toolchain to compile, link, and run with the API.</p>
-
-<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
-<p>Design verification heavily relies on good coverage data to assess completeness, 
-and AI can play a critical role in analysis. PyUCIS implements the Accellera UCIS
-API, and supports AI agents via the CLI and a built-in MCP server. 
-As previously mentioned, you can look at the <a href="https://github.com/fvutils/pyucis/tree/master/examples/ai_assisted_workflow">AI-assisted workflow example</a> 
-in the PyUCIS repository to get ideas of how to work with coverage data using
-the PyUCIS library and AI agents. Next time, we’ll
-shift focus to look at some of the other new and improved features in PyUCIS that
-AI agents are helping to rapidly develop.</p>
+<p>Next time, we’ll look at leveraging learnings from the Python ecosystem
+on creating portable binary releases of open source EDA tools. And, of 
+course, fetching these with IVPM.</p>
 
 </div>
 
