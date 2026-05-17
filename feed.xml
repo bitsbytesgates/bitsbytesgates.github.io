@@ -1,4 +1,122 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-05-10T15:08:10+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Managing DV Project Dependencies - Now with FuseSoc</title><link href="https://bitsbytesgates.com/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html" rel="alternate" type="text/html" title="Managing DV Project Dependencies - Now with FuseSoc" /><published>2026-05-09T00:00:00+00:00</published><updated>2026-05-09T00:00:00+00:00</updated><id>https://bitsbytesgates.com/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc</id><content type="html" xml:base="https://bitsbytesgates.com/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html"><![CDATA[<p>I had the pleasure of attending <a href="https://fossi-foundation.org/latch-up/2026">LatchUp</a> 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-05-17T21:57:50+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">Simplifying Access to Open-Source EDA Software</title><link href="https://bitsbytesgates.com/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html" rel="alternate" type="text/html" title="Simplifying Access to Open-Source EDA Software" /><published>2026-05-15T00:00:00+00:00</published><updated>2026-05-15T00:00:00+00:00</updated><id>https://bitsbytesgates.com/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA</id><content type="html" xml:base="https://bitsbytesgates.com/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html"><![CDATA[<p>Free and Open-Source Silicon (FOSSi) hardware designs face an interesting
+challenge. There’s a sizable and growing set of open source tools. But, obtaining
+the software in pre-built form – especially the latest versions – can be a 
+challenge due to the number of Linux OS variants. <a href="https://edapack.github.io">EDAPack</a> 
+adapts the approach that the Python ecosystem has developed to this challenge of 
+distributing binaries
+with broad Linux distribution compatibility. Together, <a href="https://edapack.github.io">EDAPack</a> 
+and <a href="https://fvutils.github.io/ivpm">IVPM</a> provide 
+a simple and fast way for projects to ensure that the proper version of open-source EDA tools
+are available in the same way that they manage other dependencies.</p>
+
+<h1 id="problem-and-opportunity">Problem and opportunity</h1>
+<p>How do you normally install software? While there are many possible paths, a common path is
+to install new software using your operating system’s package manager. Most Linux
+variants use something like <code class="language-plaintext highlighter-rouge">apt</code> or <code class="language-plaintext highlighter-rouge">yum</code>. macOS and Windows have App Stores.
+These built-in package managers are great for obtaining widely-used, stable software
+packages. They’re not as great for niche software, software that changes frequently, or 
+software where multiple versions are simultaneously in use. Open-source EDA software, for example.</p>
+
+<p>There are projects that distribute bundles of pre-built open-source EDA software,
+such as <a href="https://www.yosyshq.com/tabby-cad-datasheet">Tabby CAD</a>, or create Docker 
+images with pre-built software. These are great if they supply all the tools and tool
+versions that you need, and supports the Linux version that you’re using. But, often
+we only need one or two tools.</p>
+
+<p>One substantial challenge with EDA software is that the community is small enough that
+it’s not feasible to independently support each Linux distribution with pre-built packages.
+But, at the same time, Linux distributions are sufficiently different that a single
+binary can’t support all relevant distributions.</p>
+
+<h1 id="python-and-manylinux">Python and manylinux</h1>
+<p>As it so happens, the Python ecosystem has developed quite an elegant solution to this problem.
+Using native-compiled extension code is a key technique to increase Python performance.
+Obtaining these <code class="language-plaintext highlighter-rouge">binary wheels</code> in pre-built form simplifies package installation and 
+avoids users running into compilation errors due to missing development libraries and toolchains.</p>
+
+<p>But, how to ensure broad compatibility across platforms? They key is to build native-compiled
+code on a platform with the same characteristics as the target platform. The Python Packaging Authority (ppya)
+defines a set of Docker images https://github.com/pypa/manylinux for just this purpose. 
+Each are based on a specific Linux distribution, and specify a set of compatible Linux distributions.
+A key benefit of using these images vs just using the base Docker image is that the pypa project
+keeps <code class="language-plaintext highlighter-rouge">manylinux</code> images updated with recent versions of tools such as compilers and Python interpreters. 
+While the software you build with a <code class="language-plaintext highlighter-rouge">manylinux</code> image may be compatible with an older 
+Linux distribution versions, you aren’t locked into the old development tools that shipped with that 
+distribution version.</p>
+
+<h1 id="edapack---multi-platform-oss-eda-binaries">EDAPack - Multi-Platform OSS EDA Binaries</h1>
+
+<p>The <a href="https://edapack.github.io">EDAPack</a> project borrows the Python <code class="language-plaintext highlighter-rouge">manylinux</code> infrastructure 
+to build open-source EDA
+tool binaries that support multiple Linux platforms. In cases where an open-source EDA tool
+benefits from associated packages, EDAPack includes those as well. For example, the EDAPack 
+release of the Yosys synthesis engine includes associated tools for equivalency checking (eqy),
+formal verification (sby), and includes the <code class="language-plaintext highlighter-rouge">yosys-slang</code> plug-in that supports a broader 
+set of SystemVerilog constructs.</p>
+
+<h1 id="managing-installed-tools-with-ivpm">Managing Installed Tools with IVPM</h1>
+<p>It’s great to have access to pre-built binaries, but downloading and managing 
+multiple versions of tools is cumbersome. Fortunately, we can use <a href="https://fvutils.github.io/ivpm">IVPM</a> to
+simplify the setup process even further. IVPM approaches this by having each
+project capture their dependencies – including tools – in a YAML file named
+<code class="language-plaintext highlighter-rouge">ivpm.yaml</code>. In the case of using packages from <a href="https://edapack.github.io">EDAPack</a>, a project
+specifies the dependency source as <code class="language-plaintext highlighter-rouge">gh-rls</code> (Github Release).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package:
+  name: ivpm-fusesoc-example-registry
+
+  dep-sets:
+  - name: default
+    deps:
+    - name: iverilog
+      src: gh-rls
+      url: https://github.com/edapack/iverilog-bin
+      cache: true
+</code></pre></div></div>
+
+<p>When we fetch the project’s dependencies, we get tools as well. To save both time
+and disk space, we’ve marked our tools packages as being cached. This means
+that all projects that use the same version of a given tool simply link to 
+a single installation in IVPM’s cache directory.</p>
+
+<p>The obvious win here is that anyone wanting to a given project can very quickly
+gather the open-source tools required in order to use the project. But, beyond
+that, the project creator can pin tools to specific version to reduce issues due
+to using different tool versions. In addition, it’s easy to different projects
+to require and use different tool versions. IVPM’s cache holds the total set of
+active tool versions, and each project holds links to the specific required versions.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+
+<p>The EDAPack organization hosts a growing collection of projects that build and
+release open-source EDA software. Most packages focus on supporting x86 Linux 
+via the <code class="language-plaintext highlighter-rouge">manylinux</code> build system. IVPM supports fetching tools and other 
+artifacts from Github Releases, making it easy to load and configure the 
+precise set of tools and tool versions required by any project managed with
+IVPM.</p>
+
+<p>Feel free to reach out if you’d like to contribute a new open-source EDA tool
+to the EDAPack collection or add support for a new platform to a supported
+EDA tool.</p>
+
+<p>Next time we’ll look at <a href="https://direnv.net/">direnv</a>, my new favorite tool
+for project-centric environment management and see how IVPM integrates.</p>
+
+<h2 id="video">Video</h2>
+<p>Increasingly, topics on the blog benefit from a demo. I’m experimenting with
+recording companion videos that provide space for this.</p>
+
+<div class="video-container">
+  <iframe src="https://youtu.be/At--xRSsLAc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
+  </iframe>
+</div>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://www.yosyshq.com/tabby-cad-datasheet">Tabby CAD</a></li>
+  <li><a href="https://edapack.github.io">EDAPack</a></li>
+  <li><a href="https://fvutils.github.io">IVPM</a></li>
+</ul>]]></content><author><name></name></author><category term="EDAPack," /><category term="FVUtils" /><summary type="html"><![CDATA[Free and Open-Source Silicon (FOSSi) hardware designs face an interesting challenge. There’s a sizable and growing set of open source tools. But, obtaining the software in pre-built form – especially the latest versions – can be a challenge due to the number of Linux OS variants. EDAPack adapts the approach that the Python ecosystem has developed to this challenge of distributing binaries with broad Linux distribution compatibility. Together, EDAPack and IVPM provide a simple and fast way for projects to ensure that the proper version of open-source EDA tools are available in the same way that they manage other dependencies. Problem and opportunity How do you normally install software? While there are many possible paths, a common path is to install new software using your operating system’s package manager. Most Linux variants use something like apt or yum. macOS and Windows have App Stores. These built-in package managers are great for obtaining widely-used, stable software packages. They’re not as great for niche software, software that changes frequently, or software where multiple versions are simultaneously in use. Open-source EDA software, for example. There are projects that distribute bundles of pre-built open-source EDA software, such as Tabby CAD, or create Docker images with pre-built software. These are great if they supply all the tools and tool versions that you need, and supports the Linux version that you’re using. But, often we only need one or two tools. One substantial challenge with EDA software is that the community is small enough that it’s not feasible to independently support each Linux distribution with pre-built packages. But, at the same time, Linux distributions are sufficiently different that a single binary can’t support all relevant distributions. Python and manylinux As it so happens, the Python ecosystem has developed quite an elegant solution to this problem. Using native-compiled extension code is a key technique to increase Python performance. Obtaining these binary wheels in pre-built form simplifies package installation and avoids users running into compilation errors due to missing development libraries and toolchains. But, how to ensure broad compatibility across platforms? They key is to build native-compiled code on a platform with the same characteristics as the target platform. The Python Packaging Authority (ppya) defines a set of Docker images https://github.com/pypa/manylinux for just this purpose. Each are based on a specific Linux distribution, and specify a set of compatible Linux distributions. A key benefit of using these images vs just using the base Docker image is that the pypa project keeps manylinux images updated with recent versions of tools such as compilers and Python interpreters. While the software you build with a manylinux image may be compatible with an older Linux distribution versions, you aren’t locked into the old development tools that shipped with that distribution version. EDAPack - Multi-Platform OSS EDA Binaries The EDAPack project borrows the Python manylinux infrastructure to build open-source EDA tool binaries that support multiple Linux platforms. In cases where an open-source EDA tool benefits from associated packages, EDAPack includes those as well. For example, the EDAPack release of the Yosys synthesis engine includes associated tools for equivalency checking (eqy), formal verification (sby), and includes the yosys-slang plug-in that supports a broader set of SystemVerilog constructs. Managing Installed Tools with IVPM It’s great to have access to pre-built binaries, but downloading and managing multiple versions of tools is cumbersome. Fortunately, we can use IVPM to simplify the setup process even further. IVPM approaches this by having each project capture their dependencies – including tools – in a YAML file named ivpm.yaml. In the case of using packages from EDAPack, a project specifies the dependency source as gh-rls (Github Release). package: name: ivpm-fusesoc-example-registry dep-sets: - name: default deps: - name: iverilog src: gh-rls url: https://github.com/edapack/iverilog-bin cache: true When we fetch the project’s dependencies, we get tools as well. To save both time and disk space, we’ve marked our tools packages as being cached. This means that all projects that use the same version of a given tool simply link to a single installation in IVPM’s cache directory. The obvious win here is that anyone wanting to a given project can very quickly gather the open-source tools required in order to use the project. But, beyond that, the project creator can pin tools to specific version to reduce issues due to using different tool versions. In addition, it’s easy to different projects to require and use different tool versions. IVPM’s cache holds the total set of active tool versions, and each project holds links to the specific required versions. Conclusions and Next Steps The EDAPack organization hosts a growing collection of projects that build and release open-source EDA software. Most packages focus on supporting x86 Linux via the manylinux build system. IVPM supports fetching tools and other artifacts from Github Releases, making it easy to load and configure the precise set of tools and tool versions required by any project managed with IVPM. Feel free to reach out if you’d like to contribute a new open-source EDA tool to the EDAPack collection or add support for a new platform to a supported EDA tool. Next time we’ll look at direnv, my new favorite tool for project-centric environment management and see how IVPM integrates. Video Increasingly, topics on the blog benefit from a demo. I’m experimenting with recording companion videos that provide space for this. References Tabby CAD EDAPack IVPM]]></summary></entry><entry><title type="html">Managing DV Project Dependencies - Now with FuseSoc</title><link href="https://bitsbytesgates.com/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html" rel="alternate" type="text/html" title="Managing DV Project Dependencies - Now with FuseSoc" /><published>2026-05-09T00:00:00+00:00</published><updated>2026-05-09T00:00:00+00:00</updated><id>https://bitsbytesgates.com/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc</id><content type="html" xml:base="https://bitsbytesgates.com/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html"><![CDATA[<p>I had the pleasure of attending <a href="https://fossi-foundation.org/latch-up/2026">LatchUp</a> 
 this past weekend. Conferences invariably 
 spark new ideas and new perspectives, and this past weekend was no different. 
 Specifically, I found a new perspective on interoperability between two free and 
@@ -1625,202 +1743,4 @@ flow that supports both open-source and closed-source tools.</p>
   <li><a href="https://github.com/fvutils/pyhdl-if/">PyHDL-IF</a></li>
   <li><a href="https://mypy-lang.org/">MyPy</a></li>
   <li><a href="https://flake8.pycqa.org/en/latest/">Flake8</a></li>
-</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[Over the past few posts, we’ve examined the details of dynamically interacting with a SystemVerilog/UVM environment from Python. We can access the component hierarchy of a UVM testbench, read and write the value of sequence-item fields, and run sequences from Python – all without recompiling our UVM testbench or needing to generate any testbench-specific code. In this post, we’ll see how we can generate a Python view of key user-defined SystemVerilog classes in the UVM testbench. The reason? To better support the operation of Python development tools.]]></summary></entry><entry><title type="html">Working with Analysis Ports</title><link href="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html" rel="alternate" type="text/html" title="Working with Analysis Ports" /><published>2025-11-16T00:00:00+00:00</published><updated>2025-11-16T00:00:00+00:00</updated><id>https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts</id><content type="html" xml:base="https://bitsbytesgates.com/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html"><![CDATA[<p>For the most part, UVM and SystemVerilog make interactions with a 
-dynamically-typed language surprisingly easy. There are a few exceptions
-where the developer of the SystemVerilog UVM code must step in to enable
-access to certain testbench elements. Analysis ports are one case in point.
-Fortunately, there is a relatively non-invasive approach to allow Python
-to dynamically interact with UVM analysis ports. Let’s look more closely at 
-the details.</p>
-
-<h1 id="working-with-analysis-ports">Working with Analysis Ports</h1>
-
-<p>UVM testbench environments use analysis ports extensively. An <em>analysis port</em> 
-publishes data to zero or more listeners, and is used to route transactions 
-from interface monitors to scoreboards and other analysis components.</p>
-
-<p>Connecting to analysis ports from Python allows scoreboards and other analysis
-components to be implemented in Python. There are two technical requirements
-that enable Python to receive transactions published by analysis ports:</p>
-<ul>
-  <li>Be able to identify a uvm_analysis_port as a distinct type (vs, say, a uvm_object or uvm_component).</li>
-  <li>Be able to add a new listener to the analysis port</li>
-</ul>
-
-<h1 id="challenges-of-dynamically-using-analysis-ports">Challenges of Dynamically Using Analysis Ports</h1>
-<p>Each of these technical requirements poses its own challenge.</p>
-
-<div class="mermaid" align="center">
-classDiagram
-  uvm_analysis_port_base &lt;|-- uvm_analysis_port
-  uvm_tlm_if_base &lt;|-- uvm_analysis_port_base
-  uvm_component &lt;|-- uvm_tlm_if_base
-  class uvm_analysis_port["uvm_analysis_port #(T)"]
-  class uvm_analysis_port_base["uvm_analysis_port_base #(uvm_tlm_if_base #(T,T))"]
-  class uvm_tlm_if_base["uvm_tlm_if_base #(T,T)"]
-  class uvm_component["uvm_component"]
-</div>
-
-<p>SystemVerilog is a statically-typed language that provides minimal 
-<em>introspection</em> tools for looking at the internals of user-defined 
-classes. This is especially true when it comes to templated types. In 
-order to ask whether a given object <em>is an</em> instance of uvm_analysis_port,
-we need to ask about a specific specialization of that type – for example,
-“uvm_analysis_port #(my_special_transaction)”. As you might expect, this
-poses some challenges because the PyHDL-IF library only knows about concrete
-types defined by the UVM library, and doesn’t know anything about
-the transaction types used within a user’s testbench. As a consequence,
-when the PyHDL-IF library looks at an analysis port instance, 
-it just sees a <code class="language-plaintext highlighter-rouge">uvm_component</code> instance.</p>
-
-<p>One possible approach to this challenge is to have the user register each 
-of the transaction types that they might want to use with analysis ports 
-with the PyHDL-IF library. 
-For example:</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog"><span class="kt">class</span> <span class="n">my_transaction</span> <span class="k">extends</span> <span class="n">uvm_sequence_item</span><span class="p">;</span>
-  <span class="c1">// ...</span>
-<span class="k">endclass</span>
-
-<span class="cp">`pyhdl_uvm_transaction_utils</span><span class="p">(</span><span class="n">my_transaction</span><span class="p">)</span></code></pre></figure>
-
-<p>This would allow the PyHDL-IF library to identify analysis-port instances,
-but wouldn’t help with the second challenge of working with 
-analysis ports.</p>
-
-<p>The second challenge comes when we want to add a new listener to an 
-analysis port. This must be done during <code class="language-plaintext highlighter-rouge">connect_phase</code>, and requires that 
-a properly-specialized <code class="language-plaintext highlighter-rouge">uvm_analysis_imp #(T)</code> class instance was 
-previously created during the build phase.</p>
-
-<h1 id="making-analysis-ports-visibile">Making Analysis Ports Visibile</h1>
-
-<p>While both of these challenges can be overcome independently, doing so 
-would require the user to make two independent sets of changes. 
-And, more troubling, wouldn’t provide a good way for VIP developers 
-to hide this complexity from users. 
-At minimum, the testbench developer would always need to pre-create
-<code class="language-plaintext highlighter-rouge">uvm_analysis_imp</code> instances for each analysis port to which they might
-subscribe.</p>
-
-<p>Instead, PyHDL-IF provides two classes that supports two paths for making
-analysis ports visible and accessible from Python:</p>
-<ul>
-  <li><em>pyhdl_uvm_analysis_port</em> – An alternative analysis port implementation intended for use by VIP authors</li>
-  <li><em>pyhdl_uvm_analysis_imp</em> – An analysis port listener intended to make existing analysis ports available to PyHDL-IF</li>
-</ul>
-
-<h2 id="example">Example</h2>
-
-<p>Let’s take a look at an example to understand how analysis ports are made 
-accessible to the PyHDL-IF library. The uvm/seq_item_scoreboard example
-shows how to make analysis ports accessible as well as how to receive
-transactions from analysis ports.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">  <span class="c1">// Producer component with two analysis ports</span>
-  <span class="kt">class</span> <span class="n">dual_producer</span> <span class="k">extends</span> <span class="n">uvm_component</span><span class="p">;</span>
-    <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">dual_producer</span><span class="p">)</span>
-
-    <span class="n">pyhdl_uvm_analysis_port</span> <span class="p">#(</span><span class="n">seq_item_a</span><span class="p">)</span> <span class="n">ap_a</span><span class="p">;</span>
-    <span class="n">uvm_analysis_port</span> <span class="p">#(</span><span class="n">seq_item_b</span><span class="p">)</span> <span class="n">ap_b</span><span class="p">;</span>
-
-    <span class="k">function</span> <span class="k">new</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">,</span> <span class="n">uvm_component</span> <span class="n">parent</span><span class="p">);</span>
-      <span class="k">super</span><span class="p">.</span><span class="k">new</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">);</span>
-    <span class="k">endfunction</span>
-
-    <span class="k">function</span> <span class="kt">void</span> <span class="n">build_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
-      <span class="k">super</span><span class="p">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
-      <span class="n">ap_a</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="s">"ap_a"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
-      <span class="n">ap_b</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="s">"ap_b"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
-    <span class="k">endfunction</span></code></pre></figure>
-
-<p>The code snippet above shows how the pyhdl_uvm_analysis_port can be used
-instead of uvm_analysis_port to make an analysis port available to the
-PyHDL-IF library. The API of this class is identical to uvm_analysis_port,
-making this a good choice for VIP authors that want to automatically make 
-analysis ports accessible.</p>
-
-<figure class="highlight"><pre><code class="language-verilog" data-lang="verilog">  <span class="c1">// Environment tying producer to scoreboard</span>
-  <span class="kt">class</span> <span class="n">my_env</span> <span class="k">extends</span> <span class="n">uvm_env</span><span class="p">;</span>
-    <span class="cp">`uvm_component_utils</span><span class="p">(</span><span class="n">my_env</span><span class="p">)</span>
-
-    <span class="c1">// ...</span>
-    <span class="n">pyhdl_uvm_analysis_imp</span> <span class="p">#(</span><span class="n">seq_item_b</span><span class="p">)</span>    <span class="n">ap_b_proxy</span><span class="p">;</span>
-    <span class="c1">// ...</span>
-
-    <span class="k">function</span> <span class="kt">void</span> <span class="n">build_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
-      <span class="k">super</span><span class="p">.</span><span class="n">build_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
-      <span class="c1">// ...</span>
-      <span class="n">ap_b_proxy</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="s">"ap_b_proxy"</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
-    <span class="k">endfunction</span>
-
-    <span class="k">function</span> <span class="kt">void</span> <span class="n">connect_phase</span><span class="p">(</span><span class="n">uvm_phase</span> <span class="n">phase</span><span class="p">);</span>
-      <span class="k">super</span><span class="p">.</span><span class="n">connect_phase</span><span class="p">(</span><span class="n">phase</span><span class="p">);</span>
-      <span class="c1">// ...</span>
-      <span class="n">prod</span><span class="p">.</span><span class="n">ap_b</span><span class="p">.</span><span class="n">connect</span><span class="p">(</span><span class="n">ap_b_proxy</span><span class="p">.</span><span class="n">analysis_export</span><span class="p">);</span>
-    <span class="k">endfunction</span>
-  <span class="k">endclass</span></code></pre></figure>
-
-<p>Note that <code class="language-plaintext highlighter-rouge">ap_b</code> uses a normal uvm_analysis_port in the VIP. We can 
-make this analysis port accessible to the PyHDL-IF library by connecting
-an instance of <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> to it. While this could be done
-anywhere, it’s often done in the environment (as shown above).</p>
-
-<p>The <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> instance is connected to the analysis port 
-in the same way that any other analysis port subscriber does. Doing 
-this allows Python code to receive transactions published by the 
-analysis port.</p>
-
-<p>Both <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_port</code> and <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> have a <code class="language-plaintext highlighter-rouge">proxy</code>
-field inside with a <code class="language-plaintext highlighter-rouge">add_listener</code> method that the Python environment 
-uses to register a listener. Let’s look at the Python environment now.</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">PyComp</span><span class="p">(</span><span class="n">uvm_component_impl</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"build_phase"</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">connect_phase</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">phase</span><span class="p">):</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"connect_phase"</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="n">env</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">get_parent</span><span class="p">()</span>
-        <span class="n">env</span><span class="p">.</span><span class="n">prod</span><span class="p">.</span><span class="n">ap_a</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">add_listener</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">write_a</span><span class="p">)</span>
-        <span class="n">env</span><span class="p">.</span><span class="n">ap_b_proxy</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="nf">add_listener</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">write_b</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">write_a</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"write_a %0s"</span> <span class="o">%</span> <span class="nf">str</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="nf">pack</span><span class="p">()),</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">write_b</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-        <span class="nf">print</span><span class="p">(</span><span class="s">"write_b %0s"</span> <span class="o">%</span> <span class="nf">str</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="nf">pack</span><span class="p">()),</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></code></pre></figure>
-
-<p>In this case, the component proxy is a child instance of the <code class="language-plaintext highlighter-rouge">env</code> class
-shown above. Consequently, to connect to the analysis ports, we first
-need to get a handle to the instance of the <code class="language-plaintext highlighter-rouge">env</code> class (our parent).
-After that, we need to access the analysis port <code class="language-plaintext highlighter-rouge">proxy</code> field inside
-the <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_port</code> and <code class="language-plaintext highlighter-rouge">pyhdl_uvm_analysis_imp</code> instances.
-We can pass any callable Python method or object to the <code class="language-plaintext highlighter-rouge">add_listener</code>
-method. In this case, we simply register two class methods. When simulation
-runs, <code class="language-plaintext highlighter-rouge">write_a</code> and <code class="language-plaintext highlighter-rouge">write_b</code> will be called whenever the analysis port
-that they monitor publishes a transaction.</p>
-
-<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
-<p>The PyHDL-IF library allows analysis ports to be made visible and accessible 
-from Python with a small one-time investment. Verification IP (VIP) 
-developers can implement this support, allowing all users to benefit. 
-Testbench developers can also perform this work for VIP that isn’t pre-instrumented. 
-The result is that scoreboards and other analysis components can easily be developed in Python.</p>
-
-<p>Thus far in the series, we’ve seen how to run Python 
-behavior from SystemVerilog. We’ve seen how to interact with user-defined 
-UVM class fields, and we’ve now seen how to subscribe to analysis ports. 
-These technical capabilities make it easy for Python to dynamically interoperate 
-with an existing SystemVerilog/UVM testbench. But, thus far, these 
-capabilities don’t do much to support Python development tools. In the next
-post, we’ll see how the PyHDL-IF library provides a bridge from SystemVerilog/UVM
-to help Python development tools understand what is present in the UVM environment
-and make us more productive developing Python testbench components.</p>
-
-<h2 id="references">References</h2>
-<ul>
-  <li>PyHDL-IF library - <a href="https://github.com/fvutils/pyhdl-if">https://github.com/fvutils/pyhdl-if</a></li>
-  <li>Analysis port example - <a href="https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard">https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard</a></li>
-</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[For the most part, UVM and SystemVerilog make interactions with a dynamically-typed language surprisingly easy. There are a few exceptions where the developer of the SystemVerilog UVM code must step in to enable access to certain testbench elements. Analysis ports are one case in point. Fortunately, there is a relatively non-invasive approach to allow Python to dynamically interact with UVM analysis ports. Let’s look more closely at the details. Working with Analysis Ports UVM testbench environments use analysis ports extensively. An analysis port publishes data to zero or more listeners, and is used to route transactions from interface monitors to scoreboards and other analysis components. Connecting to analysis ports from Python allows scoreboards and other analysis components to be implemented in Python. There are two technical requirements that enable Python to receive transactions published by analysis ports: Be able to identify a uvm_analysis_port as a distinct type (vs, say, a uvm_object or uvm_component). Be able to add a new listener to the analysis port Challenges of Dynamically Using Analysis Ports Each of these technical requirements poses its own challenge. classDiagram uvm_analysis_port_base &lt;|-- uvm_analysis_port uvm_tlm_if_base &lt;|-- uvm_analysis_port_base uvm_component &lt;|-- uvm_tlm_if_base class uvm_analysis_port["uvm_analysis_port #(T)"] class uvm_analysis_port_base["uvm_analysis_port_base #(uvm_tlm_if_base #(T,T))"] class uvm_tlm_if_base["uvm_tlm_if_base #(T,T)"] class uvm_component["uvm_component"] SystemVerilog is a statically-typed language that provides minimal introspection tools for looking at the internals of user-defined classes. This is especially true when it comes to templated types. In order to ask whether a given object is an instance of uvm_analysis_port, we need to ask about a specific specialization of that type – for example, “uvm_analysis_port #(my_special_transaction)”. As you might expect, this poses some challenges because the PyHDL-IF library only knows about concrete types defined by the UVM library, and doesn’t know anything about the transaction types used within a user’s testbench. As a consequence, when the PyHDL-IF library looks at an analysis port instance, it just sees a uvm_component instance. One possible approach to this challenge is to have the user register each of the transaction types that they might want to use with analysis ports with the PyHDL-IF library. For example: class my_transaction extends uvm_sequence_item; // ... endclass `pyhdl_uvm_transaction_utils(my_transaction) This would allow the PyHDL-IF library to identify analysis-port instances, but wouldn’t help with the second challenge of working with analysis ports. The second challenge comes when we want to add a new listener to an analysis port. This must be done during connect_phase, and requires that a properly-specialized uvm_analysis_imp #(T) class instance was previously created during the build phase. Making Analysis Ports Visibile While both of these challenges can be overcome independently, doing so would require the user to make two independent sets of changes. And, more troubling, wouldn’t provide a good way for VIP developers to hide this complexity from users. At minimum, the testbench developer would always need to pre-create uvm_analysis_imp instances for each analysis port to which they might subscribe. Instead, PyHDL-IF provides two classes that supports two paths for making analysis ports visible and accessible from Python: pyhdl_uvm_analysis_port – An alternative analysis port implementation intended for use by VIP authors pyhdl_uvm_analysis_imp – An analysis port listener intended to make existing analysis ports available to PyHDL-IF Example Let’s take a look at an example to understand how analysis ports are made accessible to the PyHDL-IF library. The uvm/seq_item_scoreboard example shows how to make analysis ports accessible as well as how to receive transactions from analysis ports. // Producer component with two analysis ports class dual_producer extends uvm_component; `uvm_component_utils(dual_producer) pyhdl_uvm_analysis_port #(seq_item_a) ap_a; uvm_analysis_port #(seq_item_b) ap_b; function new(string name, uvm_component parent); super.new(name, parent); endfunction function void build_phase(uvm_phase phase); super.build_phase(phase); ap_a = new("ap_a", this); ap_b = new("ap_b", this); endfunction The code snippet above shows how the pyhdl_uvm_analysis_port can be used instead of uvm_analysis_port to make an analysis port available to the PyHDL-IF library. The API of this class is identical to uvm_analysis_port, making this a good choice for VIP authors that want to automatically make analysis ports accessible. // Environment tying producer to scoreboard class my_env extends uvm_env; `uvm_component_utils(my_env) // ... pyhdl_uvm_analysis_imp #(seq_item_b) ap_b_proxy; // ... function void build_phase(uvm_phase phase); super.build_phase(phase); // ... ap_b_proxy = new("ap_b_proxy", this); endfunction function void connect_phase(uvm_phase phase); super.connect_phase(phase); // ... prod.ap_b.connect(ap_b_proxy.analysis_export); endfunction endclass Note that ap_b uses a normal uvm_analysis_port in the VIP. We can make this analysis port accessible to the PyHDL-IF library by connecting an instance of pyhdl_uvm_analysis_imp to it. While this could be done anywhere, it’s often done in the environment (as shown above). The pyhdl_uvm_analysis_imp instance is connected to the analysis port in the same way that any other analysis port subscriber does. Doing this allows Python code to receive transactions published by the analysis port. Both pyhdl_uvm_analysis_port and pyhdl_uvm_analysis_imp have a proxy field inside with a add_listener method that the Python environment uses to register a listener. Let’s look at the Python environment now. class PyComp(uvm_component_impl): def build_phase(self, phase): print("build_phase", flush=True) def connect_phase(self, phase): print("connect_phase", flush=True) env = self.proxy.get_parent() env.prod.ap_a.proxy.add_listener(self.write_a) env.ap_b_proxy.proxy.add_listener(self.write_b) def write_a(self, t): print("write_a %0s" % str(t.pack()), flush=True) def write_b(self, t): print("write_b %0s" % str(t.pack()), flush=True) In this case, the component proxy is a child instance of the env class shown above. Consequently, to connect to the analysis ports, we first need to get a handle to the instance of the env class (our parent). After that, we need to access the analysis port proxy field inside the pyhdl_uvm_analysis_port and pyhdl_uvm_analysis_imp instances. We can pass any callable Python method or object to the add_listener method. In this case, we simply register two class methods. When simulation runs, write_a and write_b will be called whenever the analysis port that they monitor publishes a transaction. Conclusions and Next Steps The PyHDL-IF library allows analysis ports to be made visible and accessible from Python with a small one-time investment. Verification IP (VIP) developers can implement this support, allowing all users to benefit. Testbench developers can also perform this work for VIP that isn’t pre-instrumented. The result is that scoreboards and other analysis components can easily be developed in Python. Thus far in the series, we’ve seen how to run Python behavior from SystemVerilog. We’ve seen how to interact with user-defined UVM class fields, and we’ve now seen how to subscribe to analysis ports. These technical capabilities make it easy for Python to dynamically interoperate with an existing SystemVerilog/UVM testbench. But, thus far, these capabilities don’t do much to support Python development tools. In the next post, we’ll see how the PyHDL-IF library provides a bridge from SystemVerilog/UVM to help Python development tools understand what is present in the UVM environment and make us more productive developing Python testbench components. References PyHDL-IF library - https://github.com/fvutils/pyhdl-if Analysis port example - https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="PythonUVM" /><summary type="html"><![CDATA[Over the past few posts, we’ve examined the details of dynamically interacting with a SystemVerilog/UVM environment from Python. We can access the component hierarchy of a UVM testbench, read and write the value of sequence-item fields, and run sequences from Python – all without recompiling our UVM testbench or needing to generate any testbench-specific code. In this post, we’ll see how we can generate a Python view of key user-defined SystemVerilog classes in the UVM testbench. The reason? To better support the operation of Python development tools.]]></summary></entry></feed>

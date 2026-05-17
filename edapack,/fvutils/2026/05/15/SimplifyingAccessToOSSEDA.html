@@ -10,12 +10,12 @@
   <title>
     
     
-      Generate Custom Content Quickly with a Template Engine &middot; Bits, Bytes, and Gates
+      Simplifying Access to Open-Source EDA Software &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2019/03/02/generate-custom-content-quickly-with.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -27,6 +27,14 @@
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -771,12 +779,12 @@ class="jfk-button jfk-button-action " style="">
   <title>
     
     
-      Generate Custom Content Quickly with a Template Engine &middot; Bits, Bytes, and Gates
+      Simplifying Access to Open-Source EDA Software &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2019/03/02/generate-custom-content-quickly-with.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -788,6 +796,14 @@ class="jfk-button jfk-button-action " style="">
   <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
 
   <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+      
+<script type="module">
+   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/+esm';
+</script>
+
+
 
   
   <!--
@@ -817,49 +833,162 @@ Post-env
 </head>
 
 
+
   <body>
-    
+
 
   <div class="post">
-    <h1 class="post-title">Generate Custom Content Quickly with a Template Engine</h1>
-    <span class="post-date">02 Mar 2019</span>
-    <br /><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-ATyX_mYeEFY/XHrrYRSDP7I/AAAAAAAAChQ/6yYSRbhzfPABx-p8zJmIID_4v3K9KArywCLcBGAs/s1600/vte-splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="330" data-original-width="495" src="https://1.bp.blogspot.com/-ATyX_mYeEFY/XHrrYRSDP7I/AAAAAAAAChQ/6yYSRbhzfPABx-p8zJmIID_4v3K9KArywCLcBGAs/s1600/vte-splash.png" /></a></div><br />I was at <a href="https://dvcon.org/">DVCon</a> earlier this week, and attended the UVM Update Tutorial delivered by Cliff Cummings. Cliff described his typical process of creating UVM elements, which is to have a set of 'golden' template files that can be copied and hand-customized to the task at hand. It's certainly something I've done frequently on UVM projects and in many other contexts as well.<br /><br />If you work in verification and you're anything like me, you create lots of files pretty much every day. Scripts, UVM code, C++ code, Makefiles, meta-data files, the list goes on and on. While all of these files will contain custom content, there is often a lot of boilerplate content as well. There are certainly specialized tools focused on quickly creating content for specific domains. For example, there are several tools and libraries to help quickly create UVM elements based on some high-level inputs from the user. But, what about files that are custom to your environment? Can we do better than the standard process of copy, rename, and then manually doing a search/replace in each file?<br /><br /><b>VTE</b><br />I've recently been playing with just such a template engine for my own use. For lack of a better name, I've been calling it the Verification Template Engine (VTE), since I'm largely using it for creating files in the context of a verification environment. VTE is implemented in Python and leverages the <a href="http://jinja.pocoo.org/docs/2.10/">Jinja2</a> template engine, which is typically used for creating web content from a template.<br /><br />Given how much VTE is just reusing existing functionality, what is the value-add? Two things, really:<br /><br /><ul><li>VTE provides a user interface that makes it easy to see what templates are available in the environment</li><li>VTE specifies a template structure that makes it really easy to create new templates from those 'golden' template files that you would normally copy, rename, and modify.</li></ul><br /><b>Using Templates</b><br />VTE currently ships a couple of small templates with the tool. Your custom templates will be found via the VTE_TEMPLATE_PATH environment variable.<br /><br />VTE currently supports two commands: <i>list</i>&nbsp;and <i>generate. </i>The <i>list</i>&nbsp;command shows the set of templates that were found on the template path.<br /><i><br /></i><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; margin-bottom: 16px; overflow-wrap: normal; overflow: auto; padding: 16px;"><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; overflow-wrap: normal; overflow: visible; padding: 0px; word-break: normal;">% vte list<br />project.ivpm.googletest-hdl - IVPM project with Googletest-HDL dependence<br />verif.ip.googletest-hdl     - IP verification environment using Googletest-HDL<br />verif.uvm.test              - Creates a UVM test class<br /></code></pre><div><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; overflow-wrap: normal; overflow: visible; padding: 0px; word-break: normal;"><span style="font-family: &quot;Times New Roman&quot;; font-size: small;">The generate command, as you might expect, generates content from a specified template.&nbsp;</span></code></div><div><br /></div><div><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; margin-bottom: 16px; overflow-wrap: normal; overflow: auto; padding: 16px;"><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; overflow-wrap: normal; overflow: visible; padding: 0px; word-break: normal;">usage: vte generate [-h] [-force] template name [KEY=VALUE [KEY=VALUE ...]]<br /><br />positional arguments:<br />  template    ID of template<br />  name        Name to use in the template<br />  KEY=VALUE   Specify other template variables<br /><br />optional arguments:<br />  -h, --help  show this help message and exit<br />  -force      force overwrite of existing files</code></pre></div><div><br /></div><div>Here's an example using VTE to create the skeleton project structure that I use when developing an IP:</div><div><br /></div><div><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; margin-bottom: 16px; overflow-wrap: normal; overflow: auto; padding: 16px;"><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; overflow-wrap: normal; overflow: visible; padding: 0px; word-break: normal;">% vte generate project.ivpm.googletest-hdl my_proj<br />Note: processing template etc/ivpm.info<br />Note: processing template etc/packages.mf<br />Note: processing template etc/env.sh<br />Note: processing template scripts/ivpm.py<br />Note: processing template scripts/ivpm.mk<br />% find -type f<br />./etc/ivpm.info<br />./etc/packages.mf<br />./etc/my_proj_env.sh<br />./scripts/ivpm.py<br />./scripts/ivpm.mk</code></pre></div><b>Creating Templates</b><br /><br />Creating new template is simple as well. VTE. uses a marker file, named <i>.vte</i>&nbsp;to identify the root directory of a template. Any files in that directory or its subdirectories is considered to be a template file. The ID for a template is composed from the path elements between the VTE_TEMPLATE_PATH entry and the directory containing the <i>.vte</i>&nbsp;marker file.<br /><br />For a very simple template, all you need is an empty <i>.vte</i>&nbsp;marker. However, adding a little information to the <i>.vte</i>&nbsp;file makes your template more useful. For example, you can add a short description for your template, which will be shown with the <i>vte list </i>command is run:<br /><br /><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; margin-bottom: 16px; overflow-wrap: normal; overflow: auto; padding: 16px;"><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; overflow-wrap: normal; overflow: visible; padding: 0px; word-break: normal;">[template]<br />desc = Creates a UVM test class</code></pre><br />The template files, themselves, use <a href="http://jinja.pocoo.org/docs/2.10/">Jinja2</a> markup to refer to template parameters and specify directives.<br /><br /><pre style="background-color: #f6f8fa; border-radius: 3px; box-sizing: border-box; color: #24292e; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: 1.45; margin-bottom: 16px; overflow-wrap: normal; overflow: auto; padding: 16px;"><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; overflow-wrap: normal; overflow: visible; padding: 0px; word-break: normal;">/****************************************************************************<br /> * {{name}}.svh<br /> * <br /> ****************************************************************************/<br />{%set filename = "{{name}}.svh" %}<br />/**<br /> * Class: {{name}}<br /> * TODO: Document UVM Test {{name}}<br /> */<br />class {{name}} extends {{base_class}};<br /> `uvm_component_utils({{name}})<br /> <br /> function new(string name, uvm_component parent=null);<br />  super.new(name, parent);<br /> endfunction<br /> <br />endclass<br /></code></pre><div><code style="background: transparent; border-radius: 3px; border: 0px; box-sizing: border-box; display: inline; font-family: SFMono-Regular, Consolas, &quot;Liberation Mono&quot;, Menlo, Courier, monospace; font-size: 13.6px; line-height: inherit; margin: 0px; overflow-wrap: normal; overflow: visible; padding: 0px; word-break: normal;"><br /></code></div>The example above is a template for a UVM Test class. The <i>{% set filename ... %}</i>&nbsp;directive specifies the name of the output file, which depends on the value of the <i>name</i>&nbsp;parameter. The rest of the template contains a reference to the <i>name</i>&nbsp;parameter wherever we want that to be substituted in. As you can probably guess, these locations where <i>{{name}}</i>&nbsp;is referenced are the very locations that you'd go through with a text editor and manually substitute in some content.<br /><br /><br /><b>Sound Interesting?</b><br />If this all sounds interesting, check out VTE on GitHub:&nbsp;<a href="https://github.com/fvutils/vte">https://github.com/fvutils/vte</a>. You can download a release tarball from the <i>Releases</i>&nbsp;area, add the bin directory to your PATH, and try it out right away. You can also find documentation in the <a href="https://github.com/fvutils/vte/blob/master/README.md">README</a> file.<br />If you find an issue with VTE, or would like to see it support a new feature, file a ticket on the GitHub issue tracker. Even better, send me a pull request!<br /><br />My hope is that a tool like VTE can make creating boilerplate code much simpler and faster, allowing you to focus your efforts on adding truly-unique content. That is, after all, always the goal of engineering and automation, right?<br /><br /><br /><br />
+    <h1 class="post-title">Simplifying Access to Open-Source EDA Software</h1>
+    <span class="post-date">15 May 2026</span>
+
+    <p>Free and Open-Source Silicon (FOSSi) hardware designs face an interesting
+challenge. There’s a sizable and growing set of open source tools. But, obtaining
+the software in pre-built form – especially the latest versions – can be a 
+challenge due to the number of Linux OS variants. <a href="https://edapack.github.io">EDAPack</a> 
+adapts the approach that the Python ecosystem has developed to this challenge of 
+distributing binaries
+with broad Linux distribution compatibility. Together, <a href="https://edapack.github.io">EDAPack</a> 
+and <a href="https://fvutils.github.io/ivpm">IVPM</a> provide 
+a simple and fast way for projects to ensure that the proper version of open-source EDA tools
+are available in the same way that they manage other dependencies.</p>
+
+<h1 id="problem-and-opportunity">Problem and opportunity</h1>
+<p>How do you normally install software? While there are many possible paths, a common path is
+to install new software using your operating system’s package manager. Most Linux
+variants use something like <code class="language-plaintext highlighter-rouge">apt</code> or <code class="language-plaintext highlighter-rouge">yum</code>. macOS and Windows have App Stores.
+These built-in package managers are great for obtaining widely-used, stable software
+packages. They’re not as great for niche software, software that changes frequently, or 
+software where multiple versions are simultaneously in use. Open-source EDA software, for example.</p>
+
+<p>There are projects that distribute bundles of pre-built open-source EDA software,
+such as <a href="https://www.yosyshq.com/tabby-cad-datasheet">Tabby CAD</a>, or create Docker 
+images with pre-built software. These are great if they supply all the tools and tool
+versions that you need, and supports the Linux version that you’re using. But, often
+we only need one or two tools.</p>
+
+<p>One substantial challenge with EDA software is that the community is small enough that
+it’s not feasible to independently support each Linux distribution with pre-built packages.
+But, at the same time, Linux distributions are sufficiently different that a single
+binary can’t support all relevant distributions.</p>
+
+<h1 id="python-and-manylinux">Python and manylinux</h1>
+<p>As it so happens, the Python ecosystem has developed quite an elegant solution to this problem.
+Using native-compiled extension code is a key technique to increase Python performance.
+Obtaining these <code class="language-plaintext highlighter-rouge">binary wheels</code> in pre-built form simplifies package installation and 
+avoids users running into compilation errors due to missing development libraries and toolchains.</p>
+
+<p>But, how to ensure broad compatibility across platforms? They key is to build native-compiled
+code on a platform with the same characteristics as the target platform. The Python Packaging Authority (ppya)
+defines a set of Docker images https://github.com/pypa/manylinux for just this purpose. 
+Each are based on a specific Linux distribution, and specify a set of compatible Linux distributions.
+A key benefit of using these images vs just using the base Docker image is that the pypa project
+keeps <code class="language-plaintext highlighter-rouge">manylinux</code> images updated with recent versions of tools such as compilers and Python interpreters. 
+While the software you build with a <code class="language-plaintext highlighter-rouge">manylinux</code> image may be compatible with an older 
+Linux distribution versions, you aren’t locked into the old development tools that shipped with that 
+distribution version.</p>
+
+<h1 id="edapack---multi-platform-oss-eda-binaries">EDAPack - Multi-Platform OSS EDA Binaries</h1>
+
+<p>The <a href="https://edapack.github.io">EDAPack</a> project borrows the Python <code class="language-plaintext highlighter-rouge">manylinux</code> infrastructure 
+to build open-source EDA
+tool binaries that support multiple Linux platforms. In cases where an open-source EDA tool
+benefits from associated packages, EDAPack includes those as well. For example, the EDAPack 
+release of the Yosys synthesis engine includes associated tools for equivalency checking (eqy),
+formal verification (sby), and includes the <code class="language-plaintext highlighter-rouge">yosys-slang</code> plug-in that supports a broader 
+set of SystemVerilog constructs.</p>
+
+<h1 id="managing-installed-tools-with-ivpm">Managing Installed Tools with IVPM</h1>
+<p>It’s great to have access to pre-built binaries, but downloading and managing 
+multiple versions of tools is cumbersome. Fortunately, we can use <a href="https://fvutils.github.io/ivpm">IVPM</a> to
+simplify the setup process even further. IVPM approaches this by having each
+project capture their dependencies – including tools – in a YAML file named
+<code class="language-plaintext highlighter-rouge">ivpm.yaml</code>. In the case of using packages from <a href="https://edapack.github.io">EDAPack</a>, a project
+specifies the dependency source as <code class="language-plaintext highlighter-rouge">gh-rls</code> (Github Release).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package:
+  name: ivpm-fusesoc-example-registry
+
+  dep-sets:
+  - name: default
+    deps:
+    - name: iverilog
+      src: gh-rls
+      url: https://github.com/edapack/iverilog-bin
+      cache: true
+</code></pre></div></div>
+
+<p>When we fetch the project’s dependencies, we get tools as well. To save both time
+and disk space, we’ve marked our tools packages as being cached. This means
+that all projects that use the same version of a given tool simply link to 
+a single installation in IVPM’s cache directory.</p>
+
+<p>The obvious win here is that anyone wanting to a given project can very quickly
+gather the open-source tools required in order to use the project. But, beyond
+that, the project creator can pin tools to specific version to reduce issues due
+to using different tool versions. In addition, it’s easy to different projects
+to require and use different tool versions. IVPM’s cache holds the total set of
+active tool versions, and each project holds links to the specific required versions.</p>
+
+<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+
+<p>The EDAPack organization hosts a growing collection of projects that build and
+release open-source EDA software. Most packages focus on supporting x86 Linux 
+via the <code class="language-plaintext highlighter-rouge">manylinux</code> build system. IVPM supports fetching tools and other 
+artifacts from Github Releases, making it easy to load and configure the 
+precise set of tools and tool versions required by any project managed with
+IVPM.</p>
+
+<p>Feel free to reach out if you’d like to contribute a new open-source EDA tool
+to the EDAPack collection or add support for a new platform to a supported
+EDA tool.</p>
+
+<p>Next time we’ll look at <a href="https://direnv.net/">direnv</a>, my new favorite tool
+for project-centric environment management and see how IVPM integrates.</p>
+
+<h2 id="video">Video</h2>
+<p>Increasingly, topics on the blog benefit from a demo. I’m experimenting with
+recording companion videos that provide space for this.</p>
+
+<div class="video-container">
+  <iframe src="https://youtu.be/At--xRSsLAc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
+  </iframe>
+</div>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://www.yosyshq.com/tabby-cad-datasheet">Tabby CAD</a></li>
+  <li><a href="https://edapack.github.io">EDAPack</a></li>
+  <li><a href="https://fvutils.github.io">IVPM</a></li>
+</ul>
+
   </div>
 
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2026 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
   
-  <div class="related">
-    <h2>Related posts</h2>
-    <ul class="related-posts">
-      
-        <li>
-          <h3>
-            <a href="/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html">
-              Simplifying Access to Open-Source EDA Software
-              <small>15 May 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html">
-              Managing DV Project Dependencies - Now with FuseSoc
-              <small>09 May 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html">
-              Better Coverage Analysis with AI
-              <small>15 Feb 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-    </ul>
-  </div>
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
   
 
   </body>
