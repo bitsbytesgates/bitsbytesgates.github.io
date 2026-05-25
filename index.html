@@ -100,6 +100,8 @@ Post-env
         <li><span class="caret">May</span>
         <ul class="nested" list-style-type="none">
         
+        <li><a href="/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html">What's My Env Again?</a></li>
+        
         <li><a href="/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html">Simplifying Access to Open-Source EDA Software</a></li>
         
         <li><a href="/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html">Managing DV Project Dependencies - Now with FuseSoc</a></li>
@@ -776,135 +778,127 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html">Simplifying Access to Open-Source EDA Software</a>
+    <a href="/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html">What's My Env Again?</a>
   </h1>      
 
-<div class="entry-content"><p>Free and Open-Source Silicon (FOSSi) hardware designs face an interesting
-challenge. There’s a sizable and growing set of open source tools. But, obtaining
-the software in pre-built form – especially the latest versions – can be a 
-challenge due to the number of Linux OS variants. <a href="https://edapack.github.io">EDAPack</a> 
-adapts the approach that the Python ecosystem has developed to this challenge of 
-distributing binaries
-with broad Linux distribution compatibility. Together, <a href="https://edapack.github.io">EDAPack</a> 
-and <a href="https://fvutils.github.io/ivpm">IVPM</a> provide 
-a simple and fast way for projects to ensure that the proper version of open-source EDA tools
-are available in the same way that they manage other dependencies.</p>
+<div class="entry-content"><p>Almost any non-trivial project will require some amount of environment configuration.
+Perhaps the project uses a local Python virtual environment that must be used
+for running tests. Perhaps it’s a hardware-design project that needs to configure
+the environment for various EDA tools, and ensure that they’re available to users.
+If you’re sharing a project with other users, this poses a challenge. The typical
+approach is to have a setup.sh script. But, you need to remember to source it 
+before doing any work in the project – and when moving over to another project.
+And, then, there’s the complication of different shells. Fortunately there’s 
+<a href="https://direnv.net/">direnv</a>: a very elegant solution that has become my 
+go-to over the past year or so. 
+And, naturally, <a href="https://fvutils.github.io/ivpm">IVPM</a> provides support.</p>
 
-<h1 id="problem-and-opportunity">Problem and opportunity</h1>
-<p>How do you normally install software? While there are many possible paths, a common path is
-to install new software using your operating system’s package manager. Most Linux
-variants use something like <code class="language-plaintext highlighter-rouge">apt</code> or <code class="language-plaintext highlighter-rouge">yum</code>. macOS and Windows have App Stores.
-These built-in package managers are great for obtaining widely-used, stable software
-packages. They’re not as great for niche software, software that changes frequently, or 
-software where multiple versions are simultaneously in use. Open-source EDA software, for example.</p>
+<!--more-->
 
-<p>There are projects that distribute bundles of pre-built open-source EDA software,
-such as <a href="https://www.yosyshq.com/tabby-cad-datasheet">Tabby CAD</a>, or create Docker 
-images with pre-built software. These are great if they supply all the tools and tool
-versions that you need, and supports the Linux version that you’re using. But, often
-we only need one or two tools.</p>
+<p>I first learned about <a href="https://direnv.net/">direnv</a> from a colleague a little 
+over a year ago.<br />
+Initially, I was a bit skeptical because it inverts the typical approach
+to environment management. Typically, the environment is a session property
+that persists as the user navigates around the filesystem. <a href="https://direnv.net/">direnv</a> 
+treats the environment as a property of the project directory tree. Instead of
+needing to remember to source a setup file before doing work in a project,
+the mere act of entering the project directory causes the environment
+to be configured.</p>
 
-<p>One substantial challenge with EDA software is that the community is small enough that
-it’s not feasible to independently support each Linux distribution with pre-built packages.
-But, at the same time, Linux distributions are sufficiently different that a single
-binary can’t support all relevant distributions.</p>
+<p>Now, if you’re like me, this initially seems a big odd. And, you might
+ask if this slows everything down. The good news is that it’s quite fast
+and, at least for me, it begins to feel ergonomic very quickly.</p>
 
-<h1 id="python-and-manylinux">Python and manylinux</h1>
-<p>As it so happens, the Python ecosystem has developed quite an elegant solution to this problem.
-Using native-compiled extension code is a key technique to increase Python performance.
-Obtaining these <code class="language-plaintext highlighter-rouge">binary wheels</code> in pre-built form simplifies package installation and 
-avoids users running into compilation errors due to missing development libraries and toolchains.</p>
+<h2 id="how-does-it-work">How does it work?</h2>
 
-<p>But, how to ensure broad compatibility across platforms? They key is to build native-compiled
-code on a platform with the same characteristics as the target platform. The Python Packaging Authority (ppya)
-defines a set of Docker images https://github.com/pypa/manylinux for just this purpose. 
-Each are based on a specific Linux distribution, and specify a set of compatible Linux distributions.
-A key benefit of using these images vs just using the base Docker image is that the pypa project
-keeps <code class="language-plaintext highlighter-rouge">manylinux</code> images updated with recent versions of tools such as compilers and Python interpreters. 
-While the software you build with a <code class="language-plaintext highlighter-rouge">manylinux</code> image may be compatible with an older 
-Linux distribution versions, you aren’t locked into the old development tools that shipped with that 
-distribution version.</p>
+<p><a href="https://direnv.net/">direnv</a> has three key components:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.envrc</code> files to configure the environment.</li>
+  <li>A lightweight executable, written in <a href="https://go.dev/">Go</a>, to process .envrc files</li>
+  <li>A shell alias to ensure direnv runs to configure the environment</li>
+</ul>
 
-<h1 id="edapack---multi-platform-oss-eda-binaries">EDAPack - Multi-Platform OSS EDA Binaries</h1>
+<h3 id="envrc-files-and-the-stdlib">.envrc files and the stdlib</h3>
+<p><code class="language-plaintext highlighter-rouge">.envrc</code> files contain the statements and directives that configure the environment.
+These files accept <code class="language-plaintext highlighter-rouge">bash</code> syntax, providing access to standard control-flow statements.
+This also enables direnv to work cooperatively with other environment-management
+tools, such as <a href="https://envmodules.io/">Environment Modules</a>. Environment modules is
+quite popular in silicon engineering environments because it provides elegant support
+for managing multiple versions of a tool. For example, you might load version 
+5.046 of <a href="verilator.org">Verilator</a> using the following command:</p>
 
-<p>The <a href="https://edapack.github.io">EDAPack</a> project borrows the Python <code class="language-plaintext highlighter-rouge">manylinux</code> infrastructure 
-to build open-source EDA
-tool binaries that support multiple Linux platforms. In cases where an open-source EDA tool
-benefits from associated packages, EDAPack includes those as well. For example, the EDAPack 
-release of the Yosys synthesis engine includes associated tools for equivalency checking (eqy),
-formal verification (sby), and includes the <code class="language-plaintext highlighter-rouge">yosys-slang</code> plug-in that supports a broader 
-set of SystemVerilog constructs.</p>
-
-<h1 id="managing-installed-tools-with-ivpm">Managing Installed Tools with IVPM</h1>
-<p>It’s great to have access to pre-built binaries, but downloading and managing 
-multiple versions of tools is cumbersome. Fortunately, we can use <a href="https://fvutils.github.io/ivpm">IVPM</a> to
-simplify the setup process even further. IVPM approaches this by having each
-project capture their dependencies – including tools – in a YAML file named
-<code class="language-plaintext highlighter-rouge">ivpm.yaml</code>. In the case of using packages from <a href="https://edapack.github.io">EDAPack</a>, a project
-specifies the dependency source as <code class="language-plaintext highlighter-rouge">gh-rls</code> (Github Release).</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package:
-  name: ivpm-fusesoc-example-registry
-
-  dep-sets:
-  - name: default
-    deps:
-    - name: iverilog
-      src: gh-rls
-      url: https://github.com/edapack/iverilog-bin
-      cache: true
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module load verilator/5.046
 </code></pre></div></div>
 
-<p>When we fetch the project’s dependencies, we get tools as well. To save both time
-and disk space, we’ve marked our tools packages as being cached. This means
-that all projects that use the same version of a given tool simply link to 
-a single installation in IVPM’s cache directory.</p>
+<p>If your environment uses Environment Modules, you can add these same statements to 
+your <code class="language-plaintext highlighter-rouge">.envrc</code> file and direnv will configure the proper tool versions in your environment.</p>
 
-<p>The obvious win here is that anyone wanting to a given project can very quickly
-gather the open-source tools required in order to use the project. But, beyond
-that, the project creator can pin tools to specific version to reduce issues due
-to using different tool versions. In addition, it’s easy to different projects
-to require and use different tool versions. IVPM’s cache holds the total set of
-active tool versions, and each project holds links to the specific required versions.</p>
+<p>In addition to using standard shell syntax to configure environment variables, Direnv
+provides a standard library of helpful functions. For example, the <code class="language-plaintext highlighter-rouge">PATH_add</code> stdlib
+function adds a directory to the PATH variable:</p>
 
-<h1 id="conclusions-and-next-steps">Conclusions and Next Steps</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PATH_add scripts
+</code></pre></div></div>
 
-<p>The EDAPack organization hosts a growing collection of projects that build and
-release open-source EDA software. Most packages focus on supporting x86 Linux 
-via the <code class="language-plaintext highlighter-rouge">manylinux</code> build system. IVPM supports fetching tools and other 
-artifacts from Github Releases, making it easy to load and configure the 
-precise set of tools and tool versions required by any project managed with
-IVPM.</p>
+<h3 id="shell-alias">Shell Alias</h3>
 
-<p>Feel free to reach out if you’d like to contribute a new open-source EDA tool
-to the EDAPack collection or add support for a new platform to a supported
-EDA tool.</p>
+<p>Direnv needs to know when the working directory changes so it can update the 
+environment if required. This is done by evaluating direnv’s <code class="language-plaintext highlighter-rouge">hook</code> subcommand. 
+In <code class="language-plaintext highlighter-rouge">bash</code>, this looks like this:</p>
 
-<p>Next time we’ll look at <a href="https://direnv.net/">direnv</a>, my new favorite tool
-for project-centric environment management and see how IVPM integrates.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>% eval "$(direnv hook bash)"
+</code></pre></div></div>
 
-<h2 id="video">Video</h2>
-<p>Increasingly, topics on the blog benefit from a demo. I’m experimenting with
-recording companion videos that provide space for this.</p>
+<p>Direnv supports a <a href="https://direnv.net/docs/hook.html">wide variety of shells</a>, 
+including bash, zsh, and tcsh. Add the appropriate statement to your shell’s 
+startup script and direnv will ensure that your environment is properly set
+whenever you’re within a directory structure containing an <code class="language-plaintext highlighter-rouge">.envrc</code> file.</p>
 
-<div class="video-container">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/At--xRSsLAc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
-<!--
-  <iframe 
-    src="https://youtu.be/At--xRSsLAc" 
-    frameborder="0" 
-    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-    allowfullscreen>
-  </iframe>
--->
-</div>
+<h2 id="ivpm-support">IVPM Support</h2>
+
+<p>The Integrated-View Package Manager (IVPM) fetches dependent packages for a
+project and assembles unified views of those dependencies – and environment
+variables are a critical <em>view</em>. IVPM creates <code class="language-plaintext highlighter-rouge">packages/packages.envrc</code> with
+variable settings for the project and loaded dependencies. Here is a sampling
+of what it does:</p>
+<ul>
+  <li>Set IVPM_PACKAGES to point to the root deps-dir</li>
+  <li>Add the Python virtual environment to the PATH</li>
+  <li>Load <code class="language-plaintext highlighter-rouge">envrc</code> files from dependencies</li>
+</ul>
+
+<p>This last item is particularly relevant when it comes to open-source EDA tools
+provided by the <a href="https://edapack.github.io">EDAPack</a> project. These projects
+provide <code class="language-plaintext highlighter-rouge">export.envrc</code> files that IVPM incorporates into the master <code class="language-plaintext highlighter-rouge">packages.envrc</code>
+file. Doing so ensures that the loaded tools are automatically available in
+when working in the project tree.</p>
+
+<p>Using the generated envrc file is simple as well. Just add the following to 
+the project <code class="language-plaintext highlighter-rouge">.envrc</code> file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [ -d packages ]; then
+  source_env packages/packages.envrc
+fi
+</code></pre></div></div>
+
+<h2 id="conclusions-and-next-steps">Conclusions and Next Steps</h2>
+<p>The <a href="https://direnv.net">direnv</a> provides a project-centric approach to environment
+management that ensures that your environment is always properly configured according
+to your working directory. IVPM assembles a unified view of the environment variables
+that should be configured based on the dependent projects it has loaded. Together,
+these two tools provide an easy approach to project environment configuration.</p>
+
+<p>AI has been a hot topic recently, with engineers increasingly using an AI assistant
+like Claude or Codex to automate their work. Next time we’ll look at how IVPM configures
+project-specific context data for AI assistants to use.</p>
 
 <h2 id="references">References</h2>
 <ul>
-  <li><a href="https://www.yosyshq.com/tabby-cad-datasheet">Tabby CAD</a></li>
+  <li><a href="https://direnv.net">direnv</a></li>
   <li><a href="https://edapack.github.io">EDAPack</a></li>
-  <li><a href="https://fvutils.github.io">IVPM</a></li>
+  <li><a href="https://fvutils.github.io/ivpm">IVPM</a></li>
 </ul>
+
 </div>
 
 </div>

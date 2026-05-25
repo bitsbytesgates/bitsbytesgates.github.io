@@ -10,12 +10,12 @@
   <title>
     
     
-      Writing a Task-Based Cocotb BFM &middot; Bits, Bytes, and Gates
+      What's My Env Again? &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2019/12/14/writing-task-based-cocotb-bfm.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -773,12 +773,12 @@ class="jfk-button jfk-button-action " style="">
   <title>
     
     
-      Writing a Task-Based Cocotb BFM &middot; Bits, Bytes, and Gates
+      What's My Env Again? &middot; Bits, Bytes, and Gates
     
   </title>
 
   
-  <link rel="canonical" href="https://bitsbytesgates.com/2019/12/14/writing-task-based-cocotb-bfm.html">
+  <link rel="canonical" href="https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html">
   
 
   <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
@@ -819,49 +819,161 @@ Post-env
 </head>
 
 
+
   <body>
-    
+
 
   <div class="post">
-    <h1 class="post-title">Writing a Task-Based Cocotb BFM</h1>
-    <span class="post-date">14 Dec 2019</span>
-    <div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-R-vTF4170VI/XfVNlh_cZJI/AAAAAAAACy4/ESELGTzOyngCVpEv7kUxYtjzfOCqnb44ACLcBGAsYHQ/s1600/splash.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="300" data-original-width="540" src="https://1.bp.blogspot.com/-R-vTF4170VI/XfVNlh_cZJI/AAAAAAAACy4/ESELGTzOyngCVpEv7kUxYtjzfOCqnb44ACLcBGAsYHQ/s1600/splash.png" /></a></div><br /><br /><b>Background</b><br />The purpose of a Bus Functional Model (BFM) is to enable interacting with a design via a given protocol at a higher level of abstraction than the signal-level protocol, while knowing the bare minimum about the details of that protocol. Verification IP goes beyond these benefits to provide test plans, functional coverage, test sequence, and often protocol-specific benefits like compliance test suites.<br /><br />In order to realize any these benefits of having a BFM, one first needs to exist. So, let's take a look at what it takes to create a task-based Cocotb BFM for a very simple ready/valid protocol.<br /><br /><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-ncFDUr6PK2g/XfUQN6Qip1I/AAAAAAAACx8/aZEh3JGjPu0j3TNxP--T1UysRxY3HNJGgCLcBGAsYHQ/s1600/ready_valid2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="120" data-original-width="360" src="https://1.bp.blogspot.com/-ncFDUr6PK2g/XfUQN6Qip1I/AAAAAAAACx8/aZEh3JGjPu0j3TNxP--T1UysRxY3HNJGgCLcBGAsYHQ/s1600/ready_valid2.png" /></a></div><div class="separator" style="clear: both; text-align: center;"></div><div class="separator" style="clear: both; text-align: center;"></div><br />The ready/valid protocol is simple, but useful. Data is exchanged between two blocks on a clock edge when both ready and valid are active (high). The initiator controls the valid signal, the target controls the ready signal. That's all there is to the protocol.<br /><br />Before we get into the details, a few words about the structure of a task-based Cocotb BFM. There are two key components:<br /><br /><ul><li>A Python class that provides the API used by the test writer, and defines the lower-level API used to actually interact with the HDL portion of the BFM</li><li>An HDL module that performs the conversion between the commands sent from Python and signals, and vice-versa.</li></ul><br /><br /><div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-DUxwJZVhg5E/XfUSTMaAF3I/AAAAAAAACyc/K_ThRom_3mIl-Q17QpjnsDz8MKZRQDNHACLcBGAsYHQ/s1600/structure.PNG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="238" data-original-width="295" src="https://1.bp.blogspot.com/-DUxwJZVhg5E/XfUSTMaAF3I/AAAAAAAACyc/K_ThRom_3mIl-Q17QpjnsDz8MKZRQDNHACLcBGAsYHQ/s1600/structure.PNG" /></a></div><br />Both of these aspects of a task-based BFM are collected together in a Python package that is typically named with the protocol implemented by the BFM (rv, or ready-valid, in this case).<br /><br /><b>Python API</b><br /><br />The Python portion of a task-based Cocotb BFM is captured as a Python class. I use camel-case names for classes, so the ready/value output (initiator) BFM is ReadyValidDataOutBFM.<br /><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">class ReadyValidDataOutBFM():</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><br /></span><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; def __init__(self):</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; self.busy = Lock()</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; self.ack_ev = Event()</span><br /><div><br /></div>The two core data items shown in the class initializer are likely to be found in every BFM. Cocotb supports multi-threaded tests using Python co-routines. Our BFM will use the 'busy' lock to ensure that only one Python thread can use the BFM at a time. It will use the 'ack_ev' event to interact with the HDL portion of the BFM.<br /><br />As I mentioned earlier, there are typically two API layers that we need to define: the API that the user calls, and a lower-level API that is used to control the BFM's HDL code inside the simulation.<br /><br />Let's start with the user layer, since that's quite simple. The user's test will use the ready/valid initiator BFM to write data to a target ready/valid interface. Let's call the public method 'write_c', to denote that this is a Python co-routine that writes data out from the BFM.<br /><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp;@cocotb.coroutine</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; def write_c(self, data):</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; '''</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; Writes the specified data word to the interface</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; '''</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; yield self.busy.acquire()</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; self._write_req(data)</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><br /></span><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; # Wait for acknowledge of the transfer</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; yield self.ack_ev.wait()</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; self.ack_ev.clear()</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><br /></span><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; self.busy.release()</span><br /><br />Before getting into the implementation details, let's look at the second API layer -- the one that interacts directly with the BFM. The low-level API must be non-blocking in order to work with the full range of simulation and execution environments that must be supported. This means that we need to split the write operation into two pieces: an outbound call to initiate a write, and an inbound call from the BFM to notify that the write is complete.<br /><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; @cocotb.bfm_import(cocotb.bfm_uint32_t)</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; def _write_req(self, d):</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; pass</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp;&nbsp;</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; @cocotb.bfm_export()</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; def _write_ack(self):</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; &nbsp; self.ack_ev.set()</span><br /><br />Note that the low-level API functions are prefixed with '_', denoting that this is an internal API and not intended to be called directly by the user.<br /><br /><br /><br /><b>HDL BFM</b><br /><b><br /></b>The HDL portion of the BFM also has two aspects. One is synchronous synthesizable code, while the other implements the interface to the synchronous code. Both of these are contained within a Verilog module, shown below:<br /><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">module rv_data_out_bfm #(</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; parameter DATA_WIDTH = 8</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">) (</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; input<span style="white-space: pre;">    </span>clock,</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; input<span style="white-space: pre;">    </span>reset,</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; output reg[DATA_WIDTH-1:0]<span style="white-space: pre;"> </span>data,</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; output reg<span style="white-space: pre;">   </span>data_valid,</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; input<span style="white-space: pre;">    </span>data_ready</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">);</span><br /><span style="white-space: pre;"><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"> </span></span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">reg[DATA_WIDTH-1:0]<span style="white-space: pre;">  </span>data_v = 0;</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">reg<span style="white-space: pre;">    </span>data_valid_v = 0;</span><br /><br />This module is instantiated in the HDL testbench and connected to the signals on the appropriate design interface. The <i>data_v</i>&nbsp;and <i>data_valid_v</i>&nbsp;variables are used to interface between the synchronous and control code inside the BFM.<br /><br />We'll look at the interface code first. The Verilog task below implements the Python <i>_write_reg</i>&nbsp;method shown above.<br /><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><span style="white-space: pre;"> </span>task _write_req(reg[63:0] d);</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><span style="white-space: pre;">  </span>begin</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><span style="white-space: pre;">   </span>data_v = d;</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><span style="white-space: pre;">   </span>data_valid_v = 1;</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace; white-space: pre;">  </span><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">end</span><br /><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;"><span style="white-space: pre;"> </span>endtask</span><br /><br /><div><br /></div><div>Note that the interface task is non-blocking, and simply sets values on variables within the module -- in this case, storing the data to be written and indicating that there is new data to transfer.</div><div><br /></div><div>The synchronous logic controls the module signals based on the variables set by the interface tasks. This code is shown below:</div><div><br /></div><div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">always @(posedge clock) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; if (reset) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; data_valid &lt;= 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; data &lt;= 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; end else begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; data_valid &lt;= data_valid_v;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; data &lt;= data_v;</span></div><div><span style="white-space: pre;"><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">   </span></span></div><div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">if (data_valid &amp;&amp; data_ready) begin</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; _write_ack();</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; &nbsp; data_valid_v = 0;</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; &nbsp; end</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">&nbsp; end</span></div><div><span style="font-family: &quot;courier new&quot; , &quot;courier&quot; , monospace;">end</span></div></div><div><br /></div><div>This synchronous logic propagates the variables that were set in the interface task. When both the data_valid and data_ready signals are high, the _write_ack() task is called to notify the Python environment that the write is completed. At the same time the data_valid_v variable is cleared to terminate the transfer.&nbsp;</div><div><br /></div><div>Note that the synchronous logic is likely very similar to the logic within an RTL implementation of a ready/valid initiator. This is an opportunity, since it means that Cocotb BFMs can leverage existing RTL implementations of interface protocols.</div><div><br /></div><div><br /></div><br /><b>Publishing</b><br />Now that we have a ready/valid BFM implemented, what can we do with it? Well, in addition to using it to verify our current design, we can also share it with others that also have ready/valid interfaces on their designs. This is Python, after all, and it's very easy to share Python libraries with others via the PyPi repository (<a href="https://pypi.org/">https://pypi.org/</a>).<br /><br />In order to do this, we need to setup a very basic 'setup.py' script in our project directory that identifies the Python package and related data (BFM RTL) that needs to be distributed. After that, it's a simple matter to publish to PyPi such that another project can make use of the BFM simply by adding <i>rv_bfms</i>&nbsp;to that project's <i>requirements.txt </i>file.<br /><br /><div><b>Next Steps</b><br />Hopefully the description above shows just how simple it is to setup a Python BFM that can interact at the task level with RTL. You can find the full code for this BFM in the rv_bfms Github repository here:&nbsp;<a href="https://github.com/pybfms/rv_bfms">https://github.com/pybfms/rv_bfms</a>.<br /><br />In my next post, we'll take a look at some more-advanced ways to structure BFMs to increase the overall performance even more, and see some ways for BFMs to add more value in debug.<br /><br />Meanwhile, I'd be interested to hear what protocols are of high interest in your FOSSi (Free and Open-Source Silicon) projects. I'd be especially interested if you'd like to contribute a task-based Python BFM for one or more of those protocols!<br /><br /><br /><div><div class="separator" style="clear: both;"><b><i>Disclaimer</i></b></div><div class="separator" style="clear: both;"><i>The views and opinions expressed above are solely those of the author and do not represent those of my employer or any other party.</i></div></div><div><br /></div><br /></div>
+    <h1 class="post-title">What's My Env Again?</h1>
+    <span class="post-date">23 May 2026</span>
+
+    <p>Almost any non-trivial project will require some amount of environment configuration.
+Perhaps the project uses a local Python virtual environment that must be used
+for running tests. Perhaps it’s a hardware-design project that needs to configure
+the environment for various EDA tools, and ensure that they’re available to users.
+If you’re sharing a project with other users, this poses a challenge. The typical
+approach is to have a setup.sh script. But, you need to remember to source it 
+before doing any work in the project – and when moving over to another project.
+And, then, there’s the complication of different shells. Fortunately there’s 
+<a href="https://direnv.net/">direnv</a>: a very elegant solution that has become my 
+go-to over the past year or so. 
+And, naturally, <a href="https://fvutils.github.io/ivpm">IVPM</a> provides support.</p>
+
+<!--more-->
+
+<p>I first learned about <a href="https://direnv.net/">direnv</a> from a colleague a little 
+over a year ago.<br />
+Initially, I was a bit skeptical because it inverts the typical approach
+to environment management. Typically, the environment is a session property
+that persists as the user navigates around the filesystem. <a href="https://direnv.net/">direnv</a> 
+treats the environment as a property of the project directory tree. Instead of
+needing to remember to source a setup file before doing work in a project,
+the mere act of entering the project directory causes the environment
+to be configured.</p>
+
+<p>Now, if you’re like me, this initially seems a big odd. And, you might
+ask if this slows everything down. The good news is that it’s quite fast
+and, at least for me, it begins to feel ergonomic very quickly.</p>
+
+<h2 id="how-does-it-work">How does it work?</h2>
+
+<p><a href="https://direnv.net/">direnv</a> has three key components:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">.envrc</code> files to configure the environment.</li>
+  <li>A lightweight executable, written in <a href="https://go.dev/">Go</a>, to process .envrc files</li>
+  <li>A shell alias to ensure direnv runs to configure the environment</li>
+</ul>
+
+<h3 id="envrc-files-and-the-stdlib">.envrc files and the stdlib</h3>
+<p><code class="language-plaintext highlighter-rouge">.envrc</code> files contain the statements and directives that configure the environment.
+These files accept <code class="language-plaintext highlighter-rouge">bash</code> syntax, providing access to standard control-flow statements.
+This also enables direnv to work cooperatively with other environment-management
+tools, such as <a href="https://envmodules.io/">Environment Modules</a>. Environment modules is
+quite popular in silicon engineering environments because it provides elegant support
+for managing multiple versions of a tool. For example, you might load version 
+5.046 of <a href="verilator.org">Verilator</a> using the following command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module load verilator/5.046
+</code></pre></div></div>
+
+<p>If your environment uses Environment Modules, you can add these same statements to 
+your <code class="language-plaintext highlighter-rouge">.envrc</code> file and direnv will configure the proper tool versions in your environment.</p>
+
+<p>In addition to using standard shell syntax to configure environment variables, Direnv
+provides a standard library of helpful functions. For example, the <code class="language-plaintext highlighter-rouge">PATH_add</code> stdlib
+function adds a directory to the PATH variable:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PATH_add scripts
+</code></pre></div></div>
+
+<h3 id="shell-alias">Shell Alias</h3>
+
+<p>Direnv needs to know when the working directory changes so it can update the 
+environment if required. This is done by evaluating direnv’s <code class="language-plaintext highlighter-rouge">hook</code> subcommand. 
+In <code class="language-plaintext highlighter-rouge">bash</code>, this looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>% eval "$(direnv hook bash)"
+</code></pre></div></div>
+
+<p>Direnv supports a <a href="https://direnv.net/docs/hook.html">wide variety of shells</a>, 
+including bash, zsh, and tcsh. Add the appropriate statement to your shell’s 
+startup script and direnv will ensure that your environment is properly set
+whenever you’re within a directory structure containing an <code class="language-plaintext highlighter-rouge">.envrc</code> file.</p>
+
+<h2 id="ivpm-support">IVPM Support</h2>
+
+<p>The Integrated-View Package Manager (IVPM) fetches dependent packages for a
+project and assembles unified views of those dependencies – and environment
+variables are a critical <em>view</em>. IVPM creates <code class="language-plaintext highlighter-rouge">packages/packages.envrc</code> with
+variable settings for the project and loaded dependencies. Here is a sampling
+of what it does:</p>
+<ul>
+  <li>Set IVPM_PACKAGES to point to the root deps-dir</li>
+  <li>Add the Python virtual environment to the PATH</li>
+  <li>Load <code class="language-plaintext highlighter-rouge">envrc</code> files from dependencies</li>
+</ul>
+
+<p>This last item is particularly relevant when it comes to open-source EDA tools
+provided by the <a href="https://edapack.github.io">EDAPack</a> project. These projects
+provide <code class="language-plaintext highlighter-rouge">export.envrc</code> files that IVPM incorporates into the master <code class="language-plaintext highlighter-rouge">packages.envrc</code>
+file. Doing so ensures that the loaded tools are automatically available in
+when working in the project tree.</p>
+
+<p>Using the generated envrc file is simple as well. Just add the following to 
+the project <code class="language-plaintext highlighter-rouge">.envrc</code> file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [ -d packages ]; then
+  source_env packages/packages.envrc
+fi
+</code></pre></div></div>
+
+<h2 id="conclusions-and-next-steps">Conclusions and Next Steps</h2>
+<p>The <a href="https://direnv.net">direnv</a> provides a project-centric approach to environment
+management that ensures that your environment is always properly configured according
+to your working directory. IVPM assembles a unified view of the environment variables
+that should be configured based on the dependent projects it has loaded. Together,
+these two tools provide an easy approach to project environment configuration.</p>
+
+<p>AI has been a hot topic recently, with engineers increasingly using an AI assistant
+like Claude or Codex to automate their work. Next time we’ll look at how IVPM configures
+project-specific context data for AI assistants to use.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://direnv.net">direnv</a></li>
+  <li><a href="https://edapack.github.io">EDAPack</a></li>
+  <li><a href="https://fvutils.github.io/ivpm">IVPM</a></li>
+</ul>
+
+
   </div>
 
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2026 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
   
-  <div class="related">
-    <h2>Related posts</h2>
-    <ul class="related-posts">
-      
-        <li>
-          <h3>
-            <a href="/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html">
-              What's My Env Again?
-              <small>23 May 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html">
-              Simplifying Access to Open-Source EDA Software
-              <small>15 May 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-        <li>
-          <h3>
-            <a href="/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html">
-              Managing DV Project Dependencies - Now with FuseSoc
-              <small>09 May 2026</small>
-            </a>
-          </h3>
-        </li>
-      
-    </ul>
-  </div>
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
   
 
   </body>
