@@ -1,4 +1,213 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-05-25T17:21:31+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">What’s My Env Again?</title><link href="https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html" rel="alternate" type="text/html" title="What’s My Env Again?" /><published>2026-05-23T00:00:00+00:00</published><updated>2026-05-23T00:00:00+00:00</updated><id>https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain</id><content type="html" xml:base="https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html"><![CDATA[<p>Almost any non-trivial project will require some amount of environment configuration.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bitsbytesgates.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bitsbytesgates.com/" rel="alternate" type="text/html" /><updated>2026-06-08T23:40:45+00:00</updated><id>https://bitsbytesgates.com/feed.xml</id><title type="html">Bits, Bytes, and Gates</title><subtitle>There&apos;s oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</subtitle><entry><title type="html">The Right Skills for the Job: Project-Scoped Agent Skills</title><link href="https://bitsbytesgates.com/fvutils,/ai/2026/06/06/ContextualAgentConfig.html" rel="alternate" type="text/html" title="The Right Skills for the Job: Project-Scoped Agent Skills" /><published>2026-06-06T00:00:00+00:00</published><updated>2026-06-06T00:00:00+00:00</updated><id>https://bitsbytesgates.com/fvutils,/ai/2026/06/06/ContextualAgentConfig</id><content type="html" xml:base="https://bitsbytesgates.com/fvutils,/ai/2026/06/06/ContextualAgentConfig.html"><![CDATA[<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skills_banner.png" />
+</p>
+
+<p>Agentic AI has quickly become a dominant workflow. Give an LLM access to the
+filesystem and shell, provide it good instructions, and watch it work! It’s
+that second part that is critical to making the process scalable. LLMs are 
+quite happy to fill in the gaps where instructions are incomplete. Agent
+Skills help make agentic workflows repeatable and consistent.</p>
+
+<p>Reusable is a great start, but making them context-specific – scoped – is
+just as important.  The skills to which an agent has access should be 
+determined by what the current project actually uses. This post argues that
+the best way to do this is to deliver skills along with the artifacts that 
+they describe.</p>
+
+<!--more-->
+
+<h2 id="agent-skills-in-one-minute">Agent Skills in one minute</h2>
+
+<p>If you’re already familiar  with Agent Skills, skip ahead. If not, the concept
+is straightforward: a skill is a directory containing a <code class="language-plaintext highlighter-rouge">SKILL.md</code> file – a chunk of
+Markdown with a little YAML frontmatter that gives the skill a <code class="language-plaintext highlighter-rouge">name</code> and a
+<code class="language-plaintext highlighter-rouge">description</code> – plus any optional scripts or reference files it needs. The
+<a href="https://agentskills.io/home">Agent Skills specification</a> and
+<a href="https://github.com/anthropics/skills">Anthropic’s skills repository</a> are good
+places to see the shape of them.</p>
+
+<p>Skills solve two problems:</p>
+
+<ul>
+  <li><strong>Discoverability.</strong> The agent can see, from a short description, that a
+capability exists without you having to remember to paste in the relevant
+instructions every time.</li>
+  <li><strong>Progressive disclosure.</strong> When an agent loads skills, it only reads
+the description into the context initially. It only reads more of the 
+skill files if and when it decides that the skill is relevant to the
+task at hand.</li>
+</ul>
+
+<h2 id="where-skills-come-from-today">Where skills come from today</h2>
+
+<p>Most AI assistants – Claude Code, Codex, and others – let you configure
+skills through the filesystem or through tool commands, with both
+directory-specific and global scopes supported. The default tends to be
+global.</p>
+
+<p>The interactive path to acquiring skills is a marketplace. Several have
+emerged and they’re growing quickly.</p>
+
+<p>One challenge with the marketplace is that installation and curation are
+human-driven: you browse a catalog, decide you want a capability, and install it.
+This makes it available in whichever scope(s) you installed it. But, that either
+entails having all skills installed always or remembering to install skills
+whenever you start a create a new workspace.</p>
+
+<h2 id="skills-should-travel-with-the-artifact">Skills should travel with the artifact</h2>
+
+<p>The person best positioned to write “how to use X” is the author of X. And the 
+most-natural vehicle for shipping that knowledge is X’s own package. This ensures
+that the skill matches the installed version of X, and gets updated along 
+with the package.</p>
+
+<p>For example:</p>
+
+<ul>
+  <li>A Verilog/RTL IP block can ship a skill that teaches an agent how to wire it
+up and drive it.</li>
+  <li>A verification IP can ship a skill describing how to instantiate it in a
+testbench.</li>
+  <li>A Python package can deliver a skill the same way it delivers any other
+packaged resource.</li>
+</ul>
+
+<p>In each case the author of the artifact is the author of the skill, and the
+two stay in sync because they live in the same package. Contrast that
+with a marketplace listing: standalone, general-purpose, and free to drift out
+of sync with the thing it describes. When the IP gains a new port or the API
+changes, the skill that shipped alongside it changes too. A separately curated
+catalog entry has no such guarantee.</p>
+
+<p>Having skills travel with the artifact provides us a new possibility: to
+create a project-scoped set of skills that cater to the needs of an engineer
+developing that project. No need to remember to install skills after setting
+up a workspace. No potential confusion from skills from a dependency that
+isn’t relevant to your project.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skills_global_vs_scoped.png" />
+</p>
+
+<h2 id="ivpm-project-specific-skillsets">IVPM: project-specific skillsets</h2>
+
+<p>That’s where <a href="https://fvutils.github.io/ivpm">IVPM</a> comes in. The Integrated 
+View Package Manager’s mission is to fetch a project’s dependencies and 
+integrate the relevant content into project-specific <em>views</em>. For example, 
+a project-local Python virtual environment containing the project’s Python 
+dependencies. IVPM does the same for agent skills: it gathers the skills 
+delivered by a project’s dependencies and links them into the appropriate 
+directory-local assistant configuration.</p>
+
+<p>IVPM discovers skills through four mechanisms, applied in priority order:</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skill_discovery_tiers.png" />
+</p>
+
+<ol>
+  <li><strong>Consumer-specified paths.</strong> The dependency entry in your <code class="language-plaintext highlighter-rouge">ivpm.yaml</code> can
+name a glob (e.g. <code class="language-plaintext highlighter-rouge">skills/**/SKILL.md</code>) telling IVPM where the skills live.</li>
+  <li><strong>Package-declared paths.</strong> A dependency can advertise its own skill
+locations via <code class="language-plaintext highlighter-rouge">with.agents.skills</code> in its <code class="language-plaintext highlighter-rouge">ivpm.yaml</code>.</li>
+  <li><strong>Auto-probe.</strong> Absent any declaration, IVPM looks for a <code class="language-plaintext highlighter-rouge">SKILL.md</code> at the
+package root and searches a <code class="language-plaintext highlighter-rouge">skills/</code> directory. Most packages need no
+configuration at all because of this.</li>
+  <li><strong>Python entry points.</strong> For installed Python packages, IVPM queries the
+<code class="language-plaintext highlighter-rouge">agent.skills</code> entry-point group, so a package can register its skills
+programmatically. (A legacy <code class="language-plaintext highlighter-rouge">ivpm.skill</code> group is still accepted for
+backward compatibility.) Each entry point is a callable that returns a path
+– or list of paths – to directories containing a <code class="language-plaintext highlighter-rouge">SKILL.md</code>.</li>
+</ol>
+
+<p>Once discovered, the skills are linked into your project’s configuration
+directories. IVPM always populates <code class="language-plaintext highlighter-rouge">.agents/skills/</code> – the toolchain-neutral
+layout that any skills-aware agent can read – and, when you ask for it, also
+mirrors into <code class="language-plaintext highlighter-rouge">.claude/skills/</code> so Claude Code picks them up automatically.
+Links are relative when the target lives inside the project tree and absolute
+otherwise, with a directory copy as a fallback on platforms that don’t support
+symlinks. Stale links from previous runs are cleaned up on each update.</p>
+
+<p>The only opt-in is a short block in your project’s <code class="language-plaintext highlighter-rouge">ivpm.yaml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">package</span><span class="pi">:</span>
+  <span class="na">with</span><span class="pi">:</span>
+    <span class="na">agents</span><span class="pi">:</span>
+      <span class="na">claude</span><span class="pi">:</span> <span class="kc">true</span>   <span class="c1"># also mirror skills into .claude/skills/</span>
+</code></pre></div></div>
+
+<h2 id="a-worked-example">A worked example</h2>
+
+<p>You can find a runnable example in the IVPM repository:
+<a href="https://github.com/fvutils/ivpm/tree/master/examples/agent-skills"><code class="language-plaintext highlighter-rouge">examples/agent-skills</code></a>.</p>
+
+<p>The project depends on three pre-built EDA tools fetched as binary releases
+from the <a href="https://github.com/edapack">EDAPack</a> feed – <strong>yosys</strong> (RTL
+synthesis), <strong>verilator</strong> (simulation), and <strong>nextpnr</strong> (FPGA
+place-and-route). Each of those release tarballs <em>bundles its agent skills</em>
+under a <code class="language-plaintext highlighter-rouge">skills/</code> directory, so IVPM auto-discovers them with no extra
+configuration. The project’s <code class="language-plaintext highlighter-rouge">ivpm.yaml</code> does nothing more than list the
+dependencies and flip on the Claude mirror shown above.</p>
+
+<p>Run a single command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ivpm update
+</code></pre></div></div>
+
+<p>IVPM fetches the tool <em>binaries</em> and, in the same step, links every discovered
+skill into the project:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.claude/skills/
+├── yosys-bin-yosys     -&gt; ../../packages/yosys-bin/skills/yosys
+├── yosys-bin-sby       -&gt; ../../packages/yosys-bin/skills/sby
+├── yosys-bin-sv2v      -&gt; ../../packages/yosys-bin/skills/sv2v
+├── verilator-verilator -&gt; ../../packages/verilator/skills/verilator
+└── nextpnr-bin-nextpnr -&gt; ../../packages/nextpnr-bin/skills/nextpnr
+</code></pre></div></div>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skills_with_artifact_flow.png" />
+</p>
+
+<p>Now open your agent in that directory and ask:</p>
+
+<blockquote>
+  <p>Simulate the blink design and testbench in Verilator, using available
+skills. Then synthesize the design targeting ecp5 using yosys and nextpnr.</p>
+</blockquote>
+
+<p>The agent already knows the <code class="language-plaintext highlighter-rouge">synth_ecp5</code> flow, because the skill that explains
+it shipped with the synthesis binary. Nothing was hand-curated, and no global
+catalog was browsed. One <code class="language-plaintext highlighter-rouge">ivpm update</code> delivered both the toolchain and the
+know-how to drive it – and the capability tracked the dependency graph
+exactly.</p>
+
+<h2 id="conclusions-and-next-steps">Conclusions and next steps</h2>
+
+<p>Skills are most useful when they’re scoped to what a project actually uses, and
+the package manager is the right place to do that scoping. By treating skills
+as artifacts that travel with the artifacts that they describe, you
+get a project-specific skillset that’s assembled automatically, stays in sync
+with its sources, and disappears when its dependency does. No catalog to
+browse, nothing to remember to install.</p>
+
+<p>If you maintain an artifact that others integrate – an IP block, a tool, a
+library – consider shipping a skill alongside it. You’re the person best
+positioned to write it, and a <code class="language-plaintext highlighter-rouge">skills/</code> directory is a small thing to add. And
+if you’d like to try the consuming side, the
+<a href="https://github.com/fvutils/ivpm/tree/master/examples/agent-skills">agent-skills example</a>
+is a good place to start.</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://agentskills.io/home">Agent Skills Specification</a></li>
+  <li><a href="https://github.com/anthropics/skills">Anthropic Skills repository</a></li>
+  <li><a href="https://code.claude.com/docs/en/discover-plugins">Claude Code Plugins</a></li>
+  <li><a href="https://fvutils.github.io/ivpm">IVPM</a></li>
+  <li><a href="https://fvutils.github.io/ivpm/handlers.html#agents-handler-agents">IVPM Agents Handler</a></li>
+  <li><a href="https://github.com/fvutils/ivpm/tree/master/examples/agent-skills">IVPM agent-skills example</a></li>
+</ul>]]></content><author><name></name></author><category term="FVUtils," /><category term="AI" /><summary type="html"><![CDATA[Agentic AI has quickly become a dominant workflow. Give an LLM access to the filesystem and shell, provide it good instructions, and watch it work! It’s that second part that is critical to making the process scalable. LLMs are quite happy to fill in the gaps where instructions are incomplete. Agent Skills help make agentic workflows repeatable and consistent. Reusable is a great start, but making them context-specific – scoped – is just as important. The skills to which an agent has access should be determined by what the current project actually uses. This post argues that the best way to do this is to deliver skills along with the artifacts that they describe.]]></summary></entry><entry><title type="html">What’s My Env Again?</title><link href="https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html" rel="alternate" type="text/html" title="What’s My Env Again?" /><published>2026-05-23T00:00:00+00:00</published><updated>2026-05-23T00:00:00+00:00</updated><id>https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain</id><content type="html" xml:base="https://bitsbytesgates.com/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html"><![CDATA[<p>Almost any non-trivial project will require some amount of environment configuration.
 Perhaps the project uses a local Python virtual environment that must be used
 for running tests. Perhaps it’s a hardware-design project that needs to configure
 the environment for various EDA tools, and ensure that they’re available to users.
@@ -1561,121 +1770,4 @@ to more-effectively discuss and implement the hardware models they care about.</
 <h2 id="references">References</h2>
 <ul>
   <li><a href="https://bitsbytesgates.com/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html">Zuspec: Pythonic Model-Driven Hardware Development</a></li>
-</ul>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[In hardware design and verification, we’re used to working with domain-specific languages (DSLs), such as SystemVerilog, VHDL, and PSS, as well as class libraries, such as UVM, SystemC, and CHISEL. We use these DSLs and class libraries to capture key semantics of hardware design ; each have their costs and benefits. A language, of course, offers ultimate flexibility with significant implementation cost. Class libraries reduce that implementation cost significantly by leveraging the capabilities of a host language, but often lack expressive capability and portability. The Zuspec project that I’ve been working on takes a different approach, with the goal of getting the benefits (and avoiding most drawbacks) of both approaches.]]></summary></entry><entry><title type="html">Embracing UVM for FOSSi Design Verification</title><link href="https://bitsbytesgates.com/fossidv/2025/11/28/EmbracingUvmFossiDV.html" rel="alternate" type="text/html" title="Embracing UVM for FOSSi Design Verification" /><published>2025-11-28T00:00:00+00:00</published><updated>2025-11-28T00:00:00+00:00</updated><id>https://bitsbytesgates.com/fossidv/2025/11/28/EmbracingUvmFossiDV</id><content type="html" xml:base="https://bitsbytesgates.com/fossidv/2025/11/28/EmbracingUvmFossiDV.html"><![CDATA[<p>Open source communities emphasize reuse and collaboration centered around
-open and standard data formats. While open source communities do exist in 
-cases where closed-source tools provide the sole implementation of a standard,
-these communities have significant challenges compared to communities with 
-access to open-source tools. The Free and Open Source 
-Silicon (FOSSi) community <a href="https://antmicro.com/blog/2025/10/support-for-upstream-uvm-2017-in-verilator/">recently gained the ability</a> 
-to run SystemVerilog/UVM code on the Verilator open-source simulator, bringing significant new opportunities
-to share reusable testbench components across flows running on open- and closed-source
-tool flows.</p>
-
-<!--more-->
-
-<h1 id="the-value-of-consistency">The Value of Consistency</h1>
-<p>There has always been significant cross-over between open source and closed-source
-development in the software world. Students and hobbyists gain critical skills 
-working with open-source tools, with the understanding that the same languages, 
-methodologies, and tools are used in environments where the work product may 
-not be open source. Companies that produce closed-source software often contribute 
-to open-source libraries and tools that they use internally, and benefit from a 
-larger community of users and developers.</p>
-
-<p>By and large, this holds true in the FOSSi community when it comes to hardware 
-design. SystemVerilog and VHDL are used to capture hardware designs, with full
-open- and closed-source tool stacks to simulate and synthesize. Innovative
-methodologies and tools, such as CHISEL and Amaranth HDL, increase productivity
-while still connecting to existing tools using standard hardware description languages (HDLs).</p>
-
-<p>Support for standard languages and a standard design methodology 
-has been critical in fostering a sizable ecosystem of available and reusable 
-open-source hardware designs. Because these open-source hardware components 
-use the same standard interchange formats used for closed-source development,
-the technical aspects of integrating an open-source component into a closed-source 
-design are straightforward.</p>
-
-<h1 id="fossi-and-functional-verification">FOSSi and Functional Verification</h1>
-<p>Until recently, the picture was quite different for functional verification. 
-Functional verification is the systematic process of confirming that the
-implementation of a hardware design matches the intended functionality, as 
-described by the functional specification. Due to tool capabilities, what
-is common when developing with closed-source tools differs significantly
-from what is common when developing with open-source tools.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/11/open_vs_closed_dv_flow.png" />
-</p>
-
-<p>Across the industry, <a href="https://verificationacademy.com/topics/planning-measurement-and-analysis/wrg-industry-data-and-trends/2024-siemens-eda-and-wilson-research-group-ic-asic-functional-verification-trend-report/">SystemVerilog/UVM</a> 
-is the most-prevalent infrastructure used to create verification environments.
-Until recently, only closed-source tools could run SystemVerilog/UVM testbench environments. 
-Thus, content intended to run with a pure open-source tool stack had to 
-use a different testbench methodology.</p>
-
-<h1 id="toward-a-portable-verification-methodology">Toward a Portable Verification Methodology</h1>
-<p>Ideally, as a community, we can have the best of both worlds: the ability
-to use prevalent industry libraries and methodologies with open- and 
-closed-source tool chains, and the ability to add new technologies and
-techniques on top.</p>
-
-<p align="center">
-<img src="https://bitsbytesgates.com/imgs/2025/11/portable_dv_flow.png" />
-</p>
-
-<p>A portable verification stack allows students and hobbyists to hone their skills 
-in dominant industry practices, while also enabling them to explore emerging new verification 
-approaches and technologies. A portable verification stack also makes it 
-easier for industrial users to incorporate new technologies into their 
-existing SystemVerilog/UVM environments.</p>
-
-<p>Leveraging SV/UVM in a portable verification flow has other highly-desirable
-side effects as well. Having more open-source verification collateral written
-in SystemVerilog will help to increase Verilator’s support for the language, 
-and will result in increased testing of Verilator due to the prevalence of 
-continuous-integration flows used for open source.</p>
-
-<h1 id="why-focus-on-verification-ip">Why Focus on Verification IP?</h1>
-
-<p>Protocol Verification IP (VIP) is the nexus of the various flows shown above
-for good reason.  Hardware designs interact with the outside world via their interfaces. 
-Using standard interfaces vastly simplifies the task of integrating designs. Standard
-interface protocols range from quite simple to incredibly complex. Most importantly,
-the most critical aspects to verify in a hardware design are typically not the
-implementation of the interface protocols. And, what’s more, the way our tests
-wish to interact with the design is typically at the software level – for example,
-memory reads and writes – not at the detailed level of the interface protocol.</p>
-
-<p>That’s where protocol Verification IP comes into the picture. Just like other 
-reusable design IP, protocol verification IPs are pre-verified components of
-the testbench environment that exist to translate between the software-level 
-activity of our tests and the detailed signal-level implementation of a standard
-protocol.</p>
-
-<p>Verification IP allow us to start testing the unique aspects of our design
-more quickly, since we can interact with the ‘test’ side of the VIP at a high
-level, with confidence that the VIP will translate to the details of the standard
-protocol. Being able to use UVM in our verification flow gives us access
-to a much wider set of reusable verification IP.</p>
-
-<h1 id="conclusion">Conclusion</h1>
-<p>Support for SystemVerilog/UVM in open-source tools opens up new possibilities for 
-sharing within the FOSSi community and with the closed-source silicon development 
-industry. It allows students and professional hobbyists to hone their skills with
-common industrial practice using open source tools and collateral. And, it enables
-far better distributed development by allowing all contributors to access the same
-continuous integration (CI) flow.</p>
-
-<p>We’ll look at an architecture for modular multi-language/multi-environment UVM 
-protocol VIP in a future series of posts. But, next week, we’ll spend some time looking at 
-the suite of PyHDL-IF examples and how to run them.</p>
-
-<h1 id="references">References</h1>
-<ul>
-  <li><a href="https://antmicro.com/blog/2025/10/support-for-upstream-uvm-2017-in-verilator/">Support for upstream UVM 2017 in Verilator</a></li>
-  <li><a href="https://www.chisel-lang.org/">CHISEL</a></li>
-  <li><a href="https://github.com/amaranth-lang">Amaranth HDL</a></li>
-  <li><a href="https://verificationacademy.com/topics/planning-measurement-and-analysis/wrg-industry-data-and-trends/2024-siemens-eda-and-wilson-research-group-ic-asic-functional-verification-trend-report/">2024 Wilson Research Group Functional Verification Study</a></li>
-  <li><a href="https://www.veripool.org/verilator/">Verilator</a></li>
-  <li><a href="https://www.accellera.org/downloads/standards/uvm">UVM</a></li>
-</ul>]]></content><author><name></name></author><category term="FOSSiDV" /><summary type="html"><![CDATA[Open source communities emphasize reuse and collaboration centered around open and standard data formats. While open source communities do exist in cases where closed-source tools provide the sole implementation of a standard, these communities have significant challenges compared to communities with access to open-source tools. The Free and Open Source Silicon (FOSSi) community recently gained the ability to run SystemVerilog/UVM code on the Verilator open-source simulator, bringing significant new opportunities to share reusable testbench components across flows running on open- and closed-source tool flows.]]></summary></entry></feed>
+</ul>]]></content><author><name></name></author><category term="Zuspec" /><summary type="html"><![CDATA[In hardware design and verification, we’re used to working with domain-specific languages (DSLs), such as SystemVerilog, VHDL, and PSS, as well as class libraries, such as UVM, SystemC, and CHISEL. We use these DSLs and class libraries to capture key semantics of hardware design ; each have their costs and benefits. A language, of course, offers ultimate flexibility with significant implementation cost. Class libraries reduce that implementation cost significantly by leveraging the capabilities of a host language, but often lack expressive capability and portability. The Zuspec project that I’ve been working on takes a different approach, with the goal of getting the benefits (and avoiding most drawbacks) of both approaches.]]></summary></entry></feed>

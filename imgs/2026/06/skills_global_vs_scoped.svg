@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 908 530" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <!-- framed panel + soft shadow (auto) -->
+  <rect x="-1.4" y="2.5" width="862.8" height="472.8" rx="13.4" fill="#0f172a" opacity="0.030"/>
+  <rect x="-2.8" y="2.0" width="865.6" height="475.6" rx="14.8" fill="#0f172a" opacity="0.030"/>
+  <rect x="-4.2" y="1.5" width="868.4" height="478.4" rx="16.2" fill="#0f172a" opacity="0.030"/>
+  <rect x="-5.6" y="1.0" width="871.2" height="481.2" rx="17.6" fill="#0f172a" opacity="0.030"/>
+  <rect x="-7.0" y="0.5" width="874.0" height="484.0" rx="19.0" fill="#0f172a" opacity="0.030"/>
+  <rect x="-8.4" y="0.0" width="876.8" height="486.8" rx="20.4" fill="#0f172a" opacity="0.030"/>
+  <rect x="-9.8" y="-0.5" width="879.6" height="489.6" rx="21.8" fill="#0f172a" opacity="0.030"/>
+  <rect x="-11.2" y="-1.0" width="882.4" height="492.4" rx="23.2" fill="#0f172a" opacity="0.030"/>
+  <rect x="0" y="0" width="860" height="470" rx="14" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+
+
+  <!-- divider -->
+  <line x1="430" y1="30" x2="430" y2="445" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="4 5"/>
+
+  <!-- ===== LEFT: global / marketplace ===== -->
+  <text x="215" y="28" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Global / marketplace</text>
+  <text x="215" y="48" text-anchor="middle" font-size="12.5" fill="#64748b">browse a catalog, install by hand, everywhere</text>
+
+  <!-- marketplace -->
+  <rect x="70" y="64" width="290" height="60" rx="8" fill="#fde68a" stroke="#b45309" stroke-width="1.8"/>
+  <text x="215" y="86" text-anchor="middle" font-size="13.5" font-weight="600" fill="#92400e">Skills marketplace</text>
+  <g font-size="11" fill="#92400e">
+    <rect x="90" y="96" width="44" height="18" rx="4" fill="#fcd34d"/><text x="112" y="109" text-anchor="middle">s1</text>
+    <rect x="142" y="96" width="44" height="18" rx="4" fill="#fcd34d"/><text x="164" y="109" text-anchor="middle">s2</text>
+    <rect x="194" y="96" width="44" height="18" rx="4" fill="#fcd34d"/><text x="216" y="109" text-anchor="middle">s3</text>
+    <rect x="246" y="96" width="44" height="18" rx="4" fill="#fcd34d"/><text x="268" y="109" text-anchor="middle">s4</text>
+    <rect x="298" y="96" width="44" height="18" rx="4" fill="#fcd34d"/><text x="320" y="109" text-anchor="middle">s5</text>
+  </g>
+
+  <line x1="215" y1="124" x2="215" y2="158" stroke="#475569" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="225" y="146" font-size="11" fill="#64748b" font-style="italic">install (manual)</text>
+
+  <!-- global store -->
+  <rect x="105" y="160" width="220" height="50" rx="8" fill="#e2e8f0" stroke="#64748b" stroke-width="1.8"/>
+  <text x="215" y="180" text-anchor="middle" font-size="12.5" font-weight="600" fill="#334155">Global skill store</text>
+  <text x="215" y="198" text-anchor="middle" font-size="11" fill="#64748b">s1  s2  s3  s4  s5  (all of them)</text>
+
+  <!-- projects -->
+  <line x1="160" y1="210" x2="160" y2="250" stroke="#475569" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="270" y1="210" x2="270" y2="250" stroke="#475569" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <rect x="92" y="252" width="140" height="74" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+  <text x="162" y="272" text-anchor="middle" font-size="12.5" font-weight="600" fill="#334155">Project A</text>
+  <text x="162" y="290" text-anchor="middle" font-size="10.5" fill="#64748b">uses only s2</text>
+  <text x="162" y="306" text-anchor="middle" font-size="10.5" fill="#b91c1c">sees s1 s3 s4 s5 too</text>
+  <rect x="248" y="252" width="140" height="74" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.6"/>
+  <text x="318" y="272" text-anchor="middle" font-size="12.5" font-weight="600" fill="#334155">Project B</text>
+  <text x="318" y="290" text-anchor="middle" font-size="10.5" fill="#64748b">uses only s4</text>
+  <text x="318" y="306" text-anchor="middle" font-size="10.5" fill="#b91c1c">sees s1 s2 s3 s5 too</text>
+
+  <rect x="92" y="392" width="296" height="46" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="1.6"/>
+  <text x="240" y="411" text-anchor="middle" font-size="11.5" fill="#b91c1c">Skills are global; unused ones still clutter</text>
+  <text x="240" y="427" text-anchor="middle" font-size="11.5" fill="#b91c1c">the agent's view, and new deps are easy to miss</text>
+
+  <!-- ===== RIGHT: project-scoped ===== -->
+  <text x="645" y="28" text-anchor="middle" font-size="17" font-weight="700" fill="#0f172a">Project-scoped (dependency-driven)</text>
+  <text x="645" y="48" text-anchor="middle" font-size="12.5" fill="#64748b">each dependency carries its own skill</text>
+
+  <!-- dependencies carrying skills -->
+  <g>
+    <rect x="470" y="66" width="150" height="56" rx="8" fill="#bae6fd" stroke="#0369a1" stroke-width="1.8"/>
+    <text x="545" y="86" text-anchor="middle" font-size="12" font-weight="600" fill="#075985">RTL IP block</text>
+    <rect x="486" y="96" width="118" height="18" rx="4" fill="#7dd3fc"/>
+    <text x="545" y="109" text-anchor="middle" font-size="10.5" fill="#075985">+ SKILL.md (wire-up)</text>
+  </g>
+  <g>
+    <rect x="470" y="132" width="150" height="56" rx="8" fill="#bae6fd" stroke="#0369a1" stroke-width="1.8"/>
+    <text x="545" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#075985">Verification IP</text>
+    <rect x="486" y="162" width="118" height="18" rx="4" fill="#7dd3fc"/>
+    <text x="545" y="175" text-anchor="middle" font-size="10.5" fill="#075985">+ SKILL.md (testbench)</text>
+  </g>
+  <g>
+    <rect x="470" y="198" width="150" height="56" rx="8" fill="#bae6fd" stroke="#0369a1" stroke-width="1.8"/>
+    <text x="545" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#075985">Python / tool pkg</text>
+    <rect x="486" y="228" width="118" height="18" rx="4" fill="#7dd3fc"/>
+    <text x="545" y="241" text-anchor="middle" font-size="10.5" fill="#075985">+ SKILL.md (entry pt)</text>
+  </g>
+
+  <!-- converge -->
+  <path d="M620,94 C672,94 672,160 700,160" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M620,160 L700,160" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <path d="M620,226 C672,226 672,160 700,160" fill="none" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- project skillset -->
+  <rect x="702" y="120" width="118" height="80" rx="8" fill="#d1fae5" stroke="#047857" stroke-width="2"/>
+  <text x="761" y="142" text-anchor="middle" font-size="12.5" font-weight="700" fill="#065f46">Project</text>
+  <text x="761" y="159" text-anchor="middle" font-size="10" fill="#047857">.agents/skills/</text>
+  <text x="761" y="177" text-anchor="middle" font-size="10.5" fill="#065f46">exactly the 3</text>
+  <text x="761" y="191" text-anchor="middle" font-size="10.5" fill="#065f46">skills it depends on</text>
+
+  <rect x="500" y="392" width="290" height="46" rx="8" fill="#d1fae5" stroke="#34d399" stroke-width="1.6"/>
+  <text x="645" y="411" text-anchor="middle" font-size="11.5" fill="#065f46">skillset = f(dependency graph): scoped,</text>
+  <text x="645" y="427" text-anchor="middle" font-size="11.5" fill="#065f46">automatic, version-synced, nothing to curate</text>
+</svg>

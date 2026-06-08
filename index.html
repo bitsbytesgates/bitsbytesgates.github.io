@@ -97,6 +97,16 @@ Post-env
         <ul class="nested" list-style-type="none">
         
         
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/fvutils,/ai/2026/06/06/ContextualAgentConfig.html">The Right Skills for the Job: Project-Scoped Agent Skills</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
         <li><span class="caret">May</span>
         <ul class="nested" list-style-type="none">
         
@@ -778,127 +788,219 @@ class="jfk-button jfk-button-action " style="">
 </h1>
 
   <h1 class="entry-title">
-    <a href="/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html">What's My Env Again?</a>
+    <a href="/fvutils,/ai/2026/06/06/ContextualAgentConfig.html">The Right Skills for the Job: Project-Scoped Agent Skills</a>
   </h1>      
 
-<div class="entry-content"><p>Almost any non-trivial project will require some amount of environment configuration.
-Perhaps the project uses a local Python virtual environment that must be used
-for running tests. Perhaps it’s a hardware-design project that needs to configure
-the environment for various EDA tools, and ensure that they’re available to users.
-If you’re sharing a project with other users, this poses a challenge. The typical
-approach is to have a setup.sh script. But, you need to remember to source it 
-before doing any work in the project – and when moving over to another project.
-And, then, there’s the complication of different shells. Fortunately there’s 
-<a href="https://direnv.net/">direnv</a>: a very elegant solution that has become my 
-go-to over the past year or so. 
-And, naturally, <a href="https://fvutils.github.io/ivpm">IVPM</a> provides support.</p>
+<div class="entry-content"><p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skills_banner.png" />
+</p>
+
+<p>Agentic AI has quickly become a dominant workflow. Give an LLM access to the
+filesystem and shell, provide it good instructions, and watch it work! It’s
+that second part that is critical to making the process scalable. LLMs are 
+quite happy to fill in the gaps where instructions are incomplete. Agent
+Skills help make agentic workflows repeatable and consistent.</p>
+
+<p>Reusable is a great start, but making them context-specific – scoped – is
+just as important.  The skills to which an agent has access should be 
+determined by what the current project actually uses. This post argues that
+the best way to do this is to deliver skills along with the artifacts that 
+they describe.</p>
 
 <!--more-->
 
-<p>I first learned about <a href="https://direnv.net/">direnv</a> from a colleague a little 
-over a year ago.<br />
-Initially, I was a bit skeptical because it inverts the typical approach
-to environment management. Typically, the environment is a session property
-that persists as the user navigates around the filesystem. <a href="https://direnv.net/">direnv</a> 
-treats the environment as a property of the project directory tree. Instead of
-needing to remember to source a setup file before doing work in a project,
-the mere act of entering the project directory causes the environment
-to be configured.</p>
+<h2 id="agent-skills-in-one-minute">Agent Skills in one minute</h2>
 
-<p>Now, if you’re like me, this initially seems a big odd. And, you might
-ask if this slows everything down. The good news is that it’s quite fast
-and, at least for me, it begins to feel ergonomic very quickly.</p>
+<p>If you’re already familiar  with Agent Skills, skip ahead. If not, the concept
+is straightforward: a skill is a directory containing a <code class="language-plaintext highlighter-rouge">SKILL.md</code> file – a chunk of
+Markdown with a little YAML frontmatter that gives the skill a <code class="language-plaintext highlighter-rouge">name</code> and a
+<code class="language-plaintext highlighter-rouge">description</code> – plus any optional scripts or reference files it needs. The
+<a href="https://agentskills.io/home">Agent Skills specification</a> and
+<a href="https://github.com/anthropics/skills">Anthropic’s skills repository</a> are good
+places to see the shape of them.</p>
 
-<h2 id="how-does-it-work">How does it work?</h2>
+<p>Skills solve two problems:</p>
 
-<p><a href="https://direnv.net/">direnv</a> has three key components:</p>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">.envrc</code> files to configure the environment.</li>
-  <li>A lightweight executable, written in <a href="https://go.dev/">Go</a>, to process .envrc files</li>
-  <li>A shell alias to ensure direnv runs to configure the environment</li>
+  <li><strong>Discoverability.</strong> The agent can see, from a short description, that a
+capability exists without you having to remember to paste in the relevant
+instructions every time.</li>
+  <li><strong>Progressive disclosure.</strong> When an agent loads skills, it only reads
+the description into the context initially. It only reads more of the 
+skill files if and when it decides that the skill is relevant to the
+task at hand.</li>
 </ul>
 
-<h3 id="envrc-files-and-the-stdlib">.envrc files and the stdlib</h3>
-<p><code class="language-plaintext highlighter-rouge">.envrc</code> files contain the statements and directives that configure the environment.
-These files accept <code class="language-plaintext highlighter-rouge">bash</code> syntax, providing access to standard control-flow statements.
-This also enables direnv to work cooperatively with other environment-management
-tools, such as <a href="https://envmodules.io/">Environment Modules</a>. Environment modules is
-quite popular in silicon engineering environments because it provides elegant support
-for managing multiple versions of a tool. For example, you might load version 
-5.046 of <a href="verilator.org">Verilator</a> using the following command:</p>
+<h2 id="where-skills-come-from-today">Where skills come from today</h2>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module load verilator/5.046
-</code></pre></div></div>
+<p>Most AI assistants – Claude Code, Codex, and others – let you configure
+skills through the filesystem or through tool commands, with both
+directory-specific and global scopes supported. The default tends to be
+global.</p>
 
-<p>If your environment uses Environment Modules, you can add these same statements to 
-your <code class="language-plaintext highlighter-rouge">.envrc</code> file and direnv will configure the proper tool versions in your environment.</p>
+<p>The interactive path to acquiring skills is a marketplace. Several have
+emerged and they’re growing quickly.</p>
 
-<p>In addition to using standard shell syntax to configure environment variables, Direnv
-provides a standard library of helpful functions. For example, the <code class="language-plaintext highlighter-rouge">PATH_add</code> stdlib
-function adds a directory to the PATH variable:</p>
+<p>One challenge with the marketplace is that installation and curation are
+human-driven: you browse a catalog, decide you want a capability, and install it.
+This makes it available in whichever scope(s) you installed it. But, that either
+entails having all skills installed always or remembering to install skills
+whenever you start a create a new workspace.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PATH_add scripts
-</code></pre></div></div>
+<h2 id="skills-should-travel-with-the-artifact">Skills should travel with the artifact</h2>
 
-<h3 id="shell-alias">Shell Alias</h3>
+<p>The person best positioned to write “how to use X” is the author of X. And the 
+most-natural vehicle for shipping that knowledge is X’s own package. This ensures
+that the skill matches the installed version of X, and gets updated along 
+with the package.</p>
 
-<p>Direnv needs to know when the working directory changes so it can update the 
-environment if required. This is done by evaluating direnv’s <code class="language-plaintext highlighter-rouge">hook</code> subcommand. 
-In <code class="language-plaintext highlighter-rouge">bash</code>, this looks like this:</p>
+<p>For example:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>% eval "$(direnv hook bash)"
-</code></pre></div></div>
-
-<p>Direnv supports a <a href="https://direnv.net/docs/hook.html">wide variety of shells</a>, 
-including bash, zsh, and tcsh. Add the appropriate statement to your shell’s 
-startup script and direnv will ensure that your environment is properly set
-whenever you’re within a directory structure containing an <code class="language-plaintext highlighter-rouge">.envrc</code> file.</p>
-
-<h2 id="ivpm-support">IVPM Support</h2>
-
-<p>The Integrated-View Package Manager (IVPM) fetches dependent packages for a
-project and assembles unified views of those dependencies – and environment
-variables are a critical <em>view</em>. IVPM creates <code class="language-plaintext highlighter-rouge">packages/packages.envrc</code> with
-variable settings for the project and loaded dependencies. Here is a sampling
-of what it does:</p>
 <ul>
-  <li>Set IVPM_PACKAGES to point to the root deps-dir</li>
-  <li>Add the Python virtual environment to the PATH</li>
-  <li>Load <code class="language-plaintext highlighter-rouge">envrc</code> files from dependencies</li>
+  <li>A Verilog/RTL IP block can ship a skill that teaches an agent how to wire it
+up and drive it.</li>
+  <li>A verification IP can ship a skill describing how to instantiate it in a
+testbench.</li>
+  <li>A Python package can deliver a skill the same way it delivers any other
+packaged resource.</li>
 </ul>
 
-<p>This last item is particularly relevant when it comes to open-source EDA tools
-provided by the <a href="https://edapack.github.io">EDAPack</a> project. These projects
-provide <code class="language-plaintext highlighter-rouge">export.envrc</code> files that IVPM incorporates into the master <code class="language-plaintext highlighter-rouge">packages.envrc</code>
-file. Doing so ensures that the loaded tools are automatically available in
-when working in the project tree.</p>
+<p>In each case the author of the artifact is the author of the skill, and the
+two stay in sync because they live in the same package. Contrast that
+with a marketplace listing: standalone, general-purpose, and free to drift out
+of sync with the thing it describes. When the IP gains a new port or the API
+changes, the skill that shipped alongside it changes too. A separately curated
+catalog entry has no such guarantee.</p>
 
-<p>Using the generated envrc file is simple as well. Just add the following to 
-the project <code class="language-plaintext highlighter-rouge">.envrc</code> file:</p>
+<p>Having skills travel with the artifact provides us a new possibility: to
+create a project-scoped set of skills that cater to the needs of an engineer
+developing that project. No need to remember to install skills after setting
+up a workspace. No potential confusion from skills from a dependency that
+isn’t relevant to your project.</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if [ -d packages ]; then
-  source_env packages/packages.envrc
-fi
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skills_global_vs_scoped.png" />
+</p>
+
+<h2 id="ivpm-project-specific-skillsets">IVPM: project-specific skillsets</h2>
+
+<p>That’s where <a href="https://fvutils.github.io/ivpm">IVPM</a> comes in. The Integrated 
+View Package Manager’s mission is to fetch a project’s dependencies and 
+integrate the relevant content into project-specific <em>views</em>. For example, 
+a project-local Python virtual environment containing the project’s Python 
+dependencies. IVPM does the same for agent skills: it gathers the skills 
+delivered by a project’s dependencies and links them into the appropriate 
+directory-local assistant configuration.</p>
+
+<p>IVPM discovers skills through four mechanisms, applied in priority order:</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skill_discovery_tiers.png" />
+</p>
+
+<ol>
+  <li><strong>Consumer-specified paths.</strong> The dependency entry in your <code class="language-plaintext highlighter-rouge">ivpm.yaml</code> can
+name a glob (e.g. <code class="language-plaintext highlighter-rouge">skills/**/SKILL.md</code>) telling IVPM where the skills live.</li>
+  <li><strong>Package-declared paths.</strong> A dependency can advertise its own skill
+locations via <code class="language-plaintext highlighter-rouge">with.agents.skills</code> in its <code class="language-plaintext highlighter-rouge">ivpm.yaml</code>.</li>
+  <li><strong>Auto-probe.</strong> Absent any declaration, IVPM looks for a <code class="language-plaintext highlighter-rouge">SKILL.md</code> at the
+package root and searches a <code class="language-plaintext highlighter-rouge">skills/</code> directory. Most packages need no
+configuration at all because of this.</li>
+  <li><strong>Python entry points.</strong> For installed Python packages, IVPM queries the
+<code class="language-plaintext highlighter-rouge">agent.skills</code> entry-point group, so a package can register its skills
+programmatically. (A legacy <code class="language-plaintext highlighter-rouge">ivpm.skill</code> group is still accepted for
+backward compatibility.) Each entry point is a callable that returns a path
+– or list of paths – to directories containing a <code class="language-plaintext highlighter-rouge">SKILL.md</code>.</li>
+</ol>
+
+<p>Once discovered, the skills are linked into your project’s configuration
+directories. IVPM always populates <code class="language-plaintext highlighter-rouge">.agents/skills/</code> – the toolchain-neutral
+layout that any skills-aware agent can read – and, when you ask for it, also
+mirrors into <code class="language-plaintext highlighter-rouge">.claude/skills/</code> so Claude Code picks them up automatically.
+Links are relative when the target lives inside the project tree and absolute
+otherwise, with a directory copy as a fallback on platforms that don’t support
+symlinks. Stale links from previous runs are cleaned up on each update.</p>
+
+<p>The only opt-in is a short block in your project’s <code class="language-plaintext highlighter-rouge">ivpm.yaml</code>:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">package</span><span class="pi">:</span>
+  <span class="na">with</span><span class="pi">:</span>
+    <span class="na">agents</span><span class="pi">:</span>
+      <span class="na">claude</span><span class="pi">:</span> <span class="kc">true</span>   <span class="c1"># also mirror skills into .claude/skills/</span>
 </code></pre></div></div>
 
-<h2 id="conclusions-and-next-steps">Conclusions and Next Steps</h2>
-<p>The <a href="https://direnv.net">direnv</a> provides a project-centric approach to environment
-management that ensures that your environment is always properly configured according
-to your working directory. IVPM assembles a unified view of the environment variables
-that should be configured based on the dependent projects it has loaded. Together,
-these two tools provide an easy approach to project environment configuration.</p>
+<h2 id="a-worked-example">A worked example</h2>
 
-<p>AI has been a hot topic recently, with engineers increasingly using an AI assistant
-like Claude or Codex to automate their work. Next time we’ll look at how IVPM configures
-project-specific context data for AI assistants to use.</p>
+<p>You can find a runnable example in the IVPM repository:
+<a href="https://github.com/fvutils/ivpm/tree/master/examples/agent-skills"><code class="language-plaintext highlighter-rouge">examples/agent-skills</code></a>.</p>
+
+<p>The project depends on three pre-built EDA tools fetched as binary releases
+from the <a href="https://github.com/edapack">EDAPack</a> feed – <strong>yosys</strong> (RTL
+synthesis), <strong>verilator</strong> (simulation), and <strong>nextpnr</strong> (FPGA
+place-and-route). Each of those release tarballs <em>bundles its agent skills</em>
+under a <code class="language-plaintext highlighter-rouge">skills/</code> directory, so IVPM auto-discovers them with no extra
+configuration. The project’s <code class="language-plaintext highlighter-rouge">ivpm.yaml</code> does nothing more than list the
+dependencies and flip on the Claude mirror shown above.</p>
+
+<p>Run a single command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ivpm update
+</code></pre></div></div>
+
+<p>IVPM fetches the tool <em>binaries</em> and, in the same step, links every discovered
+skill into the project:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.claude/skills/
+├── yosys-bin-yosys     -&gt; ../../packages/yosys-bin/skills/yosys
+├── yosys-bin-sby       -&gt; ../../packages/yosys-bin/skills/sby
+├── yosys-bin-sv2v      -&gt; ../../packages/yosys-bin/skills/sv2v
+├── verilator-verilator -&gt; ../../packages/verilator/skills/verilator
+└── nextpnr-bin-nextpnr -&gt; ../../packages/nextpnr-bin/skills/nextpnr
+</code></pre></div></div>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2026/06/skills_with_artifact_flow.png" />
+</p>
+
+<p>Now open your agent in that directory and ask:</p>
+
+<blockquote>
+  <p>Simulate the blink design and testbench in Verilator, using available
+skills. Then synthesize the design targeting ecp5 using yosys and nextpnr.</p>
+</blockquote>
+
+<p>The agent already knows the <code class="language-plaintext highlighter-rouge">synth_ecp5</code> flow, because the skill that explains
+it shipped with the synthesis binary. Nothing was hand-curated, and no global
+catalog was browsed. One <code class="language-plaintext highlighter-rouge">ivpm update</code> delivered both the toolchain and the
+know-how to drive it – and the capability tracked the dependency graph
+exactly.</p>
+
+<h2 id="conclusions-and-next-steps">Conclusions and next steps</h2>
+
+<p>Skills are most useful when they’re scoped to what a project actually uses, and
+the package manager is the right place to do that scoping. By treating skills
+as artifacts that travel with the artifacts that they describe, you
+get a project-specific skillset that’s assembled automatically, stays in sync
+with its sources, and disappears when its dependency does. No catalog to
+browse, nothing to remember to install.</p>
+
+<p>If you maintain an artifact that others integrate – an IP block, a tool, a
+library – consider shipping a skill alongside it. You’re the person best
+positioned to write it, and a <code class="language-plaintext highlighter-rouge">skills/</code> directory is a small thing to add. And
+if you’d like to try the consuming side, the
+<a href="https://github.com/fvutils/ivpm/tree/master/examples/agent-skills">agent-skills example</a>
+is a good place to start.</p>
 
 <h2 id="references">References</h2>
-<ul>
-  <li><a href="https://direnv.net">direnv</a></li>
-  <li><a href="https://edapack.github.io">EDAPack</a></li>
-  <li><a href="https://fvutils.github.io/ivpm">IVPM</a></li>
-</ul>
 
+<ul>
+  <li><a href="https://agentskills.io/home">Agent Skills Specification</a></li>
+  <li><a href="https://github.com/anthropics/skills">Anthropic Skills repository</a></li>
+  <li><a href="https://code.claude.com/docs/en/discover-plugins">Claude Code Plugins</a></li>
+  <li><a href="https://fvutils.github.io/ivpm">IVPM</a></li>
+  <li><a href="https://fvutils.github.io/ivpm/handlers.html#agents-handler-agents">IVPM Agents Handler</a></li>
+  <li><a href="https://github.com/fvutils/ivpm/tree/master/examples/agent-skills">IVPM agent-skills example</a></li>
+</ul>
 </div>
 
 </div>

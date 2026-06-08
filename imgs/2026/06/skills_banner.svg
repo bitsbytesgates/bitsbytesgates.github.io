@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 948 530" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="barrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <!-- framed panel + soft shadow (auto) -->
+  <rect x="-1.4" y="2.5" width="902.8" height="472.8" rx="13.4" fill="#0f172a" opacity="0.030"/>
+  <rect x="-2.8" y="2.0" width="905.6" height="475.6" rx="14.8" fill="#0f172a" opacity="0.030"/>
+  <rect x="-4.2" y="1.5" width="908.4" height="478.4" rx="16.2" fill="#0f172a" opacity="0.030"/>
+  <rect x="-5.6" y="1.0" width="911.2" height="481.2" rx="17.6" fill="#0f172a" opacity="0.030"/>
+  <rect x="-7.0" y="0.5" width="914.0" height="484.0" rx="19.0" fill="#0f172a" opacity="0.030"/>
+  <rect x="-8.4" y="0.0" width="916.8" height="486.8" rx="20.4" fill="#0f172a" opacity="0.030"/>
+  <rect x="-9.8" y="-0.5" width="919.6" height="489.6" rx="21.8" fill="#0f172a" opacity="0.030"/>
+  <rect x="-11.2" y="-1.0" width="922.4" height="492.4" rx="23.2" fill="#0f172a" opacity="0.030"/>
+  <rect x="0" y="0" width="900" height="470" rx="14" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+
+
+  <!-- ===== left: artifacts, each bundling a skill ===== -->
+  <!-- 1: RTL IP -->
+  <rect x="40" y="78" width="230" height="72" rx="9" fill="#bae6fd" stroke="#0369a1" stroke-width="1.9"/>
+  <text x="155" y="106" text-anchor="middle" font-size="15" font-weight="600" fill="#075985">RTL IP block</text>
+  <rect x="58" y="118" width="194" height="22" rx="5" fill="#7dd3fc"/>
+  <text x="155" y="133" text-anchor="middle" font-size="11.5" fill="#075985">+ SKILL.md (wire-up)</text>
+
+  <!-- 2: Verification IP -->
+  <rect x="40" y="162" width="230" height="72" rx="9" fill="#bae6fd" stroke="#0369a1" stroke-width="1.9"/>
+  <text x="155" y="190" text-anchor="middle" font-size="15" font-weight="600" fill="#075985">Verification IP</text>
+  <rect x="58" y="202" width="194" height="22" rx="5" fill="#7dd3fc"/>
+  <text x="155" y="217" text-anchor="middle" font-size="11.5" fill="#075985">+ SKILL.md (testbench)</text>
+
+  <!-- 3: Python package -->
+  <rect x="40" y="246" width="230" height="72" rx="9" fill="#bae6fd" stroke="#0369a1" stroke-width="1.9"/>
+  <text x="155" y="274" text-anchor="middle" font-size="15" font-weight="600" fill="#075985">Python package</text>
+  <rect x="58" y="286" width="194" height="22" rx="5" fill="#7dd3fc"/>
+  <text x="155" y="301" text-anchor="middle" font-size="11.5" fill="#075985">+ SKILL.md (entry point)</text>
+
+  <!-- 4: Tool binary -->
+  <rect x="40" y="330" width="230" height="72" rx="9" fill="#bae6fd" stroke="#0369a1" stroke-width="1.9"/>
+  <text x="155" y="358" text-anchor="middle" font-size="15" font-weight="600" fill="#075985">Tool binary</text>
+  <rect x="58" y="370" width="194" height="22" rx="5" fill="#7dd3fc"/>
+  <text x="155" y="385" text-anchor="middle" font-size="11.5" fill="#075985">+ SKILL.md (CLI flow)</text>
+
+  <!-- arrows to IVPM -->
+  <line x1="270" y1="114" x2="392" y2="218" stroke="#475569" stroke-width="1.6" marker-end="url(#barrow)"/>
+  <line x1="270" y1="198" x2="392" y2="232" stroke="#475569" stroke-width="1.6" marker-end="url(#barrow)"/>
+  <line x1="270" y1="282" x2="392" y2="248" stroke="#475569" stroke-width="1.6" marker-end="url(#barrow)"/>
+  <line x1="270" y1="366" x2="392" y2="262" stroke="#475569" stroke-width="1.6" marker-end="url(#barrow)"/>
+
+  <!-- ===== center: IVPM ===== -->
+  <rect x="395" y="183" width="160" height="114" rx="11" fill="#e2e8f0" stroke="#334155" stroke-width="2.4"/>
+  <text x="475" y="226" text-anchor="middle" font-size="19" font-weight="700" fill="#1e293b">IVPM</text>
+  <text x="475" y="250" text-anchor="middle" font-size="11.5" fill="#475569">discover skills,</text>
+  <text x="475" y="266" text-anchor="middle" font-size="11.5" fill="#475569">link into project,</text>
+  <text x="475" y="282" text-anchor="middle" font-size="11.5" fill="#475569">clean stale entries</text>
+
+  <!-- arrows to output dirs -->
+  <line x1="555" y1="220" x2="622" y2="200" stroke="#475569" stroke-width="1.6" marker-end="url(#barrow)"/>
+  <line x1="555" y1="262" x2="622" y2="306" stroke="#475569" stroke-width="1.6" marker-end="url(#barrow)"/>
+
+  <!-- ===== right: project-local config ===== -->
+  <rect x="625" y="148" width="245" height="116" rx="9" fill="#d1fae5" stroke="#047857" stroke-width="2"/>
+  <text x="747" y="171" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">.agents/skills/</text>
+  <text x="641" y="191" font-size="10.5" fill="#047857" font-family="monospace">rtl-ip-…   → …/skills/…</text>
+  <text x="641" y="207" font-size="10.5" fill="#047857" font-family="monospace">vip-…      → …/skills/…</text>
+  <text x="641" y="223" font-size="10.5" fill="#047857" font-family="monospace">pypkg-…    → …/skills/…</text>
+  <text x="641" y="239" font-size="10.5" fill="#047857" font-family="monospace">tool-…     → …/skills/…</text>
+  <text x="747" y="256" text-anchor="middle" font-size="10" fill="#16a34a" font-style="italic">(toolchain-neutral · any agent)</text>
+
+  <rect x="625" y="276" width="245" height="64" rx="9" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+  <text x="747" y="299" text-anchor="middle" font-size="14" font-weight="700" fill="#3730a3">.claude/skills/</text>
+  <text x="747" y="318" text-anchor="middle" font-size="11" fill="#4338ca">same links, mirrored when</text>
+  <text x="747" y="333" text-anchor="middle" font-size="11" fill="#4338ca">agents.claude: true</text>
+</svg>
