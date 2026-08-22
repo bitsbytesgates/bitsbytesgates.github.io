@@ -62,8 +62,11 @@ jobs:
         # fix is to mirror the fork into mballance-utils and repoint ivpm.yaml at
         # git.dvkit.org. Until then this side builds correctly but not
         # independently.
+        # No --break-system-packages: ubuntu-latest maps to catthehacker/ubuntu:act-22.04
+        # here, whose pip (22.x, Python 3.10) predates the flag and rejects it
+        # outright. There is no PEP 668 marker in that image to work around anyway.
         run: |
-          python3 -m pip install --break-system-packages ivpm
+          python3 -m pip install ivpm
           python3 -m ivpm update -a
           bundle config set path vendor
           bundle install --gemfile=Gemfile.cfg
