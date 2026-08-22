@@ -1,0 +1,152 @@
+# Build and publish bitsbytesgates.com from Forgejo Actions.
+#
+# The standby publisher. Its GitHub-side twin is .github/workflows/ci.yaml, and
+# the release-authority switch decides which of the two is allowed to publish:
+#
+#   https://dvkit.org/.well-known/release-authority.json
+#
+# One scalar per repo, so both sides can never publish at once. Flipping it is a
+# policy edit plus a re-emit, on the host:
+#
+#   $EDITOR /srv/forgejo/etc/sync-policy.toml     # release_authority = "forgejo"
+#   git-sync emit-release-authority && ~/dvkit-docs/bin/docs-deploy
+#
+# Ground rules, inherited from fvutils/ivpm and featherweight-hdl/peakrdl-fw-hdl:
+#
+#  1. No third-party actions. A bare `uses:` resolves against code.forgejo.org,
+#     not github.com, so JamesIves/github-pages-deploy-action and friends do not
+#     exist here. That is a feature: it keeps GitHub off the critical path of a
+#     release from this side.
+#  2. Releases are tag-driven. Pushes to main build and check; only a `v*` tag
+#     can publish.
+#  3. The built site leaves as an ARTIFACT, never as a branch and never by
+#     deploying from inside the job. The container holds no Cloudflare token and
+#     never mounts /srv/bbg-site. A host-side poller stages `bbg-site` for
+#     review and a separate, host-side step deploys it.
+
+name: Build and Publish
+
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for internal identifiers in tracked files
+        # This repo is published to git.dvkit.org, so anything committed here is
+        # public. Host names, tailnet addresses and CGNAT-range IPs must not
+        # appear in tracked files. The migration notes for this very site are
+        # full of them, which is exactly why the check is here and not optional.
+        run: |
+          pattern='perch-char\.ts\.net|\.ts\.net|a9550|100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]+\.[0-9]+'
+          if git grep -nIE "$pattern" -- . ':!.forgejo/workflows/publish.yml' ; then
+            echo "::error::internal identifier found in a tracked file (see matches above)"
+            exit 1
+          fi
+          echo "OK: no internal identifiers in tracked files"
+
+      - name: Install tools
+        run: |
+          apt-get update
+          apt-get install -y ruby-full python3 python3-pip bundler build-essential zlib1g-dev
+
+      - name: Install dependencies
+        # NOTE: `ivpm update` still fetches mballance/rouge@pss from github.com.
+        # That is finding F5 -- a Forgejo build reaching out to GitHub for a
+        # dependency, which is the coupling this migration exists to remove. The
+        # fix is to mirror the fork into mballance-utils and repoint ivpm.yaml at
+        # git.dvkit.org. Until then this side builds correctly but not
+        # independently.
+        run: |
+          python3 -m pip install --break-system-packages ivpm
+          python3 -m ivpm update -a
+          bundle config set path vendor
+          bundle install --gemfile=Gemfile.cfg
+
+      - name: Build site
+        run: |
+          export JEKYLL_ENV=production
+          bundle exec --gemfile=Gemfile.cfg jekyll build -d web
+          touch web/.nojekyll
+
+      - name: Sanity-check the build
+        # Jekyll exits 0 on a build that produced almost nothing. These two
+        # checks are what distinguish "built" from "built something real".
+        run: |
+          test -s web/index.html || { echo "::error::no index.html in the build output"; exit 1; }
+          n=$(find web -name '*.html' | wc -l)
+          echo "generated pages: $n"
+          [ "$n" -ge 50 ] || { echo "::error::only $n pages built; expected ~105. Refusing to call this a site."; exit 1; }
+
+      - name: Upload site
+        uses: forgejo/upload-artifact@v4
+        with:
+          name: bbg-site
+          path: web/**
+          if-no-files-found: error
+
+  gate:
+    # Identical in substance to the GitHub side; only SIDE differs. Resolved as
+    # a job output because `if:` cannot reference a step in its own job.
+    runs-on: ubuntu-latest
+    outputs:
+      authority: ${{ steps.resolve.outputs.authority }}
+    steps:
+      - id: resolve
+        # One line on purpose -- a multi-line `python3 -c` has to start at
+        # column 0, which terminates the YAML block scalar.
+        run: |
+          url=https://dvkit.org/.well-known/release-authority.json
+          if ! body=$(curl -fsS --max-time 10 "$url"); then
+            case "$GITHUB_REF" in
+              refs/tags/v*)
+                echo "::error::release-authority switch unreachable; refusing to publish"
+                exit 1 ;;
+              *)
+                echo "authority=none" >> "$GITHUB_OUTPUT"
+                echo "switch unreachable on a non-tag ref; nothing to release"
+                exit 0 ;;
+            esac
+          fi
+          auth=$(printf '%s' "$body" | python3 -c 'import json,os,sys; d=json.load(sys.stdin); r=os.environ["GITHUB_REPOSITORY"]; print(d["repos"].get(r) or d["orgs"].get(r.split("/")[0]) or d["default"])')
+          echo "release authority for $GITHUB_REPOSITORY: $auth"
+          echo "authority=$auth" >> "$GITHUB_OUTPUT"
+
+  release:
+    # Tags only, and only when the switch names Forgejo as this repo's
+    # publisher. Skips (does not fail) when the switch says github.
+    #
+    # This job deliberately does no deploying. It re-uploads the checked build
+    # under a name the host-side poller watches for, and the deploy happens
+    # outside the container, where the credential lives.
+    if: startsWith(github.ref, 'refs/tags/v') && needs.gate.outputs.authority == 'forgejo'
+    needs: [gate, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download site
+        uses: forgejo/download-artifact@v4
+        with:
+          name: bbg-site
+          path: web
+
+      - name: Publish for host-side staging
+        # The <name>-<ref> convention is what the poller matches on; the tag in
+        # the name is what makes "which build is in staging?" answerable without
+        # consulting the run log.
+        uses: forgejo/upload-artifact@v4
+        with:
+          name: bbg-site-release-${{ github.ref_name }}
+          path: web/**
+          if-no-files-found: error
+
+      - name: Say what happens next
+        run: |
+          echo "Release ${{ github.ref_name }} built and uploaded as bbg-site-release-${{ github.ref_name }}."
+          echo "The host-side poller stages it at /srv/bbg-site/staging, then:"
+          echo "  blog-promote   # staging -> live"
+          echo "  blog-deploy    # live -> Cloudflare Pages project 'bitsbytesgates'"

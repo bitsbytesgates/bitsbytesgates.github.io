@@ -1,36 +1,179 @@
-name: Build and Deploy
+# Build and publish bitsbytesgates.com from GitHub Actions.
+#
+# WHAT CHANGED, AND WHY IT MATTERS
+# --------------------------------
+# This workflow used to deploy on every push to main. It no longer does. A push
+# builds the site and stops; publishing happens only when you push a `v*` tag.
+#
+# Two reasons, both learned elsewhere in the estate:
+#
+#  1. Committing and publishing are different decisions. Fixing a typo in a
+#     draft, pushing a work-in-progress, or merging a branch should not put
+#     anything in front of readers. The tag is the moment you chose.
+#  2. The release-authority switch needs a single deliberate moment to refuse.
+#     A guard that fires on every push is noise; a guard that fires on a tag is
+#     a decision point.
+#
+# To publish:  git tag v2026.08.23 && git push origin v2026.08.23
+#              (origin is Forgejo; the tag mirrors to GitHub, which runs this.)
+#
+# WHERE THIS RUNS
+# ---------------
+# Forgejo is the origin of truth for this repo; GitHub is a downstream mirror
+# that happens to hold the publishing credential for GitHub Pages. The Forgejo
+# side has its own copy of this pipeline in .forgejo/workflows/publish.yml, and
+# the switch below decides which one is allowed to publish. Exactly one can.
+
+name: Build and Publish
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    tags: ['v*']
+  pull_request:
   workflow_dispatch:
+    inputs:
+      override:
+        description: 'Publish even if the authority switch says otherwise (say why in the run notes)'
+        type: boolean
+        default: false
 
 jobs:
-    build-and-deploy:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2.3.1
-        - name: Install Tools
-          run: |
-            sudo apt-get install ruby-full python3 bundler build-essential zlib1g-dev ninja-build
-        - name: Install IVPM
-          run: |
-            python3 -m pip install ivpm
-        - name: Install Dependencies
-          run: |
-            python3 -m ivpm update -a
-            bundle config set path vendor
-            bundle install --gemfile=Gemfile.cfg
-        - name: Install and build
-          run: |
-            export JEKYLL_ENV=production
-            bundle exec --gemfile=Gemfile.cfg jekyll build -d web
-            touch web/.nojekyll
+  build:
+    # Runs on every trigger, including pull requests. A build that only happens
+    # at release time tells you the site is broken at the worst possible moment.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        - name: Deploy
-          uses: JamesIves/github-pages-deploy-action@4.1.7
-          with:
-            branch: gh-pages # The branch the action should deploy to.
-            folder: web # The folder the action should deploy.
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby-full python3 bundler build-essential zlib1g-dev ninja-build
 
+      - name: Install IVPM
+        run: python3 -m pip install ivpm
+
+      - name: Install dependencies
+        run: |
+          python3 -m ivpm update -a
+          bundle config set path vendor
+          bundle install --gemfile=Gemfile.cfg
+
+      - name: Build site
+        run: |
+          export JEKYLL_ENV=production
+          bundle exec --gemfile=Gemfile.cfg jekyll build -d web
+          touch web/.nojekyll
+
+      - name: Sanity-check the build
+        # Jekyll exits 0 on a build that produced almost nothing -- a broken
+        # _config.yml or an empty _posts globs down to a shell of a site. These
+        # two checks are what distinguish "built" from "built something real",
+        # and they run before anything is allowed to reach readers.
+        run: |
+          test -s web/index.html || { echo "::error::no index.html in the build output"; exit 1; }
+          n=$(find web -name '*.html' | wc -l)
+          echo "generated pages: $n"
+          [ "$n" -ge 50 ] || { echo "::error::only $n pages built; expected ~105. Refusing to call this a site."; exit 1; }
+
+      - name: Upload site
+        # The published tree is an artifact, so the deploy job ships exactly the
+        # bytes that were built and checked -- not a rebuild that might differ.
+        uses: actions/upload-artifact@v4
+        with:
+          name: bbg-site
+          path: web/**
+          include-hidden-files: true
+          if-no-files-found: error
+
+  gate:
+    # Release authority -- the transfer switch.
+    #
+    # ONE file, above both platforms, decides who publishes:
+    #   https://dvkit.org/.well-known/release-authority.json
+    # generated from sync-policy.toml by `git-sync emit-release-authority`, so
+    # GitHub and Forgejo cannot drift: there is only one copy to disagree about.
+    #
+    # The runner only READS it, unauthenticated. A workflow file is public and
+    # editable by anyone who can push, so nothing secret goes in one.
+    #
+    # `if:` on a job cannot reference a step in its own job, hence the output.
+    runs-on: ubuntu-latest
+    outputs:
+      authority: ${{ steps.resolve.outputs.authority }}
+    steps:
+      - id: resolve
+        # The resolver is one line on purpose: a multi-line `python3 -c` has to
+        # start at column 0, which terminates the YAML block scalar and silently
+        # corrupts the workflow.
+        run: |
+          url=https://dvkit.org/.well-known/release-authority.json
+          if ! body=$(curl -fsS --max-time 10 "$url"); then
+            # Fail CLOSED, but only make noise when a release was actually due.
+            case "$GITHUB_REF" in
+              refs/tags/v*)
+                echo "::error::release-authority switch unreachable; refusing to publish"
+                exit 1 ;;
+              *)
+                echo "authority=none" >> "$GITHUB_OUTPUT"
+                echo "switch unreachable on a non-tag ref; nothing to release"
+                exit 0 ;;
+            esac
+          fi
+          auth=$(printf '%s' "$body" | python3 -c 'import json,os,sys; d=json.load(sys.stdin); r=os.environ["GITHUB_REPOSITORY"]; print(d["repos"].get(r) or d["orgs"].get(r.split("/")[0]) or d["default"])')
+          echo "release authority for $GITHUB_REPOSITORY: $auth"
+          echo "authority=$auth" >> "$GITHUB_OUTPUT"
+
+  publish:
+    # Tags only, and only when the switch names GitHub as this repo's publisher.
+    #
+    # When the switch says "forgejo" this job SKIPS -- it does not fail. A red
+    # build on the dormant side every time anyone tags would train people to
+    # ignore the signal, which is worse than having no signal.
+    if: >-
+      needs.gate.outputs.authority == 'github' &&
+      (startsWith(github.ref, 'refs/tags/v') || inputs.override)
+    needs: [gate, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Announce an override
+        if: inputs.override
+        run: echo "::warning::publishing via manual override on ${{ github.ref }} -- the tag gate was bypassed"
+
+      - name: Download site
+        uses: actions/download-artifact@v4
+        with:
+          name: bbg-site
+          path: web
+
+      - name: Deploy to GitHub Pages
+        # bitsbytesgates.com is served from this branch today. It stays the live
+        # path until the DNS cutover to Cloudflare Pages; after that this step
+        # goes away and the branch is frozen as history, not deleted.
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: web
+
+      - name: Deploy to Cloudflare Pages
+        # The second leg of the dual-publish window: the same bytes go to the
+        # Pages project that will serve the apex after the DNS cutover, so the
+        # two can be diffed URL by URL before anything reader-visible moves.
+        #
+        # Skipped, loudly, when the secret is absent -- that is the state before
+        # CLOUDFLARE_BBG_PAGES_PAT is installed, and it must not fail a release
+        # whose primary leg (gh-pages) succeeded.
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_BBG_PAGES_PAT }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_BBG_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::warning::CLOUDFLARE_BBG_PAGES_PAT is not set; skipping the Cloudflare Pages leg"
+            exit 0
+          fi
+          npx --yes wrangler@3 pages deploy web \
+            --project-name=bitsbytesgates \
+            --branch=main \
+            --commit-dirty=true
