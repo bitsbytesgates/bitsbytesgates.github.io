@@ -142,6 +142,14 @@ jobs:
         if: inputs.override
         run: echo "::warning::publishing via manual override on ${{ github.ref }} -- the tag gate was bypassed"
 
+      - name: Checkout
+        # Required even though nothing here builds: the Pages deploy action runs
+        # git commands against the workspace and dies with "fatal: not in a git
+        # directory" without a checkout. The site itself still comes from the
+        # artifact below -- this checkout is scaffolding for the action, not a
+        # second source of content.
+        uses: actions/checkout@v4
+
       - name: Download site
         uses: actions/download-artifact@v4
         with:
