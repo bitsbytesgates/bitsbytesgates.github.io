@@ -1,12 +1,14 @@
 ---
 // Persistent nav. The Lanyon off-canvas drawer hid every navigation affordance
 // behind a click on every page load; this replaces it.
+import ThemeToggle from './ThemeToggle.astro'
 const path = Astro.url.pathname
 const links = [
   { href: '/', label: 'Home' },
   { href: '/archive/', label: 'Archive' },
   { href: '/topics/', label: 'Topics' },
   { href: '/series/', label: 'Series' },
+  { href: '/search/', label: 'Search' },
   { href: '/about/', label: 'About' },
   { href: '/feed.xml', label: 'RSS' },
 ]
@@ -20,6 +22,7 @@ const current = (href: string) =>
       {links.map((l) => (
         <a href={l.href} aria-current={current(l.href) ? 'page' : undefined}>{l.label}</a>
       ))}
+      <ThemeToggle />
     </nav>
   </div>
 </header>

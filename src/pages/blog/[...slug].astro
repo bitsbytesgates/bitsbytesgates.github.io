@@ -5,6 +5,8 @@ import TopicChips from '../../components/TopicChips.astro'
 import SeriesNav from '../../components/SeriesNav.astro'
 import PrevNext from '../../components/PrevNext.astro'
 import RelatedPosts from '../../components/RelatedPosts.astro'
+import Mermaid from '../../components/Mermaid.astro'
+import PostFooter from '../../components/PostFooter.astro'
 import { topicsOf, formatDate, byDateDesc, relatedTo, readingTime } from '../../lib/topics'
 
 export async function getStaticPaths() {
@@ -21,6 +23,8 @@ const { Content, headings } = await render(post)
 const topics = topicsOf(post)
 const mins = readingTime(post.body)
 const related = relatedTo(post, all)
+// 21 diagrams across 11 posts use <div class="mermaid">; load the library only there.
+const hasMermaid = /class=["']mermaid["']/.test(post.body ?? '')
 ---
 <BaseLayout
   title={post.data.title}
@@ -29,7 +33,7 @@ const related = relatedTo(post, all)
   type="article"
   publishedTime={post.data.date}
 >
-  <article class="prose">
+  <article class="prose" data-pagefind-body>
     <h1>{post.data.title}</h1>
     <div class="meta">
       <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
@@ -59,8 +63,11 @@ const related = relatedTo(post, all)
 
     <Content />
 
+    <PostFooter body={post.body} />
+
     {post.data.series && <SeriesNav post={post} all={all} />}
     <PrevNext prev={older} next={newer} />
     <RelatedPosts posts={related} />
   </article>
+  {hasMermaid && <Mermaid />}
 </BaseLayout>

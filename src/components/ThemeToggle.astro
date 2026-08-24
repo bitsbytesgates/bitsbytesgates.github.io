@@ -1,0 +1,21 @@
+---
+// The inline head script in BaseLayout has already set data-theme before paint;
+// this button only flips it.
+---
+<button class="theme-toggle" type="button" id="theme-toggle"
+        aria-label="Switch between light and dark theme">
+  <span class="on-light" aria-hidden="true">◐ Dark</span>
+  <span class="on-dark" aria-hidden="true">◑ Light</span>
+</button>
+<script>
+  const btn = document.getElementById('theme-toggle')
+  btn?.addEventListener('click', () => {
+    const root = document.documentElement
+    const explicit = root.getAttribute('data-theme')
+    const effective =
+      explicit ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    const next = effective === 'dark' ? 'light' : 'dark'
+    root.setAttribute('data-theme', next)
+    try { localStorage.setItem('theme', next) } catch {}
+  })
+</script>

@@ -1,6 +1,7 @@
 ---
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
+import CodeEnhancements from '../components/CodeEnhancements.astro'
 import '../styles/global.css'
 
 interface Props {
@@ -42,11 +43,20 @@ const ogImage = new URL(image ?? '/imgs/og-default.png', Astro.site)
 
     <link rel="alternate" type="application/rss+xml" title={SITE} href="/feed.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Set the theme before first paint. A deferred script would repaint and flash. -->
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('theme')
+        if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t)
+      } catch {}
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
     <Header />
     <main id="main"><div class="wrap"><slot /></div></main>
     <Footer />
+    <CodeEnhancements />
   </body>
 </html>

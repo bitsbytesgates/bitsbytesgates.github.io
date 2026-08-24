@@ -131,3 +131,106 @@ blockquote { margin-inline: 0; padding-left: 1rem; border-left: 3px solid var(--
 
 .skip { position: absolute; left: -9999px; }
 .skip:focus { left: 1rem; top: 1rem; background: var(--bg); padding: .5rem 1rem; z-index: 10; }
+
+/* ---------------------------------------------------------------------------
+   Dark theme. Two triggers: the OS preference, and an explicit data-theme set
+   by the toggle. The [data-theme] selectors must win over the media query in
+   BOTH directions, so a reader who picks light on a dark OS stays light.
+   --------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0d1117;
+    --bg-subtle: #161b22;
+    --bg-code: #161b22;
+    --fg: #e6edf3;
+    --fg-muted: #9198a1;
+    --border: #30363d;
+    --accent: #6cb6ff;
+    --accent-hover: #a5d6ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #0d1117;
+  --bg-subtle: #161b22;
+  --bg-code: #161b22;
+  --fg: #e6edf3;
+  --fg-muted: #9198a1;
+  --border: #30363d;
+  --accent: #6cb6ff;
+  --accent-hover: #a5d6ff;
+  color-scheme: dark;
+}
+
+/* Shiki emits both palettes inline: `color` for light, `--shiki-dark` for dark.
+   Swap them wholesale rather than re-highlighting. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .astro-code,
+  :root:not([data-theme='light']) .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+/* ---- theme toggle ---- */
+.theme-toggle {
+  background: none; border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--fg-muted); cursor: pointer; font: inherit; font-size: .9rem;
+  line-height: 1; padding: .35rem .5rem;
+}
+.theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+.theme-toggle .on-light { display: inline; }
+.theme-toggle .on-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .theme-toggle .on-light { display: none; }
+  :root:not([data-theme='light']) .theme-toggle .on-dark { display: inline; }
+}
+:root[data-theme='dark'] .theme-toggle .on-light { display: none; }
+:root[data-theme='dark'] .theme-toggle .on-dark { display: inline; }
+:root[data-theme='light'] .theme-toggle .on-light { display: inline; }
+:root[data-theme='light'] .theme-toggle .on-dark { display: none; }
+
+/* ---- copy button on code blocks ---- */
+.code-wrap { position: relative; }
+.code-wrap .copy {
+  position: absolute; top: .45rem; right: .45rem;
+  font: inherit; font-size: .72rem; line-height: 1;
+  padding: .3rem .5rem; cursor: pointer;
+  color: var(--fg-muted); background: var(--bg); border: 1px solid var(--border);
+  border-radius: 4px; opacity: 0; transition: opacity .12s;
+}
+.code-wrap:hover .copy, .code-wrap .copy:focus-visible { opacity: 1; }
+.code-wrap .copy[data-copied] { color: var(--accent); border-color: var(--accent); }
+
+/* ---- heading anchors ---- */
+.heading-anchor {
+  margin-left: .3em; opacity: 0; text-decoration: none; color: var(--fg-muted);
+  font-weight: 400;
+}
+h2:hover .heading-anchor, h3:hover .heading-anchor,
+.heading-anchor:focus-visible { opacity: 1; }
+
+/* ---- search ---- */
+#search { margin-block: 1rem 2rem; }
+:root { --pagefind-ui-primary: var(--fg); --pagefind-ui-text: var(--fg);
+        --pagefind-ui-background: var(--bg); --pagefind-ui-border: var(--border);
+        --pagefind-ui-tag: var(--bg-subtle); --pagefind-ui-border-radius: var(--radius);
+        --pagefind-ui-font: var(--font-prose); }
+
+/* ---- table of contents ---- */
+.toc { background: var(--bg-subtle); border: 1px solid var(--border);
+       border-radius: var(--radius); padding: .9rem 1.2rem; margin-block: 1.5rem; }
+.toc ul { list-style: none; padding-left: 0; margin: .4rem 0 0; }
+.toc a { text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+/* ---- per-post copyright + disclaimer (Jekyll's post.html appended these) ---- */
+.post-footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+               color: var(--fg-muted); font-size: .85rem; }
+.post-footer .copyright { font-weight: 600; margin: 0 0 .4rem; }
+.post-footer .disclaimer { margin: 0; }

@@ -1,0 +1,25 @@
+---
+/**
+ * Copyright line + "views are mine" disclaimer, matching what Jekyll's post.html
+ * appended to every post automatically.
+ *
+ * `hasInline` exists because the two corpora differ: the 36 modern posts relied on the
+ * layout for this, but 29 of the 45 Blogger-era posts have the disclaimer typed into the
+ * body (in several different shapes, one of them inside a code fence). Emitting it
+ * unconditionally would show it twice on those 29. Detecting instead of stripping keeps
+ * the historical post text untouched and still guarantees exactly one per page.
+ */
+interface Props { body?: string }
+const { body = '' } = Astro.props
+const hasInline = /views and opinions expressed/i.test(body)
+const year = new Date().getUTCFullYear()
+---
+<footer class="post-footer">
+  <p class="copyright">Copyright 2014–{year} Matthew Ballance. All Rights Reserved.</p>
+  {!hasInline && (
+    <p class="disclaimer">
+      <em>The views and opinions expressed above are solely those of the author and do not
+      represent those of my employer or any other party.</em>
+    </p>
+  )}
+</footer>
