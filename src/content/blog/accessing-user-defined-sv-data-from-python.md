@@ -16,7 +16,7 @@ dynamic and Pythonic access to user-defined data in UVM.
 
 <!--more-->
 
-# Two Kinds of User-Defined Data
+## Two Kinds of User-Defined Data
 
 There are two key kinds of user-defined data that we care about in our UVM 
 environment: named UVM instances, and data fields. In both of these cases,
@@ -41,7 +41,7 @@ An example of using named instance fields, using registers, is shown
 above.  Our goal is to be able to access these fields just as easily in 
 Python, as well as plain data fields.
 
-## Named UVM Instances
+### Named UVM Instances
 
 Named UVM instances are UVM objects registered with the UVM library using a name.
 User code typically accesses these objects via the SystemVerilog instance 
@@ -143,7 +143,7 @@ Python-implemented UVM sequence to access registers and register fields
 directly, as shown above.
 
 
-## Plain-Data Fields
+### Plain-Data Fields
 
 Accessing UVM named-instance fields is useful in some cases, but there
 are many other cases where the fields are not named instances. UVM 
@@ -239,7 +239,7 @@ method is called to set the value of the SystemVerilog fields. Finally,
 the standard `start_item`, `randomize`, `finish_item` sequence of calls
 is made to execute the sequence item on the driver.
 
-# Conclusion
+## Conclusion
 The [PyHDL-IF](http://github.com/fvutils/pyhdl-if) library allows Python code to easily access both named UVM
 instance fields and data fields. This significantly enhances the type 
 of test and analysis behavior that can easily be implemented in Python.
@@ -253,7 +253,7 @@ Next time, we'll see how the [PyHDL-IF](http://github.com/fvutils/pyhdl-if) libr
 from Python.
 
 
-# References
+## References
 - PyHDL-IF library: [https://github.com/fvutils/pyhdl-if](https://github.com/fvutils/pyhdl-if)
 - Example: spi_reg_seq: [https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq](https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/spi_reg_seq)
 - Example: sequence-item knobs: [https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs](https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/sequence_item_knobs)

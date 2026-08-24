@@ -18,7 +18,7 @@ development tools.
 
 <!--more-->
 
-# Feeding Python Development Tools
+## Feeding Python Development Tools
 
 Python has a rich ecosystem of developer tools. There are IDE plug-ins that 
 assist developers in navigating around a codebase, and provide context-aware 
@@ -34,7 +34,7 @@ a UVM testbench. Fortunately, the same dynamically-discovered data that enables 
 of integration can be used to generate the Python source that enables our 
 development tools.
 
-# Discovering Available Types
+## Discovering Available Types
 
 PyHDL-IF already uses the vast majority of the data required to generate a Python 
 view of user-defined SV/UVM classes to implement the runtime integration 
@@ -92,7 +92,7 @@ endclass
 ```
 
 
-# The pyhdl_uvm_pygen UVM Test
+## The pyhdl_uvm_pygen UVM Test
 
 We need to run the simulator in order to load and execute code from the UVM
 testbench. In a UVM environment, the UVM test is the center of executing
@@ -104,7 +104,7 @@ While the `pyhdl_uvm_pygen` test is the entrypoint, the task of discovering
 available classes, processing them, and generating Python is all implemented
 in Python. 
 
-# Example
+## Example
 While all the details of *how* we extract information from SV/UVM classes is 
 interesting, pragmatic users will be much more interested in *applying* the
 workflow and using the result.
@@ -189,7 +189,7 @@ development tools, allowing these tools to check and provide help working
 with the Python interface to our SystemVerilog/UVM testbench.
 
 
-# Conclusion
+## Conclusion
 The PyHDL-IF library provides an easy-to-use integration between Python and
 a SystemVerilog/UVM testbench environment. And, by generating a Python view
 of the SystemVerilog classes, supports Python development tools in providing
@@ -200,7 +200,7 @@ in future posts. But, more immediately, we'll be looking at how recent changes i
 the open-source EDA ecosystem are changing what's possible in a verification 
 flow that supports both open-source and closed-source tools.
 
-# References
+## References
 - [PyHDL-IF](https://github.com/fvutils/pyhdl-if/)
 - [MyPy](https://mypy-lang.org/)
 - [Flake8](https://flake8.pycqa.org/en/latest/)

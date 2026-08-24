@@ -18,7 +18,7 @@ to reuse models.
 
 <!--more-->
 
-# Example Vehicle: DMA Engine
+## Example Vehicle: DMA Engine
 
 A DMA engine is one of my favorite examples to use. It's relatively simple,
 yet highlights several key aspects of a range of hardware devices:
@@ -36,7 +36,7 @@ executable specification. I'll store all of the models in the
 repo so you can follow along if you're interested.
 
 
-# DMA High-Level Specification
+## DMA High-Level Specification
 
 Let's start with a simple natural-language spec for what we want. You can find 
 the file here: [01_highlevel_spec.md](https://github.com/zuspec/zuspec-example-dma/blob/main/docs/spec/01_highlevel_spec.md)
@@ -73,7 +73,7 @@ spending little time on how we might implement this.
 Already, though, we might want to do some experiments with different executable
 specifications that implement the natural language one above.
 
-# DMA Algorithmic Model
+## DMA Algorithmic Model
 
 Our first step is to define an algorithmic model with interfaces that satisfy
 the requirements above. Let's start with the Logical Interface, since that is 
@@ -179,7 +179,7 @@ defines the API used by devices to request data transfers from the DMA engine.
 In total, we've define the key operations used to interact with the DMA engine
 in less than 100 lines of code. Now, to do something with these operations.
 
-# Algorithmic Model Implementation
+## Algorithmic Model Implementation
 Now that we've defined our abstract interfaces, we can create an *algorithmic* 
 implementation of the DMA engine. 
 
@@ -241,7 +241,7 @@ is simple and brief, aside from a little complexity with respect to aligning
 the address. The total model implementation is ~150 lines of Python code, 
 which is just about 6x the length of the original high-level spec.
 
-# Tests and Test Fixture
+## Tests and Test Fixture
 
 Now that we have a behavioral model, we need a way to exercise it. Fortunately,
 we have a couple of tools that simplify the process. [pytest](https://docs.pytest.org/en/stable/) is used as the
@@ -286,7 +286,7 @@ def test_memcpy_basic():
 A basic transfer test is shown above, showing how the 'memcpy' operation is 
 used, and how results are checked.
 
-# Conclusions and Next Steps
+## Conclusions and Next Steps
 Engineers spend significant time working with natural-language and executable
 specifications. Zuspec simplifies the process of creating and testing 
 executable specifications (models) at multiple abstraction levels, which
@@ -298,5 +298,5 @@ The difference with Zuspec is that the models are designed to be reusable
 for multiple purposes. Over the next few posts, we'll look at how we continue
 to refine, reuse, and retarget our DMA model.
 
-# Resources
+## Resources
 - [zuspec-example-dma]()

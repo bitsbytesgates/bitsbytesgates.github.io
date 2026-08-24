@@ -12,7 +12,7 @@ syndicate: derived
 <img src="/imgs/2023/05/RelatingActionsPart2_splash.png"/>
 </p>
 
-A few posts back ([Relating Actions with Dataflow](/_posts/2023-03-18-RelatingActionsWithDataflow.html)), 
+A few posts back ([Relating Actions with Dataflow](/blog/relating-actions-with-dataflow/)), 
 we talked about using `buffer` objects to form a relationship 
 between actions that execute sequentially. Because the actions 
 execute sequentially, this
@@ -24,7 +24,7 @@ data exchange aspect of the PSS language.
 
 <!--more-->
 
-# DMA as a Service
+## DMA as a Service
 Many high-speed devices have a built-in DMA engine to offload the
 system processor from managing data transfers, and maximize 
 overall system performance. For other devices, whether to use
@@ -49,7 +49,7 @@ definitely want these two aspects to easily work together
 when testing a system where the architect has provisioned
 a device with an external DMA engine channel!
 
-# DMA as a Service: Theory of Operations
+## DMA as a Service: Theory of Operations
 
 The DMA engine that we're working with has a fairly simple 
 interface when it comes to supporting external devices. 
@@ -70,7 +70,7 @@ Over the course of transferring a block of data, a
 peripheral device and the DMA engine are likely to
 interact many times.
 
-## Key takeaways -- and PSS Rules
+### Key takeaways -- and PSS Rules
 
 Now that we understand a bit more about how the DMA engine
 provides "DMA as a service", it's time to start organizing
@@ -100,7 +100,7 @@ the actions are not evaluated sequentially.  Fortunately, PSS
 provides a `stream` data type for specifying a data 
 relationship between two actions that are run in parallel.
 
-## Data to Agree On
+### Data to Agree On
 
 Much like a `buffer` type, a `stream` type is a struct-like type that
 holds user-defined fields. while a `buffer` object is used to form
@@ -127,7 +127,7 @@ list that we already assembled:
   as where data is stored in memory.
 - They must agree on how data will be transferred. 
 
-## Actions to Match
+### Actions to Match
 
 Now that we've captured the data to be shared, let's sketch out 
 the actions that will actually participate in this two-part
@@ -221,7 +221,7 @@ In addition to making intuitive sense, this modeling approach has
 the big benefit of ensuring that the dataflow for UART actions 
 is the same whether or not DMA is being used (see above).
 
-## Creating Scenarios
+### Creating Scenarios
 
 Let's create a small scenario that combines the PSS model for our
 DMA engine with the PSS model for our UART to create a scenario
@@ -284,7 +284,7 @@ component pss_top {
 ```
 
 
-# Conclusion and Next Steps
+## Conclusion and Next Steps
 
 Buffers and Streams -- the PSS mechanism for relating sequential-
 and parallel-executing actions act as APIs that allow actions
@@ -316,6 +316,6 @@ plethora of open-source hardware designs out there that we can use
 to explore these topics! 
 
 
-# References
+## References
 - [1] Wishbone DMA Core [project page](https://opencores.org/projects/wb_dma)
 - [2] Wishbone DMA Core [manual]( /imgs/2023/03/dma_doc.pdf)

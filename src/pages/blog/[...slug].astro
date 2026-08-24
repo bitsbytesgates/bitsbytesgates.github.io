@@ -1,21 +1,66 @@
 ---
 import { getCollection, render } from 'astro:content'
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import TopicChips from '../../components/TopicChips.astro'
+import SeriesNav from '../../components/SeriesNav.astro'
+import PrevNext from '../../components/PrevNext.astro'
+import RelatedPosts from '../../components/RelatedPosts.astro'
+import { topicsOf, formatDate, byDateDesc, relatedTo, readingTime } from '../../lib/topics'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft)
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }))
+  const all = (await getCollection('blog', ({ data }) => !data.draft)).sort(byDateDesc)
+  return all.map((post, i) => ({
+    params: { slug: post.id },
+    // newest-first, so the NEXT post chronologically is the previous array index
+    props: { post, all, newer: all[i - 1], older: all[i + 1] },
+  }))
 }
 
-const { post } = Astro.props
-const { Content } = await render(post)
-const topics = [...post.data.categories, ...post.data.tags]
+const { post, all, newer, older } = Astro.props
+const { Content, headings } = await render(post)
+const topics = topicsOf(post)
+const mins = readingTime(post.body)
+const related = relatedTo(post, all)
 ---
-<BaseLayout title={post.data.title}>
-  <article>
+<BaseLayout
+  title={post.data.title}
+  description={post.data.excerpt}
+  image={post.data.image}
+  type="article"
+  publishedTime={post.data.date}
+>
+  <article class="prose">
     <h1>{post.data.title}</h1>
-    <p><time datetime={post.data.date.toISOString()}>{post.data.date.toISOString().slice(0, 10)}</time>
-    {topics.length > 0 && <span> · {topics.join(' · ')}</span>}</p>
+    <div class="meta">
+      <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+      <span class="sep" /><span>{mins} min read</span>
+      {post.data.author && <><span class="sep" /><span>{post.data.author}</span></>}
+    </div>
+    <TopicChips topics={topics} />
+
+    {post.data.legacy && (
+      <p class="legacy-note">
+        From the archive — originally published on Blogger
+        {post.data.blogger_orig_url && <> at <a href={post.data.blogger_orig_url}>the original address</a></>}.
+        Formatting has been modernised; the text is unchanged.
+      </p>
+    )}
+
+    {post.data.toc && headings.length > 2 && (
+      <nav class="toc" aria-label="Contents">
+        <strong>Contents</strong>
+        <ul>
+          {headings.filter((h) => h.depth <= 3).map((h) => (
+            <li style={`margin-left:${(h.depth - 2) * 1}rem`}><a href={`#${h.slug}`}>{h.text}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
     <Content />
+
+    {post.data.series && <SeriesNav post={post} all={all} />}
+    <PrevNext prev={older} next={newer} />
+    <RelatedPosts posts={related} />
   </article>
 </BaseLayout>

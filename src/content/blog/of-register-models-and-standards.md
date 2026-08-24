@@ -25,7 +25,7 @@ from SystemRDL input.
 
 <!--more-->
 
-# Why so Many RALs?
+## Why so Many RALs?
 Nearly every design and verification environment defines a way to access
 and manipulate registers. UVM provides a set of classes for capturing
 the definition of register fields, register banks, and address maps. It's
@@ -78,7 +78,7 @@ code conveys a much better picture of what is happening. And, we don't
 need to worry about shifting and masking our data to cause it to be 
 placed in the right bit positions.
 
-# Register-description Standards
+## Register-description Standards
 This is great, but across a project we're likely to need to have 
 register access layers for UVM, C, and (just maybe) PSS. Clearly, 
 environment-specific register-access layers helps us be productive. But, 
@@ -88,7 +88,7 @@ registers. This allows us to capture the register layout once, and
 use automation tools to generate the specific 
 register-access layers that we need. 
 
-## IP-XACT -- Registers (and more) in XML
+### IP-XACT -- Registers (and more) in XML
 [IP-XACT](https://www.accellera.org/downloads/standards/ip-xact) has been 
 around in one flavor or another since around 2004. Its purpose is 
 to document the external and programming interfaces of IPs
@@ -127,7 +127,7 @@ format between tools. The one thing it's (subjectively) not good at is
 providing a human-friently description. XML, after all, is quite 
 verbose.
 
-## SystemRDL -- A language for describing registers
+### SystemRDL -- A language for describing registers
 That brings us to 
 [SystemRDL](https://www.accellera.org/downloads/standards/systemrdl). 
 SystemRDL is a domain-specific language (DSL) specifically designed for 
@@ -158,7 +158,7 @@ of using a domain-specific language. The cost is the
 expense (dollars, development time, etc) of tools to support
 a domain-specific language.
 
-# PeakRDL -- Tools for processing SystemRDL
+## PeakRDL -- Tools for processing SystemRDL
 That brings me to [Latch-Up](https://www-archive.fossi-foundation.org/latchup/) -- 
 the excellent FOSSi Foundation conference that acts as the US version of 
 [ORConf](https://orconf.org/). I was fortunate to be able to attend this year 
@@ -174,7 +174,7 @@ into various output formats, PeakRDL provides a
 [VSCode](https://code.visualstudio.com/) extension that supports syntax
 highlighting for SystemRDL files.
 
-# PeakRDL-pss - Connecting SystemRDL to PSS
+## PeakRDL-pss - Connecting SystemRDL to PSS
 Ever since I saw PeakRDL at Latch-Up in April, my TODO list has contained
 an item dedicated to adding support for the PSS register-access layer.
 Fortunately, PeakRDL has a well-defined extension mechanism that allows 
@@ -204,7 +204,7 @@ register fields that are not contiguous.
     }
 ```
 
-# Conclusions and next steps
+## Conclusions and next steps
 Register access layers are key to making testbench and firmware
 code that interacts with registers easy to understand and maintain.
 Standard register-description languages allow developers to capture the

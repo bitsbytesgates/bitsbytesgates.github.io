@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { seriesPosts, topicSlug, byDateDesc } from '../../lib/topics'
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byDateDesc)
+const names = [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as string[]
+---
+<BaseLayout title="Series" description="Multi-part explainers, in reading order.">
+  <h1>Series</h1>
+  {names.length === 0 && <p>No series yet.</p>}
+  {names.map((n) => {
+    const members = seriesPosts(posts, n)
+    return (
+      <section>
+        <h2><a href={`/series/${topicSlug(n)}/`}>{n}</a></h2>
+        <p>{members.length} parts</p>
+        <ol>{members.map((p) => <li><a href={`/blog/${p.id}/`}>{p.data.title}</a></li>)}</ol>
+      </section>
+    )
+  })}
+</BaseLayout>

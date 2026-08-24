@@ -35,10 +35,10 @@ with Python in a SystemVerilog testbench
 
 <!--more-->
 
-# Using Python from SV and Vice Versa
+## Using Python from SV and Vice Versa
 
 
-## Calling Python from SV
+### Calling Python from SV
 
 Requirements:
 - Be able to keep things dynamic
@@ -57,7 +57,7 @@ data (ie JSON, YAML, etc), when we want to manipulate data using a library
 like Pandas, or when we want to use a Python library to generate reference
 data. In other words, as long as our SV call to Python returns immediately.
 
-## Calling SV from Python
+### Calling SV from Python
 
 Python gets much more interesting -- and useful -- in a SystemVerilog 
 testbench when a Python method call from SystemVerilog can 
@@ -73,7 +73,7 @@ Unfortunately, the requirements that they place on how threaded behavior
 interacts with the outside world (and vice versa) prevent cross-calling
 in a 'blocking' manner between the two languages.
 
-## Additional Requirements
+### Additional Requirements
 
 Beyond the raw capability to cross-call between SystemVerilog and Python,
 there a few additional requirements that vastly simplify the ability
@@ -86,7 +86,7 @@ to create reusable infrastructure.
 - Any generated code should be, at most, application-specific. Specifically,
   the end user shouldn't need to re-generate application-specific code.
 
-# PyHDL-IF Package
+## PyHDL-IF Package
 
 <div class="mermaid" align="center">
 block-beta
@@ -143,7 +143,7 @@ from Python. It also provides a SystemVerilog code generator to create
 SystemVerilog class APIs to simplify the process of cross-calling 
 between the two languages.
 
-# An Example
+## An Example
 To better understand all of this, let's walk through an example. You can find 
 the full code of this example here: [call_sv_bfm example](https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm)
 
@@ -186,7 +186,7 @@ to start that Python test from SystemVerilog as well.
 
 Let's dig into some details on how this all fits together.
 
-## Python BFM Interface
+### Python BFM Interface
 Let's start with the Python interface to the Wishbone BFM. You can find the full source here:
 [call_sv_bfm.py](https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.py)
 
@@ -230,7 +230,7 @@ obviously, is to implement the Python side of a cross-language API. The
 other is to generate SystemVerilog to implement the SystemVerilog portion 
 of the API. 
 
-## SystemVerilog BFM
+### SystemVerilog BFM
 Let's move on and take a look at the Wishbone BFM that we will access 
 using the API class that we've defined above. You can find the full code here:
 [wb_init_bfm.sv](https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/wb_init_bfm.sv)
@@ -293,7 +293,7 @@ terms of the BFM's existing tasks.
 Finally, the BFM module creates an instance of the API implementation class.
 
 
-## Python Test Class
+### Python Test Class
 Okay, thus far we have a SystemVerilog BFM and a Python API definition for
 calling it. Now, let's look at the test code that uses that API. You can find the
 full source here:
@@ -322,7 +322,7 @@ Our test code is encapsulated in a Python class with an `async` method.
 Our test method expects to receive a handle to the BFM API, which it will 
 use to perform reads and writes.
 
-## Top-level Testbench
+### Top-level Testbench
 Finally, let's take a look at the top-level testbench that pulls it all 
 together. You can find the full source here:
 [call_sv_bfm.sv](https://github.com/fvutils/pyhdl-if/tree/main/examples/call/dpi/call_sv_bfm/call_sv_bfm.sv)
@@ -377,7 +377,7 @@ Finally, we call the `run` method on the Test class and pass a handle to the
 BFM's Python class. The run method will, of course, call back into 
 SystemVerilog to invoke the BFM's methods.
 
-## Summary
+### Summary
 We've quickly walked through an example of integrating Python and SystemVerilog
 such that we can implement Python methods that make task calls into the simulator.
 This can allow us to either quickly graft some Python onto am existing BFM we 
@@ -387,6 +387,6 @@ There are, of course, more applications and usecases for PyHDL-IF. We'll look at
 in future posts.
 
 
-## References
+### References
 - [cocotb](https://www.cocotb.org),  
 - [PyHDL-IF library](https://github.com/fvutils/pyhdl-if)

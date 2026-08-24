@@ -1,0 +1,19 @@
+---
+import type { Post } from '../lib/topics'
+interface Props { prev?: Post; next?: Post }
+const { prev, next } = Astro.props
+---
+{(prev || next) && (
+  <nav class={`post-nav ${prev && next ? 'two' : ''}`} aria-label="Post navigation">
+    {prev && (
+      <a class="prev" href={`/blog/${prev.id}/`} rel="prev">
+        <span class="dir">← Previous</span>{prev.data.title}
+      </a>
+    )}
+    {next && (
+      <a class="next" href={`/blog/${next.id}/`} rel="next">
+        <span class="dir">Next →</span>{next.data.title}
+      </a>
+    )}
+  </nav>
+)}

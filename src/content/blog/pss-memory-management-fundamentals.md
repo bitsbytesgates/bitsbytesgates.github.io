@@ -37,7 +37,7 @@ PSS provides some easy to use features that allow actions to manage memory that
 they require in a way that enables static allocation while not limiting 
 variability or reuse. Let's dig in!
 
-# Test Requirements for Memory Management
+## Test Requirements for Memory Management
 System-level tests have three core requirements when it comes to 
 memory management:
 - Ensure that behaviors needing distinct blocks of memory are provided non-overlapping
@@ -55,7 +55,7 @@ There are two parts of the PSS memory management approach:
 - Specification of available memory resource
 - Specification of claims on those resources, and how the claimed data is used.
 
-# Using Memory in Behaviors
+## Using Memory in Behaviors
 Let's start with the second point -- how we claim memory -- since we can see 
 immediately how that fits into our DMA example.
 
@@ -120,7 +120,7 @@ both have a handle to exactly the same object. That means that when the
 outputting action assigns a value to a field, it is assigning to the 
 exact field that the inputting action will read.
 
-## Specifying Memory Claim Lifetimes
+### Specifying Memory Claim Lifetimes
 
 By default, the lifetime of a memory claim is the same as the action containing
 it. 
@@ -186,7 +186,7 @@ flowchart TD;
   end
 </div>
 
-# Describing Memory Resources
+## Describing Memory Resources
 In addition to claiming memory, we also need to capture the memory available
 to us in the system. This is done by defining an address space with one or
 more memory regions, from which memory will be allocated. 
@@ -216,7 +216,7 @@ flowchart TD
   end
 </div>
 
-## Capturing Available Memory
+### Capturing Available Memory
 In our simple example, we will capture the address space for our DMA
 engine to use in `pss_top`. 
 
@@ -246,7 +246,7 @@ The available memory regions within the address space are specified in the
 `init_down` exec block. Here, we register two regions of memory -- one at
 0x8000_0000 and one at 0x0000_0000.
 
-# Putting it all together
+## Putting it all together
 We've completed the basic updates to our PSS model that enable our DMA actions
 to sensibly management memory.
 - We have added a memory claim to the `Mem2Mem` action to claim memory
@@ -268,7 +268,7 @@ manage memory as a test-scenario resource, we can turn our attention to
 managing another type of resource: the DMA channels within the engine.
 
 
-# Resources
+## Resources
 - [1] [PSS LRM](https://www.accellera.org/downloads/standards/portable-stimulus) 
-- [2] [DMA PSS Code (Viewing)](/code_html/2023/03/wb_dma_2.html)
+- [2] [DMA PSS Code (Viewing)](/code_html/2023/03/wb_dma_2/)
 - [3] [DMA PSS Code (Raw Text)](/code/2023/03/wb_dma_2.pss)

@@ -54,7 +54,7 @@ could play and add value.
 Looking forward, there are three key areas where I'm looking to see growth
 in the PSS language and ecosystem:
 
-## Develop PSS Core Language
+### Develop PSS Core Language
 
 An evolving language is critical to maintaining interest and users. 
 Needs, styles, and approaches change over time, and a programming
@@ -65,7 +65,7 @@ to the language. I'm happy to see the PSS language continuing to
 grow and evolve in the context of the Accelera PSWG.
 
 
-## Grow PSS Ecosystem
+### Grow PSS Ecosystem
 
 Ecosystems are key to the success of any programming language. Having a 
 vibrant ecosystem means that users of a language will have access to 
@@ -77,7 +77,7 @@ I'd also like to see more publicly-available examples and libraries.
 Having real live code out there to play with is a critical part of
 learning a new technology. 
 
-## Exploration of New Applications
+### Exploration of New Applications
 
 New applications and integrations is the area in which I most like to play.
 Each phase of the design process shown above has its own unique 
@@ -91,7 +91,7 @@ tests are implemented. But, in addition, there might be some other interesting
 roles for PSS across the process. Could we use PSS, for example, to implement
 an architectural model of the design?
 
-# Thinking Forward
+## Thinking Forward
 Given these three areas, it's reasonable to ask how we can "move the needle" 
 in each of them. To a certain extent, continued evolution of the core
 language might have the simplest answer since there's a well-established 
@@ -110,13 +110,13 @@ takes places when people are able to work with the language themselves and
 internalize the key concepts of the language.
 
 
-## PSS and Open Source
+### PSS and Open Source
 Open source software has been a powerful enabler of exploration in other ecosystems. 
 Having open source resources encourages people to learn about a technology. 
 It also provides a basis for experimentation that doesn't require an interested
 party to start at zero.
 
-## Zuspec
+### Zuspec
 Starting in 2025, I'll be starting to write more about components within the 
 *Zuspec* umbrella project. Consequently, it's worth providing a brief 
 introduction to what *Zuspec* is, what it's not, and what to expect.
@@ -152,7 +152,7 @@ enable others to do the same. Starting in the new year, I'll be writing
 more about the components and what they allow us to do with a 
 PSS-based description
 
-# PSS Looking Forward
+## PSS Looking Forward
 
 I continue to see PSS as having a bright future. It's providing strong value
 in the areas of test-content reuse, with a focus on simulation, emulation, 
@@ -168,7 +168,7 @@ expect to hear more about other tools and technologies related to design
 and verification. There is always something new to learn and explore!
 
 
-# References
+## References
 - Accellera - https://accellera.org
 - PSS Tutorial Video - https://www.accellera.org/resources/videos/portable-stimulus-tutorial-2024
 - PSS LRM - https://www.accellera.org/downloads/standards/portable-stimulus

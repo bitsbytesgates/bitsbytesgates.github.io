@@ -1,5 +1,6 @@
 ---
-layout: code
+title: wb dma 4 registers
+layout: ../../../../layouts/CodeLayout.astro
 ---
 ```pss
 /****************************************************************************

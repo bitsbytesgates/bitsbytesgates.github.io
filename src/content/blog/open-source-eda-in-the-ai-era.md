@@ -19,7 +19,7 @@ and contributors leverage it well.
 
 <!--more-->
 
-# EDA Software and Domain Expertise
+## EDA Software and Domain Expertise
 
 Electronic Design Automation (EDA) software is a unique market. Like 
 any other complex software, developing it requires strong software engineering 
@@ -38,7 +38,7 @@ EDA software engineers have varying degrees of expertise in silicon
 engineering, and product engineers have varying degrees of software
 engineering expertise.
 
-# AI and Open Source EDA
+## AI and Open Source EDA
 
 An open source EDA developer typically doesn't have the luxury of focusing 
 on a single domain. Open source EDA developers often start from a vision -- whether 
@@ -52,7 +52,7 @@ AI allows me to focus much more energy on the Product Engineering aspects
 of open source EDA, while delegating much of the software engineering 
 aspects. 
 
-# AI and Open Source EDA Developers
+## AI and Open Source EDA Developers
 
 If you're an open source EDA developer, AI enables you to spend a greater
 portion of your time in Product Engineer mode. With good requirements and
@@ -61,7 +61,7 @@ tasks can be delegated to an agent. Here are a few things to consider as
 you look for AI opportunities in your project.
 
 
-## Develop 'Nice to Have' Features
+### Develop 'Nice to Have' Features
 Being an open source developer fosters a mentality of scarcity, if your
 experience is anything like mine. Ruthless prioritization is the only
 way to ensure that something with sufficiently-broad application can
@@ -72,7 +72,7 @@ AI nicely inverts this equation. When the primary cost of a new feature
 is specification, it becomes much easier to justify adding helpful 
 features: better error handling, more output formats, etc.
 
-## More Communication
+### More Communication
 Communication tasks such as documentation, project websites, 
 and project news is a task that often gets de-prioritized. After all,
 we need to get key features developed!
@@ -86,7 +86,7 @@ useful documentation, my current experience is that AI-generated docs are
 far better than no documentation at all. I'm also finding that providing
 a little structure and guidance goes a long way in getting better results.
 
-## Consider the Agent Experience
+### Consider the Agent Experience
 As a developer, it's key to consider how your user will experience your 
 project. Increasingly, you can assume that your users will be using an 
 AI agent of some form to work with your project. This means that your
@@ -125,7 +125,7 @@ If your project produces human-consumable output, such as reports, you should
 have an option to produce JSON output as well. While JSON isn't particularly easy 
 for humans to read, agents work well with its regular structure.
 
-## Test, Test, Test
+### Test, Test, Test
 We all know that tests are good and important. But, often, we settle for a few
 basic tests so we can spend more time developing new features. 
 
@@ -133,7 +133,7 @@ Here, again, AI can help. But, also, a good test suite is critical to getting
 good results with AI. Just like a human developer, an agent makes mistakes and
 a robust test suite catches those errors before they accidentally get committed.
 
-# AI and Open Source EDA Users
+## AI and Open Source EDA Users
 
 As an Open Source EDA user, AI provides you tools to make better use of the 
 available software. Don't hesitate to have your agent look at the source
@@ -152,7 +152,7 @@ about your usecase and intent. Including that critical user perspective
 helps to ensure that your usecase is well-supported beyond just fixing
 a point issue. 
 
-# AI and Open Source EDA Contributors
+## AI and Open Source EDA Contributors
 
 If you're trying to move from open source EDA user to open source EDA 
 contributor, welcome! AI is definitely a help here as well. 
@@ -173,7 +173,7 @@ Reading an entire standard (SystemVerilog, SystemRDL, PSS) is daunting
 as a human, but easy with an agent. Use an agent to help explore 
 implementation alternatives and refine requirements. 
 
-# AI and Open Source EDA Sponsors
+## AI and Open Source EDA Sponsors
 
 Sponsoring open source software development and maintenance has always been
 a bit tricky -- especially for small projects. Large projects with an organization
@@ -194,7 +194,7 @@ If you're a would-be sponsor of Open Source EDA software, be on the lookout
 for organizations and platforms that allow you to contribute AI agent
 access (LLM tokens) to your favorite projects. 
 
-# Conclusion
+## Conclusion
 
 AI has the potential to scale open source EDA software efforts in ways that 
 other technology advances simply have not. In short, allowing us as 
@@ -207,5 +207,5 @@ scale. The future of open source EDA in the AI era is bright, and I'm
 excited to be here for this phase of the journey.
 
 
-## References
+### References
 - [Anthropic Skills](https://agentskills.io/home)

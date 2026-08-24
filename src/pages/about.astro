@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { marked } from 'marked'
+import { readFileSync } from 'node:fs'
+const html = await marked.parse(readFileSync('./src/content-about.md', 'utf8'))
+---
+<BaseLayout title="About" description="Matthew Ballance — verification methodology and automation, Portland, Oregon.">
+  <div class="prose"><h1>About</h1><Fragment set:html={html} /></div>
+</BaseLayout>

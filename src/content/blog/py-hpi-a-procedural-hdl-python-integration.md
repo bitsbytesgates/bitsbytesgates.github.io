@@ -63,7 +63,7 @@ In this blog post, I will be describing the user experience in using Py-HPI. In 
 
 </div>
 
-## Py-HPI: The Big Picture
+### Py-HPI: The Big Picture
 
 <div>
 
@@ -92,7 +92,7 @@ Currently, Py-HPI supports standard SystemVerilog-DPI simulators (eg Modelsim) a
 
 </div>
 
-## Py-HPI: A Small Example
+### Py-HPI: A Small Example
 
 <div>
 
@@ -112,7 +112,7 @@ The structure of this testbench environment is shown above. The Python portion o
 
 </div>
 
-### Python Testbench
+#### Python Testbench
 
 <div>
 
@@ -152,7 +152,7 @@ Execution starts in the *run_my_tb()*method (which is marked by a special Python
 In a way, it's almost identical to what I would write in either C++ or SystemVerilog. In a way, that's kind of the point from my perspective.  
   
 
-### Running the Testbench
+#### Running the Testbench
 
 <div>
 
@@ -160,7 +160,7 @@ Okay, now that we know what the Python side of the testbench looks like, let's s
 
 </div>
 
-#### Create the Simulation Support Files
+##### Create the Simulation Support Files
 
 <div>
 
@@ -186,7 +186,7 @@ Verilator is a bit of an outlier, in that the simulation-support files are speci
 
   
 
-#### Create the Testbench Wrapper
+##### Create the Testbench Wrapper
 
 </div>
 
@@ -205,9 +205,9 @@ python3 -m hpi -m my_tb gen-dpi
 
 </div>
 
-#### Because the Verilator simulator supports DPI, we generate a DPI-based testbench wrapper for our testbench that uses a single BFM. The resulting testbench wrapper is implemented in C and provides the connection between SystemVerilog and Python for our BFM.
+##### Because the Verilator simulator supports DPI, we generate a DPI-based testbench wrapper for our testbench that uses a single BFM. The resulting testbench wrapper is implemented in C and provides the connection between SystemVerilog and Python for our BFM.
 
-#### **Compile Everything**
+##### **Compile Everything**
 
 <div>
 
@@ -238,7 +238,7 @@ Since we're using Verilator, we need to run Verilator to compile the HDL files a
 
 </div>
 
-#### Run it!
+##### Run it!
 
 <div>
 
@@ -265,7 +265,7 @@ So, all in all, Py-HPI makes it quite easy to connect a Python testbench to an H
 
 </div>
 
-## Conclusion
+### Conclusion
 
 </div>
 

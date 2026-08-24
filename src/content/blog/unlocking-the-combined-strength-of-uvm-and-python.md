@@ -17,7 +17,7 @@ environment.
 
 <!--more-->
 
-# Assessing Languages for Functional Verification
+## Assessing Languages for Functional Verification
 Using object-oriented languages to develop hardware verification environments
 for simulation and hardware emulation is a longstanding practice. This is 
 enabled by the fact that dynamic verification of hardware has a lot in common
@@ -42,7 +42,7 @@ is supported by a sizable collection of development tools and libraries. And,
 it offers superior results with AI assistants due to the availability of large
 volumes of training data for large language models (LLMs). 
 
-# Ease of Integration and Reuse
+## Ease of Integration and Reuse
 
 But, for hardware verification, two of the most important factors to consider 
 are ease of integration into a simulation environment and how readily existing
@@ -77,7 +77,7 @@ Ideally, we want the best of both when it comes to integration and reuse.
 We want a low-effort integration that also supports seamless reuse of existing
 SystemVerilog object-oriented verification collateral.
 
-# Focusing on UVM
+## Focusing on UVM
 
 Fortunately, UVM helps to suggest a solution. Because of the popularity of UVM, 
 focusing on enabling easy integration with UVM environments is a good 80+% solution.
@@ -96,7 +96,7 @@ In addition to having access to these APIs, we also need to address two challeng
 - How to work with user-defined types and data
 - How to initiate Python behavior
 
-# Example
+## Example
 
 Over the next few posts, we'll dig into all the details of how this works from a
 technical perspective. For now, let's take a look at a simple example that highlights
@@ -179,7 +179,7 @@ lines a code needed to get something running.
 If you're interested, you can look at the full code [here](https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm).
 
 
-# Conclusions and Next Steps
+## Conclusions and Next Steps
 
 Of course, the example above only shows how to get started. 
 Over the next few posts, we'll dive into more detail on the capabilities of the

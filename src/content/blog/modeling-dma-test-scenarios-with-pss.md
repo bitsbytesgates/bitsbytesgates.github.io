@@ -34,7 +34,7 @@ itself before digging into the PSS that we'll use to create tests for it.
 
 <!--more-->
 
-# Wishbone DMA Engine
+## Wishbone DMA Engine
 
 Our next example design will be the 
 [Wishbone DMA Core](https://opencores.org/projects/wb_dma). While this 
@@ -65,7 +65,7 @@ We'll use this example to look at PSS features such as:
 - Modeling and managing contended resources
 - Implementing test scenarios down to the register level
 
-# First Steps in PSS Modeling
+## First Steps in PSS Modeling
 
 Getting started is often the hardest part of any task, and creating a
 PSS scenario model is no different. I often advise that the best 
@@ -85,7 +85,7 @@ of the device to be tested:
 My fallback approach is to start with the individual behaviors supported
 by the device. The other details can always be layered on later.
 
-# Core DMA Behaviors
+## Core DMA Behaviors
 
 At the core, our DMA engine supports three operations:
 - Copy memory from a source region to a destination region
@@ -97,7 +97,7 @@ of the transfer is stored in DMA channel registers or in an in-memory descriptor
 chain. But, let's also worry about in-memory descriptors later. For now, 
 let's figure out what our three behaviors look like in PSS.
 
-## Component
+### Component
 
 One thing that we always need when creating a new PSS scenario model is a 
 component to put everything in. It's generally a good practice to name
@@ -115,7 +115,7 @@ While we could do our initial development of actions inside `pss_top`,
 eventually we will need to move our content to a container that is 
 reusable. Might as well start that way instead.
 
-## Memory Copy Action
+### Memory Copy Action
 
 Let's think a bit about our memory copy operation -- specifically 
 what its `pre-conditions` and `post-conditions` are. For normal 
@@ -185,7 +185,7 @@ transfer is implemented later. For now, though, this action
 captures the `pre-conditions` and `post-conditions` that we
 listed above.
 
-## Copy To/From Device
+### Copy To/From Device
 
 The role of a DMA engine in copying data to/from a device is
 a bit interesting. While the DMA engine may implement the
@@ -225,7 +225,7 @@ component WbDMA {
 }
 ```
 
-## Playing with Scenarios
+### Playing with Scenarios
 
 Even in this early state, we can start to arrange our actions to see if 
 we'll be able to form the test scenarios that we might be interested in.
@@ -241,7 +241,7 @@ another block? Again, yes, as long as the `buffer` data types are the same.
 With very little work, we can start to build confidence that we'll be able
 to create the tests that we want.
 
-# Conclusion and Next Steps
+## Conclusion and Next Steps
 
 Taking the first step with a new programming language and new modeling 
 approach can seem intimidating, but it needn't be with PSS. With PSS,
@@ -256,8 +256,8 @@ details by learning about new PSS constructs.
 Next up: modeling memory with PSS.
 
 
-# Resources
+## Resources
 - [1] Wishbone DMA Core [project page](https://opencores.org/projects/wb_dma)
 - [2] Wishbone DMA Core [manual]( /imgs/2023/03/dma_doc.pdf)
-- [3] [DMA PSS Code (Viewing)](/code_html/2023/03/wb_dma_1.html)
+- [3] [DMA PSS Code (Viewing)](/code_html/2023/03/wb_dma_1/)
 - [4] [DMA PSS Code (Raw Text)](/code/2023/03/wb_dma_1.pss)

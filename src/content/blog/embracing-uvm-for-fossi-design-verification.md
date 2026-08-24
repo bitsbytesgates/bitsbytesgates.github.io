@@ -19,7 +19,7 @@ tool flows.
 
 <!--more-->
 
-# The Value of Consistency 
+## The Value of Consistency 
 There has always been significant cross-over between open source and closed-source
 development in the software world. Students and hobbyists gain critical skills 
 working with open-source tools, with the understanding that the same languages, 
@@ -41,7 +41,7 @@ use the same standard interchange formats used for closed-source development,
 the technical aspects of integrating an open-source component into a closed-source 
 design are straightforward.
 
-# FOSSi and Functional Verification
+## FOSSi and Functional Verification
 Until recently, the picture was quite different for functional verification. 
 Functional verification is the systematic process of confirming that the
 implementation of a hardware design matches the intended functionality, as 
@@ -59,7 +59,7 @@ Until recently, only closed-source tools could run SystemVerilog/UVM testbench e
 Thus, content intended to run with a pure open-source tool stack had to 
 use a different testbench methodology.
 
-# Toward a Portable Verification Methodology
+## Toward a Portable Verification Methodology
 Ideally, as a community, we can have the best of both worlds: the ability
 to use prevalent industry libraries and methodologies with open- and 
 closed-source tool chains, and the ability to add new technologies and
@@ -81,7 +81,7 @@ in SystemVerilog will help to increase Verilator's support for the language,
 and will result in increased testing of Verilator due to the prevalence of 
 continuous-integration flows used for open source.
 
-# Why Focus on Verification IP?
+## Why Focus on Verification IP?
 
 Protocol Verification IP (VIP) is the nexus of the various flows shown above
 for good reason.  Hardware designs interact with the outside world via their interfaces. 
@@ -104,7 +104,7 @@ level, with confidence that the VIP will translate to the details of the standar
 protocol. Being able to use UVM in our verification flow gives us access
 to a much wider set of reusable verification IP.
 
-# Conclusion
+## Conclusion
 Support for SystemVerilog/UVM in open-source tools opens up new possibilities for 
 sharing within the FOSSi community and with the closed-source silicon development 
 industry. It allows students and professional hobbyists to hone their skills with
@@ -117,7 +117,7 @@ protocol VIP in a future series of posts. But, next week, we'll spend some time 
 the suite of PyHDL-IF examples and how to run them. 
 
 
-# References
+## References
 - [Support for upstream UVM 2017 in Verilator](https://antmicro.com/blog/2025/10/support-for-upstream-uvm-2017-in-verilator/)
 - [CHISEL](https://www.chisel-lang.org/)
 - [Amaranth HDL](https://github.com/amaranth-lang)

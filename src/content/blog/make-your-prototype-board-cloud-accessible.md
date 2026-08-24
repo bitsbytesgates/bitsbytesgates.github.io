@@ -133,7 +133,7 @@ The general demo process is as follows:
 
 <div class="player-unavailable">
 
-# An error occurred.
+## An error occurred.
 
 <div class="submessage">
 

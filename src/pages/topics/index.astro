@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { topicIndex, byDateDesc } from '../../lib/topics'
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byDateDesc)
+const topics = topicIndex(posts)
+const main = topics.filter((t) => t.posts.length >= 3)
+const rest = topics.filter((t) => t.posts.length < 3)
+---
+<BaseLayout title="Topics" description="Browse every topic covered on Bits, Bytes, and Gates.">
+  <h1>Topics</h1>
+  <p>{topics.length} topics across {posts.length} posts. Modern categories and archive tags are
+    merged — they were different fields, but they describe the same subjects.</p>
+  <ul class="chips">
+    {main.map((t) => (
+      <li><a class="chip" href={`/topics/${t.slug}/`}>{t.name} <span class="n">{t.posts.length}</span></a></li>
+    ))}
+  </ul>
+  {rest.length > 0 && (
+    <>
+      <h2>Less frequent</h2>
+      <ul class="chips">
+        {rest.map((t) => (
+          <li><a class="chip" href={`/topics/${t.slug}/`}>{t.name} <span class="n">{t.posts.length}</span></a></li>
+        ))}
+      </ul>
+    </>
+  )}
+</BaseLayout>

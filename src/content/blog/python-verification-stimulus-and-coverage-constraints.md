@@ -47,7 +47,7 @@ The examples in this post come from the PyVSC documentation. The latest version 
 
 </div>
 
-## Constraint Blocks
+### Constraint Blocks
 
 <div>
 
@@ -129,7 +129,7 @@ In the example above, the *ab_c* constraint in the sub-class *my_ext_s* overri
 
 </div>
 
-## Constraint Expressions
+### Constraint Expressions
 
 <div>
 
@@ -220,7 +220,7 @@ In this example, the part-select operator is used to ensure that certain bits an
 
 </div>
 
-## Constraint Statements
+### Constraint Statements
 
 <div>
 
@@ -322,7 +322,7 @@ class my_s(object):
 
 <div>
 
-## Customizing Declared Constraints
+### Customizing Declared Constraints
 
 <div>
 
@@ -406,7 +406,7 @@ As shown in the example above, the first 10 randomizations have all constraints 
 
 </div>
 
-## Next Steps
+### Next Steps
 
 <div>
 

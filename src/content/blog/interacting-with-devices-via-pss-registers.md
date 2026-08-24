@@ -32,7 +32,7 @@ using the PSS register model.
 
 <!--more-->
 
-# Registers in Different Contexts
+## Registers in Different Contexts
 
 Looking across the various contexts in which registers appear, it 
 quickly becomes clear that the critical capabilities are
@@ -71,7 +71,7 @@ the address space space of a device, and efficiently read and
 write them. Unlike the UVM register model, the PSS register
 model doesn't maintain a copy of the data stored in registers.
 
-# The PSS Register Model
+## The PSS Register Model
 The PSS register model focuses on capturing the field layout
 of each register, the layout of device registers in the
 memory map, and on providing efficient mechanisms for
@@ -87,7 +87,7 @@ defined by the PSS *Core Library*. While they are not built-in constructs
 in the language, they are special types that tools are expected to 
 implement specially.
 
-## Register Group
+### Register Group
 
 We define a register group to contain the top-level registers and register
 groups of a device (eg our DMA engine). Or, any time we collections of 
@@ -119,7 +119,7 @@ pure component WbDmaRegs : reg_group_c {
 ```
 
 
-## Register Definition Struct and Component
+### Register Definition Struct and Component
 
 Each register is composed of some number of fields. When these fields have
 special meaning, we define a `packed struct` to capture the field layout.
@@ -190,7 +190,7 @@ For the DMA engine, this process results in a top-level register block
 for the IP such as the one shown above. In this case, we have a few
 individual registers and an array of channel register groups.
 
-# The PSS Register Model in the Real World
+## The PSS Register Model in the Real World
 
 In the prior sections, we manually created a PSS register model.
 In practice this is quite rare because, in a production environment,  
@@ -212,7 +212,7 @@ organization uses for register information, and what
 facilities exist for adding new automatically-derived
 output formats.
 
-# Instantiating and Connecting the Register Model
+## Instantiating and Connecting the Register Model
 
 Our PSS register model is simply a mechanism for associating
 the addresses and bit patterns of memory-mapped registers
@@ -220,7 +220,7 @@ with symbolic representations. Consequently, we need to
 connect our register model to an address space before we
 can actually use it for reading and writing registers.
 
-## Connecting to Register Space
+### Connecting to Register Space
 Registers are always mapped at some location within the 
 address space. In order to determine the correct address
 to use when accessing a register, we need to know where
@@ -260,7 +260,7 @@ claim memory from this region. Note that
 We will use this handle to specify where the register block 
 is located.
 
-## Connecting 
+### Connecting 
 In this little example, the register model that we're focusing on
 is the one and only register model. This is not the case most 
 of the time. It's much more frequently the case that the register
@@ -276,7 +276,7 @@ must use:
 - We can create a register model per consumer component and 
   calculate a base address to associate with each.
 
-### Large Register Model ; Distribute Refs
+#### Large Register Model ; Distribute Refs
 
 In this scheme, our DMA component has a reference to the 
 register model, not an instance:
@@ -356,7 +356,7 @@ model using automation tools. We also have the option to directly
 reach down through the register model to access registers. 
 The biggest downside is a loss of some degree of modularity.
 
-### Individual Register Models ; Distribute Base Addresses
+#### Individual Register Models ; Distribute Base Addresses
 
 This approach is nearly mirror image of the previous approach. 
 In this approach, each component with registers "owns" its 
@@ -411,7 +411,7 @@ handle on the register-model instance within the DMA component. Note
 that we need to compute the proper offset to create the correct address
 handle for the DMA registers.
 
-# Using the Register Model
+## Using the Register Model
 Now that we have our register model integrated and connected, we can
 write PSS test realization code to program a DMA channel to perform
 a transfer.
@@ -469,7 +469,7 @@ the equivalent hand-coded bare-metal C code. The great thing, of course,
 is that the resulting implementation is just as efficient as if it 
 were hand-coded in C.
 
-# Conclusion and Next Steps
+## Conclusion and Next Steps
 
 We have now worked through all the key topics in exercising the 
 memory to memory copy functionality of our DMA engine. We've looked
@@ -489,9 +489,9 @@ we want to be able to exercise that behavior with multiple different
 devices at the system. In the next post, we'll look at approaches
 for modeling this with PSS.
 
-# Resources
+## Resources
 - [1] [SystemRDL 2.0 LRM](https://www.accellera.org/images/downloads/standards/systemrdl/SystemRDL_2.0_Jan2018.pdf)
 - [2] [PeakRDL](https://github.com/orgs/SystemRDL)
 - [3] [IP-XACT](https://www.accellera.org/downloads/standards/ip-xact)
-- [4] [DMA Example (Viewing)](/code_html/2023/04/wb_dma_4_registers.html)
+- [4] [DMA Example (Viewing)](/code_html/2023/04/wb_dma_4_registers/)
 - [5] [DMA Example (Raw Text)](/code/2023/04/wb_dma_4_registers.pss)

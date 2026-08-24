@@ -1,20 +1,52 @@
 ---
-// Phase 1 scaffold. Phase 2 replaces this with the real design system.
-// Structurally emits exactly one <html>/<head>/<body> — the duplicate-document
-// bug in the Jekyll post.html cannot recur here.
-const { title, description } = Astro.props
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import '../styles/global.css'
+
+interface Props {
+  title: string
+  description?: string
+  image?: string
+  type?: 'website' | 'article'
+  publishedTime?: Date
+}
+const { title, description, image, type = 'website', publishedTime } = Astro.props
+const SITE = 'Bits, Bytes, and Gates'
+const DESC = 'Notes on portable stimulus, hardware modeling, and Python in design verification.'
+const desc = description ?? DESC
+const full = title === SITE ? SITE : `${title} · ${SITE}`
+const canonical = new URL(Astro.url.pathname, Astro.site)
+const ogImage = new URL(image ?? '/imgs/og-default.png', Astro.site)
 ---
 <!doctype html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="/feed.xml" />
+    <title>{full}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={SITE} />
+    {publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="alternate" type="application/rss+xml" title={SITE} href="/feed.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
   </head>
   <body>
-    <main><slot /></main>
+    <a class="skip" href="#main">Skip to content</a>
+    <Header />
+    <main id="main"><div class="wrap"><slot /></div></main>
+    <Footer />
   </body>
 </html>

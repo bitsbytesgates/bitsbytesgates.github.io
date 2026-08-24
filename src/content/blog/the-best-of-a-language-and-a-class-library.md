@@ -19,7 +19,7 @@ benefits (and avoiding most drawbacks) of both approaches.
 
 <!--more-->
 
-# DSL or Class Library?
+## DSL or Class Library?
 In my experience, the use of hardware modeling varies widely across project teams. At the
 extremes, some attempt to maintain a consistent set of models across various abstraction 
 levels, while others focus on producing RTL for their piece of the design and create 
@@ -36,7 +36,7 @@ general-purpose language.
 
 Both of these approaches have benefits and drawbacks. 
 
-### Benefits
+#### Benefits
 - Language
   - Full flexibility to have domain-specific features
   - Clear boundaries between what is the 'language' and the rest of the 
@@ -46,7 +46,7 @@ Both of these approaches have benefits and drawbacks.
   - Leverage existing expertise in the base language
   - Easily expand the class library to add new capabilities
 
-### Drawbacks
+#### Drawbacks
 - Language
   - Expensive to implement and add new features
   - Must convince users to learn and become proficient in the language
@@ -60,7 +60,7 @@ We currently use a variety of domain-specific languages across the design and ve
 process. Ideally, we could apply a modeling approach that retains the key benefits of 
 both approaches much more broadly.
 
-# Zuspec: A DSL / Class Library Hybrid
+## Zuspec: A DSL / Class Library Hybrid
 
 [Zuspec](https://github.com/zuspec/) is a Python class library with a twist. 
 A model described with Zuspec dataclasses is completely valid Python syntax, and can 
@@ -138,14 +138,14 @@ properly connect ports and channels. And, of course, there are many other
 cases where Zuspec allows the user to specify *what* is desired and have
 the library determine *how* that intent is implemented.
 
-# Beyond Pure Python
+## Beyond Pure Python
 
 There are quite a few projects that seek to translate Python to a more-performant
 implementation. Python ahead-of-time (AOT) compilers typically work with a Python
 script (and it dependent libraries) as a whole. Zuspec looks at the world 
 differently. 
 
-## Identifying the Model Boundary
+### Identifying the Model Boundary
 Zuspec uses types defined in zuspec.dataclasses to identify the boundary of
 a model. For example, in the example above, the 'Top' class defines such
 a boundary. Tools that map a Zuspec description to a non-Python implementation
@@ -157,7 +157,7 @@ operate on such boundaries.
 
 
 
-## Pure Python vs Retargetable
+### Pure Python vs Retargetable
 
 The other place where Zuspec is a bit different is in defining 'Profiles'
 for content. This has significant similarities to the SystemVerilog "synthesizable" 
@@ -179,11 +179,11 @@ The diagram above shows several options for how a *Retargetable* Zuspec model
 might be implemented. Several of these targets, such as SystemVerilog RTL,
 have their own *Profile* that further restricts available features.
 
-# Conclusions and Next Steps
+## Conclusions and Next Steps
 Zuspec is showing early promise in simplifying hardware model creation, and allowing
 those models to be reused and retargeted to a variety of environments. Next time,
 we'll look at modeling abstraction-level methodology, and how this helps humans (and LLMs)
 to more-effectively discuss and implement the hardware models they care about.
 
-## References
+### References
 - [Zuspec: Pythonic Model-Driven Hardware Development](https://bitsbytesgates.com/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html)

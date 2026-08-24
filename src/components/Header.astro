@@ -1,0 +1,25 @@
+---
+// Persistent nav. The Lanyon off-canvas drawer hid every navigation affordance
+// behind a click on every page load; this replaces it.
+const path = Astro.url.pathname
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/archive/', label: 'Archive' },
+  { href: '/topics/', label: 'Topics' },
+  { href: '/series/', label: 'Series' },
+  { href: '/about/', label: 'About' },
+  { href: '/feed.xml', label: 'RSS' },
+]
+const current = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href) ? 'page' : undefined
+---
+<header class="site-header">
+  <div class="wrap">
+    <a class="site-title" href="/">Bits, Bytes, and Gates</a>
+    <nav class="site-nav" aria-label="Main">
+      {links.map((l) => (
+        <a href={l.href} aria-current={current(l.href) ? 'page' : undefined}>{l.label}</a>
+      ))}
+    </nav>
+  </div>
+</header>

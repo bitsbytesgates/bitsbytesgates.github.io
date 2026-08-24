@@ -16,7 +16,7 @@ to dynamically interact with UVM analysis ports. Let's look more closely at
 the details.
 
 
-# Working with Analysis Ports
+## Working with Analysis Ports
 
 UVM testbench environments use analysis ports extensively. An *analysis port* 
 publishes data to zero or more listeners, and is used to route transactions 
@@ -29,7 +29,7 @@ that enable Python to receive transactions published by analysis ports:
 - Be able to add a new listener to the analysis port
 
 
-# Challenges of Dynamically Using Analysis Ports
+## Challenges of Dynamically Using Analysis Ports
 Each of these technical requirements poses its own challenge. 
 
 <div class="mermaid" align="center">
@@ -78,7 +78,7 @@ analysis port. This must be done during `connect_phase`, and requires that
 a properly-specialized `uvm_analysis_imp #(T)` class instance was 
 previously created during the build phase. 
 
-# Making Analysis Ports Visibile
+## Making Analysis Ports Visibile
 
 While both of these challenges can be overcome independently, doing so 
 would require the user to make two independent sets of changes. 
@@ -93,7 +93,7 @@ analysis ports visible and accessible from Python:
 - *pyhdl_uvm_analysis_port* -- An alternative analysis port implementation intended for use by VIP authors
 - *pyhdl_uvm_analysis_imp* -- An analysis port listener intended to make existing analysis ports available to PyHDL-IF
 
-## Example
+### Example
 
 Let's take a look at an example to understand how analysis ports are made 
 accessible to the PyHDL-IF library. The uvm/seq_item_scoreboard example
@@ -193,7 +193,7 @@ runs, `write_a` and `write_b` will be called whenever the analysis port
 that they monitor publishes a transaction.
 
 
-# Conclusions and Next Steps
+## Conclusions and Next Steps
 The PyHDL-IF library allows analysis ports to be made visible and accessible 
 from Python with a small one-time investment. Verification IP (VIP) 
 developers can implement this support, allowing all users to benefit. 
@@ -210,6 +210,6 @@ post, we'll see how the PyHDL-IF library provides a bridge from SystemVerilog/UV
 to help Python development tools understand what is present in the UVM environment
 and make us more productive developing Python testbench components.
 
-## References
+### References
 - PyHDL-IF library - [https://github.com/fvutils/pyhdl-if](https://github.com/fvutils/pyhdl-if)
 - Analysis port example - [https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard](https://github.com/fvutils/pyhdl-if/tree/main/examples/uvm/seq_item_scoreboard)

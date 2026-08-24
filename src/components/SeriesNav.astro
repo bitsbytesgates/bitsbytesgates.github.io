@@ -1,0 +1,18 @@
+---
+import { seriesPosts, topicSlug, type Post } from '../lib/topics'
+interface Props { post: Post; all: Post[] }
+const { post, all } = Astro.props
+const name = post.data.series!
+const members = seriesPosts(all, name)
+const idx = members.findIndex((p) => p.id === post.id)
+---
+<nav class="series-nav" aria-label="Series">
+  <strong>Part {idx + 1} of {members.length} in <a href={`/series/${topicSlug(name)}/`}>{name}</a></strong>
+  <ol>
+    {members.map((p, i) => (
+      <li aria-current={i === idx ? 'true' : undefined}>
+        {i === idx ? <span>{p.data.title}</span> : <a href={`/blog/${p.id}/`}>{p.data.title}</a>}
+      </li>
+    ))}
+  </ol>
+</nav>

@@ -21,7 +21,7 @@ implementations with different abstraction levels.
 
 <!--more-->
 
-# Connecting Modeling Abstractions
+## Connecting Modeling Abstractions
 
 <p align="center">
 <img src="/imgs/2026/01/spec_model_relationship.png"/>
@@ -46,7 +46,7 @@ according to that basis. Each
 model still needs to incorporate abstraction-specific details from the spec, but 
 isn't a full from-spec implementation.
 
-# Breaking Down Device Abstraction
+## Breaking Down Device Abstraction
 
 <p align="center">
 <img src="/imgs/2026/01/design_abstraction.png"/>
@@ -58,7 +58,7 @@ The first thing to note is that there are two levels of interface: logical and p
 The same set of interface abstractions apply to logical and physical interfaces, so
 let's explore the abstraction levels first.
 
-## Abstraction: Scenario
+### Abstraction: Scenario
 A scenario-level interface captures rules about how a device may be used. The 
 [Portable Test and Stimulus (PSS) standard](https://www.accellera.org/downloads/standards/portable-stimulus) 
 is likely the best-known example of a scenario-level interface abstraction.
@@ -67,42 +67,42 @@ resource utilization rules. The rules of a scenario-level description assist
 in automating test creation and simplifying the integration of content 
 from multiple IPs.
 
-## Abstraction: Operation
+### Abstraction: Operation
 An operation-level interface captures the device interface in terms of 
 operations that the device can perform. Think of the API of a software driver
 for a device. An operation-level interface lets us exercise key functions
 of a device without worrying too much about the details.
 
-## Abstraction: MMIO
+### Abstraction: MMIO
 A memory-mapped I/O (MMIO) interface uses memory-mapped registers and 
 interrupts as the device interface. 
 
-## Abstraction: TLM
+### Abstraction: TLM
 A transaction-level modeling (TLM) interface uses packet-like messages. 
 The [TLM 1.0 and 2.0 standards](https://www.accellera.org/images/downloads/standards/systemc/TLM_2_0_LRM.pdf) 
 provide good examples of this level of modeling. TLM is also heavily
 used in [UVM](https://www.accellera.org/downloads/standards/uvm) testbench 
 environments.
 
-## Abstraction: Protocol
+### Abstraction: Protocol
 Protocol-level interfaces are the familiar signal-level interfaces used
 in register-transfer level (RTL) designs. 
 
 
-## Physical Interfaces
+### Physical Interfaces
 
 We're all familiar with physical device interfaces. In RTL, these are the Protocol-level
 interfaces with signal-level ports at the boundary of the device. Every hardware model has physical interfaces,
 and these typically 
 
-## Logical Interfaces
+### Logical Interfaces
 
 A logical interface is typically a software interface. Software, firmware, and 
 test environments interact with a device via logical interfaces. A key attribute
 of a logical interface is that it is independent of the physical interface 
 and can be virtualized. 
 
-## Useful Combinations
+### Useful Combinations
 
 The combination of logical and physical interface abstraction levels, combined with
 internal implementation abstraction level, provides a flexible way to characterize
@@ -117,7 +117,7 @@ logical and physical interfaces.
 | TLM         | Maybe   | Yes      |
 | Protocol    | No      | Yes      |
 
-# Interface Roles
+## Interface Roles
 
 <p align="center">
 <img src="/imgs/2026/01/interface_roles.png"/>
@@ -129,7 +129,7 @@ considering when characterizing a device.
 - Target interfaces respond to requests from an initiator. Think: register interface on a UART
 - Monitor interfaces passively view interaction between initiator and target
 
-# Relating Interface Abstractions
+## Relating Interface Abstractions
 
 <p align="center">
 <img src="/imgs/2026/01/abstractors.png"/>
@@ -146,7 +146,7 @@ be used as a stand-in for the RTL implementation of the device with protocol-lev
 in a verification testbench simply by adding the right protocol transactors from a library.
 
 
-# Next Steps
+## Next Steps
 Interface abstraction levels and interface types (logical, physical) enable 
 model reuse and provide a basis for comparing models with very different
 internal implementations. While there are many legal combinations of logical interface,

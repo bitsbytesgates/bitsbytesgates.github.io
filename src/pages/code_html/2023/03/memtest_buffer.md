@@ -1,9 +1,10 @@
 ---
-layout: code
+title: memtest buffer
+layout: ../../../../layouts/CodeLayout.astro
 ---
 ```pss
 /****************************************************************************
- * memtest.pss
+ * memtest_buffer.pss
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -29,57 +30,72 @@ struct core_s : executor_trait_s {
     rand bit[8]     id;
 }
 
+buffer mem_b {
+    rand bit[64] in [0..0xFFFFFF] offset;
+    rand bit[32] in [1..256]      words;
+}
+
 component memtest_c {
     addr_handle_t       base_addr;
 
+    // Binding the mem_b pool to all actions enables
+    // all actions to communicate via mem_b objects
+    pool mem_b mem_b_p;
+    bind mem_b_p *;
+
     action Write {
+        output mem_b                  dat_o;
         rand executor_claim_s<core_s> core;
-        rand bit[64] in [0..0xFFFFFF] offset;
-        rand bit[32] in [1..256]      words;
 
         exec body {
-            repeat (i : words) {
+            repeat (i : dat_o.words) {
                 write32(
-                    make_handle_from_handle(comp.base_addr, 4*(offset+i)),
+                    make_handle_from_handle(
+                        comp.base_addr, 4*(dat_o.offset+i)),
                     i+1);
             }
         }
     }
 
     action Copy {
-        rand executor_claim_s<core_s> core;
-        rand bit[64] in [0..0xFFFFFF] src;
-        rand bit[64] in [0..0xFFFFFF] dst;
-        rand bit[32] in [1..256]      words;
+        input mem_b                     dat_i;
+        output mem_b                    dat_o;
+        rand executor_claim_s<core_s>   core;
+
+        // Ensure we copy the same number of words
+        constraint dat_i.words == dat_o.words;
+
+        // Ensure that src/dst regions d not overlap
+        constraint (dat_i.offset+(5*dat_i.words) < dat_o.offset) ||
+            (dat_i.offset > dat_o.offset+(4*dat_i.words));
 
         exec body {
             bit[32] tmp;
-            repeat (i : words) {
+            repeat (i : dat_o.words) {
                 tmp = read32(
                     make_handle_from_handle(comp.base_addr,
-                        4*(src+i)));
+                        4*(dat_i.offset+i)));
                 write32(
                     make_handle_from_handle(comp.base_addr,
-                        4*(dst+i)),
+                        4*(dat_o.offset+i)),
                     tmp);
             }
         }
     }
 
     action Check {
-        rand executor_claim_s<core_s> core;
-        rand bit[64] in [0..0xFFFFFF] offset;
-        rand bit[32] in [1..256]      words;
+        input mem_b                     dat_i;
+        rand executor_claim_s<core_s>   core;
 
         exec body {
             bit[32] tmp;
-            repeat (i : words) {
+            repeat (i : dat_i.words) {
                 tmp = read32(
                     make_handle_from_handle(comp.base_addr,
-                        4*(offset+i)));
+                        4*(dat_i.offset+i)));
                 if (tmp != i+1) {
                     error("0x%08x: expect %d ; receive %d",
-                        4*(offset+i), i+1, tmp);
+                        4*(dat_i.offset+i), i+1, tmp);
                 }
             }
         }
@@ -94,23 +110,26 @@ component memtest_c {
             write;
             copy;
             check;
-        }
-
-        constraint {
-            // Copy reads from same location that Write populated
-            copy.src == write.offset;
-            // Check reads from the same location that Copy populated
-            copy.dst == check.offset;
-            // All actions write the same number of words
-            copy.words == write.words;
-            copy.words == check.words;
-
-            // Ensure that src/dst regions do not overlap
-            (copy.src+(4*copy.words) < copy.dst) ||
-            (copy.src > copy.dst+(4*copy.words));
+            bind write.dat_o copy.dat_i;
+            bind copy.dat_o check.dat_i;
         }
     }
 
+    action Write2xCopyCheck {
+        Write             write;
+        Copy              copy1, copy2;
+        Check             check;
+
+        activity {
+            write;
+            copy1;
+            copy2;
+            check;
+            bind write.dat_o copy1.dat_i;
+            bind copy1.dat_o copy2.dat_i;
+            bind copy2.dat_o check.dat_i;
+        }
+    }
 }
 
 component pss_top {
@@ -118,6 +137,9 @@ component pss_top {
     executor_group_c<core_s>   cores;
     transparent_addr_space_c<> aspace;
     memtest_c                  memtest;
+
+    pool mem_b mem_b_p;
+    bind mem_b_p *;
 
     exec init {
         foreach (core[i]) {
@@ -156,6 +178,12 @@ component pss_top {
                 write.core.trait.id == copy.core.trait.id;
                 copy.core.trait.id == check.core.trait.id;
             }
+        }
+    }
+
+    action Copy2x {
+        activity {
+            do memtest_c::Write2xCopyCheck;
         }
     }
 }

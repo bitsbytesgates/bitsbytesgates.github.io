@@ -17,7 +17,7 @@ Python description that we care about.
 
 <!-- more -->
 
-# A Simple Counter
+## A Simple Counter
 
 Let's start with an example. The code below represents the behavior of 
 a very simple counter in Verilog:
@@ -83,7 +83,7 @@ You might be asking how this is any different from a class library,
 such as SystemC or pyuvm. This is exactly the right question to ask, since
 it's at the crux of how this approach is different.
 
-# Becoming the Compiler
+## Becoming the Compiler
 
 If we were implementing the Zuspec library as a class library, we would have
 each of the key elements above (Component, @sync, input, output) construct
@@ -114,7 +114,7 @@ So, what does this look like?
 Using this approach allows different transformations to be used for 
 different modules in the design.
 
-# Anatomy of a Type Transformer
+## Anatomy of a Type Transformer
 
 Type transformers typically use the visitor pattern, using a visitor that
 is aware of key elements of the domain-specific specification.
@@ -151,7 +151,7 @@ approach to transform the type to Verilog. And, because the model
 is a specification without a class-library implementation, both
 of these implementations (and more) can easily co-exist.
 
-# Next Steps
+## Next Steps
 
 In this post, we've looked at an approach to capturing hardware domain
 semantics in Python such that we keep the description independent 

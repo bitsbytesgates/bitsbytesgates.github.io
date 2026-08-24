@@ -38,7 +38,7 @@ points of hardware development.  Unfortunately, this has also led to a very
 fragmented ecosystem with loosely-integrated languages and methodologies and 
 complex build flows.
 
-# Considering the Ecosystem
+## Considering the Ecosystem
 
 All of these innovations have primarily come from a hardware-design 
 perspective, and focus on enabling hardware-design flows. That,
@@ -55,7 +55,7 @@ It seems quite unlikely that a language created to serve the unique
 requirements of the ecosystem's minority can serve the combined
 needs and gain the acceptance of the majority.
 
-# Zuspec 
+## Zuspec 
 
 Zuspec[1](https://zuspec.github.io/) adopts Python as its starting 
 point, and embeds hardware semantics into that ecosystem. The result 
@@ -63,7 +63,7 @@ is a platform that is familiar to software engineers, offers
 high productivity for hardware engineering, and has the goal of 
 increasing the ability to share artifacts across the disciplines.
 
-## Why Python?
+### Why Python?
 
 Many factors are involved in selecting a language for any purpose: 
 key language features, tool ecosystem, relevant libraries, as well
@@ -71,7 +71,7 @@ as the community around the language. Applying an existing language to the
 semantics of another  domains raises another factor to consider: 
 flexibility of the language. 
 
-### Popularity can be Self-Reinforcing
+#### Popularity can be Self-Reinforcing
 
 Python is a popular language overall, holding the top spot in many
 rankings for several consecutive years, and being ranked highly 
@@ -99,7 +99,7 @@ But, language popularity is only relevant for the set of languages
 that can be used to capture relevant domain semantics. Fortunately,
 Python measures up very well here again.
 
-### Technical Arguments for Python
+#### Technical Arguments for Python
 
 There are strong technical arguments for the Python language as well.
 As a dynamic language, Python provides excellent facilities for 
@@ -155,7 +155,7 @@ for producing, discovering, and consuming packages.
 Together, these capabilities make Python a very compelling platform 
 for developing, verifying, and publishing hardware models.
 
-# What does this look like?
+## What does this look like?
 
 All languages are a combination of syntax and semantics. Syntax 
 governs the lexical aspects of a language: the keywords, operators,
@@ -272,7 +272,7 @@ Another transformer might convert the model to the synthesizable
 Verilog shown above to be used as input to existing 
 synthesis or simulation flows. 
 
-# The User-Extensible Language
+## The User-Extensible Language
 
 The `Counter` example is quite simple, and at the register-transfer level (RTL).
 Zuspec is designed to be able to capture a broad range of 
@@ -306,7 +306,7 @@ hardware that is code-centric, AI-friendly, and nimble. And, most importantly,
 Zuspec provides togetherness: a common environment in which new language 
 innovations can be explored along with integrated existing technologies. 
 
-### References
+#### References
 1. https://zuspec.github.io
 2. https://www.tiobe.com/tiobe-index/
 3. https://en.wikipedia.org/wiki/TIOBE_index

@@ -20,7 +20,7 @@ a simple and fast way for projects to ensure that the proper version of open-sou
 are available in the same way that they manage other dependencies.
 
 
-# Problem and opportunity
+## Problem and opportunity
 How do you normally install software? While there are many possible paths, a common path is
 to install new software using your operating system's package manager. Most Linux
 variants use something like `apt` or `yum`. macOS and Windows have App Stores.
@@ -40,7 +40,7 @@ But, at the same time, Linux distributions are sufficiently different that a sin
 binary can't support all relevant distributions.
 
 
-# Python and manylinux
+## Python and manylinux
 As it so happens, the Python ecosystem has developed quite an elegant solution to this problem.
 Using native-compiled extension code is a key technique to increase Python performance.
 Obtaining these `binary wheels` in pre-built form simplifies package installation and 
@@ -57,7 +57,7 @@ Linux distribution versions, you aren't locked into the old development tools th
 distribution version.
 
 
-# EDAPack - Multi-Platform OSS EDA Binaries
+## EDAPack - Multi-Platform OSS EDA Binaries
 
 The [EDAPack](https://edapack.github.io) project borrows the Python `manylinux` infrastructure 
 to build open-source EDA
@@ -67,7 +67,7 @@ release of the Yosys synthesis engine includes associated tools for equivalency 
 formal verification (sby), and includes the `yosys-slang` plug-in that supports a broader 
 set of SystemVerilog constructs.
 
-# Managing Installed Tools with IVPM
+## Managing Installed Tools with IVPM
 It's great to have access to pre-built binaries, but downloading and managing 
 multiple versions of tools is cumbersome. Fortunately, we can use [IVPM](https://fvutils.github.io/ivpm) to
 simplify the setup process even further. IVPM approaches this by having each
@@ -100,7 +100,7 @@ to using different tool versions. In addition, it's easy to different projects
 to require and use different tool versions. IVPM's cache holds the total set of
 active tool versions, and each project holds links to the specific required versions.
 
-# Conclusions and Next Steps
+## Conclusions and Next Steps
 
 The EDAPack organization hosts a growing collection of projects that build and
 release open-source EDA software. Most packages focus on supporting x86 Linux 
@@ -116,7 +116,7 @@ EDA tool.
 Next time we'll look at [direnv](https://direnv.net/), my new favorite tool
 for project-centric environment management and see how IVPM integrates.
 
-## Video
+### Video
 Increasingly, topics on the blog benefit from a demo. I'm experimenting with
 recording companion videos that provide space for this. 
 
@@ -127,7 +127,7 @@ recording companion videos that provide space for this.
 
 
 
-## References
+### References
 - [Tabby CAD](https://www.yosyshq.com/tabby-cad-datasheet)
 - [EDAPack](https://edapack.github.io)
 - [IVPM](https://fvutils.github.io)

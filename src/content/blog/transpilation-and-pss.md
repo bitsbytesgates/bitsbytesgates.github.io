@@ -36,7 +36,7 @@ test scenarios in PSS into implementations in existing programming languages.
 
 <!--more-->
 
-# Is PSS a Programming Language?
+## Is PSS a Programming Language?
 Both compilers and transpilers are software concepts, so it's worth asking
 whether PSS language is a programming language. Portions of the language 
 do provide the features of a standard programming language -- if/else,
@@ -48,7 +48,7 @@ The other major portion of the language has *declarative* semantics.
 This means that we focus on capturing the *rules* of our test scenarios
 instead of capturing how we will *implement* our test scenarios.
 
-## Why be declarative?
+### Why be declarative?
 
 Take, for example, test scenarios that exercise a multi-channel DMA
 controller. When our test exercises multiple channels at the same
@@ -66,7 +66,7 @@ The declarative nature of the PSS language increases our testing
 productivity by allowing us to capture the rules of our scenarios
 and automate the work of implementing tests.
 
-# Creating Model Implementations
+## Creating Model Implementations
 Capturing tests in this way has huge productivity benefits. It also
 has a (subjective) downside: we need to use a *constraint solver* 
 to evaluate the model and select the data and operation schedule 
@@ -95,7 +95,7 @@ model is very interesting because it suggests that we might be able
 to leverage the constraint solver within our SystemVerilog simulators
 to provide the solving needed to evaluate our PSS models.
 
-# Transpiling PSS to SystemVerilog
+## Transpiling PSS to SystemVerilog
 I've been working PSS infrastructure, in general, for a while. More
 recently, I've focused on using that infrastructure to implement the
 beginnings of a PSS to SystemVerilog transpiler. 
@@ -151,7 +151,7 @@ Specifically:
   and executed by a SystemVerilog simulator.
 
 
-# A simple example 
+## A simple example 
 
 Let's take a look at a tiny example from the 
 [Zuspec Examples](https://github.com/zuspec/zuspec-examples) project. 
@@ -189,7 +189,7 @@ endmodule
 ```
 
 
-# Where do we go from here?
+## Where do we go from here?
 
 Transpiling PSS to SystemVerilog provides a useful interesting implementation 
 option for PSS, both because of the solver within the simulator and because

@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { byDateDesc, formatDate } from '../lib/topics'
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byDateDesc)
+const years = [...new Set(posts.map((p) => p.data.date.getUTCFullYear()))].sort((a, b) => b - a)
+---
+<BaseLayout title="Archive" description="Every post, newest first.">
+  <h1>Archive</h1>
+  <p>{posts.length} posts, {years.length} years.</p>
+  {years.map((y) => (
+    <section>
+      <h2 id={`y${y}`}>{y}</h2>
+      <ul>
+        {posts.filter((p) => p.data.date.getUTCFullYear() === y).map((p) => (
+          <li>
+            <a href={`/blog/${p.id}/`}>{p.data.title}</a>
+            <span class="meta"> — <time datetime={p.data.date.toISOString()}>{formatDate(p.data.date)}</time></span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</BaseLayout>

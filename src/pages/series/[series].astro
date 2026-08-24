@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import PostCard from '../../components/PostCard.astro'
+import { seriesPosts, topicSlug, byDateDesc } from '../../lib/topics'
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(byDateDesc)
+  const names = [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as string[]
+  return names.map((n) => ({ params: { series: topicSlug(n) }, props: { name: n, posts: seriesPosts(posts, n) } }))
+}
+const { name, posts } = Astro.props
+---
+<BaseLayout title={name} description={`${name} — a ${posts.length}-part series.`}>
+  <p><a href="/series/">← All series</a></p>
+  <h1>{name}</h1>
+  <p>{posts.length} parts, in reading order.</p>
+  <ul class="card-list">{posts.map((p) => <PostCard post={p} />)}</ul>
+</BaseLayout>

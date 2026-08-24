@@ -15,7 +15,7 @@ and how you can best use it in your verification environment.
 
 <!--more-->
 
-# An Interface, not a UVM Library
+## An Interface, not a UVM Library
 
 <p align="center">
 <img src="/imgs/2025/11/pyhdl_if_uvm_wrapper.png"/>
@@ -36,7 +36,7 @@ is quite large, the APIs that test writers and scoreboard developers use is
 a much smaller subset. Prioritizing this much-smaller subset very quickly 
 provides an interface library that covers a large percentage of usecases.
 
-# Initiating Behavior from UVM
+## Initiating Behavior from UVM
 
 One implication of PyHDL-IF being an interface library is that all 
 PyHDL-IF UVM objects are wrappers to access SystemVerilog UVM objects. 
@@ -50,7 +50,7 @@ So, how do we initiate Python behavior from a UVM testbench? There are
 two special PyHDL-IF "proxy" classes that provide a Python implementation
 for `uvm_component` and `uvm_sequence`: `pyhdl_uvm_component_proxy` and `pyhdl_uvm_sequence_proxy`.
 
-# Interface Structure
+## Interface Structure
 
 The PyHDL-IF library provides infrastructure that connects a Python object and 
 a SystemVerilog object via method calls. Specially-decorated classes define
@@ -92,7 +92,7 @@ is called in Python.
 When a new instance of the generated SystemVerilog is created, it results 
 in a pair of objects: one in SystemVerilog and a connected peer Python object.
 
-# Initiating Behavior
+## Initiating Behavior
 
 Starting Python behavior from a UVM-SV environment is as simple as selecting
 the right `proxy` class, creating an instance, and using the `proxy` class
@@ -165,7 +165,7 @@ the sequence on the sequencer. UVM's object-oriented nature lets us
 create and use a sequence without caring whether it's implemented in
 Python or SystemVerilog.
 
-# PYHDL-IF UVM API Specifics
+## PYHDL-IF UVM API Specifics
 
 Let's use this example to look more closely at the API exposed by
 PYHDL-IF. There are three core categories:
@@ -217,7 +217,7 @@ refer to the `REQ` type parameter of the sequence class to create
 a new request sequence item. In Python, it makes sense to expose
 this functionality via a method.
 
-# Beyond UVM Methods
+## Beyond UVM Methods
 
 The combination of exposing UVM-defined methods to Python, along with and 
 two `proxy` classes to initiate behavior, makes it simple to run Python 

@@ -1,0 +1,133 @@
+/* ---------------------------------------------------------------------------
+   bitsbytesgates.com — design tokens
+   Everything is a custom property so Phase 4 can add a dark theme by
+   overriding this one block, not by touching component CSS.
+   --------------------------------------------------------------------------- */
+:root {
+  --font-prose: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', 'Fira Code', SFMono-Regular, Menlo, Consolas, monospace;
+
+  --bg: #ffffff;
+  --bg-subtle: #f6f8fa;
+  --bg-code: #f6f8fa;
+  --fg: #1f2328;
+  --fg-muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0550ae;
+  --accent-hover: #033d8b;
+
+  --prose-width: 42rem;   /* ~70ch of prose */
+  --wide-width: 58rem;    /* code and diagrams break out to here */
+  --radius: 6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-prose);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* ---- layout ---- */
+.wrap { width: min(100% - 2rem, var(--wide-width)); margin-inline: auto; }
+main { padding-block: 2.5rem 4rem; }
+
+.prose { width: min(100%, var(--prose-width)); margin-inline: auto; }
+/* Code, tables and diagrams break out wider than the prose column — PSS
+   component/action declarations and Verilog module headers wrap badly at 70ch. */
+.prose > pre,
+.prose > .expressive-code,
+.prose > .video-embed,
+.prose > table { width: min(100vw - 2rem, var(--wide-width)); margin-inline: calc(50% - min(50vw - 1rem, var(--wide-width) / 2)); }
+
+/* ---- header ---- */
+.site-header { border-bottom: 1px solid var(--border); background: var(--bg); }
+.site-header .wrap { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; align-items: baseline; padding-block: 1rem; }
+.site-title { font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; text-decoration: none; color: var(--fg); }
+.site-nav { display: flex; flex-wrap: wrap; gap: 1rem; margin-left: auto; }
+.site-nav a { color: var(--fg-muted); text-decoration: none; font-size: .95rem; }
+.site-nav a:hover, .site-nav a[aria-current='page'] { color: var(--accent); }
+
+/* ---- links & type ---- */
+a { color: var(--accent); text-underline-offset: 2px; }
+a:hover { color: var(--accent-hover); }
+h1, h2, h3, h4 { line-height: 1.25; letter-spacing: -0.015em; margin-block: 2rem .5rem; }
+h1 { font-size: 2rem; margin-top: 0; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.2rem; }
+img { max-width: 100%; height: auto; }
+hr { border: 0; border-top: 1px solid var(--border); margin-block: 2.5rem; }
+
+/* ---- code ---- */
+code { font-family: var(--font-mono); font-size: .875em; }
+:not(pre) > code { background: var(--bg-code); padding: .15em .35em; border-radius: 4px; }
+pre {
+  font-family: var(--font-mono);
+  font-size: .85rem;
+  line-height: 1.5;
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow-x: auto;              /* pre scrolls internally so the PAGE never scrolls sideways */
+}
+pre code { background: none; padding: 0; }
+
+/* ---- tables ---- */
+table { border-collapse: collapse; width: 100%; font-size: .95rem; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: .4rem .6rem; text-align: left; }
+th { background: var(--bg-subtle); }
+
+blockquote { margin-inline: 0; padding-left: 1rem; border-left: 3px solid var(--border); color: var(--fg-muted); }
+
+/* ---- post cards ---- */
+.card-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 2rem; }
+.card h2 { margin: 0 0 .25rem; font-size: 1.3rem; }
+.card h2 a { text-decoration: none; }
+.card h2 a:hover { text-decoration: underline; }
+.card p { margin: .5rem 0 0; }
+.meta { color: var(--fg-muted); font-size: .875rem; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.meta .sep::before { content: '·'; }
+
+/* ---- topic chips ---- */
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; list-style: none; padding: 0; margin: 0; }
+.chip {
+  display: inline-block; font-size: .78rem; line-height: 1.6;
+  padding: .05rem .5rem; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--bg-subtle);
+  color: var(--fg-muted); text-decoration: none;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip .n { opacity: .6; }
+
+/* ---- post footer nav ---- */
+.post-nav { display: grid; gap: 1rem; margin-top: 3rem; }
+@media (min-width: 40rem) { .post-nav.two { grid-template-columns: 1fr 1fr; } }
+.post-nav a { display: block; padding: .9rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; }
+.post-nav a:hover { border-color: var(--accent); }
+.post-nav .dir { display: block; font-size: .78rem; color: var(--fg-muted); text-transform: uppercase; letter-spacing: .04em; }
+.post-nav .next { text-align: right; }
+
+.series-nav { margin: 2rem 0; padding: 1rem 1.25rem; background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); }
+.series-nav ol { margin: .5rem 0 0; padding-left: 1.25rem; }
+.series-nav li[aria-current='true'] { font-weight: 600; }
+
+.video-embed { position: relative; padding-bottom: 56.25%; height: 0; }
+.video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: var(--radius); }
+
+/* ---- pagination ---- */
+.pagination { display: flex; gap: 1rem; justify-content: space-between; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+
+/* ---- footer ---- */
+.site-footer { border-top: 1px solid var(--border); color: var(--fg-muted); font-size: .9rem; }
+.site-footer .wrap { padding-block: 1.5rem 2.5rem; display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
+
+.legacy-note { font-size: .875rem; color: var(--fg-muted); background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius); padding: .6rem .9rem; }
+
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 1rem; top: 1rem; background: var(--bg); padding: .5rem 1rem; z-index: 10; }

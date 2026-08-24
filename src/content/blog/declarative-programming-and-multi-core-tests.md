@@ -467,5 +467,5 @@ actions communicate in a reusable and modular fashion.
 ### References
 - [https://www.npr.org/2008/10/02/95256794/think-youre-multitasking-think-again](https://www.npr.org/2008/10/02/95256794/think-youre-multitasking-think-again)
 - [https://en.wikipedia.org/wiki/Declarative_programming](https://en.wikipedia.org/wiki/Declarative_programming)
-- [MemTest PSS Code (Viewing)](/code_html/2023/03/memtest.html)
+- [MemTest PSS Code (Viewing)](/code_html/2023/03/memtest/)
 - [MemTest PSS Code (Raw Text)](/code/2023/03/memtest.pss)

@@ -34,7 +34,7 @@ concurrently. Let's dig in and learn more.
 
 <!--more-->
 
-# Resources and the DMA Example
+## Resources and the DMA Example
 <p align="center">
 <img src="/imgs/2023/03/DMA_block_diagram.png"/>
 </p>
@@ -46,7 +46,7 @@ the OS driver for the DMA will manage satisfying requests for a
 DMA channel. But, for now, our test will need to manage allocating
 channels itself.
 
-# PSS Resource Management in Three Parts
+## PSS Resource Management in Three Parts
 
 There are three key parts to managing resources in PSS. 
 - A data type to encapsulate data related to the resource kind
@@ -55,7 +55,7 @@ There are three key parts to managing resources in PSS.
 - A resource claim on an action to acquire a resource with 
   specific characteristics
 
-## Resource Type
+### Resource Type
 
 A _resource_ data type is declared using the `resource` keyword.
 A resource type is very similar to a struct, in that it can
@@ -83,7 +83,7 @@ to which DMA channel an action is assigned. Consequently, our
 resource type `Channel` doesn't contain any custom fields.
 
 
-## Resource Pool
+### Resource Pool
 
 In prior posts, we've hand-waved a bit about where `buffer` pools
 are placed, and how they are statically bound to actions.
@@ -177,7 +177,7 @@ some shared resource such as a shared DMA engine. In that
 case, having all actions share the same resource pool would 
 make sense.
 
-## Resource Claim
+### Resource Claim
 
 Finally, we reach the point where we can have our DMA actions
 claim a resource. Actions claim resources using a special 
@@ -230,7 +230,7 @@ For the third parallel transfer, we request a channel less than 8.
 The PSS tool will randomly select an appropriate channel, while not 
 selecting channels 0 or 1.
 
-# Locking vs Sharing a Resource
+## Locking vs Sharing a Resource
 In the case of the DMA example, acquiring exclusive access to a DMA channel
 (locking it) is the appropriate choice. In fact, locking resources is 
 probably the most common use case. However, there are certainly valid
@@ -246,7 +246,7 @@ resource-protected element, while ensuring that no action is
 simultaneously trying to change the stored information.
 
 
-# Conclusion and Next Steps
+## Conclusion and Next Steps
 In this post, we've seen how PSS enables the definition of resources
 that can only be used in certain ways by certain actions over time, 
 and have seen how PSS resources can be applied to describe restrictions
@@ -255,6 +255,6 @@ on how DMA channels can be used over time by concurrent behavior.
 In the next post, we'll look at using PSS `registers` to connect the 
 actions in our PSS model to the registers within the DMA engine.
 
-# Resources
-- [1] [DMA PSS Code (Viewing)](/code_html/2023/03/wb_dma_3.html)
+## Resources
+- [1] [DMA PSS Code (Viewing)](/code_html/2023/03/wb_dma_3/)
 - [2] [DMA PSS Code (Raw Text)](/code/2023/03/wb_dma_3.pss)

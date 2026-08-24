@@ -13,7 +13,7 @@ shifting tasks left in the silicon design process.
 
 <!--more-->
 
-# A simplified silicon design process
+## A simplified silicon design process
 
 <p align="center">
 <img src="/imgs/2026/01/simplified_si_design_process.png"/>
@@ -36,7 +36,7 @@ model of the design. This poses several challenges, but one of the biggest
 is that the abstraction difference between Spec and RTL is enormous. 
 
 
-# A closer look
+## A closer look
 
 While the diagram above is straightforward, it hides some useful details
 about what is actually happening during each of the steps above.
@@ -76,7 +76,7 @@ there are now four abstraction levels:
   intended micro-architecture of the design
 - **RTL** - Synthesizable model
 
-## Spec Development
+### Spec Development
 
 During spec development, it's natural to use some high-level models to
 validate assumptions. These models are captured at a high level of
@@ -87,7 +87,7 @@ model (e.g. an Excel sheet) enables what-if analysis by adjusting
 control parameters. These are typically two distinct models because 
 of the two different evaluation approaches.
 
-## RTL Implementation
+### RTL Implementation
 
 The RTL development process is also not a monolith. Generally, you could
 think of a process by which the design is partitioned into independent
@@ -96,7 +96,7 @@ is partitioned, engineers can work in parallel to implement and test
 their assigned sub-IP. Finally, sub-IPs are integrated back into the
 overall structure of the design.
 
-## Design Verification
+### Design Verification
 
 The design verification process is also step-wise, typically starting
 with basic bring-up tests to ensure that simple operations, such as 
@@ -113,7 +113,7 @@ levels is being done. But, too often, these models are only used within a specif
 silo. There are many reasons for this, including the language(s) used to implement
 models and integration challenges. 
 
-# Shifting Left with Model Reuse
+## Shifting Left with Model Reuse
 
 The Zuspec 'bet' is that we can reorganize the silicon development process by making models
 easier to create, easier to reuse and transform, and easier to integrate. Future posts will
@@ -176,7 +176,7 @@ relative size of the tasks shown above, as well as on the cost
 of creating the set of models used above. But, the savings should be
 significant.
 
-# Next Stes
+## Next Stes
 
 We've looked at several implementation abstraction levels for device models. 
 In the next post, we'll dig into interface abstraction levels and see how

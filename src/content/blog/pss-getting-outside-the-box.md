@@ -67,7 +67,7 @@ use global functions to implement interactions with the outside world.
 Global functions do not allow us to leverage object-oriented language constructs, so 
 we will need to add some infrastructure on top.
 
-# The Basics
+## The Basics
 PSS provides `import` functions to allow the PSS model to interact 
 with the outside world. 
 
@@ -115,7 +115,7 @@ instances, and little implementation flexibility.  Fortunately, a
 little methodology and a little code generation can help us
 get the object-oriented interfaces that we want!
 
-## Introducing the API Class
+### Introducing the API Class
 Zuspec-SV (our PSS to SV transpiler) defines an Import API class that
 contains a virtual method definition for each and every Import function
 in the PSS model. 
@@ -139,7 +139,7 @@ model needs to access. Implementing the API can be done simply by
 creating a class that inherits from `pss_import_api` and providing
 implementations of the tasks and functions.
 
-## Connecting our API Implementation
+### Connecting our API Implementation
 Once we have a SystemVerilog class with properly-implemented methods, 
 we need to connect the PSS model implementation to it. This is where
 things get a bit tool-specific. 
@@ -168,7 +168,7 @@ As we saw in the *Hello World* example, we run a PSS model
 by creating an instance of the *Actor* and calling the
 *run* task. 
 
-## Full Example
+### Full Example
 Let's take a step-by-step look at the simple API implementation example
 in `zuspec-examples`. You can find the full example 
 [here](https://github.com/zuspec/zuspec-examples/tree/main/sv/simple_read_write).
@@ -209,7 +209,7 @@ model (BFM), and one that reads data via a bus functional model.
 We then declare a (very) simple PSS Action that calls the `write` function
 twice, calls the `read` function once, and displays the return value.
 
-### Implementing the API
+#### Implementing the API
 
 `Zuspec-SV` creates the following API class based on the import functions
 declared within the PSS model:
@@ -289,7 +289,7 @@ PSS read data 42
 ```
 
 
-# Summary and What's Next
+## Summary and What's Next
 We've looked at the funadamentals of a strategy to integrate two 
 object-oriented languages, via global functions, 
 in an object-oriented way. This approach

@@ -1,0 +1,30 @@
+---
+import TopicChips from './TopicChips.astro'
+import { topicsOf, formatDate, type Post } from '../lib/topics'
+interface Props { post: Post }
+const { post } = Astro.props
+const { title, date, series } = post.data
+// The excerpt is authored via <!--more--> and was never displayed by the Jekyll templates.
+const raw = post.body ?? ''
+const excerpt = post.data.excerpt
+  ?? (raw.includes('<!--more-->')
+        ? raw.split('<!--more-->')[0]
+        : raw)
+      .replace(/^---[\s\S]*?---/, '')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/[#*_>`]/g, '')
+      .trim()
+      .slice(0, 260)
+---
+<li class="card">
+  <h2><a href={`/blog/${post.id}/`}>{title}</a></h2>
+  <div class="meta">
+    <time datetime={date.toISOString()}>{formatDate(date)}</time>
+    {series && <><span class="sep" /><span>{series}</span></>}
+    {post.data.legacy && <><span class="sep" /><span>archive</span></>}
+  </div>
+  {excerpt && <p>{excerpt}{excerpt.length >= 260 ? '…' : ''}</p>}
+  <TopicChips topics={topicsOf(post).slice(0, 5)} />
+</li>

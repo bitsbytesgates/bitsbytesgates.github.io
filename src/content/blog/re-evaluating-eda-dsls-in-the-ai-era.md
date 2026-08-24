@@ -22,7 +22,7 @@ path forward for my little project -- as well as for future EDA domain-specific 
 
 <!-- more -->
 
-# Why EDA Domain-Specific Languages?
+## Why EDA Domain-Specific Languages?
 If you work in silicon design, you're very familiar with a set of domain-specific languages (DSLs),
 such as SystemVerilog and VHDL,  that are used to specify a model of your design intent, 
 verify its logical correctness, and synthesize it to a gate-level representation that can
@@ -64,7 +64,7 @@ also often encourages new applications for the language. For example, Verilog st
 off as a simulation language. It was only later that tools started to synthesize
 gates from a Verilog description.
 
-# The Cost of EDA Domain-specific Languages
+## The Cost of EDA Domain-specific Languages
 For all the benefits of having full EDA domain-specific languages, there are 
 significant drawbacks. 
 
@@ -89,12 +89,12 @@ increase in the popularity of Python driven by the proficiency of AI assistants 
 Python. Given the cost of training a large language model (LLM), language popularity is likely to become a self-reinforcing pattern: increasing popularity leads to better 
 results from LLMs, which further increases the popularity of a language.
 
-# Alterative Approaches
+## Alterative Approaches
 
 Over the years, at least two alternatives to a full domain-specific language have been
 used: class libraries and embedded domain-specific languages. 
 
-## Class Libraries
+### Class Libraries
 
 A class library is the lightest-weight approach to capturing domain-specific semantics.
 In this approach, the host language is used as-is and domain-specific semantics are
@@ -130,7 +130,7 @@ them in a different language. If a class library-based description needs to
 target a different language, it typically will build an internal data 
 model based on running the model and generate code from that data model.
 
-## Embedded Domain-Specific Languages
+### Embedded Domain-Specific Languages
 
 If a class library is insufficient to capture the semantics we require, another
 approach is to create an embedded domain-specific language (eDSL) using a language
@@ -176,7 +176,7 @@ Finally, the code above doesn't really *look* like good Python code. Tools
 like linters are likely to complain. LLMs will also not know how to create
 this content unless specially prompted.
 
-# Back to Python
+## Back to Python
 
 So, where does that leave us? Well, until recently, right back to needing a full language to
 satisfy the requirements. But, as it turns out, Python has a few more features to offer.
@@ -212,7 +212,7 @@ we simply use Python's AST introspection to build the data structure directly.
 This allows us to leverage Python syntax, and all the tools that understand it, while
 layering our own special semantics on top.
 
-# Next Steps
+## Next Steps
 
 As I mentioned at the beginning of this post, my key interest is in having a modeling
 language that supports capturing very abstraction descriptions of hardware behavior

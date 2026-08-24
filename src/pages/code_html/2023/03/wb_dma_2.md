@@ -1,9 +1,10 @@
 ---
-layout: code
+title: wb dma 2
+layout: ../../../../layouts/CodeLayout.astro
 ---
 ```pss
 /****************************************************************************
- * wb_dma_3.pss
+ * wb_dma_2.pss
  *
  * Copyright 2023 Matthew Ballance and Contributors
  *
@@ -29,21 +30,15 @@ buffer MemBuf {
     addr_handle_t       addr_h;
 }
 
-resource Channel { }
-
 component WbDma {
 
     pool MemBuf     mem_buf_p;
     bind mem_buf_p  *;
 
-    pool [16] Channel    channels_p;
-    bind channels_p *;
-
     action Mem2Mem {
         input MemBuf            src_i;
         input MemBuf            dst_o;
         rand addr_claim_s<>     dst_claim;
-        lock Channel            channel;
 
         // Input and output size must be the same
         constraint dst_o.size == src_i.size;

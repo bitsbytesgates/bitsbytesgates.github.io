@@ -20,7 +20,7 @@ AI is having on both EDA developers and users via this project.
 <img src="/imgs/2026/02/coverage_tui.png"/>
 </p>
 
-# Verification and Coverage
+## Verification and Coverage
 Coverage is a key metric we use to evaluate how well-verified a design is. We collect 
 and analyze code coverage to identify areas of the design that aren't exercised. We
 use assertion and functional coverage to ensure that key conditions are exercised. Combined
@@ -37,7 +37,7 @@ But, all of these are independent. How can I view and analyze Verilator code cov
 together?
 
 
-# Standards: UCIS
+## Standards: UCIS
 
 A unique aspect of verification coverage is that we have are larger set of metrics than software
 projects typically use. Software projects tend to focus on code coverage, while design verification
@@ -54,7 +54,7 @@ Having a common API enables the classic separation of concerns that other common
 enable. Instead of developing analysis capabilities for each and every coverage format, we can 
 create tools that use the UCIS API, and converters to map coverage formats into the UCIS data model.
 
-# Open Source: PyUCIS
+## Open Source: PyUCIS
 
 I initially created the [PyUCIS](https://fvutils.github.io/pyucis) project because I needed a way to work with coverage data
 captured by the [PyVSC](https://fvutils.github.io/pyvsc/) library that I was also working on. At the time, I focused
@@ -66,12 +66,12 @@ are properly AI-enabled for users.  We'll cover some of these new feature areas 
 this post focuses on AI enablement.
 
 
-# Three Levels of AI Enablement
+## Three Levels of AI Enablement
 I've gradually come to apply a three-level approach for enabling a tool for AI agent access
 that reflect successively-deeper levels of integration with the tool. 
 
 
-## AI-Friendly CLI
+### AI-Friendly CLI
 The first level of integration is via the command-line interface (CLI). AI agents, such 
 as Copilot, Codex, and Claude Code, excel at using command-line tools. Best practices 
 for enhancing the CLI to be AI-friendly include:
@@ -137,7 +137,7 @@ instructions on tool workflows. I like to advertise how to find the
 tool's `skill` in the help message, since AI agents often check this first.
 
 
-## Model Context Protocol
+### Model Context Protocol
 The Model Context Protocol ([MCP](https://modelcontextprotocol.io/docs/getting-started/intro)) 
 is a JSON RPC-based communication protocol that allows AI agents to run external operations. 
 MCP excels in situations where operation setup times are long. For example, loading a waveform
@@ -149,13 +149,13 @@ allows the Agent to perform many queries.
 PyUCIS provides a [MCP server](https://fvutils.github.io/pyucis/mcp_server.html) with a 
 range of tools, including:
 
-### Database Operations
+#### Database Operations
 - open_database: Load UCIS databases in XML, YAML, or UCIS binary formats
 - close_database: Clean up database resources
 - list_databases: List all currently open databases
 - get_database_info: Retrieve database metadata and statistics
 
-### Coverage Analysis Tools
+#### Coverage Analysis Tools
 - get_coverage_summary: Overall coverage statistics by type (statement, branch, etc.)
 - get_coverage_gaps: Identify uncovered or low-coverage items with configurable thresholds
 - get_covergroups: Retrieve covergroup details with optional bin information
@@ -164,7 +164,7 @@ range of tools, including:
 - get_hierarchy: Navigate and explore the design hierarchy
 - get_metrics: Advanced coverage metrics and analysis
 
-### Advanced Features
+#### Advanced Features
 - compare_databases: Compare two databases for regression analysis and coverage deltas
 - get_hotspots: Identify high-value coverage targets for optimization
 - get_code_coverage: Export code coverage in multiple formats (LCOV, Cobertura, JaCoCo, Clover)
@@ -175,7 +175,7 @@ Given the speed of the PyUCIS SQLite database, I'll be interested in point at wh
 using the MCP server becomes beneficial. 
 
 
-## API
+### API
 An API provides an AI agent the most-detailed access to a tool's capabilities.
 Both the difficulty of producing an API and the difficult of an AI agent using it
 depends heavily on the tool's implementation language. For example, Python is often
@@ -185,7 +185,7 @@ module and go. On the other hand, a compiled languages like C/C++ will likely re
 explicit action to define and expose an API, and AI agents will need to use the language
 toolchain to compile, link, and run with the API.
 
-# Conclusion and Next Steps
+## Conclusion and Next Steps
 Design verification heavily relies on good coverage data to assess completeness, 
 and AI can play a critical role in analysis. PyUCIS implements the Accellera UCIS
 API, and supports AI agents via the CLI and a built-in MCP server. 

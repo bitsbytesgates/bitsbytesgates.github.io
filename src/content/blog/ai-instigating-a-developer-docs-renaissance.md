@@ -22,7 +22,7 @@ developer-docs renaissance driven by the needs of LLMs.
 
 <!-- more -->
 
-# Developer Docs and why we don't create them
+## Developer Docs and why we don't create them
 
 I define developer docs as the set of documentation that helps a
 developer navigate a technical project and understand things like:
@@ -50,7 +50,7 @@ LLMs shift that equation by making developer docs immediately
 actionable, and I'm optimistic that this may actually shift 
 our behavior.
 
-# Working with Complex Projects
+## Working with Complex Projects
 
 I was recently working on one of my open source projects. The structure
 is a bit complicated due to some of the requirements. Specifically,
@@ -72,7 +72,7 @@ there were many cases where the model (gpt-4.1 in this case) would only
 perform a subset of the required changes. In one case, it decided to 
 create a new Cython extension file entirely.
 
-# Developer Docs as LLM Instructions
+## Developer Docs as LLM Instructions
 
 I had independently started to write down some notes about the structure 
 of this code. You can find the notes [here](https://github.com/zuspec/zuspec-dev-docs/blob/main/docs/python_ext_structure.md)
@@ -85,7 +85,7 @@ after all, these notes will be immediately useful as I start working on
 the implementation.
 
 
-# Looking Forward
+## Looking Forward
 
 Writing developer docs and writing code is too-often seen as a zero-sum game:
 I can write code *or* I can write developer documentation. LLMs change this 

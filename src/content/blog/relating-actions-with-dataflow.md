@@ -26,7 +26,7 @@ PSS `buffer` construct.
 
 <!--more-->
 
-# Rewinding a Bit...
+## Rewinding a Bit...
 Recall that, in the last post, we were creating very simple multi-core
 read/write tests, such as what is shown in the diagram below:
 
@@ -90,7 +90,7 @@ actions without expressing how they can be related by data means that users
 will need to dig into the code to understand the internal variables and 
 constraints -- clearly not what we expect from modular code.
 
-# From Data to Temporal Declarative Relationships
+## From Data to Temporal Declarative Relationships
 
 If you're coming from a SystemVerilog background, data constraints are most
 likely the declarative programming feature that you're most familiar with. 
@@ -124,7 +124,7 @@ It's certainly not impossible, but can force us into some awkward design pattern
 of collecting lots of otherwise-unrelated classes such that they can be solved 
 together before separating them to run over time.
 
-# Toward a Declarative API
+## Toward a Declarative API
 The cross-action constraints that we used in the previous post are one 
 temporally-declarative feature that PSS provides. PSS allows us to express how 
 action execution is 
@@ -140,7 +140,7 @@ We'll see more details on how this I/O `contract` for actions helps in the futur
 For now, it's a great feature to assist in making PSS descriptions more modular 
 and reusable.
 
-# Updating the Memory-Test Actions
+## Updating the Memory-Test Actions
 
 All of the data relationships in our memory test are between 
 sequentially-executing actions. PSS provides the `buffer` data type to express
@@ -283,7 +283,7 @@ action Check {
 }
 ```
 
-# Updating the Memory-Test Scenario
+## Updating the Memory-Test Scenario
 Now that our actions are updated to capture the data they require and produce,
 we can turn our attention to assembling a scenario. Recall that our original
 scenario looked like this, with constraints enforcing all relationships:
@@ -320,7 +320,7 @@ Instead of using constraints, we will connect the input and
 output buffers on the action together. How to do we form those
 connections? The `bind` statement.
 
-## The Activity Bind Statement
+### The Activity Bind Statement
 The activity `bind` statement is used to connect action I/O
 ports together. In its simplest form, a `bind` statement 
 connects a single input and output. For example:
@@ -371,7 +371,7 @@ the temporal relationship between actions (write, copy, check). In the
 _Dataflow_ portion, we can see the data objects relating various 
 actions.
 
-# Extending the Scenario
+## Extending the Scenario
 As mentioned in the beginning of the post, the `buffer` construct
 is a feature that enables encapsulation and reuse.
 Let's leverage that reusability to extend our scenario to see how 
@@ -426,7 +426,7 @@ used plain data constraints. Secondly, input/output ports on actions express the
 library developer (or, just my colleague who wrote some actions) to 
 express where I should focus as an end user of the action.
 
-# Flow-Object Pools and Binding
+## Flow-Object Pools and Binding
 There is one final thing to be aware of with PSS flow objects, and that
 is the `pool` construct. We'll largely gloss over it until we hit
 cases where we really need to use pools. For now, it's important to 
@@ -450,7 +450,7 @@ component memtest_c {
 }
 ```
 
-# Wrapping up and Looking Forward
+## Wrapping up and Looking Forward
 In this post, we looked at the `buffer` declarative data-flow construct. 
 We've seen how this can help to make our actions more reusable and 
 better encapsulated. The `buffer` construct provides a way to relate
@@ -469,7 +469,7 @@ I'm a big proponent of using real-world examples to introduce concepts in a
 practical context. In the next post, I'll introduce an example that we will
 use as a vehicle to introduce the next series of PSS modeling topics.
 
-## References
+### References
 - [1] [PSS LRM](https://www.accellera.org/downloads/standards/portable-stimulus) 
-- [2] [MemTest PSS Code (Viewing)](/code_html/2023/03/memtest_buffer.html)
+- [2] [MemTest PSS Code (Viewing)](/code_html/2023/03/memtest_buffer/)
 - [3] [MemTest PSS Code (Raw Text)](/code/2023/03/memtest_buffer.pss)

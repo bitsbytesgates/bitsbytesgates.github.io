@@ -31,7 +31,7 @@ situation with a SystemVerilog convenience API.
 
 <!--more-->
 
-# PyHDL-IF Architecture
+## PyHDL-IF Architecture
 
 The PyHDL-IF implements the interface between Python and HDLs with a layered architecture.
 
@@ -65,7 +65,7 @@ SystemVerilog source to implement the API in the SystemVerilog environment.
 We could use this same approach to "wrap up" the API of a Python library and expose it to SystemVerilog. But,
 it often makes sense to use one of the lower-level interface APIs. Let's look at an example.
 
-# Loading JSON Data
+## Loading JSON Data
 
 UVM testbench environments can be highly-configurable when used for complex, configurable IPs. Capturing 
 the configuration data in a JSON or YAML file is helpful in keeping all the settings in one place. 
@@ -96,7 +96,7 @@ for key in keys:
     print("Key: %s" % key)
 ```
 
-# SV/Python Convenience API
+## SV/Python Convenience API
 Using the PyHDL-IF library, we actually have several options for leveraging Python to access JSON data. 
 Let's look at using [SystemVerilog convenience API](https://fvutils.github.io/pyhdl-if/sv_api.html#systemverilog-api). 
 This API is object-oriented and higher level than the raw CPython API (which we also can use). 
@@ -155,7 +155,7 @@ it *is* pure SystemVerilog. And, it didn't require us to do any code generation 
 special "tagging" of Python code. Let's look in more detail at what's happening in this
 code, and how the PyHDL-IF convenience API helps us out.
 
-## Calling Built-in Functions
+### Calling Built-in Functions
 One of the first things we need to do is to read the contents of the JSON data file. 
 The Python `open` function is a built-in. This means that it's not contained in 
 another package or module that needs to be imported.
@@ -171,7 +171,7 @@ requires function arguments to be Python objects, and to be packed in a Tuple. T
 `py_tuple::mk_init` function handles creating the properly-sized tuple. The helper
 function `py_from_str` creates a Python string object from a SystemVerilog string value.
 
-## Calling Methods
+### Calling Methods
 The `open` function returns a Python stream object. We want to read all the data from
 the file and then close the file.
 
@@ -196,7 +196,7 @@ We happen to know that the return of the `loads` method is a Python dictionary (
 Therefore, we can directly convert the return value to a `py_dict` object. This allows
 us to use convenience methods to access the data.
 
-## Iterating
+### Iterating
 Now that we have a Python dictionary containing the JSON data, we likely will 
 want to iterate over it. The PyHDL-IF objects also provide some convenience 
 APIs to help simplify this process as well.
@@ -230,14 +230,14 @@ variable is actually a Python iterator object. Here, again, the convenience
 API simplifies the user code compared to using the raw CPython API.
 
 
-# Conclusion
+## Conclusion
 The PyHDL-IF Python convenience API enables you to call Python code from
 SystemVerilog without the need to generate any application-specific 
 code, and with less work that directly using the CPython API would require.
 This reduction of effort makes is incredibly simple to augment the capabilities
 of your existing testbench with those of a library from the vast Python ecosystem.
 
-# Resources
+## Resources
 - [PyHDL-IF Documentation](https://fvutils.github.io/pyhdl-if/)
 - [PyHDL-IF SV Convenience API](https://fvutils.github.io/pyhdl-if/sv_api.html)
 - [CPython API](https://docs.python.org/3/c-api/index.html)
