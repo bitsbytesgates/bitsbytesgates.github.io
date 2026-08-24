@@ -18,7 +18,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash-9.png)](https://1.bp.blogspot.com/-WV71pb0_ZF4/YF9cvK_8etI/AAAAAAAADio/uJ5BsUYxoj8Z91U1OQGBdT6OzD3J0dSAACLcBGAsYHQ/s540/splash.png)
+[![](/legacy-img/splash-9.png)](/legacy-img/splash-9.png)
 
 </div>
 
@@ -72,11 +72,11 @@ A final challenge, which really ought not to be a challenge, is that we’ll oft
 
 **Making use of Execution Trace**
 
-[In a previous post](https://bitsbytesgates.blogspot.com/2021/01/soc-integration-testing-higher-level.html), I wrote about using processor-execution trace for enhanced debug. I've also used processor trace as a simple way to detect test termination. For example, here is the Python test-harness code that terminates the test when one of 'test_pass' or 'test_fail' are invoked:
+[In a previous post](/blog/so-c-integration-testing-higher-level-software-debug-visibility/), I wrote about using processor-execution trace for enhanced debug. I've also used processor trace as a simple way to detect test termination. For example, here is the Python test-harness code that terminates the test when one of 'test_pass' or 'test_fail' are invoked:
 
 <div>
 
-[![](/legacy-img/TestTermination_1.png)](https://1.bp.blogspot.com/-bKYGmYKAeKg/YF9gH4FjidI/AAAAAAAADiw/EGsI42J_cOUsZ1frVsi_EcVxpVZaAuh5gCLcBGAsYHQ/s613/TestTermination_1.PNG)
+[![](/legacy-img/TestTermination_1.png)](/legacy-img/TestTermination_1.png)
 
 </div>
 
@@ -84,7 +84,7 @@ In order to support test-result checking, the processor-execution trace BFM has 
 
 <div>
 
-[![](/legacy-img/CoreBFM_diagram.png)](https://1.bp.blogspot.com/-zwqFc3WrFhs/YF9g2huL96I/AAAAAAAADi4/5FWlKf--AHsMJbFWZZvInHlapMq-OM9zQCLcBGAsYHQ/s288/CoreBFM_diagram.png)
+[![](/legacy-img/CoreBFM_diagram.png)](/legacy-img/CoreBFM_diagram.png)
 
 </div>
 
@@ -100,7 +100,7 @@ In order to access the value of function parameters, we need to know the calling
 
 <div>
 
-[<img src="/legacy-img/CallingConvention_1.png" width="400" height="351" />](https://1.bp.blogspot.com/-4X4Te8faB1g/YF9j89Ht-QI/AAAAAAAADjA/8w8tX8Nlho8zfW03MohsxsBXPPfCehdXQCLcBGAsYHQ/s469/CallingConvention_1.PNG)
+[<img src="/legacy-img/CallingConvention_1.png" width="400" height="351" />](/legacy-img/CallingConvention_1.png)
 
 </div>
 
@@ -130,7 +130,7 @@ The architecture-independent core-debug BFM defines a class API for accessing th
 
 <div>
 
-[<img src="/legacy-img/ParamsIterator_1.png" width="400" height="238" />](https://1.bp.blogspot.com/-eH4tfBi7W7U/YF9lf0svRBI/AAAAAAAADjI/iVlvGCKrdzUtEPDtTvH666fU2Y4lnQm4QCLcBGAsYHQ/s498/ParamsIterator_1.PNG)
+[<img src="/legacy-img/ParamsIterator_1.png" width="400" height="238" />](/legacy-img/ParamsIterator_1.png)
 
 </div>
 
@@ -139,7 +139,7 @@ Now, we just need to implement a RISC-V specific version of this API in order to
 
 <div>
 
-[<img src="/legacy-img/RiscVParamsIterator_1.png" width="400" height="354" />](https://1.bp.blogspot.com/-jwc45mpxSgE/YF9l5xwZdsI/AAAAAAAADjQ/Xi4l_A9Zle0qR2pgZJymqXYuWZQCPPlyACLcBGAsYHQ/s532/RiscVParamsIterator_1.PNG)
+[<img src="/legacy-img/RiscVParamsIterator_1.png" width="400" height="354" />](/legacy-img/RiscVParamsIterator_1.png)
 
 </div>
 
@@ -153,7 +153,7 @@ Here's how we use this implementation. Assume we have a embedded-software functi
 
 <div>
 
-[![](/legacy-img/FuncS.png)](https://1.bp.blogspot.com/-qPTNifjMFhU/YF9nn2HFzyI/AAAAAAAADjY/xOoAXIK_ZPwje_s_py0sadnzaSH9atddQCLcBGAsYHQ/s235/FuncS.PNG)
+[![](/legacy-img/FuncS.png)](/legacy-img/FuncS.png)
 
 </div>
 
@@ -161,7 +161,7 @@ When we detect that this function has been called, we can access the value of th
 
 <div>
 
-[<img src="/legacy-img/FuncS_TB.png" width="320" />](https://1.bp.blogspot.com/-SNbqbC6mvrs/YF9nzR5GHZI/AAAAAAAADjc/B_BIXMpOt9Yu3tCslNBdoFehF3DYcI5wQCLcBGAsYHQ/s344/FuncS_TB.PNG)
+[<img src="/legacy-img/FuncS_TB.png" width="320" />](/legacy-img/FuncS_TB.png)
 
 </div>
 
@@ -187,7 +187,7 @@ Perhaps more importantly, our trace-based communication mechanism allow us to of
 
 <div>
 
-[<img src="/legacy-img/Print.png" width="320" />](https://1.bp.blogspot.com/-_CsvguYOpeg/YF9pRHnsVcI/AAAAAAAADjo/WMq5h1EOrBAZathYfTwE-olWKZPyqwCQwCLcBGAsYHQ/s345/Print.PNG)
+[<img src="/legacy-img/Print.png" width="320" />](/legacy-img/Print.png)
 
 </div>
 

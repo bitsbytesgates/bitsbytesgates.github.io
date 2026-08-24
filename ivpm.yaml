@@ -1,14 +1,22 @@
 
+# IVPM is no longer on the build path.
+#
+# Its only job here was fetching mballance/rouge@pss -- a Rouge fork carrying a
+# hand-written PSS lexer -- so Jekyll could highlight PSS code blocks. Astro
+# highlights with Shiki against grammars/pss.tmLanguage.json, a file committed to
+# this repo, so there is nothing left to fetch. That also closes finding F5: the
+# Forgejo build no longer reaches github.com for a dependency.
+#
+# The file stays, empty of deps, because the ivpm package map still resolves this
+# repo by name and an absent ivpm.yaml is a harder failure than an inert one.
+
 package:
   name: bitsbytesgates.github.io
 
   dep-sets:
-  
+
   - name: default-dev
-    deps:
-    - name: rouge
-      url: https://github.com/mballance/rouge.git
-      branch: pss
+    deps: []
 
   - name: default
     deps: []

@@ -17,11 +17,11 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash-8.png)](https://1.bp.blogspot.com/-Uv3Qm-tHLPY/YDrk77i_u0I/AAAAAAAADgk/nBkE_Qvibsc8eUvE_0sC13PQEKEJpRr0ACLcBGAsYHQ/s540/splash.png)
+[![](/legacy-img/splash-8.png)](/legacy-img/splash-8.png)
 
 </div>
 
-One of the things I've always liked about side projects is the freedom to stop and explore a topic of interest as it comes up. One such topic that came up for me recently is IP-integrated debug and analysis instrumentation. I started thinking about this after the last post ([link](https://bitsbytesgates.blogspot.com/2021/01/soc-integration-testing-higher-level.html)) which focused on exposing a higher-abstraction-level view of processor-core execution. My initial approach to doing this involved a separate bus-functional model (BFM) intended to connect to any RISC-V processor core via an interface. After my initial work on this bus-functional model that could be bolted onto a RISC-V core, two things occurred to me:
+One of the things I've always liked about side projects is the freedom to stop and explore a topic of interest as it comes up. One such topic that came up for me recently is IP-integrated debug and analysis instrumentation. I started thinking about this after the last post ([link](/blog/so-c-integration-testing-higher-level-software-debug-visibility/)) which focused on exposing a higher-abstraction-level view of processor-core execution. My initial approach to doing this involved a separate bus-functional model (BFM) intended to connect to any RISC-V processor core via an interface. After my initial work on this bus-functional model that could be bolted onto a RISC-V core, two things occurred to me:
 
 <div>
 
@@ -100,7 +100,7 @@ Let's look at a simple example of adding instrumentation to an existing IP. Over
 
 |                                                                                                                                                                                                                                                                                                                            |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [<img src="/legacy-img/DMA_block_diagram.png" width="400" height="315" />](https://1.bp.blogspot.com/-jEEt3dPpqwc/YDqdSwhj6PI/AAAAAAAADgM/2Gv1iB1tavIbFg4DBvajQWnLOXxWtIrawCLcBGAsYHQ/s376/DMA_block_diagram.PNG) |
+| [<img src="/legacy-img/DMA_block_diagram.png" width="400" height="315" />](/legacy-img/DMA_block_diagram.png) |
 | DMA Block Diagram                                                                                                                                                                                                                                                                                                          |
 
   
@@ -129,7 +129,7 @@ While there may be additional things we'd like to know, this is a good start.
 
 <div>
 
-[<img src="/legacy-img/TransferDetail.png" width="640" height="438" />](https://1.bp.blogspot.com/-4zzJw_MbDNA/YDrDbP51fnI/AAAAAAAADgc/uIMARWX9sG43RU6ZpZu70Va-bB4SmqxigCLcBGAsYHQ/s833/TransferDetail.PNG)
+[<img src="/legacy-img/TransferDetail.png" width="640" height="438" />](/legacy-img/TransferDetail.png)
 
 </div>
 
@@ -165,7 +165,7 @@ We first need to establish a debug/analysis "socket" -- an empty module -- that 
 
 <div>
 
-[<img src="/legacy-img/fwperiph_dma_dbg.png" width="333" height="400" />](https://1.bp.blogspot.com/-kgXALJqCWRQ/YDrx4z8YizI/AAAAAAAADg0/_4q2BypkDRQ5FauJ8LRgFytRyZHoRhEeQCLcBGAsYHQ/s464/fwperiph_dma_dbg.PNG)
+[<img src="/legacy-img/fwperiph_dma_dbg.png" width="333" height="400" />](/legacy-img/fwperiph_dma_dbg.png)
 
 </div>
 
@@ -232,7 +232,7 @@ Thus far, I've mostly used the waveform-centric view provided by the DMA-control
 
 <div>
 
-[<img src="/legacy-img/AlignedStart.png" width="640" height="236" />](https://1.bp.blogspot.com/-M-nBbyLdMOE/YDqcfJ-zGYI/AAAAAAAADgE/yTnf_qBc4HcI_iopjHx22bPLVssrSoRigCLcBGAsYHQ/s1490/AlignedStart.PNG)
+[<img src="/legacy-img/AlignedStart.png" width="640" height="236" />](/legacy-img/AlignedStart.png)
 
 </div>
 
@@ -244,7 +244,7 @@ I was developing a full-traffic test that was intended to keep all DMA channels 
 
 <div>
 
-[<img src="/legacy-img/RandomStart.png" width="640" height="224" />](https://1.bp.blogspot.com/-F8aUPl0vfpo/YDrBabTRY5I/AAAAAAAADgU/aqoAAV2EyV4HLrqvs4WDfC6SN1mFSgHTgCLcBGAsYHQ/s1567/RandomStart.PNG)
+[<img src="/legacy-img/RandomStart.png" width="640" height="224" />](/legacy-img/RandomStart.png)
 
 </div>
 

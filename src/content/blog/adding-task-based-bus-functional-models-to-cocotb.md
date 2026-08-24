@@ -85,7 +85,7 @@ In considering how to add task-based interactions to Cocotb, there were a severa
 
 <div>
 
-[<img src="/legacy-img/OverallDiagram.png" width="640" height="268" />](https://1.bp.blogspot.com/-PKzRYWPDZHs/XeKur66lccI/AAAAAAAACwM/ZzO6MkL850ADBshxdjN_3sihafwWQMpWgCLcBGAsYHQ/s1600/OverallDiagram.png)
+[<img src="/legacy-img/OverallDiagram.png" width="640" height="268" />](/legacy-img/OverallDiagram.png)
 
 </div>
 
@@ -615,7 +615,7 @@ I'll use my [FWRISC](https://github.com/mballance/fwrisc/tree/fwrisc-s-merge) (F
 
 <div>
 
-[<img src="/legacy-img/fwrisc_testbench_diagram-2.png" width="400" height="400" />](https://1.bp.blogspot.com/-TLz9jYIpD08/XeKzINNDMiI/AAAAAAAACwo/fb_Lij7dENwOe2K5U1QHcpJwmenH7DzQwCLcBGAsYHQ/s1600/fwrisc_testbench_diagram.png)
+[<img src="/legacy-img/fwrisc_testbench_diagram-2.png" width="400" height="400" />](/legacy-img/fwrisc_testbench_diagram-2.png)
 
 </div>
 

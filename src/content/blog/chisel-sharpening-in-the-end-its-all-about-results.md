@@ -49,7 +49,7 @@ We already have a synthesizable Wishbone target memory device from the verificat
 
 <div>
 
-[<img src="/legacy-img/Wishbone_rtl_2x4.png" width="320" height="298" />](https://3.bp.blogspot.com/-C7RORUyUI9I/WaOhkeBEfII/AAAAAAAACCA/SCogFvYyNmMwullaYZOdTt4MS9rl3K_VACLcBGAs/s1600/Wishbone_rtl_2x4.png)
+[<img src="/legacy-img/Wishbone_rtl_2x4.png" width="320" height="298" />](/legacy-img/Wishbone_rtl_2x4.png)
 
 </div>
 
@@ -118,7 +118,7 @@ Now, just for fun, here is the design running on the Cylone V prototype board.
 
 <div>
 
-[<img src="/legacy-img/Untitled.gif" width="320" height="180" />](https://2.bp.blogspot.com/-Nzyt-3eq9oE/WaTQTDJ3W7I/AAAAAAAACCk/g6oGDchAoZgBJTGS5mnAJGRhme8Vkaf6QCLcBGAs/s1600/Untitled.gif)
+[<img src="/legacy-img/Untitled.gif" width="320" height="180" />](/legacy-img/Untitled.gif)
 
 </div>
 

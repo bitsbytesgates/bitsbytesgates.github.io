@@ -22,7 +22,7 @@ This post isn't about RiscV, though. It's about Chisel (<https://github.com/free
 
 <div>
 
-[<img src="/legacy-img/ChiselProductivity.png" width="400" height="298" />](https://1.bp.blogspot.com/-wciyTu7Ffj4/WYJ0GBrRTcI/AAAAAAAAB-Y/G2fdnF-X8tUgfaxB9s5gTxAqAgwE5pQ2wCLcBGAs/s1600/ChiselProductivity.png)
+[<img src="/legacy-img/ChiselProductivity.png" width="400" height="298" />](/legacy-img/ChiselProductivity.png)
 
 </div>
 
@@ -229,7 +229,7 @@ Now, what we're building is effectively shown below. Each slave interface has an
 
 <div>
 
-[<img src="/legacy-img/Untitled_2Bdrawing_2B_25281_2529.jpg" width="400" height="206" />](http://4.bp.blogspot.com/-9iv6eBLKTEo/WYKLSe9KCmI/AAAAAAAAB_s/h3b5JCTevOYRSywom0hB6x1x4hY-EJBuwCK4BGAYYCw/s1600/Untitled%2Bdrawing%2B%25281%2529.jpg)
+[<img src="/legacy-img/Untitled_2Bdrawing_2B_25281_2529.jpg" width="400" height="206" />](/legacy-img/Untitled_2Bdrawing_2B_25281_2529.jpg)
 
 </div>
 

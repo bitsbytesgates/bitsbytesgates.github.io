@@ -34,7 +34,7 @@ syndicate: none
 
 <div>
 
-In my [last post](https://bitsbytesgates.blogspot.com/2019/06/py-hpi-procedural-hdlpython-integration.html), I talked about a prototype procedural interface between Python and HDL that enables cross-calling between Python and SystemVerilog. My primary motivation for investigating a procedural interface was its potential to maximize performance. In this post, I create a Python testbench for a small IP and compare it to the equivalent C++ testbench. I also look at the performance of Python for verification.
+In my [last post](/blog/py-hpi-a-procedural-hdl-python-integration/), I talked about a prototype procedural interface between Python and HDL that enables cross-calling between Python and SystemVerilog. My primary motivation for investigating a procedural interface was its potential to maximize performance. In this post, I create a Python testbench for a small IP and compare it to the equivalent C++ testbench. I also look at the performance of Python for verification.
 
 </div>
 
@@ -53,7 +53,7 @@ In my [last post](https://bitsbytesgates.blogspot.com/2019/06/py-hpi-procedural-
 
 <div>
 
-My go-to IP for trying out new verification techniques is a small 32-bit RISC-V core named Featherweight RISC ([FWRISC](https://github.com/mballance/fwrisc)) that I created for a design contest last year. The original testbench was written in C++, so that will be my baseline for comparison. If you're interested in the structure of the testbench, have a look at [this post](https://bitsbytesgates.blogspot.com/2018/12/fwrisc-creating-unit-test-safety-net.html).  
+My go-to IP for trying out new verification techniques is a small 32-bit RISC-V core named Featherweight RISC ([FWRISC](https://github.com/mballance/fwrisc)) that I created for a design contest last year. The original testbench was written in C++, so that will be my baseline for comparison. If you're interested in the structure of the testbench, have a look at [this post](/blog/fwrisc-creating-a-unit-test-safety-net/).  
   
 Since I was keeping the testbench structure the same, I didn't expect much in terms of a reduction in lines of code. C++ is a bit verbose, in that it expects a header and implementation file for each class. This contributes to the fact that each C++ test is roughly twice as long as each Python test:  
   
@@ -146,7 +146,7 @@ Testbench performance may not be the most important factor when evaluating a lan
 
 <div>
 
-[<img src="/legacy-img/PythonSpeed_Patterson.png" width="640" height="360" />](https://1.bp.blogspot.com/-sbkMFJtmMfQ/XQVtnrSb84I/AAAAAAAACmw/VP7TqeatozgDkBDQIP86JQaJYQJckemuwCLcBGAs/s1600/PythonSpeed_Patterson.PNG)
+[<img src="/legacy-img/PythonSpeed_Patterson.png" width="640" height="360" />](/legacy-img/PythonSpeed_Patterson.png)
 
 </div>
 

@@ -13,7 +13,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/MultiLanguageTestbench_splash.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRHKdkXm_YqfEF4nahvthmhcSyVkvuROeDoDcR-M25X1Gi4KFoG15drTEl7t3H1HOyImflxhYPzMa1pYxQ0wNDNpekQqWBkJA3JjecSNMlZkG8wTEczhFu-1mfHq0PQggd8LWdgvuRiPGEqjRhulETC-0LC-JRH3L7p0ZUDQBepfWBgn6wtw5cznPjhg/s540/MultiLanguageTestbench_splash.png)
+[![](/legacy-img/MultiLanguageTestbench_splash.png)](/legacy-img/MultiLanguageTestbench_splash.png)
 
 </div>
 
@@ -39,7 +39,7 @@ I’ll get into more detail about the TbLink-RPC architecture in a future post. 
 
 <div>
 
-[<img src="/legacy-img/concept_diagram.png" width="400" height="165" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnNyy_ASmMS639E9gPwbBIMGmmP5wCblEc5CTH-LsMynJ2QRwyJ-CyQvan5OdxKEb8IrAJviaEOw8FVQfExXzvwi-3TKbAWff45bEPh1J_Uut8-kz7n7JVNwKRXp_vRQMhI6oKzWBRbUVRu3ISqhRo31ikIDUG7TDtZB9QlEa8YNDa0qYR1GQEZpBozg/s932/concept_diagram.png)
+[<img src="/legacy-img/concept_diagram.png" width="400" height="165" />](/legacy-img/concept_diagram.png)
 
 </div>
 
@@ -59,7 +59,7 @@ An example is often the simplest way to get across a concept, and I have a very 
 
 <div>
 
-[<img src="/legacy-img/UVM_tb_diagram.png" width="320" height="264" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjR0Ce9JX3-2lmnyV1vKc13y4QZLFNOWk4pLts4jkI95i_MbQDBCXWqbKAf42gUX5wJWbbInFlBPJlRw-tg69wLKkAzULM-l8aDiHQlgOG36Vs-WMNQpsSy-uhSzDXNk5NcbyEafwMED33RrrAIwjPrTiaLWkjELNmHSEeFl4SRQAFoY3fb-lvB-ylevw/s408/UVM_tb_diagram.png)
+[<img src="/legacy-img/UVM_tb_diagram.png" width="320" height="264" />](/legacy-img/UVM_tb_diagram.png)
 
 </div>
 
@@ -69,7 +69,7 @@ Now, in this case our DUT isn’t that exciting. It’s just an adder, so our re
 
 <div>
 
-[![](/legacy-img/python_class.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6uJXRt5gO1iGAxSMHaHA5XGbuWTVq9QI_plx5v0ErXbeQKM4cippRZZzvM1tu_tffUnafRuJ3BTm9b8ZSpG2kc8mdYA9_cKVCh5Fgi2gxPZQnGMSNOSKmferC2OpWpfnZTwLv92Uvfk3VZ6MHEw0J8Vpkfdeo0wRi2dJj0PxT5AxzvkoUgZkOutbPbg/s646/python_class.png)
+[![](/legacy-img/python_class.png)](/legacy-img/python_class.png)
 
 </div>
 
@@ -79,7 +79,7 @@ Our reference-model class contains a method named ‘add’ that returns the sum
 
 <div>
 
-[![](/legacy-img/sv_object_class.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBMcPcMsk5zKpVnNvI3n7ucOU0Er2mEZXdvzsYTnzYbnpH1wWd158FalAlz2jPER6yxqb0GZ38xnlszVf8F7hDGasqmIdh5N4Uc-fRLdGsuvVKKYTkpMtfcPjDT3Bnrv71auuftoD_THlwWekKrETqoyQ5TgHpApOObjeUZTEvVuHFqmoGB8XwWXeS7Q/s529/sv_object_class.png)
+[![](/legacy-img/sv_object_class.png)](/legacy-img/sv_object_class.png)
 
 </div>
 
@@ -94,7 +94,7 @@ From a UVM testbench perspective, using our Python class involves two steps:
 
 <div>
 
-[![](/legacy-img/launch_remote_obj.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjXGIxM1M5fLJWbtYtnT6xs3t-cJm7qeHzmum5xqxPlYB9Pb2V-_vLjIuTgYgSSgYGwZeDflywQKqhzK9TH7x0-bLzJZg42Dkfw1CR0hyVE7y7gkIxngndkQAW5AamvgM943snUyd8ELt-umJVGpONImT5xDQXbPl6xVTb5LOWZXS5sT0qChz596pKCJw/s599/launch_remote_obj.png)
+[![](/legacy-img/launch_remote_obj.png)](/legacy-img/launch_remote_obj.png)
 
 </div>
 
@@ -102,7 +102,7 @@ The first step, launching, is shown above. The TbLink-RPC library class (TbLinkL
 
 <div>
 
-[![](/legacy-img/call_remote_obj.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhBp3tOO2_5c-WzCUf_VbKSgN1UPwUw4zVeKRrv-jlMnB3cqaOCVkPR5JEpsWBkrOU9i19VZS4Tv9KYwIFgqCjoRiY8KVyiovD90wEY69gOc9fK-xaxtjFZKrMBBu2t7nOYRrAwlq8QQCXYvEsyYJ7Z4HrRgZiBPahTZyxGadnhGOgKq5q1BIc0ZLmpzQ/s653/call_remote_obj.png)
+[![](/legacy-img/call_remote_obj.png)](/legacy-img/call_remote_obj.png)
 
 </div>
 

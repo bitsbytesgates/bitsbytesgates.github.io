@@ -50,47 +50,53 @@ jobs:
           fi
           echo "OK: no internal identifiers in tracked files"
 
-      - name: Install tools
-        run: |
-          apt-get update
-          apt-get install -y ruby-full python3 python3-pip bundler build-essential zlib1g-dev
+      - name: Set up Node
+        # `actions/setup-node` resolves against code.forgejo.org, not github.com
+        # (ground rule 1) -- verified present there. Version comes from .nvmrc so
+        # the two workflows and a local build cannot name different Node
+        # releases.
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
-        # NOTE: `ivpm update` still fetches mballance/rouge@pss from github.com.
-        # That is finding F5 -- a Forgejo build reaching out to GitHub for a
-        # dependency, which is the coupling this migration exists to remove. The
-        # fix is to mirror the fork into mballance-utils and repoint ivpm.yaml at
-        # git.dvkit.org. Until then this side builds correctly but not
-        # independently.
-        # No --break-system-packages: ubuntu-latest maps to catthehacker/ubuntu:act-22.04
-        # here, whose pip (22.x, Python 3.10) predates the flag and rejects it
-        # outright. There is no PEP 668 marker in that image to work around anyway.
-        run: |
-          python3 -m pip install ivpm
-          python3 -m ivpm update -a
-          bundle config set path vendor
-          bundle install --gemfile=Gemfile.cfg
+        # F5 IS CLOSED HERE. This step used to run `ivpm update -a`, which
+        # fetched mballance/rouge@pss from github.com -- a Forgejo build reaching
+        # out to GitHub for a dependency, the exact coupling this migration
+        # exists to remove. Shiki replaced Rouge, the PSS grammar is a committed
+        # file in grammars/, and npm is the only registry touched. This side now
+        # builds independently.
+        run: npm ci
 
       - name: Build site
+        # Byte-for-byte the same command as the GitHub side and as a local build.
         run: |
-          export JEKYLL_ENV=production
-          bundle exec --gemfile=Gemfile.cfg jekyll build -d web
-          touch web/.nojekyll
+          npm run build
+          touch dist/.nojekyll
 
       - name: Sanity-check the build
-        # Jekyll exits 0 on a build that produced almost nothing. These two
-        # checks are what distinguish "built" from "built something real".
+        # A static-site build can exit 0 having produced almost nothing. These
+        # checks are what distinguish "built" from "built something real". Kept
+        # identical to the GitHub side -- the two publishers must agree on what
+        # counts as a real site, or the standby silently accepts what the primary
+        # would have rejected.
         run: |
-          test -s web/index.html || { echo "::error::no index.html in the build output"; exit 1; }
-          n=$(find web -name '*.html' | wc -l)
+          test -s dist/index.html || { echo "::error::no index.html in the build output"; exit 1; }
+          n=$(find dist -name '*.html' | wc -l)
           echo "generated pages: $n"
-          [ "$n" -ge 50 ] || { echo "::error::only $n pages built; expected ~105. Refusing to call this a site."; exit 1; }
+          [ "$n" -ge 150 ] || { echo "::error::only $n pages built; expected ~183. Refusing to call this a site."; exit 1; }
+          test -s dist/_redirects || { echo "::error::no _redirects in the build output"; exit 1; }
+          r=$(grep -c '  301$' dist/_redirects)
+          echo "redirect rules: $r"
+          [ "$r" -ge 160 ] || { echo "::error::only $r redirect rules; expected ~167. Old URLs would 404."; exit 1; }
+          test -s dist/pagefind/pagefind.js || { echo "::error::pagefind did not index the site"; exit 1; }
 
       - name: Upload site
         uses: forgejo/upload-artifact@v4
         with:
           name: bbg-site
-          path: web/**
+          path: dist/**
           if-no-files-found: error
 
   gate:
@@ -135,7 +141,7 @@ jobs:
         uses: forgejo/download-artifact@v4
         with:
           name: bbg-site
-          path: web
+          path: dist
 
       - name: Publish for host-side staging
         # The <name>-<ref> convention is what the poller matches on; the tag in
@@ -144,7 +150,7 @@ jobs:
         uses: forgejo/upload-artifact@v4
         with:
           name: bbg-site-release-${{ github.ref_name }}
-          path: web/**
+          path: dist/**
           if-no-files-found: error
 
       - name: Say what happens next

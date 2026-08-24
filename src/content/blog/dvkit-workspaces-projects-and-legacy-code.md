@@ -27,7 +27,7 @@ Eclipse, like many integrated development environments, provides a variety of fl
 
 <div>
 
-[<img src="/legacy-img/WorkspaceProject_1.png" width="400" height="213" />](https://2.bp.blogspot.com/-p4TwkHhI8cc/WlJt5VAnQLI/AAAAAAAACMc/DeClllSY6SsO4dEkIXXhiVk9RCAKfVhxgCLcBGAs/s1600/WorkspaceProject_1.png)
+[<img src="/legacy-img/WorkspaceProject_1.png" width="400" height="213" />](/legacy-img/WorkspaceProject_1.png)
 
 </div>
 
@@ -86,7 +86,7 @@ After launching DVKit, I would launch the 'New C Project' wizard (New-\>Project.
 
 <div>
 
-[<img src="/legacy-img/NewProject_1-2.png" width="320" height="310" />](https://2.bp.blogspot.com/-sxk_tiAO80A/WlJwbMd0zwI/AAAAAAAACMs/Itoec5ZlE2AOwR03lu43DSj6w_wum_ZbgCLcBGAs/s1600/NewProject_1.png)
+[<img src="/legacy-img/NewProject_1-2.png" width="320" height="310" />](/legacy-img/NewProject_1-2.png)
 
 </div>
 
@@ -100,7 +100,7 @@ The next wizard allows me to provide specifics about the project I want to work 
 
 <div>
 
-[<img src="/legacy-img/WorkspaceProject_2.png" width="286" height="320" />](https://1.bp.blogspot.com/-Gg_Z1NWJK5A/WlJwbGWtz3I/AAAAAAAACMo/yfvlcDiS-SoUkcc3fcmaGsBfelJZosx6ACLcBGAs/s1600/WorkspaceProject_2.png)
+[<img src="/legacy-img/WorkspaceProject_2.png" width="286" height="320" />](/legacy-img/WorkspaceProject_2.png)
 
 </div>
 
@@ -119,7 +119,7 @@ After completing this wizard, the 'dtc' project will be visible in the workspace
 
 <div>
 
-[<img src="/legacy-img/DTC_Project.png" width="640" height="444" />](https://1.bp.blogspot.com/-HVohfwderJw/WlJyL_0RTEI/AAAAAAAACM4/_eELXh5oMBIEx2Dc3nrC5OTA8I3xIcqqQCLcBGAs/s1600/DTC_Project.png)
+[<img src="/legacy-img/DTC_Project.png" width="640" height="444" />](/legacy-img/DTC_Project.png)
 
 </div>
 

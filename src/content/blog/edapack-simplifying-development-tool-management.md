@@ -90,7 +90,7 @@ I created [EDAPack](https://github.com/edapack), which I consider to be in an Al
 
 <div>
 
-[<img src="/legacy-img/EDAPackDiagram_2.png" width="640" height="343" />](https://2.bp.blogspot.com/-mHnyi80IJ5M/XDvtzUQzq2I/AAAAAAAACfM/mGuwBfXr7Ps0ArY4CAkLdPMJmD9uBh6UwCLcBGAs/s1600/EDAPackDiagram_2.PNG)
+[<img src="/legacy-img/EDAPackDiagram_2.png" width="640" height="343" />](/legacy-img/EDAPackDiagram_2.png)
 
 </div>
 

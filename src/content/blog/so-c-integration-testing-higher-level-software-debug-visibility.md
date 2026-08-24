@@ -20,7 +20,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash-14.png)](https://1.bp.blogspot.com/-g9jpDauYz3M/YBWmxag8yNI/AAAAAAAADdQ/lZ5vFQabXDc8LrcUuxbhK0PvtVQBqc0ewCLcBGAsYHQ/s540/splash.png)
+[![](/legacy-img/splash-14.png)](/legacy-img/splash-14.png)
 
 </div>
 
@@ -101,7 +101,7 @@ Like other BFMs, the Verilog side of the RISC-V Debug BFM contains various mecha
 
 <div>
 
-[![](/legacy-img/DebugBfmStructure.png)](https://1.bp.blogspot.com/-IDZtHejNexY/YBXNZoC8ZFI/AAAAAAAADds/TL24aMAqVkIP0iwwYBIqR1IfqFAOHxYSQCLcBGAsYHQ/s266/DebugBfmStructure.PNG)
+[![](/legacy-img/DebugBfmStructure.png)](/legacy-img/DebugBfmStructure.png)
 
 </div>
 
@@ -109,7 +109,7 @@ The image above shows the elements within the debug BFM. The *ctxt* scope conta
 
 <div>
 
-[<img src="/legacy-img/Disassembly.png" width="640" height="120" />](https://1.bp.blogspot.com/-RgLcO7XNFa0/YBXOYqv4NKI/AAAAAAAADd0/JhhCWwlNC0wMkMm2KOB5ryOHkzY1J8tnACLcBGAsYHQ/s1047/Disassembly.PNG)
+[<img src="/legacy-img/Disassembly.png" width="640" height="120" />](/legacy-img/Disassembly.png)
 
 </div>
 
@@ -139,7 +139,7 @@ Fortunately, our BFM is connected to Python and there's a readily-available libr
 
 <div>
 
-[![](/legacy-img/SettingElfFile.png)](https://1.bp.blogspot.com/-rYEkSyPKo04/YBXRfPEirXI/AAAAAAAADeQ/RzZ3Qc6Tes47SrHif5QysraFpHm6kq1LgCLcBGAsYHQ/s512/SettingElfFile.PNG)
+[![](/legacy-img/SettingElfFile.png)](/legacy-img/SettingElfFile.png)
 
 </div>
 
@@ -153,7 +153,7 @@ The code snippet above shows our testbench obtaining the path to the ELF file fr
 
 <div>
 
-[<img src="/legacy-img/ExecStack.png" width="640" height="122" />](https://1.bp.blogspot.com/-1-trnvaKz3I/YBXR9FizCFI/AAAAAAAADeY/euzgRll1v44gfbbHPvg7LF0oBJn64pINACLcBGAsYHQ/s994/ExecStack.PNG)
+[<img src="/legacy-img/ExecStack.png" width="640" height="122" />](/legacy-img/ExecStack.png)
 
 </div>
 
@@ -167,7 +167,7 @@ The screenshot above shows the call stack of the [Zephyr OS](https://www.zephyrp
 
 <div>
 
-[<img src="/legacy-img/FullView.png" width="640" height="328" />](https://1.bp.blogspot.com/-3CirMoIHFnY/YBXSmxdxJ7I/AAAAAAAADeg/r-LdE-IvpHo2HFVyfEIFpHOePWydDFo-wCLcBGAsYHQ/s1559/FullView.PNG)
+[<img src="/legacy-img/FullView.png" width="640" height="328" />](/legacy-img/FullView.png)
 
 </div>
 

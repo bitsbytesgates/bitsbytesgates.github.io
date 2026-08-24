@@ -20,7 +20,7 @@ syndicate: none
 
 <div>
 
-[<img src="/legacy-img/splash-13.png" width="500" height="279" />](https://1.bp.blogspot.com/-eSbEW6CXj2I/Xve6PIe8-RI/AAAAAAAAC_Q/qNxrNskh4ysWWe_2tqR3Lqn0Zf21LdpVACK4BGAsYHg/s540/splash.png)
+[<img src="/legacy-img/splash-13.png" width="500" height="279" />](/legacy-img/splash-13.png)
 
 </div>
 

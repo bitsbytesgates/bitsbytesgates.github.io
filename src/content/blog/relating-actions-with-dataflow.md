@@ -351,12 +351,10 @@ We might visualize this as follows.
 
 <div class="mermaid" align="center">
 flowchart TB;
-
   write-.->mem_b_1
   mem_b_1-.->copy
   copy-.->mem_b_2
   mem_b_2-.->check
-
   subgraph Dataflow
     mem_b_1([mem_b])
     mem_b_2([mem_b])
@@ -401,14 +399,12 @@ action Write2xCopyCheck {
 
 <div class="mermaid" align="center">
 flowchart LR
-
   write-.->mem_b_1
   mem_b_1-.->copy1
   copy1-.->mem_b_2
   mem_b_2-.->copy2
   copy2-->mem_b_3
   mem_b_3-.->check
-
   subgraph Dataflow
     mem_b_1([mem_b])
     mem_b_2([mem_b])

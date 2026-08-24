@@ -16,7 +16,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/pyvsc_coverage-2.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjq5wnj9yN65OUU7dsp8gm5PRovjwCZlQubAsXkkaEis47rG46JBgh0gaNcbGqXjUX0HbjZQd1nRKrIChY0X6x_pVn_vbvGHNWxKyFDRiEATtKA-HWvSGjqViM03kqSmXfOsXtEI1NrobfqM6Q1E-rAkNKXk4RqeJfAIR3Wi_tLDYutBFSiDxMU2VjOFg/s540/pyvsc_coverage.png)
+[![](/legacy-img/pyvsc_coverage-2.png)](/legacy-img/pyvsc_coverage-2.png)
 
 </div>
 
@@ -34,7 +34,7 @@ Let’s look at an example:
 
 <div>
 
-[<img src="/legacy-img/CoverageMethodsExample.png" width="640" height="410" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgp4sxGCmgvfSB9S5pp78tiKP9ANcuyBKm63jyX6Ba4FzkbWym3MKXtZm7XHklK37Q85x1d-B2WjNvVk4emQP6dQqtWWRBFb1QXRiB2osalTHrhv1_QJqVGejSBiGVBm4-z0QpU_wXceqAAilxYOfPOTI9aFJac3NmpNevdRnePWsu78MXv-8kluu0ppA/s696/CoverageMethodsExample.png)
+[<img src="/legacy-img/CoverageMethodsExample.png" width="640" height="410" />](/legacy-img/CoverageMethodsExample.png)
 
 </div>
 
@@ -44,7 +44,7 @@ In the example above, we define a covergroup with a coverpoint that contains fou
 
 <div>
 
-[<img src="/legacy-img/CoverageMethodsExample_output.png" width="640" height="55" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg2qk4RnWoLhRiXIiobU0GG5RUXFb-vzkDOOWbZxIQJEE9LIgaPJHgdw39_4zxORd4TArXagA9F8oeCRqPX_huZZNdsISo9EBDq4p2wpwTKlm4_AvW7DLRbrY871A7AWpp7WBCClI1FiPQhtevTqBZKKcNEvvCXTHgGa_Zyk-dINdavQtYNqhb7E8Zvmw/s696/CoverageMethodsExample_output.png)
+[<img src="/legacy-img/CoverageMethodsExample_output.png" width="640" height="55" />](/legacy-img/CoverageMethodsExample_output.png)
 
 </div>
 
@@ -65,7 +65,7 @@ Both of these methods accept a keyword parameter named ‘details’ which contr
 
 <div>
 
-[<img src="/legacy-img/CoverageReportExample.png" width="640" height="364" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjRCPcddPWGxNhpIXiH6rLaOqn_mExL05U8D8FGs2S_j4b6sNzqrzZNGd7oc7DeAAznwyc625pf5FePHsBmfrNXm2iHnbIeCxwU_ivnGg6XRTLA_dtbUyVPRhPK3k1kVmvedG07N5xB_1Won8A0oDH3ECbnODzM4NrETSJ5Mmt2yl73YCOVpxgLQR-mmg/s695/CoverageReportExample.png)
+[<img src="/legacy-img/CoverageReportExample.png" width="640" height="364" />](/legacy-img/CoverageReportExample.png)
 
 </div>
 
@@ -75,7 +75,7 @@ This example is nearly identical to the first one, but with calls to ‘report_c
 
 <div>
 
-[<img src="/legacy-img/CoverageReportExample_output.png" width="640" height="470" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdCGkZXcD3sQrlwTpP0rZV5xdOBlI95xSCqcq0mR9pAhpIHb32K82BLuZvwxq7xaFCo7xryzLMcwcZhZSOpHkIYgWdqjisDqq-E7089ddMUZ1vS85LNACJh7JFmz9fXMME4bXGS9gXXWc3CxuJy6VQHCPkI6QFxHJH6DEk2-QbrvJszihsWpkEgtqgqA/s694/CoverageReportExample_output.png)
+[<img src="/legacy-img/CoverageReportExample_output.png" width="640" height="470" />](/legacy-img/CoverageReportExample_output.png)
 
 </div>
 
@@ -93,7 +93,7 @@ PyVSC can save coverage data to the XML interchange format defined by the UCIS s
 
 <div>
 
-[<img src="/legacy-img/CoverageSave_xml.png" width="640" height="304" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiv9Ox2BndFzQFeA46VCxqyroz3t-tNew5qvX0tu6xOiqxs83CdOn2jTq6mB_XxE3wsLjewGA1A4TdhpMRBk9SK1FE2uJl5UX-2zKQ9KElZunwOqpCiIKtJR5WgUGBjdn9kmzVap71ITuLTxE1zNrRRAKtR9KETlHXt0lzhEgQ1TDjdK34802Hu0_y_5Q/s698/CoverageSave_xml.png)
+[<img src="/legacy-img/CoverageSave_xml.png" width="640" height="304" />](/legacy-img/CoverageSave_xml.png)
 
 </div>
 
@@ -103,7 +103,7 @@ PyVSC can also save coverage data to a custom database format, provided the tool
 
 <div>
 
-[<img src="/legacy-img/CoverageSave_ucis.png" width="640" height="302" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg1XaHSaOJZFYZ7xXLeQykKEXpAIkqXy69KBbpgxUAbjfjq7LL3hKaYm8UfihtSpZdmWiDVx9MtxhSOBQ28JnD5oQSaMtwXHtsW2DYgK30APCv78PAAW6WW_FtsIDUeiay1Tgd-sCUfRfSHCY4FDVQ7VfBWdL3OkYceMQZDHUgrhNj00A70KeKlaYW_WQ/s699/CoverageSave_ucis.png)
+[<img src="/legacy-img/CoverageSave_ucis.png" width="640" height="302" />](/legacy-img/CoverageSave_ucis.png)
 
 </div>
 
@@ -123,7 +123,7 @@ A simple tree-based graphical viewer will open to show type and instance coverag
 
 <div>
 
-[<img src="/legacy-img/RISCV-DV_Coverage-2.png" width="640" height="516" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhyl0Aq9crAVbgEDjUxRerI8F_fGYYudJiKtinT634Xb9HxvehdeaPSIhEPcm2AJhPakC36tHA5EmWFZnkCVKSh7PX0geeo34oaTlByWx1o13cfj8nj29Dj17Omvz-BmVWxQrpM-h26voDzzMpfec7idota5KvUW96RgrVbFMoLqvVVyf--L5g-mH7lNA/s893/RISCV-DV_Coverage.PNG)
+[<img src="/legacy-img/RISCV-DV_Coverage-2.png" width="640" height="516" />](/legacy-img/RISCV-DV_Coverage-2.png)
 
 </div>
 

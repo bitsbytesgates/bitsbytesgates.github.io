@@ -43,7 +43,7 @@ When developing the FWRISC RISC-V core, I initially started off taking a verific
 
 <div>
 
-[<img src="/legacy-img/fwrisc_unit_test_add.png" width="400" height="222" />](https://1.bp.blogspot.com/-Qn0B8hGdxwQ/XBHsrgPpEYI/AAAAAAAACbQ/7S37-sUlbtwPnfkWzoggfFpwHKQTFwIKwCLcBGAs/s1600/fwrisc_unit_test_add.png)
+[<img src="/legacy-img/fwrisc_unit_test_add.png" width="400" height="222" />](/legacy-img/fwrisc_unit_test_add.png)
 
 </div>
 
@@ -83,7 +83,7 @@ The Featherweight RISC testbench block diagram is shown below:
 
 <div>
 
-[<img src="/legacy-img/fwrisc_testbench_diagram.png" width="400" height="400" />](https://1.bp.blogspot.com/-QP6Xetq1188/XBMnd6yr5eI/AAAAAAAACbc/Z5VZqQzE7UUGrMgZCf5B9SAStShHY3IQgCLcBGAs/s1600/fwrisc_testbench_diagram.png)
+[<img src="/legacy-img/fwrisc_testbench_diagram.png" width="400" height="400" />](/legacy-img/fwrisc_testbench_diagram.png)
 
 </div>
 
@@ -144,7 +144,7 @@ This data-driven test allows our test harness to be fairly simple and completely
 
 <div>
 
-[<img src="/legacy-img/unit_test_harness.png" width="640" height="555" />](https://2.bp.blogspot.com/-WIRfInPdPAA/XBM43R8GvNI/AAAAAAAACbw/6KiPMmsdeMc5yMfgVSxVAXqmzQzuJf5cwCLcBGAs/s1600/unit_test_harness.PNG)
+[<img src="/legacy-img/unit_test_harness.png" width="640" height="555" />](/legacy-img/unit_test_harness.png)
 
 </div>
 

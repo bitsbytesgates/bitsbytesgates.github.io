@@ -17,7 +17,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash-19.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjeUm4wAbSaE2GiFPDoa1M_6U6OqGwT5jusXQtor0CaVBSy_OYi1JCUko102SmcL0MBhnNOpBpQznLycMXV4T3OyDLnYaicBSEAyTMzPIyjswUegXQPOutmCFliEKg3Njs3gollZawm6YiJq1Q2fb2APy3gJlnwSgON-q__3hMqnytgYdhA_1YWKHuGZg/s540/splash.png)
+[![](/legacy-img/splash-19.png)](/legacy-img/splash-19.png)
 
 </div>
 
@@ -43,7 +43,7 @@ Let’s look at the following tools in the context of the YAML data format that 
 
 <div>
 
-[![](/legacy-img/coverage_yaml.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgfhgdr7Od7ZdsjwfNr912DRS5sh6z49-lKhnUCNzdbptH-ovF_YCyBbzDmzNrlQPGib_OvrMjpVwLqhe61HSwt39QSQ_p_TQXxkTcGpELesLCoUAjjXb2p-KA3Wwt3R2DBcIdDggHTN7Vjfd_O4rl_NJq2ES_TMpPT3lIiXy-QoDg4-AEbcUqwG3POzw/s393/coverage_yaml.png)
+[![](/legacy-img/coverage_yaml.png)](/legacy-img/coverage_yaml.png)
 
 </div>
 
@@ -140,7 +140,7 @@ Despite the fact that we are using YAML for our data, we will capture the schema
 
 <div>
 
-[<img src="/legacy-img/schema_ex.png" width="640" height="549" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi6PcfTk_RTY780zR_cGW4akORUYkp9K9EeglDvrt627RUf1Zbb065vcMHve20Nf3AztmLwPWto_x1AJbk33EX2oGC4L-zoxyrxjQ3XSmRNG018INzG66fly9nF1yRuyjXV68g1KxA7QkBoZDUs0t6vPQa615j0-n-b0XgeKN0Bo_UkTSpYgAt5Lw1I8w/s759/schema_ex.png)
+[<img src="/legacy-img/schema_ex.png" width="640" height="549" />](/legacy-img/schema_ex.png)
 
 </div>
 
@@ -231,7 +231,7 @@ So, what does having a schema allow an intelligent editor to do for us? Well, fo
 
 <div>
 
-[![](/legacy-img/vscode_autocomplete.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhmCCgG5L9mMcINvPYrvpocZhzGm-RKNB9pw1alxT6ady2z5MXX3dKUiJ5eJoIizFGYo1LidRk8zvopvVjuA0c0ieimBq4KAmwUHlwcEIV6ngLGPmo9zYFEi-Fn1wpuDeGo708acq1JLH0hjqHMqv0OZV7EK2-Jj5B8hXyJeTh9GravZTTLZw0Q6JFRrQ/s602/vscode_autocomplete.png)
+[![](/legacy-img/vscode_autocomplete.png)](/legacy-img/vscode_autocomplete.png)
 
 </div>
 
@@ -241,7 +241,7 @@ It can suggest what content is valid based on where we are in the document. For 
 
 <div>
 
-[![](/legacy-img/vscode_hover.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxqBocp04oJKSm7KgrkmvArNER7hJZKhT-t0ptwZhRlXUEQY7YsdYrqB7iIYvsXaLVTVNmf-5TsgI-QkhG8WCDTwHfqueqlEw3mto07zL8mnHqQWBlNsLh9eDEhkT7Jfot4nhjP0j3dZCLI7B2K5nlAbQQenJY-y8RBWHZ2xwzMLEj9jglgOu1-bEu3A/s407/vscode_hover.png)
+[![](/legacy-img/vscode_hover.png)](/legacy-img/vscode_hover.png)
 
 </div>
 
@@ -271,7 +271,7 @@ Not surprisingly, Sphinx has an extension that supports extracting data from a J
 
 <div>
 
-[<img src="/legacy-img/sphinx-doc.png" width="640" height="446" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhjyLqGYA4KAKB2iLodt0A-lKIYoYwG9i8pSM26Lcw85XZ5XUlctJtYYZPTec55urV5x_QBb20etVf2M60i0MsWyf7Sip7l_ZDU6hzr4zgSwT7o8il8p5f-FZyGN89VcWuCXnJlDWRK-a6b6RMXli-vlTnF8UW3H_aPcBxUVSGhOb-8IGmQaMlx83Oq4A/s756/sphinx-doc.png)
+[<img src="/legacy-img/sphinx-doc.png" width="640" height="446" />](/legacy-img/sphinx-doc.png)
 
 </div>
 

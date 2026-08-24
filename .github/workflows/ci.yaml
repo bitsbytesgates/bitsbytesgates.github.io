@@ -47,36 +47,54 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ruby-full python3 bundler build-essential zlib1g-dev ninja-build
-
-      - name: Install IVPM
-        run: python3 -m pip install ivpm
+      - name: Set up Node
+        # Pinned via .nvmrc, which is the version this site is developed and
+        # verified against. The Ruby toolchain it replaced was unpinned, and a
+        # silent Ruby bump was exactly the class of breakage that made a release
+        # feel unrepeatable. One file holds the version; nothing else names it.
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
 
       - name: Install dependencies
-        run: |
-          python3 -m ivpm update -a
-          bundle config set path vendor
-          bundle install --gemfile=Gemfile.cfg
+        # `ci`, not `install`: the lockfile is authoritative and a build must not
+        # be allowed to quietly resolve a different dependency tree than the one
+        # the site was verified against.
+        run: npm ci
 
       - name: Build site
+        # `npm run build` is the whole pipeline, and it is the SAME command used
+        # locally -- prebuild regenerates public/_redirects from src/url-map.json,
+        # astro builds, post-build-images normalises <img>, pagefind indexes.
+        # Keeping CI and local on one command is what stops the two diverging.
         run: |
-          export JEKYLL_ENV=production
-          bundle exec --gemfile=Gemfile.cfg jekyll build -d web
-          touch web/.nojekyll
+          npm run build
+          touch dist/.nojekyll
 
       - name: Sanity-check the build
-        # Jekyll exits 0 on a build that produced almost nothing -- a broken
-        # _config.yml or an empty _posts globs down to a shell of a site. These
-        # two checks are what distinguish "built" from "built something real",
-        # and they run before anything is allowed to reach readers.
+        # A static-site build can exit 0 having produced almost nothing -- an
+        # empty content collection or a bad glob leaves a shell of a site. These
+        # checks are what distinguish "built" from "built something real", and
+        # they run before anything is allowed to reach readers.
+        #
+        # 183 pages at the Astro cutover (81 posts + topic/series/archive/
+        # pagination pages), against ~105 for Jekyll: the floor is re-baselined
+        # accordingly. It is a floor, not an assertion of the exact count --
+        # writing a post legitimately moves the number up.
         run: |
-          test -s web/index.html || { echo "::error::no index.html in the build output"; exit 1; }
-          n=$(find web -name '*.html' | wc -l)
+          test -s dist/index.html || { echo "::error::no index.html in the build output"; exit 1; }
+          n=$(find dist -name '*.html' | wc -l)
           echo "generated pages: $n"
-          [ "$n" -ge 50 ] || { echo "::error::only $n pages built; expected ~105. Refusing to call this a site."; exit 1; }
+          [ "$n" -ge 150 ] || { echo "::error::only $n pages built; expected ~183. Refusing to call this a site."; exit 1; }
+          # The redirect map is what keeps nine years of inbound links alive. It
+          # is generated, so an empty or missing one is a silent build failure.
+          test -s dist/_redirects || { echo "::error::no _redirects in the build output"; exit 1; }
+          r=$(grep -c '  301$' dist/_redirects)
+          echo "redirect rules: $r"
+          [ "$r" -ge 160 ] || { echo "::error::only $r redirect rules; expected ~167. Old URLs would 404."; exit 1; }
+          # Pagefind runs last and fails soft if the site tree surprises it.
+          test -s dist/pagefind/pagefind.js || { echo "::error::pagefind did not index the site"; exit 1; }
 
       - name: Upload site
         # The published tree is an artifact, so the deploy job ships exactly the
@@ -84,7 +102,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bbg-site
-          path: web/**
+          # include-hidden-files keeps dist/.nojekyll in the artifact; without it
+          # GitHub Pages strips dist/_astro/, which is every stylesheet and script
+          # on the site.
+          path: dist/**
           include-hidden-files: true
           if-no-files-found: error
 
@@ -154,25 +175,32 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: bbg-site
-          path: web
+          path: dist
 
       - name: Deploy to GitHub Pages
-        # bitsbytesgates.com is served from this branch today. It stays the live
-        # path until the DNS cutover to Cloudflare Pages; after that this step
-        # goes away and the branch is frozen as history, not deleted.
+        # DORMANT as of the 2026-08-23 DNS cutover: bitsbytesgates.com is served
+        # by Cloudflare Pages, so nothing reads gh-pages any more. The step stays
+        # only until the 48 h watch on the GitHub teardown expires (earliest
+        # 2026-08-25 ~15:30 UTC), at which point it and the branch's custom
+        # domain go away together. Removing it here would front-run that watch.
+        #
+        # Note the branch stops being a Jekyll rollback target the first time
+        # this runs: it will hold the Astro tree. That is acceptable because the
+        # real rollback is promoting the previous Cloudflare Pages deployment,
+        # and the Jekyll source survives on the `jekyll-archive` branch.
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: web
+          folder: dist
 
       - name: Deploy to Cloudflare Pages
-        # The second leg of the dual-publish window: the same bytes go to the
-        # Pages project that will serve the apex after the DNS cutover, so the
-        # two can be diffed URL by URL before anything reader-visible moves.
+        # THE live leg since the 2026-08-23 DNS cutover -- this is what readers
+        # get. The gh-pages step above is the vestigial one now, not this.
         #
-        # Skipped, loudly, when the secret is absent -- that is the state before
-        # CLOUDFLARE_BBG_PAGES_PAT is installed, and it must not fail a release
-        # whose primary leg (gh-pages) succeeded.
+        # Skipped, loudly, when the secret is absent. That tolerance predates the
+        # cutover, when gh-pages was primary; it now means a release can report
+        # success having published nothing, so it is on the list to tighten into
+        # a hard failure once the gh-pages leg is removed.
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_BBG_PAGES_PAT }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_BBG_ACCOUNT_ID }}
@@ -181,7 +209,7 @@ jobs:
             echo "::warning::CLOUDFLARE_BBG_PAGES_PAT is not set; skipping the Cloudflare Pages leg"
             exit 0
           fi
-          npx --yes wrangler@3 pages deploy web \
+          npx --yes wrangler@4 pages deploy dist \
             --project-name=bitsbytesgates \
             --branch=main \
             --commit-dirty=true

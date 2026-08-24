@@ -11,6 +11,13 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 }
 
 const { page } = Astro.props as { page: Page<Post> }
+
+// Astro emits page.url.prev/next without a trailing slash ("/2"), but the pages
+// are directories, so Cloudflare 308s "/2" to "/2/". Linking the slashed form
+// keeps every internal link a single hop.
+const slash = (u: string | undefined) => (u && u !== '/' && !u.endsWith('/') ? u + '/' : u)
+const prev = slash(page.url.prev)
+const next = slash(page.url.next)
 ---
 <BaseLayout title={page.currentPage === 1 ? 'Bits, Bytes, and Gates' : `Page ${page.currentPage}`}>
   {page.currentPage === 1 ? (
@@ -25,8 +32,8 @@ const { page } = Astro.props as { page: Page<Post> }
     {page.data.map((post) => <PostCard post={post} />)}
   </ul>
   <nav class="pagination" aria-label="Pagination">
-    {page.url.prev ? <a href={page.url.prev}>← Newer</a> : <span />}
+    {prev ? <a href={prev}>← Newer</a> : <span />}
     <span>Page {page.currentPage} of {page.lastPage}</span>
-    {page.url.next ? <a href={page.url.next}>Older →</a> : <span />}
+    {next ? <a href={next}>Older →</a> : <span />}
   </nav>
 </BaseLayout>

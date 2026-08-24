@@ -45,7 +45,6 @@ flowchart TD
       BFM2_1["BFM1"]
       BFM2_2["BFM2"]
     end
-
     subgraph Sim ["Simulation"]
       BFM1
       BFM2
@@ -54,7 +53,6 @@ flowchart TD
     end
     Model1 --> Sim
     Model2 --> Sim
-
 </div>
 
 In other words, we want an integration mechanism that supports:

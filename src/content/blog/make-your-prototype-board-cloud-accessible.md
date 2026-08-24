@@ -19,7 +19,7 @@ syndicate: none
 
 <div>
 
-[<img src="/legacy-img/IntroPicture.png" width="640" height="336" />](https://3.bp.blogspot.com/-gVJQ9J60d7k/WigffOlHBQI/AAAAAAAACJQ/AQh-Px7v6So2DCEg4nQkg6HkIDfgHu_PwCEwYBhgL/s1600/IntroPicture.png)
+[<img src="/legacy-img/IntroPicture.png" width="640" height="336" />](/legacy-img/IntroPicture.png)
 
 </div>
 
@@ -50,7 +50,7 @@ There are three components to FPGAMgr: The client, the server, and the board con
 
 <div>
 
-[<img src="/legacy-img/FPGAMgrArchitecture.png" width="148" height="200" />](https://4.bp.blogspot.com/-5oDDHLLelZo/WjCNMPI1G6I/AAAAAAAACKM/yoTQycKP00ETXqe0IgD-9jdK2cBDD4QnwCLcBGAs/s1600/FPGAMgrArchitecture.png)
+[<img src="/legacy-img/FPGAMgrArchitecture.png" width="148" height="200" />](/legacy-img/FPGAMgrArchitecture.png)
 
 </div>
 
@@ -62,7 +62,7 @@ The CycloneV device was Altera's (now Intel's) first foray into pairing an ARM p
 
 <div>
 
-[<img src="/legacy-img/C5S_2013_image_top_01.jpg" width="320" height="248" />](https://1.bp.blogspot.com/-cakrziM0SSM/WjCOuF6SyhI/AAAAAAAACKY/BVLITEEjHd4Ef51Bj2ybzENNgQAu3lWDwCLcBGAs/s1600/C5S_2013_image_top_01.jpg)
+[<img src="/legacy-img/C5S_2013_image_top_01.jpg" width="320" height="248" />](/legacy-img/C5S_2013_image_top_01.jpg)
 
 </div>
 
@@ -74,7 +74,7 @@ I developed a very simple example design to use in testing out FPGAMgr. Much les
 
 <div>
 
-[<img src="/legacy-img/DesignPhoto.png" width="320" height="238" />](https://4.bp.blogspot.com/-QiPdd_RVjzo/WjCKTE-HhNI/AAAAAAAACJ8/k8xR-amBcvsbx6Alfq2UmWRgwEsfJdabwCLcBGAs/s1600/DesignPhoto.png)
+[<img src="/legacy-img/DesignPhoto.png" width="320" height="238" />](/legacy-img/DesignPhoto.png)
 
 </div>
 

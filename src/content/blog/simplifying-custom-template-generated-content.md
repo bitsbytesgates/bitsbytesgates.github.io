@@ -18,7 +18,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash-18.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjW6ygOoIw0lvUu7rGQcU-QVVwfR0SFtT6zCJtRzOilSOqHR8OwMnyDjG3C32-arWwoRRP0mKzGieAzgnyEPWk5fFsnzWNezMqZgDFNOUQy9MCRdodg9cWa3ghlBgKJgxJmXLOAXXCkMJI7tdm-fvXLQZIVvYFCXSXc7yHXz5NjDUt3SRbvhit25z52PQ/s540/splash.png)
+[![](/legacy-img/splash-18.png)](/legacy-img/splash-18.png)
 
 </div>
 

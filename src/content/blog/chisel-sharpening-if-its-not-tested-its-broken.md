@@ -55,7 +55,7 @@ I decided to verify a 2x4 configuration of the Wishbone interconnect, and create
 
 <div>
 
-[<img src="/legacy-img/Wishbone_2x4.png" width="320" height="245" />](https://4.bp.blogspot.com/-RvjgxA5Gsk8/WZhaNqjw6aI/AAAAAAAACAw/PCEPL1rG9Wceib6PIZiNmXKqAlxGEY62gCLcBGAs/s1600/Wishbone_2x4.png)
+[<img src="/legacy-img/Wishbone_2x4.png" width="320" height="245" />](/legacy-img/Wishbone_2x4.png)
 
 </div>
 
@@ -65,7 +65,7 @@ And, a very basic write/read test:
 
 <div>
 
-[<img src="/legacy-img/BasicTest.png" width="366" height="400" />](https://1.bp.blogspot.com/-FRsghUP_ww0/WZheiR1mguI/AAAAAAAACA8/IHVfNYovfjsiarkojlMQ8GBlx9IicLDcgCLcBGAs/s1600/BasicTest.png)
+[<img src="/legacy-img/BasicTest.png" width="366" height="400" />](/legacy-img/BasicTest.png)
 
 </div>
 
@@ -306,7 +306,7 @@ For now, I have a working Wishbone interconnect described with Chisel. And, desp
 
 <div>
 
-[<img src="/legacy-img/Waves.png" width="320" height="174" />](https://4.bp.blogspot.com/-4go5IsrHVb0/WZjxzcfPcqI/AAAAAAAACBM/gTOlpqXTsXUtAsgX4xkljg09Bmbrc_yPQCLcBGAs/s1600/Waves.png)
+[<img src="/legacy-img/Waves.png" width="320" height="174" />](/legacy-img/Waves.png)
 
 </div>
 

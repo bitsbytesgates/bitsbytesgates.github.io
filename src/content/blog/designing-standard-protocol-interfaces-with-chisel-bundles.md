@@ -18,7 +18,7 @@ syndicate: none
 
 <div>
 
-[<img src="/legacy-img/plugboard_2.jpg" width="320" height="213" />](https://1.bp.blogspot.com/-kZonK_HUEao/Wc_XfoFFrYI/AAAAAAAACEM/NQNpTqanWWocSn52Qr2Bb84nzJh4VA_FQCLcBGAs/s1600/plugboard_2.jpg)
+[<img src="/legacy-img/plugboard_2.jpg" width="320" height="213" />](/legacy-img/plugboard_2.jpg)
 
 </div>
 

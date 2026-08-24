@@ -172,7 +172,6 @@ columns 1
       style SvTbTitle fill:transparent,stroke:transparent
       style SvPad fill:transparent,stroke:transparent,color:transparent
     end
-
     Init --> PySeq
     PySeq --> WbBfm
   end

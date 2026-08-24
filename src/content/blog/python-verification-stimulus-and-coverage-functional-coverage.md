@@ -23,7 +23,7 @@ syndicate: none
 </div>
 
   
-In my last two posts ([here](https://bitsbytesgates.blogspot.com/2020/03/modeling-random-stimulus-and-functional.html) and [here](https://bitsbytesgates.blogspot.com/2020/04/python-verification-stimulus-and.html)), I've been talking about modeling random stimulus, constraints, and functional coverage in Python. After looking at the fundamentals of capturing the specifics of data types such that they can be used for hardware verification last week, lets look at using those data types for modeling functional coverage.  
+In my last two posts ([here](/blog/modeling-random-stimulus-and-functional-coverage-in-python/) and [here](/blog/python-verification-stimulus-and-coverage-data-types/)), I've been talking about modeling random stimulus, constraints, and functional coverage in Python. After looking at the fundamentals of capturing the specifics of data types such that they can be used for hardware verification last week, lets look at using those data types for modeling functional coverage.  
   
 As I mentioned last week, I'm using this series of blog posts as a guide and as motivation to document the [PyVSC](https://github.com/fvutils/pyvsc) package that implements the random stimulus and coverage that I'm describing. You can find documentation on the functional-coverage features in the [Coverage](https://py-vsc.readthedocs.io/en/latest/coverage.html#) chapter of the [documentation on readthedocs.org](https://py-vsc.readthedocs.io/en/latest/).  
   

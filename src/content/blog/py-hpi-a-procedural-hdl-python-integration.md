@@ -34,7 +34,7 @@ syndicate: none
 
 <div>
 
-As I mentioned in my [last post](https://bitsbytesgates.blogspot.com/2019/06/functional-verification-and-ecosystem.html), I've been looking at using Python for more tasks, including functional verification. My go-to languages for functional verification have traditionally been SystemVerilog for professional work, and C++ when I'm working on a personal project. I've started doing more of my small-application development in Python (often as an alternative to C++), and have wondered whether I could also migrate my testbench development from C++ to Python as well.
+As I mentioned in my [last post](/blog/functional-verification-and-the-ecosystem-argument/), I've been looking at using Python for more tasks, including functional verification. My go-to languages for functional verification have traditionally been SystemVerilog for professional work, and C++ when I'm working on a personal project. I've started doing more of my small-application development in Python (often as an alternative to C++), and have wondered whether I could also migrate my testbench development from C++ to Python as well.
 
 </div>
 
@@ -67,7 +67,7 @@ In this blog post, I will be describing the user experience in using Py-HPI. In 
 
 <div>
 
-<img src="https://raw.githubusercontent.com/fvutils/py-hpi/master/docs/block_diagram.png" width="400" height="270" />
+<img src="/legacy-img/pyhpi_block_diagram.png" width="400" height="270" />
 
 </div>
 
@@ -96,7 +96,7 @@ Currently, Py-HPI supports standard SystemVerilog-DPI simulators (eg Modelsim) a
 
 <div>
 
-<img src="https://raw.githubusercontent.com/fvutils/py-hpi/master/docs/bfm_example_block_diagram.png" width="400" height="281" />
+<img src="/legacy-img/pyhpi_bfm_example_block_diagram.png" width="400" height="281" />
 
 </div>
 

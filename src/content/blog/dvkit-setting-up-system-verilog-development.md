@@ -23,7 +23,7 @@ syndicate: none
 
 <div>
 
-[<img src="/legacy-img/Headline_full-2.png" width="400" height="190" />](https://4.bp.blogspot.com/-iy_14JZjvmU/Wl7byVVwQYI/AAAAAAAACNk/EfstsS2KUkoFXk_ZoiAKJUW1zT6WlzbpgCLcBGAs/s1600/Headline_full.png)
+[<img src="/legacy-img/Headline_full-2.png" width="400" height="190" />](/legacy-img/Headline_full-2.png)
 
 </div>
 
@@ -47,7 +47,7 @@ As mentioned in the last post, Eclipse makes it easy to create a project around 
 
 <div>
 
-[<img src="/legacy-img/NewProject_1.png" width="320" height="308" />](https://1.bp.blogspot.com/-0KpZHQxVEUI/Wl7cG8zqODI/AAAAAAAACNs/FFlABJrULfgZP1DRR_R3fiHBG4L9ZpYyQCLcBGAs/s1600/NewProject_1.png)
+[<img src="/legacy-img/NewProject_1.png" width="320" height="308" />](/legacy-img/NewProject_1.png)
 
 </div>
 
@@ -60,7 +60,7 @@ After selecting the proper wizard for project creation, we need to specify the p
 
 <div>
 
-[<img src="/legacy-img/NewProject_2.png" width="320" height="320" />](https://3.bp.blogspot.com/-aBGwPZWIyEM/Wl7cGgQ2dqI/AAAAAAAACOI/7JPGx7h3wGICcq67lfm2RnJUZiaHRWykwCPcBGAYYCw/s1600/NewProject_2.png)
+[<img src="/legacy-img/NewProject_2.png" width="320" height="320" />](/legacy-img/NewProject_2.png)
 
 </div>
 
@@ -82,7 +82,7 @@ Since the ubus project contains existing sources, we next want to specify the ro
 
 <div>
 
-[<img src="/legacy-img/NewProject_3.png" width="320" height="311" />](https://1.bp.blogspot.com/-O_3TMM3Q8SQ/Wl7cGt6FGeI/AAAAAAAACOM/y56PSc5G5-cjwNwaOrJEBbTM9-2mCgaxACPcBGAYYCw/s1600/NewProject_3.png)
+[<img src="/legacy-img/NewProject_3.png" width="320" height="311" />](/legacy-img/NewProject_3.png)
 
 </div>
 
@@ -94,7 +94,7 @@ To do this, we first create a New Filelist on the Filelists page of the new SVE 
 
 <div>
 
-[<img src="/legacy-img/NewProject_4.png" width="320" height="320" />](https://1.bp.blogspot.com/-YKhEKGnC8Ek/Wl7cHHw5m0I/AAAAAAAACOQ/do8mhGz6gZ4zwkwssvt64aK2K3rxoypzgCPcBGAYYCw/s1600/NewProject_4.png)
+[<img src="/legacy-img/NewProject_4.png" width="320" height="320" />](/legacy-img/NewProject_4.png)
 
 </div>
 

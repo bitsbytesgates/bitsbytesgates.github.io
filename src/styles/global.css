@@ -62,6 +62,12 @@ h1 { font-size: 2rem; margin-top: 0; }
 h2 { font-size: 1.5rem; }
 h3 { font-size: 1.2rem; }
 img { max-width: 100%; height: auto; }
+
+/* Long unbreakable tokens -- bare URLs in prose, and PSS/Verilog identifiers --
+   otherwise set their own minimum width and push the whole PAGE sideways at
+   375px. `pre` is exempt: code scrolls inside its own box (see below) rather
+   than wrapping, because a broken line of code is worse than a scrollbar. */
+h1, h2, h3, h4, p, li, td, th, a, dd, dt, figcaption { overflow-wrap: break-word; }
 hr { border: 0; border-top: 1px solid var(--border); margin-block: 2.5rem; }
 
 /* ---- code ---- */
@@ -86,7 +92,10 @@ th { background: var(--bg-subtle); }
 blockquote { margin-inline: 0; padding-left: 1rem; border-left: 3px solid var(--border); color: var(--fg-muted); }
 
 /* ---- post cards ---- */
-.card-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 2rem; }
+/* minmax(0,1fr), not the default 1fr: a grid item's automatic minimum size is
+   its MIN-CONTENT width, so one long title made every card 564px wide inside a
+   375px viewport and took the page with it. */
+.card-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 2rem; grid-template-columns: minmax(0, 1fr); }
 .card h2 { margin: 0 0 .25rem; font-size: 1.3rem; }
 .card h2 a { text-decoration: none; }
 .card h2 a:hover { text-decoration: underline; }

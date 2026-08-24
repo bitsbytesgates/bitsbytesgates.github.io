@@ -26,7 +26,7 @@ syndicate: none
 
 <div>
 
-In my last post, [Modeling Random Stimulus and Functional Coverage in Python](https://bitsbytesgates.blogspot.com/2020/03/modeling-random-stimulus-and-functional.html), I introduced a Python library for modeling random variables, constraints, and functional coverage. Starting with this post, I'll go through several aspects of the [PyVSC](https://github.com/fvutils/pyvsc) library in greater detail. In this post, I'll cover the data types supported by PyVSC.
+In my last post, [Modeling Random Stimulus and Functional Coverage in Python](/blog/modeling-random-stimulus-and-functional-coverage-in-python/), I introduced a Python library for modeling random variables, constraints, and functional coverage. Starting with this post, I'll go through several aspects of the [PyVSC](https://github.com/fvutils/pyvsc) library in greater detail. In this post, I'll cover the data types supported by PyVSC.
 
 </div>
 

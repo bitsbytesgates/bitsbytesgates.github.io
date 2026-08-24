@@ -16,7 +16,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/documenting-systemverilog-with-sphinx-3.png)](https://blogger.googleusercontent.com/img/a/AVvXsEiNWOsyFL5mQ67LxKR4FU9onpnBqZi9VdXXlN6f3v7jdhDpgpoT6JDNZI0xew3Vs7nw6Si5qG-aiOz9IymD_1j7kuh5n8wfSUthnYDrqTyq4gKhhYCFs62nlqZ0X0ll_DW2kMUjQXw3wnLXYAEWS__DyPdR1Xsq4jpUU9e_TU4u_q-fuMtJ6rnFdH4XCQ=s574)
+[![](/legacy-img/documenting-systemverilog-with-sphinx-3.png)](/legacy-img/documenting-systemverilog-with-sphinx-3.png)
 
 </div>
 
@@ -69,7 +69,7 @@ There really are two parts to our flow. The first is processing the SystemVerilo
 
 <div>
 
-[<img src="/legacy-img/documenting-systemverilog-with-sphinx-5.png" width="640" height="175" />](https://blogger.googleusercontent.com/img/a/AVvXsEjTMqFgnHsQjvDkklhPK7IsqsrdUTThcv4KmlMC3J1qPipseAoPTtFyP51x0MyoCBgZ7h5H22cZZQD5MbI6mCUfdjZdoXi1F41v-OLmXMrCR3cFQ5GSg4oDl9sPAS92JNqZnnwKvzLKI7lAFZRDCh3SC14y_uVZ6BGY_K5X2drvkJEXvMXfFQo6MgLjJQ=s912)
+[<img src="/legacy-img/documenting-systemverilog-with-sphinx-5.png" width="640" height="175" />](/legacy-img/documenting-systemverilog-with-sphinx-5.png)
 
 </div>
 
@@ -82,7 +82,7 @@ because of a very unique feature. Most pre-processors that I'm aware of strip ou
 
 <div>
 
-[<img src="/legacy-img/documenting-systemverilog-with-sphinx-4.png" width="640" height="285" />](https://blogger.googleusercontent.com/img/a/AVvXsEirdJh-jO91obP_OQyW5CrnT1y2GyZP4w6luiuBMp_o91e0TYK2byPTAI0VBTzCt6UAfz69wMpSjLEk6Vtjd5322mq5FnogyKKeMQFHtsUMl6_9qRWgEDcagdTaRgBQmC7NmLetOd4L0UNMPita_wW-9SYDQLkbFjUP8Lcv51xoyJ4GzldrvD4wE2terA=s865)
+[<img src="/legacy-img/documenting-systemverilog-with-sphinx-4.png" width="640" height="285" />](/legacy-img/documenting-systemverilog-with-sphinx-4.png)
 
 </div>
 
@@ -92,7 +92,7 @@ As I mentioned earlier, Sphinx brings in documentation code-comment content on d
 
 <div>
 
-[![](/legacy-img/documenting-systemverilog-with-sphinx-2.png)](https://blogger.googleusercontent.com/img/a/AVvXsEhZWM3-FBZzqoe7ks4iq2PQ-CcFsac1KN46H0GAup0GhvjvPpQPFGbd6uipsRNj_LBSfjinXF0ltdd5PYBTUkKWgnHN6dAA16zHFTtBz82eXE-ToHDXm5-7uAwFCb6bH2m1pU4HJkIdJpc-9C84Lfm6ngL0AhP-K6USUT9_4yBC5GxPCqHumu8N6YQ3eg=s320)
+[![](/legacy-img/documenting-systemverilog-with-sphinx-2.png)](/legacy-img/documenting-systemverilog-with-sphinx-2.png)
 
 </div>
 
@@ -100,7 +100,7 @@ The snippet above shows bringing in the code-comment documentation for all field
 
 <div>
 
-[![](/legacy-img/documenting-systemverilog-with-sphinx-1.png)](https://blogger.googleusercontent.com/img/a/AVvXsEg_qUdw_b1UWVJd5O5nhIU2NzQhSkJILiiYcksQVPmKPHtYaF-LC6Ghelx60Gi1dpXIwwPpTK2V-vuWHFLKp0uNEmSa55ZsqrdlbfBrJ4pBxI3pCrtvRuo2ZKJzOP9e1bYu0dSEe0S97v2rmcgU0JZDAVLEhS8cCe0-tefGoNnhEF81uHhRDnNr_O8O6g=s712)
+[![](/legacy-img/documenting-systemverilog-with-sphinx-1.png)](/legacy-img/documenting-systemverilog-with-sphinx-1.png)
 
 </div>
 

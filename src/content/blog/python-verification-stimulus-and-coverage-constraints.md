@@ -18,7 +18,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash_constraints.png)](https://1.bp.blogspot.com/-5brwvGvJgds/XrbHTbxSbZI/AAAAAAAAC8I/BA9qcnrfshE_qDlIO8yP5k9uOMNsiEYygCK4BGAsYHg/splash_constraints.png)
+[![](/legacy-img/splash_constraints.png)](/legacy-img/splash_constraints.png)
 
 </div>
 

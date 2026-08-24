@@ -28,7 +28,7 @@ syndicate: none
   
 Before jumping into this week's post, I wanted to offer a bit of an apology to my readers. I recently realized that, despite being a Google property, Blogger only notifies authors of comments for moderation if the author has specifically registered a 'moderator' email with the site. So, apologies to those of you that have commented on posts directly on the Blogger site and watched those comments hang out in limbo indefinitely. I should now receive notifications of new comments.  
   
-In my [last post](https://bitsbytesgates.blogspot.com/2020/04/python-verification-and-stimulus.html), we looked at modeling and sampling functional coverage in Python using the Python Verification Stimulus and Coverage (PyVSC). In that post, I showed how a textual coverage report could be generated to the console by calling an API. But, there is much more that we want to do with functional coverage data. The key question is: how do we store and manipulate it?  
+In my [last post](/blog/python-verification-stimulus-and-coverage-functional-coverage/), we looked at modeling and sampling functional coverage in Python using the Python Verification Stimulus and Coverage (PyVSC). In that post, I showed how a textual coverage report could be generated to the console by calling an API. But, there is much more that we want to do with functional coverage data. The key question is: how do we store and manipulate it?  
   
 
 ### Storing Coverage Data
@@ -83,7 +83,7 @@ Much of my work recently has been in Python, so I wanted a way to work with the 
 
 <div>
 
-[<img src="/legacy-img/PyUCIS_Diagram.png" width="640" height="291" />](https://1.bp.blogspot.com/-5FQxSojHcr0/XqTbGueCh7I/AAAAAAAAC6k/pu_lSRcIEnMK19ItUP36u6LgIfJkwzhswCLcBGAsYHQ/s1600/PyUCIS_Diagram.png)
+[<img src="/legacy-img/PyUCIS_Diagram.png" width="640" height="291" />](/legacy-img/PyUCIS_Diagram.png)
 
 </div>
 
@@ -148,7 +148,7 @@ The top layer of the PyUCIS architecture diagram are external applications that 
 
 <div>
 
-[<img src="/legacy-img/PyUCIS_Viewer.png" width="400" height="237" />](https://1.bp.blogspot.com/-QGGohth8vXY/XqTEUMyjfYI/AAAAAAAAC6I/1tIWcWMCylAvWcjbWOULt2B68M5g0QvBQCLcBGAsYHQ/s1600/PyUCIS_Viewer.PNG)
+[<img src="/legacy-img/PyUCIS_Viewer.png" width="400" height="237" />](/legacy-img/PyUCIS_Viewer.png)
 
 </div>
 

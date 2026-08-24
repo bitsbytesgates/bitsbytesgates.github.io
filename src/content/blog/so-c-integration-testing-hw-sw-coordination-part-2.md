@@ -19,7 +19,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash-10.png)](https://1.bp.blogspot.com/-ZBoJb1TpY0c/YHs7BEuD-CI/AAAAAAAADpQ/-6mLIuhpgRA-EWwhuCzgZf8AZAwIXyQagCLcBGAsYHQ/s540/splash.png)
+[![](/legacy-img/splash-10.png)](/legacy-img/splash-10.png)
 
 </div>
 
@@ -27,7 +27,7 @@ syndicate: none
 
 <div>
 
-Controlling the outside world -- specifically interface BFMs -- from embedded software is critical to SoC integration tests that exercise interface IP. [In the last post](https://bitsbytesgates.blogspot.com/2021/03/soc-integration-testing-hwsw-test.html), we showed how to pass data from embedded software to Python by tracing execution of the processor core and reading the mirrored values of registers and memory to obtain parameter values. While functional, doing things in this way is highly specific to one message-passing approach and is pretty labor intensive. In this post, we'll add some abstraction and automation to improve usability and scalability.
+Controlling the outside world -- specifically interface BFMs -- from embedded software is critical to SoC integration tests that exercise interface IP. [In the last post](/blog/so-c-integration-testing-hw-sw-test-coordination-part-1/), we showed how to pass data from embedded software to Python by tracing execution of the processor core and reading the mirrored values of registers and memory to obtain parameter values. While functional, doing things in this way is highly specific to one message-passing approach and is pretty labor intensive. In this post, we'll add some abstraction and automation to improve usability and scalability.
 
 </div>
 
@@ -48,7 +48,7 @@ Controlling the outside world -- specifically interface BFMs -- from embedded so
 
 <div>
 
-[![](/legacy-img/HvlRpc_Diagram.png)](https://1.bp.blogspot.com/-dUWSpyHCvZM/YHtJyOtv5LI/AAAAAAAADqA/TjNZGDS5mlEztLbKRmkwP9oJynFYFSjcwCLcBGAsYHQ/s384/HvlRpc_Diagram.png)
+[![](/legacy-img/HvlRpc_Diagram.png)](/legacy-img/HvlRpc_Diagram.png)
 
 </div>
 
@@ -105,7 +105,7 @@ I always find an example to be helpful, so let's look at the enhancements to the
 
 <div>
 
-[![](/legacy-img/Example_Diagram.png)](https://1.bp.blogspot.com/-LNqDqp1S2pU/YHtC6-hfN6I/AAAAAAAADpk/L_J_vgTSKC8JzKu_f3xusMbk0BKkHRcQACLcBGAsYHQ/s276/Example_Diagram.png)
+[![](/legacy-img/Example_Diagram.png)](/legacy-img/Example_Diagram.png)
 
 </div>
 
@@ -154,7 +154,7 @@ For software-driven testing, we want to instruct the BFM to do some reasonable a
 
 <div>
 
-[![](/legacy-img/HigherLevel_Tx.png)](https://1.bp.blogspot.com/-4GIcjAmaI3g/YHtF85dMLLI/AAAAAAAADpw/h4Nc63Uaaswm_ul2AnSNK99cObt56LygwCLcBGAsYHQ/s549/HigherLevel_Tx.PNG)
+[![](/legacy-img/HigherLevel_Tx.png)](/legacy-img/HigherLevel_Tx.png)
 
 </div>
 
@@ -174,7 +174,7 @@ To enable automation, we describe the Python API that we will call from embedded
 
 <div>
 
-[![](/legacy-img/ApiClass.png)](https://1.bp.blogspot.com/-IBOvEpdd1XQ/YHtIA434IzI/AAAAAAAADp4/iGDmoLXzeow-JvqBmClH2aUUm8WG4nEsQCLcBGAsYHQ/s641/ApiClass.PNG)
+[![](/legacy-img/ApiClass.png)](/legacy-img/ApiClass.png)
 
 </div>
 
@@ -200,7 +200,7 @@ On the C side, we simply need to have functions with the same signature as what 
 
 <div>
 
-[![](/legacy-img/C_API.png)](https://1.bp.blogspot.com/-BcFSME3qtEM/YHtSAPXzGGI/AAAAAAAADqQ/rTs8AdskVfE-hvhdKPerdP_Mm3jK4D28ACLcBGAsYHQ/s446/C_API.PNG)
+[![](/legacy-img/C_API.png)](/legacy-img/C_API.png)
 
 </div>
 
@@ -227,7 +227,7 @@ Connecting all of this up on the Python side involves connecting the relevant BF
 
 <div>
 
-[![](/legacy-img/Connect_Python.png)](https://1.bp.blogspot.com/-4fZcuLXRITI/YHtP3vlx8fI/AAAAAAAADqI/yNvW6xx40_AwxSEqmr5QJpUmGyG_xuSqwCLcBGAsYHQ/s498/Connect_Python.PNG)
+[![](/legacy-img/Connect_Python.png)](/legacy-img/Connect_Python.png)
 
 </div>
 
@@ -253,7 +253,7 @@ With the BFMs connected on the Python side, we can now focus on how to interact 
 
 <div>
 
-[![](/legacy-img/RxTest.png)](https://1.bp.blogspot.com/-2JkVBKqE8Ok/YHtS02o9uUI/AAAAAAAADqY/v_kJYqUAKJwyWcLyPikPhfHHHL19A3tTgCLcBGAsYHQ/s557/RxTest.PNG)
+[![](/legacy-img/RxTest.png)](/legacy-img/RxTest.png)
 
 </div>
 

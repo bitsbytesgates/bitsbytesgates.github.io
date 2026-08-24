@@ -8,10 +8,11 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/post-build-images.mjs && pagefind --site dist",
+    "build": "astro build && node scripts/post-build-images.mjs && node scripts/check-mermaid.mjs && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
-    "prebuild": "node scripts/gen-redirects.mjs"
+    "prebuild": "node scripts/gen-redirects.mjs",
+    "verify": "node scripts/verify-deployment.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",

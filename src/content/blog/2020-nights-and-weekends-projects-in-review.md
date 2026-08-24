@@ -13,7 +13,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash-2.png)](https://1.bp.blogspot.com/-DZkaD_vzuoQ/X-oyxNXGKwI/AAAAAAAADZo/WF95kx1n-74ipRgHDy7CKvmQd5C5aIWhQCLcBGAsYHQ/s540/splash.png)
+[![](/legacy-img/splash-2.png)](/legacy-img/splash-2.png)
 
 </div>
 
@@ -102,7 +102,7 @@ One effort I continued from 2019 was my work with constraint solvers and embedde
 
 <div>
 
-[<img src="/legacy-img/RISCV-DV_Coverage.png" width="320" />](https://1.bp.blogspot.com/-8wjH5ud2oI4/X-p_q9rfYfI/AAAAAAAADaE/JcephIqtoTASNXiJDwIgWi5WYn3tpn-NACLcBGAsYHQ/s893/RISCV-DV_Coverage.PNG)
+[<img src="/legacy-img/RISCV-DV_Coverage.png" width="320" />](/legacy-img/RISCV-DV_Coverage.png)
 
 </div>
 
@@ -138,7 +138,7 @@ There are signs this could be changing, though. Several projects have been worki
 
 <div>
 
-[<img src="/legacy-img/FWPayload_rot.png" width="320" />](https://1.bp.blogspot.com/-4jP-aJqqwDo/X-qFAUk_KSI/AAAAAAAADag/vbqEK5qTxZAZNy6749tSkge5B3DAZSMsACLcBGAsYHQ/s869/FWPayload_rot.PNG)
+[<img src="/legacy-img/FWPayload_rot.png" width="320" />](/legacy-img/FWPayload_rot.png)
 
 </div>
 

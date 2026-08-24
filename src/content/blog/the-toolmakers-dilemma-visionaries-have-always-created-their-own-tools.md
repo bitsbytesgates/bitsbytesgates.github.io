@@ -24,7 +24,7 @@ I recently saw a quote (on Twitter, in a photo no less) to roughly the same effe
 
 <div>
 
-[<img src="/legacy-img/technologyadoption.jpg" width="400" height="130" />](https://1.bp.blogspot.com/-FpXiJ-RUJdc/XSoi-vQw4kI/AAAAAAAACoA/3avMX-pgwYYwytFACE-M9mTnwKn1FDnrQCLcBGAs/s1600/technologyadoption.jpg)
+[<img src="/legacy-img/technologyadoption.jpg" width="400" height="130" />](/legacy-img/technologyadoption.jpg)
 
 </div>
 

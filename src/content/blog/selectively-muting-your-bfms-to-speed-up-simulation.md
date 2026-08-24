@@ -26,7 +26,7 @@ syndicate: none
   
 Have you ever had the misfortune to be on the CC list for a "lively" email discussion where you're a stakeholder but only case about the conclusion? You can't simply ignore the traffic, because you do care about the conclusion to the discussion. But, it would be a significant time saver if you could just "tune out" all the discussion and simply be notified when a conclusion is reached.  
   
-I've been working with Python-based testbench environments (specifically [cocotb](https://cocotb.readthedocs.io/en/latest/introduction.html)) since the middle of last year. My first foray into contributing to cocotb was to implement a task-based BFM interface between the HDL environment and the Python environment (related blog posts [here](https://bitsbytesgates.blogspot.com/2019/11/adding-task-based-bus-functional-models.html) and [here](https://bitsbytesgates.blogspot.com/2019/12/writing-task-based-cocotb-bfm.html)). The motivation was to increase simulation speed by reducing the number of interactions between the HDL environment and the testbench environment. In other words, allow the Python testbench to "tune out" what was happening in the simulation until the BFM came back with some useful conclusions.  
+I've been working with Python-based testbench environments (specifically [cocotb](https://cocotb.readthedocs.io/en/latest/introduction.html)) since the middle of last year. My first foray into contributing to cocotb was to implement a task-based BFM interface between the HDL environment and the Python environment (related blog posts [here](/blog/adding-task-based-bus-functional-models-to-cocotb/) and [here](/blog/writing-a-task-based-cocotb-bfm/)). The motivation was to increase simulation speed by reducing the number of interactions between the HDL environment and the testbench environment. In other words, allow the Python testbench to "tune out" what was happening in the simulation until the BFM came back with some useful conclusions.  
   
 The performance benefits of abstracting up and interacting at the task-call level come from maximizing the amount of time the simulation engine can run before it needs to check in with the testbench environment. Getting good performance also requires having the HDL environment generate clocks for the design, in addition to having Python interact with BFMs at the task level to drive stimulus against the design.  
   
@@ -397,10 +397,10 @@ You can even see the difference visually in the two videos below. In both cases,
 <tbody>
 <tr class="odd">
 <td><div>
-<a href="https://1.bp.blogspot.com/-Whii4opAvnA/XjuAvhO_36I/AAAAAAAAC1Q/mBtGyA5AWSEup6VBjR4kGEcm0G4qKkvBQCLcBGAsYHQ/s1600/Philosophers2_slow2.gif"><img src="/legacy-img/Philosophers2_slow2.gif" width="320" height="221" /></a>
+<a href="/legacy-img/Philosophers2_slow2.gif"><img src="/legacy-img/Philosophers2_slow2.gif" width="320" height="221" /></a>
 </div></td>
 <td><div>
-<a href="https://1.bp.blogspot.com/-pHH_6WsK3vU/XjuAzuOkPMI/AAAAAAAAC1U/t4_kMcnFcFUzcyZdjX2XukwuJUL38BVNwCLcBGAsYHQ/s1600/Philosophers2_fast2.gif"><img src="/legacy-img/Philosophers2_fast2.gif" width="320" height="220" /></a>
+<a href="/legacy-img/Philosophers2_fast2.gif"><img src="/legacy-img/Philosophers2_fast2.gif" width="320" height="220" /></a>
 </div></td>
 </tr>
 <tr class="even">

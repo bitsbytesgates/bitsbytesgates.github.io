@@ -13,7 +13,7 @@ syndicate: none
 
 <div>
 
-[![](/legacy-img/splash.png)](https://1.bp.blogspot.com/-B9Vd2K7SMOs/YAOfDE0VZ9I/AAAAAAAADcI/d8ylNbcOYkE7KcgOtIYl_wtKnMNcKTW4gCLcBGAsYHQ/s540/splash.png)
+[![](/legacy-img/splash.png)](/legacy-img/splash.png)
 
 </div>
 
@@ -21,7 +21,7 @@ syndicate: none
 
 <div>
 
-As I mentioned in my [end-of-year post](https://bitsbytesgates.blogspot.com/2020/12/2020-nights-and-weekends-projects-in.html), one of my 2020 projects was to develop a design for the [Google/eFabless/SkyWater Multi-Project Wafer (MPW) fab run](https://efabless.com/open_shuttle_program). One thing I looked forward to was applying elements of the Python-based verification flow that I've been developing. Doing so highlighted a gap in my verification toolkit: reusable infrastructure for SoC-level verification.
+As I mentioned in my [end-of-year post](/blog/2020-nights-and-weekends-projects-in-review/), one of my 2020 projects was to develop a design for the [Google/eFabless/SkyWater Multi-Project Wafer (MPW) fab run](https://efabless.com/open_shuttle_program). One thing I looked forward to was applying elements of the Python-based verification flow that I've been developing. Doing so highlighted a gap in my verification toolkit: reusable infrastructure for SoC-level verification.
 
 </div>
 
@@ -39,7 +39,7 @@ As I mentioned in my [end-of-year post](https://bitsbytesgates.blogspot.com/2020
 
 <div>
 
-[<img src="/legacy-img/ciic_harness.png" height="320" />](https://1.bp.blogspot.com/-r7elh_Ysvtw/YANvrRwEuFI/AAAAAAAADbs/kbfIkWCrqD4rQmYo9RU32VT2ZHNCPDB_ACLcBGAsYHQ/s857/ciic_harness.png)
+[<img src="/legacy-img/ciic_harness.png" height="320" />](/legacy-img/ciic_harness.png)
 
 </div>
 
@@ -51,7 +51,7 @@ The entire thing is called the Caravel -- a carrier for the user project. To kee
 
 <div>
 
-[![](https://github.com/mballance/caravel_fwpayload/raw/main/doc/images/fwpayload_diagram.png)](https://github.com/mballance/caravel_fwpayload/raw/main/doc/images/fwpayload_diagram.png)
+[![](/legacy-img/fwpayload_diagram.png)](/legacy-img/fwpayload_diagram.png)
 
 </div>
 

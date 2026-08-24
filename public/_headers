@@ -1,0 +1,9 @@
+# Cloudflare Pages response headers.
+#
+# Pages types static files by extension, so /feed.xml went out as
+# application/xml -- true, but not specific enough for a browser or a reader to
+# recognise it as a subscribable feed. GitHub Pages had the same behaviour, so
+# this is a long-standing defect being fixed at the migration, not a regression
+# introduced by it.
+/feed.xml
+  Content-Type: application/atom+xml; charset=utf-8

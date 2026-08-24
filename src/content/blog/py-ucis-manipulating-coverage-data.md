@@ -16,7 +16,7 @@ image: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhp1-_7rtBzwcTN
 syndicate: none
 ---
 
-[![](/legacy-img/splash-17.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhp1-_7rtBzwcTNYBtGBUsqaxugtgc8RIz3D1KHRhbTpqghM-oTZjXq_6-ngByPlwmSHZgnu6f5e8ptq6wLa5EZFkOuOHWmgYY0JLua-wLrlTw38FcWT_hMZuFzwOEnxYv1oEimFAAqnr4bcDEo2meEFEZQvH7YdDXMGUixfLzHC6KGfQ_iuXOgn48ogg/s540/splash.png)  
+[![](/legacy-img/splash-17.png)](/legacy-img/splash-17.png)  
   
 
 In a prior post, we looked at how to inspect coverage as a text report and export coverage data using the PyVSC API, and view coverage graphically using the PyUCIS-Viewer. Recent enhancements have enabled the PyUCIS library to provide even more ways to manipulate coverage data. Over the next couple of posts, we’ll look at those enhancements. 
@@ -56,7 +56,7 @@ I decided to define a YAML format to make it simpler to capture coverage data in
 
 <div>
 
-[<img src="/legacy-img/yaml_coverage_spec.png" width="250" height="237" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjdaeXpmEYuvyXmWxluRALy-WLMci6JOtkxwHv8pizdR3AZyMLLDcKkbEzSkaj6fT7b9U4yxc06CLKMX1xy6Cc_VM2Ntgk0A7ri3epneWGF8BKVgzafT4-ks3BwSeZVIqKeUZFdxnVAc9AIiIC9gS75isWG5JSdGHqlobAPQSLcodmUBOHPA0lTrC6n9Q/s250/yaml_coverage_spec.png)
+[<img src="/legacy-img/yaml_coverage_spec.png" width="250" height="237" />](/legacy-img/yaml_coverage_spec.png)
 
 </div>
 
@@ -82,7 +82,7 @@ Let’s take a look at a very simple case. Let’s say we have two coverage-data
 
 <div>
 
-[![](/legacy-img/merge_input_data.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6vvu8qYu9EklhJd0IkaC4_Px0ZcCjPQZbFy1-TtgNviArsSrtHc-PN7rSRYJE2XpUo4uTHQ7YaBTY3D8_VcOjL3EuOsvVRKlwTvAQA6H9LRVLyL0bAtZdBSi3Wv51MQR4PzCk2WQj-EckBSwdhhcVylHWirWl36g7amzFFmC9jah_wc1YLYMtZmL9uA/s504/merge_input_data.png)
+[![](/legacy-img/merge_input_data.png)](/legacy-img/merge_input_data.png)
 
 </div>
 
@@ -122,7 +122,7 @@ The default report is textual. Let’s create a textual report on the YAML cover
 
 <div>
 
-[<img src="/legacy-img/txt_coverage_report.png" width="244" height="85" />](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifRBJaI9kmG0at2fuySwAQRHqOrow3uiP17zEjyQmj0dU-N0z3ZJNIuxebRKzImTChJgFqOt1GvsbhS967pQ1gR42WDsn5QPTlcLx3WsuTlhF8oTs6bpQZAUlFdUrda7VrP9CJJ2hBxGzeReERNEC9fnSc_b2P0A79M4AQx-kIl2MgdAEEywcZmgVFBw/s244/txt_coverage_report.png)
+[<img src="/legacy-img/txt_coverage_report.png" width="244" height="85" />](/legacy-img/txt_coverage_report.png)
 
 </div>
 
@@ -136,7 +136,7 @@ What if we wanted to post-process the data using a script? We certainly could ex
 
 <div>
 
-[![](/legacy-img/json_coverage_report.png)](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi1LqtUHblxEwKju_-m9tESy3trKWjJi_-y-NkYK73HhoU-Etm9xdqIwqzkS7E_ASMnNmu86N6dYm2GfSb8-WeHZdspBEWi3oM4CLmnnLr_Fjok8prBX5rg0r3ip4QQ7Z8H0meu74yU3PbLxcuPHw41KAx42h2pHHpeClfVe4O6TJyMrEgWX4eiDrNxtg/s862/json_coverage_report.png)
+[![](/legacy-img/json_coverage_report.png)](/legacy-img/json_coverage_report.png)
 
 </div>
 
