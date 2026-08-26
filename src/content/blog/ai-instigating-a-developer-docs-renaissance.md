@@ -3,6 +3,8 @@ title: 'AI: Instigating a Developer Docs Renaissance?'
 date: 2025-08-30
 categories:
 - AI
+- Documentation
+- Zuspec
 mermaid: true
 syndicate: full
 ---

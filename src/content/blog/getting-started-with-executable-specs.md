@@ -3,6 +3,9 @@ title: Getting Started with Executable Specs
 date: 2026-02-01
 categories:
 - Zuspec
+- Python
+- AI
+- Design Abstraction
 mermaid: true
 syndicate: derived
 ---

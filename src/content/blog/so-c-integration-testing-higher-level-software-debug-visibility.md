@@ -2,19 +2,20 @@
 title: 'SoC Integration Testing: Higher-Level Software Debug Visibility'
 date: '2021-01-30T14:39:00.004-08:00'
 tags:
-- Zephyr
+- SoC Verification
 - PyBFMs
-- SoC
+- cocotb
 - Python
-- Cocotb
-- Verilog
-- Design Verification
+- RISC-V
+- Software-Driven Verification
+- Zephyr
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-206056678500810206
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2021/01/soc-integration-testing-higher-level.html
 modified_time: '2021-02-09T14:26:11.177-08:00'
 image: https://1.bp.blogspot.com/-g9jpDauYz3M/YBWmxag8yNI/AAAAAAAADdQ/lZ5vFQabXDc8LrcUuxbhK0PvtVQBqc0ewCLcBGAsYHQ/s72-c/splash.png
+series: SoC Integration Testing
 syndicate: none
 ---
 

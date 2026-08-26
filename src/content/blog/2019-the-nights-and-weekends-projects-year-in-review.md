@@ -2,17 +2,12 @@
 title: 2019 - The "Nights and Weekends Projects" Year in Review
 date: '2019-12-31T11:04:00.001-08:00'
 tags:
-- CRAVE
-- PyBFMs
-- EDA
-- domain-specific language
-- PyPi
+- Year in Review
 - Python
-- Cocotb
-- FPGA
-- Featherweight RISC
-- Design Verification
-- HDL
+- cocotb
+- PyBFMs
+- FWRISC
+- Constrained Random
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-8953982748865933356

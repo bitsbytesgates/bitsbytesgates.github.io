@@ -5,6 +5,8 @@ tags:
 - Documentation
 - SystemVerilog
 - Sphinx
+- Python
+- TbLink-RPC
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-2367826103061036918

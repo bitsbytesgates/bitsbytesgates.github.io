@@ -3,7 +3,10 @@ title: Simplifying Access to Open-Source EDA Software
 date: 2026-05-15
 categories:
 - EDAPack
-- FVUtils
+- IVPM
+- Open Source EDA
+- Package Management
+- Python
 mermaid: true
 syndicate: full
 ---

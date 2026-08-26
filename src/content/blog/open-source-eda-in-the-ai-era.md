@@ -3,6 +3,9 @@ title: Open Source EDA in the AI Era
 date: 2026-02-07
 categories:
 - EDA
+- Open Source EDA
+- AI
+- Opinion
 mermaid: true
 syndicate: full
 ---

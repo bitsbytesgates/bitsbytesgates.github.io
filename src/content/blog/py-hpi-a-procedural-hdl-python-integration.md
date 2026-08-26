@@ -2,22 +2,19 @@
 title: 'Py-HPI: A Procedural HDL/Python Integration'
 date: '2019-06-08T17:25:00.000-07:00'
 tags:
-- Electronic Design Automation
-- EDA
-- Verification
+- Py-HPI
 - Python
-- Verilator
-- Modelsim
 - SystemVerilog
+- Verilator
+- Code Generation
 - Functional Verification
-- Design Verification
-- HDL
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-5183933610926076860
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2019/06/py-hpi-procedural-hdlpython-integration.html
 modified_time: '2019-06-08T17:25:55.719-07:00'
 image: https://1.bp.blogspot.com/-hEeOagYDfLk/XPxNuGhOaUI/AAAAAAAAClM/sbguSr-QWLUfNyxFFR8RnViMLjxwhln9wCLcBGAs/s72-c/splash.png
+series: Py-HPI
 syndicate: none
 ---
 

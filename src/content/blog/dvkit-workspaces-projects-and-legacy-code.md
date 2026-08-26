@@ -2,20 +2,17 @@
 title: 'DVKit: Workspaces, Projects, and Legacy Code'
 date: '2018-01-07T11:57:00.000-08:00'
 tags:
+- DVKit
 - IDE
-- RTL
-- Verilog
-- SystemVerilog
 - Eclipse
-- design abstraction
-- Design Verification
-- HDL
+- SystemVerilog
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-6993462667292205651
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2018/01/dvkit-workspaces-projects-and-legacy.html
 modified_time: '2018-01-07T11:57:40.173-08:00'
 image: https://2.bp.blogspot.com/-p4TwkHhI8cc/WlJt5VAnQLI/AAAAAAAACMc/DeClllSY6SsO4dEkIXXhiVk9RCAKfVhxgCLcBGAs/s72-c/WorkspaceProject_1.png
+series: DVKit
 syndicate: none
 ---
 

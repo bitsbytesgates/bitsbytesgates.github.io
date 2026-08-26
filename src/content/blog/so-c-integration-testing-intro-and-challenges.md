@@ -1,13 +1,19 @@
 ---
 title: 'SoC Integration Testing: Intro and Challenges '
 date: '2021-01-16T18:29:00.000-08:00'
-tags: []
+tags:
+- SoC Verification
+- Software-Driven Verification
+- Python
+- RISC-V
+- Open Source EDA
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-8165435786622037178
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2021/01/soc-integration-testing-intro-and.html
 modified_time: '2021-01-16T18:29:25.412-08:00'
 image: https://1.bp.blogspot.com/-B9Vd2K7SMOs/YAOfDE0VZ9I/AAAAAAAADcI/d8ylNbcOYkE7KcgOtIYl_wtKnMNcKTW4gCLcBGAsYHQ/s72-c/splash.png
+series: SoC Integration Testing
 syndicate: none
 ---
 

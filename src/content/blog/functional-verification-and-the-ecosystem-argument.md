@@ -1,7 +1,11 @@
 ---
 title: Functional Verification and the Ecosystem Argument
 date: '2019-06-02T09:09:00.001-07:00'
-tags: []
+tags:
+- Opinion
+- Functional Verification
+- Python
+- EDA
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-8627838823206817379

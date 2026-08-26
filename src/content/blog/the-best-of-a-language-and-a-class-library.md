@@ -3,6 +3,10 @@ title: The Best of a Language and a Class Library
 date: 2026-01-04
 categories:
 - Zuspec
+- Domain-Specific Language
+- Python
+- SystemC
+- Design Abstraction
 mermaid: true
 syndicate: full
 ---

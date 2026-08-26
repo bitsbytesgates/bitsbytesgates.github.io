@@ -2,7 +2,12 @@
 title: 'DPI Isn''t Enough: Making Python Part of Your SV Testbench'
 date: 2024-11-04
 categories:
+- PyHDL-IF
 - Python
+- SystemVerilog
+- UVM
+- cocotb
+- Functional Verification
 mermaid: true
 syndicate: derived
 ---

@@ -2,19 +2,15 @@
 title: 'Chisel Sharpening: In the end, it''s all about results'
 date: '2017-08-28T21:23:00.004-07:00'
 tags:
-- Xilinx
 - Chisel
-- Chisel3
-- Altera
-- Vivado
-- Quartus
-- HDL
+- FPGA
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-908433686780267267
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2017/08/chisel-sharpening-in-end-its-all-about.html
 modified_time: '2017-08-29T11:17:34.447-07:00'
 image: https://3.bp.blogspot.com/-C7RORUyUI9I/WaOhkeBEfII/AAAAAAAACCA/SCogFvYyNmMwullaYZOdTt4MS9rl3K_VACLcBGAs/s72-c/Wishbone_rtl_2x4.png
+series: Chisel Sharpening
 syndicate: none
 ---
 

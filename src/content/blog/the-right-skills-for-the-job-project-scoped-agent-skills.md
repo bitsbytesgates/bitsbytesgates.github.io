@@ -2,8 +2,11 @@
 title: 'The Right Skills for the Job: Project-Scoped Agent Skills'
 date: 2026-06-06
 categories:
-- FVUtils
+- IVPM
 - AI
+- Package Management
+- Verilator
+- Python
 syndicate: derived
 ---
 

@@ -2,19 +2,18 @@
 title: 'Py-HPI: Applying Python for Verification'
 date: '2019-06-16T12:29:00.000-07:00'
 tags:
-- EDA
+- Py-HPI
 - Python
+- FWRISC
+- Verilator
 - Functional Verification
-- Featherweight RISC
-- RISC-V
-- Design Verification
-- HDL
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-482943611998865766
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2019/06/py-hpi-applying-python-for-verification.html
 modified_time: '2019-06-16T12:29:13.411-07:00'
 image: https://1.bp.blogspot.com/-QAicbfb3SLs/XQVscWcsfBI/AAAAAAAACmo/Vv06hJYdhYcJpHjUsntZPfZiOQmEauUVwCLcBGAs/s72-c/splash.png
+series: Py-HPI
 syndicate: none
 ---
 

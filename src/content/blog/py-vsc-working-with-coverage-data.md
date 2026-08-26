@@ -2,9 +2,11 @@
 title: 'PyVSC: Working with Coverage Data'
 date: '2022-06-12T16:01:00.005-07:00'
 tags:
-- functional coverage
+- PyVSC
+- PyUCIS
+- UCIS
+- Functional Coverage
 - Python
-- Functional Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-4339569767190659846

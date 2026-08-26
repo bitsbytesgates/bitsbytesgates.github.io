@@ -2,10 +2,10 @@
 title: 'PyUCIS: Manipulating Coverage Data'
 date: '2022-07-17T13:37:00.000-07:00'
 tags:
-- functional coverage
-- Python
-- Altera
+- PyUCIS
 - UCIS
+- Functional Coverage
+- Python
 - Accellera
 legacy: true
 author: Matthew Ballance

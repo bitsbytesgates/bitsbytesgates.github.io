@@ -3,6 +3,8 @@ title: 'PSS: Getting Outside the Box'
 date: 2025-02-11
 categories:
 - PSS
+- Zuspec
+- SystemVerilog
 mermaid: true
 syndicate: derived
 ---

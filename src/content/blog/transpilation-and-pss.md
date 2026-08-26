@@ -3,6 +3,9 @@ title: Transpilation and PSS
 date: 2025-02-04
 categories:
 - PSS
+- Zuspec
+- SystemVerilog
+- Code Generation
 mermaid: true
 syndicate: full
 ---

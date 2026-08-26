@@ -2,7 +2,11 @@
 title: Embracing UVM for FOSSi Design Verification
 date: 2025-11-28
 categories:
-- FOSSiDV
+- UVM
+- Open Source EDA
+- Verilator
+- SystemVerilog
+- Functional Verification
 mermaid: true
 syndicate: full
 ---

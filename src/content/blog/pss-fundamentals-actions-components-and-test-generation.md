@@ -3,6 +3,8 @@ title: 'PSS Fundamentals: Actions, Components, and Test Generation'
 date: 2023-03-03
 categories:
 - PSS
+- Constrained Random
+- SoC Verification
 series: Intro to PSS
 syndicate: derived
 ---

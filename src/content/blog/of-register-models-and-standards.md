@@ -3,6 +3,8 @@ title: Of Register Models and Standards
 date: 2023-10-31
 categories:
 - PSS
+- Register Models
+- UVM
 syndicate: derived
 ---
 

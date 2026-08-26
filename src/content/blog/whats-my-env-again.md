@@ -2,8 +2,10 @@
 title: What's My Env Again?
 date: 2026-05-23
 categories:
-- FVUtils
 - IVPM
+- EDAPack
+- Package Management
+- Python
 syndicate: derived
 ---
 

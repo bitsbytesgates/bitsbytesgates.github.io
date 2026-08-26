@@ -2,12 +2,12 @@
 title: 'EDAPack: Simplifying Development-Tool Management'
 date: '2019-01-13T19:00:00.002-08:00'
 tags:
-- Formal Verification
-- Electronic Design Automation
-- EDA
-- Symbiyosys
-- Design Verification
 - EDAPack
+- EDA
+- Open Source EDA
+- Package Management
+- Verilator
+- Formal Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-6059972311529904563

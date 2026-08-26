@@ -2,20 +2,16 @@
 title: 'FWRISC: Sizing up the RISC-V Architecture'
 date: '2018-12-08T20:17:00.001-08:00'
 tags:
-- Verilator
-- RTL
-- FPGA
-- Googletest
-- Verilog
-- RISCVcontest
+- FWRISC
 - RISC-V
-- HDL
+- FPGA
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-1699277764769430972
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2018/12/fwrisc-sizing-up-risc-v-architecture.html
 modified_time: '2018-12-16T09:45:33.642-08:00'
 image: https://3.bp.blogspot.com/-vl_M8KSBei8/XAx_fj8Fi9I/AAAAAAAACak/oEnB_fcrCFogqQNpOW0CdSAKnZ-_uJWJQCLcBGAs/s72-c/post2_intro.png
+series: FWRISC
 syndicate: none
 ---
 

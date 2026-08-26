@@ -3,15 +3,15 @@ title: 'Chisel Sharpening: If it''s not tested, it''s broken'
 date: '2017-08-19T19:36:00.001-07:00'
 tags:
 - Chisel
-- Chisel3
 - UVM
-- HDL
+- Functional Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-7218057771447605912
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2017/08/chisel-sharpening-verification.html
 modified_time: '2017-08-20T11:44:39.441-07:00'
 image: https://4.bp.blogspot.com/-RvjgxA5Gsk8/WZhaNqjw6aI/AAAAAAAACAw/PCEPL1rG9Wceib6PIZiNmXKqAlxGEY62gCLcBGAs/s72-c/Wishbone_2x4.png
+series: Chisel Sharpening
 syndicate: none
 ---
 

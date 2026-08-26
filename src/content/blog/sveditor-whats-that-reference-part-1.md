@@ -2,10 +2,9 @@
 title: 'SVEditor: What''s that reference? (Part 1)'
 date: '2014-03-16T16:37:00.002-07:00'
 tags:
+- SVEditor
 - IDE
 - SystemVerilog
-- SVE
-- SVEditor
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-2977738424941983202

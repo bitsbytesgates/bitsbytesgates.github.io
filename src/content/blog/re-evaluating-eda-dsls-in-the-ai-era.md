@@ -3,7 +3,13 @@ title: Re-Evaluating EDA DSLs in the AI Era
 date: 2025-08-18
 categories:
 - Zuspec
+- Domain-Specific Language
+- AI
+- Python
+- PyVSC
+- UVM
 mermaid: true
+series: Re-Evaluating EDA DSLs
 syndicate: derived
 ---
 

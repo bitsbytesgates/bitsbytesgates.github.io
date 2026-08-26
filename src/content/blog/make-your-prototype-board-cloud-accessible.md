@@ -2,12 +2,7 @@
 title: Make Your Prototype Board Cloud-Accessible
 date: '2017-12-12T18:49:00.000-08:00'
 tags:
-- RTL
-- Chisel3
 - FPGA
-- Altera
-- Prototype
-- HDL
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-3562136726369297789

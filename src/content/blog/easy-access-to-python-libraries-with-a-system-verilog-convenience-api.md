@@ -2,7 +2,10 @@
 title: Easy Access to Python Libraries with a SystemVerilog Convenience API
 date: 2024-11-17
 categories:
+- PyHDL-IF
 - Python
+- SystemVerilog
+- UVM
 mermaid: true
 syndicate: derived
 ---

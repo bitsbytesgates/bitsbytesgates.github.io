@@ -3,6 +3,8 @@ title: Relating Hardware Model Abstractions
 date: 2026-01-18
 categories:
 - Zuspec
+- Design Abstraction
+- PSS
 mermaid: true
 syndicate: full
 ---

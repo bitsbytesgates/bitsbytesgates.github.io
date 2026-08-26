@@ -2,21 +2,18 @@
 title: 'FWRISC: Designing an FPGA-friendly Core in 30 Days'
 date: '2018-12-01T17:55:00.000-08:00'
 tags:
+- FWRISC
+- RISC-V
+- FPGA
 - Zephyr
 - Verilator
-- RTL
-- FPGA
-- Googletest
-- Verilog
-- RISCVcontest
-- RISC-V
-- HDL
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-3278562873094967676
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2018/12/risc-v-designing-fpga-friendly-core-in.html
 modified_time: '2018-12-04T12:56:24.325-08:00'
 image: https://3.bp.blogspot.com/-rCh9bdAbtkY/XAL5Um0aZOI/AAAAAAAACaI/RH1k9rBNkwM2bhGswKIO1Q63wTv6NraVQCLcBGAs/s72-c/fwrisc_intro_splash_2.png
+series: FWRISC
 syndicate: none
 ---
 

@@ -2,22 +2,19 @@
 title: 'DVKit: Setting up SystemVerilog Development'
 date: '2018-01-17T20:04:00.000-08:00'
 tags:
-- IDE
 - DVKit
-- RTL
-- Verilog
-- SystemVerilog
-- UVM
+- IDE
 - Eclipse
 - SVEditor
-- Design Verification
-- HDL
+- SystemVerilog
+- UVM
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-6376662403037818546
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2018/01/4-dvkit-setting-up-systemverilog.html
 modified_time: '2018-01-17T20:18:21.498-08:00'
 image: https://4.bp.blogspot.com/-iy_14JZjvmU/Wl7byVVwQYI/AAAAAAAACNk/EfstsS2KUkoFXk_ZoiAKJUW1zT6WlzbpgCLcBGAs/s72-c/Headline_full.png
+series: DVKit
 syndicate: none
 ---
 

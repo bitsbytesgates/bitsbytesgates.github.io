@@ -3,6 +3,9 @@ title: Interacting with Devices via PSS Registers
 date: 2023-04-18
 categories:
 - PSS
+- Register Models
+- UVM
+- SoC Verification
 series: Intro to PSS
 syndicate: derived
 ---

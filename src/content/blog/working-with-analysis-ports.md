@@ -2,8 +2,12 @@
 title: Working with Analysis Ports
 date: 2025-11-16
 categories:
-- PythonUVM
+- PyHDL-IF
+- UVM
+- Python
+- SystemVerilog
 mermaid: true
+series: UVM and Python
 syndicate: derived
 ---
 

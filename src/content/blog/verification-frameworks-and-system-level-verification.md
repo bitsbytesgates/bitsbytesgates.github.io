@@ -2,15 +2,15 @@
 title: Verification Frameworks and System-Level Verification
 date: '2014-03-18T20:47:00.000-07:00'
 tags:
-- Verification Frameworks
-- Software-Driven Verification
-- SVF
 - System-Level Verification
+- Software-Driven Verification
+- SoC Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-7921258928295422718
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2014/03/verification-frameworks-and-system.html
 modified_time: '2014-03-18T20:47:02.224-07:00'
+series: System-Level Verification
 syndicate: none
 ---
 

@@ -2,12 +2,11 @@
 title: Generate Custom Content Quickly with a Template Engine
 date: '2019-03-02T13:38:00.001-08:00'
 tags:
-- Automation
+- IVPM
+- Code Generation
 - Jinja2
-- Template
-- Verification
 - Python
-- SystemVerilog
+- UVM
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-1242043696191857470

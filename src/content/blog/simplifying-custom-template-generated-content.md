@@ -2,11 +2,10 @@
 title: Simplifying Custom Template-Generated Content
 date: '2022-08-21T10:18:00.001-07:00'
 tags:
-- Jinja2
 - Code Generation
-- Templates
+- Jinja2
 - Python
-- Functional Verification
+- UVM
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-1102691510656038598

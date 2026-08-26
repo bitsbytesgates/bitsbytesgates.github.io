@@ -2,12 +2,12 @@
 title: Selectively Muting your BFMs to Speed up Simulation
 date: '2020-02-08T16:36:00.001-08:00'
 tags:
-- Icarus Verilog
-- Python
-- Verilator
-- BFMs
 - Bus Functional Models
-- Cocotb
+- cocotb
+- Verilator
+- Python
+- Zephyr
+- FWRISC
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-3730890952553056874

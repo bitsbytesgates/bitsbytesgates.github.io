@@ -2,8 +2,13 @@
 title: Unlocking the Combined Strength of UVM and Python
 date: 2025-10-04
 categories:
-- PythonUVM
+- PyHDL-IF
+- UVM
+- Python
+- cocotb
+- AI
 mermaid: true
+series: UVM and Python
 syndicate: full
 ---
 

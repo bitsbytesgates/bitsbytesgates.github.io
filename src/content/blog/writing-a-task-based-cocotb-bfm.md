@@ -3,12 +3,10 @@ title: Writing a Task-Based Cocotb BFM
 date: '2019-12-14T13:06:00.001-08:00'
 tags:
 - PyBFMs
-- PyPi
+- Bus Functional Models
+- cocotb
 - Python
-- Cocotb
 - Functional Verification
-- Design Verification
-- HDL
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-4715231122925663126

@@ -2,16 +2,19 @@
 title: 'SoC Integration Testing: IP-Integrated Debug and Analysis'
 date: '2021-02-28T10:27:00.000-08:00'
 tags:
+- SoC Verification
 - PyBFMs
-- SoC
+- cocotb
 - Python
-- Cocotb
+- UVM
+- RISC-V
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-7365953598579437340
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2021/02/soc-integration-testing-ip-integrated.html
 modified_time: '2021-02-28T10:27:30.939-08:00'
 image: https://1.bp.blogspot.com/-Uv3Qm-tHLPY/YDrk77i_u0I/AAAAAAAADgk/nBkE_Qvibsc8eUvE_0sC13PQEKEJpRr0ACLcBGAsYHQ/s72-c/splash.png
+series: SoC Integration Testing
 syndicate: none
 ---
 

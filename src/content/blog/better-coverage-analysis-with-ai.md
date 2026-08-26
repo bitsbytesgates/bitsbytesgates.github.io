@@ -2,9 +2,11 @@
 title: Better Coverage Analysis with AI
 date: 2026-02-15
 categories:
-- EDA
+- PyUCIS
 - UCIS
-- Coverage
+- Functional Coverage
+- AI
+- EDA
 mermaid: true
 syndicate: full
 ---

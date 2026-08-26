@@ -1,7 +1,16 @@
 ---
 title: '2020: Nights and Weekends Projects in Review'
 date: '2020-12-28T18:20:00.000-08:00'
-tags: []
+tags:
+- Year in Review
+- PyVSC
+- PyBFMs
+- cocotb
+- Functional Coverage
+- Constrained Random
+- Python
+- RISC-V
+- SoC Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-6930909879744532713

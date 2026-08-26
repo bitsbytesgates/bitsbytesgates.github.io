@@ -2,15 +2,15 @@
 title: 'System-level verification: Islands vs Continents'
 date: '2014-03-29T12:58:00.004-07:00'
 tags:
-- Verification Frameworks
-- Software-Driven Verification
-- SVF
 - System-Level Verification
+- Software-Driven Verification
+- SoC Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-8474131335532202522
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2014/03/system-level-verification-islands-vs.html
 modified_time: '2014-03-29T12:58:38.760-07:00'
+series: System-Level Verification
 syndicate: none
 ---
 

@@ -2,8 +2,12 @@
 title: Introducing SV/UVM to Python Development Tools
 date: 2025-11-23
 categories:
-- PythonUVM
+- PyHDL-IF
+- UVM
+- Python
+- SystemVerilog
 mermaid: true
+series: UVM and Python
 syndicate: derived
 ---
 

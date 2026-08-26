@@ -3,7 +3,11 @@ title: 'Re-Evaluating EDA DSLs: Becoming the Compiler'
 date: 2025-08-23
 categories:
 - Zuspec
+- Domain-Specific Language
+- Python
+- EDA
 mermaid: true
+series: Re-Evaluating EDA DSLs
 syndicate: derived
 ---
 

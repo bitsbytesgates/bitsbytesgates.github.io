@@ -2,16 +2,12 @@
 title: Modeling Random Stimulus and Functional Coverage in Python
 date: '2020-03-27T14:02:00.003-07:00'
 tags:
-- CRAVE
-- SMT
-- functional coverage
-- Python
-- Boolector
-- Cocotb
 - PyVSC
-- UVM
+- Python
+- Constrained Random
+- Functional Coverage
+- cocotb
 - Functional Verification
-- constrained random
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-4688440595080223691

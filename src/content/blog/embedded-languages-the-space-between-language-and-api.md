@@ -2,15 +2,12 @@
 title: 'Embedded Languages: The Space Between Language and API'
 date: '2019-07-27T16:19:00.004-07:00'
 tags:
-- CRAVE
-- domain-specific language
-- Python
-- Chisel3
-- higher-level design
-- SystemVerilog
-- UVM
-- Functional Verification
+- Domain-Specific Language
+- Design Abstraction
+- Chisel
 - SystemC
+- UVM
+- Python
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-728335647313527081

@@ -3,6 +3,8 @@ title: Shifting Left with Hardware Model Abstractions
 date: 2026-01-11
 categories:
 - Zuspec
+- Design Abstraction
+- Functional Coverage
 mermaid: true
 syndicate: full
 ---

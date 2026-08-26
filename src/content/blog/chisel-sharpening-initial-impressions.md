@@ -3,15 +3,15 @@ title: 'Chisel Sharpening: Initial impressions'
 date: '2017-08-02T19:39:00.000-07:00'
 tags:
 - Chisel
-- Chisel3
-- RiscV
-- HDL
+- RISC-V
+- SystemVerilog
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-5090067165930278711
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2017/08/chisel-sharpening-initial-impressions.html
 modified_time: '2017-08-02T19:39:02.820-07:00'
 image: https://1.bp.blogspot.com/-wciyTu7Ffj4/WYJ0GBrRTcI/AAAAAAAAB-Y/G2fdnF-X8tUgfaxB9s5gTxAqAgwE5pQ2wCLcBGAs/s72-c/ChiselProductivity.png
+series: Chisel Sharpening
 syndicate: none
 ---
 

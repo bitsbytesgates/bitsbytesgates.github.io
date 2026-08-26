@@ -4,8 +4,9 @@ date: '2022-06-26T17:31:00.002-07:00'
 tags:
 - Python
 - YAML
-- JSON
-- Schema
+- PyUCIS
+- Sphinx
+- Documentation
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-6866712509128303273

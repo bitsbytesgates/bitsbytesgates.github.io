@@ -3,6 +3,8 @@ title: Automating Bare-Metal Tests with PSS
 date: 2023-02-25
 categories:
 - PSS
+- Software-Driven Verification
+- SoC Verification
 series: Intro to PSS
 syndicate: full
 ---

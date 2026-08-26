@@ -2,8 +2,12 @@
 title: Accessing User-Defined SV Data from Python
 date: 2025-11-08
 categories:
-- PythonUVM
+- PyHDL-IF
+- UVM
+- SystemVerilog
+- Python
 mermaid: true
+series: UVM and Python
 syndicate: derived
 ---
 

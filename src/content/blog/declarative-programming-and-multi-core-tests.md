@@ -3,6 +3,8 @@ title: Declarative Programming and Multi-Core Tests
 date: 2023-03-11
 categories:
 - PSS
+- Constrained Random
+- SoC Verification
 mermaid: true
 series: Intro to PSS
 syndicate: derived

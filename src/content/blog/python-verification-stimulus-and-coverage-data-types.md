@@ -2,17 +2,17 @@
 title: 'Python Verification Stimulus and Coverage: Data Types'
 date: '2020-04-05T10:02:00.000-07:00'
 tags:
-- functional coverage
+- PyVSC
 - Python
-- Cocotb
-- Functional Verification
-- constrained random
+- Constrained Random
+- Functional Coverage
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-373800869599754092
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2020/04/python-verification-stimulus-and.html
 modified_time: '2020-04-05T10:02:17.914-07:00'
 image: https://1.bp.blogspot.com/-3xDfd2VYh08/Xn5nbRvUAUI/AAAAAAAAC4Q/YjgMPTE9fXA0Tp7oIaxYgRtFJ-HsGWuxQCPcBGAYYCw/s72-c/ModelingRandomStimulusSplash.png
+series: Python Verification Stimulus and Coverage
 syndicate: none
 ---
 

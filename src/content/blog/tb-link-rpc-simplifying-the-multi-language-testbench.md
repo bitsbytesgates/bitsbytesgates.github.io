@@ -1,7 +1,13 @@
 ---
 title: 'TbLink-RPC: Simplifying the Multi-Language Testbench'
 date: '2022-03-27T13:40:00.000-07:00'
-tags: []
+tags:
+- TbLink-RPC
+- SystemVerilog
+- UVM
+- Python
+- cocotb
+- Code Generation
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-3321529724266083236

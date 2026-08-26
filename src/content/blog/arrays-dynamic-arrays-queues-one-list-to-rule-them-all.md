@@ -2,13 +2,11 @@
 title: 'Arrays, Dynamic Arrays, Queues: One List to Rule them All'
 date: '2020-06-27T15:43:00.001-07:00'
 tags:
-- Electronic Design Automation
-- domain-specific language
-- Python
 - PyVSC
+- Python
+- Constrained Random
+- SystemVerilog
 - Functional Verification
-- constrained random
-- Design Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-649586351283392620

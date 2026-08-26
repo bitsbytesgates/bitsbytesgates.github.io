@@ -2,17 +2,18 @@
 title: 'SoC Integration Testing: Hw/Sw Test Coordination (Part 1)'
 date: '2021-03-28T10:58:00.000-07:00'
 tags:
-- SoC
-- BFMs
+- SoC Verification
+- PyBFMs
 - Software-Driven Verification
 - RISC-V
-- Design Verification
+- Bus Functional Models
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-5295802653231893328
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2021/03/soc-integration-testing-hwsw-test.html
 modified_time: '2021-03-28T10:58:08.910-07:00'
 image: https://1.bp.blogspot.com/-WV71pb0_ZF4/YF9cvK_8etI/AAAAAAAADio/uJ5BsUYxoj8Z91U1OQGBdT6OzD3J0dSAACLcBGAsYHQ/s72-c/splash.png
+series: SoC Integration Testing
 syndicate: none
 ---
 

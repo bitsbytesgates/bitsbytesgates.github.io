@@ -3,10 +3,8 @@ title: Designing Standard-protocol Interfaces with Chisel Bundles
 date: '2017-10-02T10:24:00.000-07:00'
 tags:
 - Chisel
-- Chisel3
-- higher-level design
 - SystemVerilog
-- design abstraction
+- Design Abstraction
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-2798536707613504072

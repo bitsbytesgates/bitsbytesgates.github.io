@@ -3,6 +3,8 @@ title: Relating Actions with Dataflow
 date: 2023-03-18
 categories:
 - PSS
+- Constrained Random
+- SystemVerilog
 mermaid: true
 series: Intro to PSS
 syndicate: derived

@@ -1,0 +1,11 @@
+{
+  "name": "Bits, Bytes, and Gates",
+  "short_name": "Bits & Gates",
+  "icons": [
+    { "src": "/public/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/public/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#1c2128",
+  "background_color": "#1c2128",
+  "display": "browser"
+}

@@ -2,18 +2,18 @@
 title: 'SoC Integration Testing: Hw/Sw Coordination (Part 2)'
 date: '2021-04-18T09:01:00.000-07:00'
 tags:
+- SoC Verification
 - PyBFMs
-- SoC
-- BFMs
 - Software-Driven Verification
 - Bus Functional Models
-- System-Level Verification
+- Python
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-8108144240203267066
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2021/04/soc-integration-testing-hwsw.html
 modified_time: '2021-04-18T09:01:23.981-07:00'
 image: https://1.bp.blogspot.com/-ZBoJb1TpY0c/YHs7BEuD-CI/AAAAAAAADpQ/-6mLIuhpgRA-EWwhuCzgZf8AZAwIXyQagCLcBGAsYHQ/s72-c/splash.png
+series: SoC Integration Testing
 syndicate: none
 ---
 

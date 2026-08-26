@@ -4,10 +4,9 @@ date: '2018-09-02T18:55:00.003-07:00'
 tags:
 - IDE
 - DVKit
-- Integrated Development Environment
-- SystemVerilog
-- Eclipse
 - SVEditor
+- Eclipse
+- SystemVerilog
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-5500393587446281673

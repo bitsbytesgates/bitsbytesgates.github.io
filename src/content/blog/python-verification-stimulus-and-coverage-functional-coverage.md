@@ -2,10 +2,9 @@
 title: 'Python Verification Stimulus and Coverage: Functional Coverage'
 date: '2020-04-11T19:07:00.001-07:00'
 tags:
-- functional coverage
-- Python
-- Cocotb
 - PyVSC
+- Python
+- Functional Coverage
 - Functional Verification
 legacy: true
 author: Matthew Ballance
@@ -13,6 +12,7 @@ blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-248859979406621501
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2020/04/python-verification-and-stimulus.html
 modified_time: '2020-04-11T19:07:58.681-07:00'
 image: https://1.bp.blogspot.com/-ph8x-Zy9vU0/XpI3g_cV3XI/AAAAAAAAC5A/ucHyW0cm62Yhoj_u2D4rzWTrnIYi4ToDwCLcBGAsYHQ/s72-c/pyvsc_coverage.png
+series: Python Verification Stimulus and Coverage
 syndicate: none
 ---
 

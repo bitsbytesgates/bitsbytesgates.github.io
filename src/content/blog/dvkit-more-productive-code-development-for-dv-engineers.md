@@ -3,18 +3,16 @@ title: 'DVKit: More-productive Code Development for DV Engineers'
 date: '2018-01-02T08:43:00.004-08:00'
 tags:
 - DVKit
-- RTL
-- Verilog
-- SystemVerilog
-- UVM
+- IDE
 - Eclipse
-- Design Verification
+- SystemVerilog
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-6773915784436832435
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2018/01/dvkit-more-productive-code-development.html
 modified_time: '2018-01-02T08:43:49.288-08:00'
 image: https://1.bp.blogspot.com/-dfzVc4UDipQ/Wj7W2Z4yV0I/AAAAAAAACLc/ZNKSz0oFA_oAQSoTA6u5ojEZCLcjYNV-gCLcBGAs/s72-c/BlogHeadline.png
+series: DVKit
 syndicate: none
 ---
 

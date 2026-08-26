@@ -3,6 +3,10 @@ title: 'Zuspec: Pythonic Model-Driven Hardware Development'
 date: 2025-09-22
 categories:
 - Zuspec
+- Python
+- PSS
+- Constrained Random
+- Design Abstraction
 mermaid: true
 syndicate: derived
 ---

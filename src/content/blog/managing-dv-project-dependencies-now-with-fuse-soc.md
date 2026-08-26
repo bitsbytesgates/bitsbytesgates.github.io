@@ -2,7 +2,11 @@
 title: Managing DV Project Dependencies - Now with FuseSoc
 date: 2026-05-09
 categories:
-- FVUtils
+- IVPM
+- Package Management
+- FuseSoc
+- EDA
+- Python
 mermaid: true
 syndicate: full
 ---

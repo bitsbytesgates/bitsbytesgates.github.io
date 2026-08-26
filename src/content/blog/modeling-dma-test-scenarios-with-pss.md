@@ -3,6 +3,7 @@ title: Modeling DMA Test Scenarios with PSS
 date: 2023-03-25
 categories:
 - PSS
+- SoC Verification
 mermaid: true
 series: Intro to PSS
 syndicate: derived

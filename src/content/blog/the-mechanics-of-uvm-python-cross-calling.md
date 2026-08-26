@@ -2,8 +2,12 @@
 title: The Mechanics of UVM/Python Cross-Calling
 date: 2025-11-01
 categories:
-- PythonUVM
+- PyHDL-IF
+- UVM
+- Python
+- SystemVerilog
 mermaid: true
+series: UVM and Python
 syndicate: derived
 ---
 

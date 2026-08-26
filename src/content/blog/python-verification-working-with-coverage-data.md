@@ -2,12 +2,11 @@
 title: 'Python Verification: Working with Coverage Data'
 date: '2020-04-25T18:38:00.001-07:00'
 tags:
-- functional coverage
-- Python
-- Cocotb
 - PyVSC
+- PyUCIS
 - UCIS
-- constrained random
+- Functional Coverage
+- Python
 - Accellera
 legacy: true
 author: Matthew Ballance
@@ -15,6 +14,7 @@ blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-806412704696948975
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2020/04/python-verification-working-with.html
 modified_time: '2020-04-25T18:38:37.778-07:00'
 image: https://1.bp.blogspot.com/-PCp3xC32PWs/XqTlJm0XgfI/AAAAAAAAC7A/J4RwJlYZtWgHDRQaz6V0vTh4IxQX8n1CwCLcBGAsYHQ/s72-c/splash.png
+series: Python Verification Stimulus and Coverage
 syndicate: none
 ---
 

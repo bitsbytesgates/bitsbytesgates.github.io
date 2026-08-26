@@ -1,7 +1,9 @@
 ---
 title: 'The Toolmaker''s Dilemma: Visionaries Have Always Created Their Own Tools'
 date: '2019-07-13T17:16:00.000-07:00'
-tags: []
+tags:
+- Opinion
+- EDA
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-7840441892417134321

@@ -2,10 +2,9 @@
 title: 'Python Verification Stimulus and Coverage: Constraints'
 date: '2020-05-09T15:50:00.000-07:00'
 tags:
-- Python
-- Boolector
-- Cocotb
 - PyVSC
+- Python
+- Constrained Random
 - Functional Verification
 legacy: true
 author: Matthew Ballance
@@ -13,6 +12,7 @@ blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-861387183459790794
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2020/05/python-verification-stimulus-and.html
 modified_time: '2020-05-09T15:50:33.408-07:00'
 image: https://1.bp.blogspot.com/-5brwvGvJgds/XrbHTbxSbZI/AAAAAAAAC8I/BA9qcnrfshE_qDlIO8yP5k9uOMNsiEYygCK4BGAsYHg/s72-c-d/splash_constraints.png
+series: Python Verification Stimulus and Coverage
 syndicate: none
 ---
 

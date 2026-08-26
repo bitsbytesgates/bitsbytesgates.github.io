@@ -2,19 +2,19 @@
 title: 'FWRISC: Creating a Unit-test Safety Net'
 date: '2018-12-15T12:52:00.001-08:00'
 tags:
+- FWRISC
+- RISC-V
 - Verilator
 - Googletest
-- SystemVerilog
-- Test-Driven Development
 - Unit Testing
-- RISCVcontest
-- RISC-V
+- Functional Verification
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-9146224530816962823
 blogger_orig_url: https://bitsbytesgates.blogspot.com/2018/12/fwrisc-creating-unit-test-safety-net.html
 modified_time: '2018-12-16T09:45:45.771-08:00'
 image: https://4.bp.blogspot.com/-uBqMqLsjbVo/XBHorqeNAvI/AAAAAAAACbE/uQTszK6bfiIWVvQ8Ka5cppoEQP6P-vFIACLcBGAs/s72-c/unit_test_splash.png
+series: FWRISC
 syndicate: none
 ---
 

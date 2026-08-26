@@ -3,6 +3,8 @@ title: What's Next for PSS?
 date: 2024-12-15
 categories:
 - PSS
+- Zuspec
+- Accellera
 mermaid: true
 syndicate: full
 ---

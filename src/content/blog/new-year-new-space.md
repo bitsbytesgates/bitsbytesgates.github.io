@@ -2,7 +2,9 @@
 title: New Year, New Space
 date: 2023-02-16
 categories:
-- Intro
+- Meta
+- PSS
+- Python
 syndicate: full
 ---
 

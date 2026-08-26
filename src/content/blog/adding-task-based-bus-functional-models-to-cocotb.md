@@ -2,14 +2,11 @@
 title: Adding Task-Based Bus Functional Models to Cocotb
 date: '2019-11-30T12:59:00.000-08:00'
 tags:
-- Electronic Design Automation
-- Verification Frameworks
-- Python
+- Bus Functional Models
+- cocotb
 - Verilator
-- Verilog
+- Python
 - Functional Verification
-- Design Verification
-- HDL
 legacy: true
 author: Matthew Ballance
 blogger_id: tag:blogger.com,1999:blog-142675602739945566.post-4170162733915418360
