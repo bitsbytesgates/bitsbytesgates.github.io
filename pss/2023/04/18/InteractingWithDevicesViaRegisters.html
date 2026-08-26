@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Interacting with Devices via PSS Registers &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>There's oh so much fun to be had. At the leading edge,  at the bleeding edge, at the confluence of bits, bytes, and gates.</p>
+  </div>
+
+  <nav class="sidebar-nav">
+
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/index.html">Home</a>
+    <!--
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/series.html">Archive</a>
+      -->
+    
+
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/archive.html">Archive</a>
+    
+    <ul class="BlogPostTreeUL" list-style-type="none">
+    
+        <li list-style-type="none"><span class="caret">2026</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2026</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/fvutils,/ai/2026/06/06/ContextualAgentConfig.html">The Right Skills for the Job: Project-Scoped Agent Skills</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/fvutils,/ivpm/2026/05/23/WhatsMyEnvAgain.html">What's My Env Again?</a></li>
+        
+        <li><a href="/edapack,/fvutils/2026/05/15/SimplifyingAccessToOSSEDA.html">Simplifying Access to Open-Source EDA Software</a></li>
+        
+        <li><a href="/fvutils/2026/05/09/ManagingDVProjectDeps_NowWithFuseSoc.html">Managing DV Project Dependencies - Now with FuseSoc</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/eda,/ucis,/coverage/2026/02/15/BetterCoverageAnalysisWithAI.html">Better Coverage Analysis with AI</a></li>
+        
+        <li><a href="/eda/2026/02/07/OpenSourceEDA_in_AI_Era.html">Open Source EDA in the AI Era</a></li>
+        
+        <li><a href="/zuspec/2026/02/01/ModelingExample_GettingStarted.html">Getting Started with Executable Specs</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/zuspec/2026/01/18/RelatingModelAbstractions.html">Relating Hardware Model Abstractions</a></li>
+        
+        <li><a href="/zuspec/2026/01/11/ShiftingLeftWithModelingAbstractions.html">Shifting Left with Hardware Model Abstractions</a></li>
+        
+        <li><a href="/zuspec/2026/01/04/BestOfLanguageAndClassLib.html">The Best of a Language and a Class Library</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2025</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2025</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/fossidv/2025/11/28/EmbracingUvmFossiDV.html">Embracing UVM for FOSSi Design Verification</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/23/UvmWithPython__DevTools.html">Introducing SV/UVM to Python Development Tools</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/16/UvmWithPython__AnalysisPorts.html">Working with Analysis Ports</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/08/UvmWithPython__UserDefinedData.html">Accessing User-Defined SV Data from Python</a></li>
+        
+        <li><a href="/pythonuvm/2025/11/01/UvmWithPython__CrossCallingMechanics.html">The Mechanics of UVM/Python Cross-Calling</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pythonuvm/2025/10/04/UvmWithPython__UnlockCombinedStrength.html">Unlocking the Combined Strength of UVM and Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/zuspec/2025/09/22/Zuspec_PythonicModelDrivenHardwareDevelopment.html">Zuspec: Pythonic Model-Driven Hardware Development</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/ai/2025/08/30/AI_Instigating_a_DevDocRenaissance.html">AI: Instigating a Developer Docs Renaissance?</a></li>
+        
+        <li><a href="/zuspec/2025/08/23/ReEvaluating_EDA_DSLs_BecomingTheCompiler.html">Re-Evaluating EDA DSLs: Becoming the Compiler</a></li>
+        
+        <li><a href="/zuspec/2025/08/18/ReEvaluating_EDA_DomainSpecificLanguages_in_AI_Era.html">Re-Evaluating EDA DSLs in the AI Era</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2025/02/11/PSS_GettingOutsideTheBox.html">PSS: Getting Outside the Box</a></li>
+        
+        <li><a href="/pss/2025/02/04/Transpilation_and_PSS.html">Transpilation and PSS</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2024</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2024</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2024/12/15/PSS_WhatsNext.html">What's Next for PSS?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/python/2024/11/17/PyHDL_Convenience_API.html">Easy Access to Python Libraries with a SystemVerilog Convenience API</a></li>
+        
+        <li><a href="/python/2024/11/04/DPI_Isnt_Enough_MakingPythonPartOfYourSVTB.html">DPI Isn't Enough: Making Python Part of Your SV Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2023</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2023</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/10/31/OfRegisters_and_Standards.html">Of Register Models and Standards</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">Relating Actions with Dataflow Part2 -- Parallelism</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">Interacting with Devices via PSS Registers</a></li>
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        <li><a href="/intro/2023/02/16/NewYearNewSpace.html">New Year, New Space</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2022</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2022</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/08/21/simplifying-custom-template-generated.html">Simplifying Custom Template-Generated Content</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/07/17/pyucis-manipulating-coverage-data.html">PyUCIS: Manipulating Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/06/27/tools-and-techniques-to-improve-yaml.html">Tools and Techniques to Improve YAML-File Usability</a></li>
+        
+        <li><a href="/2022/06/12/pyvsc-working-with-coverage-data.html">PyVSC: Working with Coverage Data</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/03/27/tblink-rpc-simplifying-multi-language.html">TbLink-RPC: Simplifying the Multi-Language Testbench</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2022/01/24/documenting-systemverilog-with-sphinx.html">Documenting SystemVerilog with Sphinx</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2021</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2021</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/04/18/soc-integration-testing-hwsw.html">SoC Integration Testing: Hw/Sw Coordination (Part 2)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/03/28/soc-integration-testing-hwsw-test.html">SoC Integration Testing: Hw/Sw Test Coordination (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/02/28/soc-integration-testing-ip-integrated.html">SoC Integration Testing: IP-Integrated Debug and Analysis</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2021/01/30/soc-integration-testing-higher-level.html">SoC Integration Testing: Higher-Level Software Debug Visibility</a></li>
+        
+        <li><a href="/2021/01/17/soc-integration-testing-intro-and.html">SoC Integration Testing: Intro and Challenges </a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2020</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2020</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/12/29/2020-nights-and-weekends-projects-in.html">2020: Nights and Weekends Projects in Review</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/06/27/arrays-dynamic-arrays-queues-one-list.html">Arrays, Dynamic Arrays, Queues: One List to Rule them All</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">May</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/05/09/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Constraints</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">May</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/04/26/python-verification-working-with.html">Python Verification: Working with Coverage Data</a></li>
+        
+        <li><a href="/2020/04/12/python-verification-and-stimulus.html">Python Verification Stimulus and Coverage: Functional Coverage</a></li>
+        
+        <li><a href="/2020/04/05/python-verification-stimulus-and.html">Python Verification Stimulus and Coverage: Data Types</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/03/27/modeling-random-stimulus-and-functional.html">Modeling Random Stimulus and Functional Coverage in Python</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Feb</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2020/02/09/selectively-muting-your-bfms-to-speed.html">Selectively Muting your BFMs to Speed up Simulation</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Feb</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2019</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2019</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/12/31/2019-nights-and-weekends-projects-year.html">2019 - The "Nights and Weekends Projects" Year in Review</a></li>
+        
+        <li><a href="/2019/12/14/writing-task-based-cocotb-bfm.html">Writing a Task-Based Cocotb BFM</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Nov</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/11/30/adding-task-based-bus-functional-models.html">Adding Task-Based Bus Functional Models to Cocotb</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Nov</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jul</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/07/27/embedded-languages-space-between.html">Embedded Languages: The Space Between Language and API</a></li>
+        
+        <li><a href="/2019/07/14/the-toolmakers-dilemma-visionaries-have.html">The Toolmaker's Dilemma: Visionaries Have Always Created Their Own Tools</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jul</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jun</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/06/16/py-hpi-applying-python-for-verification.html">Py-HPI: Applying Python for Verification</a></li>
+        
+        <li><a href="/2019/06/09/py-hpi-procedural-hdlpython-integration.html">Py-HPI: A Procedural HDL/Python Integration</a></li>
+        
+        <li><a href="/2019/06/02/functional-verification-and-ecosystem.html">Functional Verification and the Ecosystem Argument</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jun</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/03/02/generate-custom-content-quickly-with.html">Generate Custom Content Quickly with a Template Engine</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2019/01/14/edapack-simplifying-development-tool.html">EDAPack: Simplifying Development-Tool Management</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2018</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2018</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/12/15/fwrisc-creating-unit-test-safety-net.html">FWRISC: Creating a Unit-test Safety Net</a></li>
+        
+        <li><a href="/2018/12/09/fwrisc-sizing-up-risc-v-architecture.html">FWRISC: Sizing up the RISC-V Architecture</a></li>
+        
+        <li><a href="/2018/12/02/risc-v-designing-fpga-friendly-core-in.html">FWRISC: Designing an FPGA-friendly Core in 30 Days</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Sep</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/09/03/why-not-ide.html">Why Not an IDE?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Sep</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Jan</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2018/01/18/4-dvkit-setting-up-systemverilog.html">DVKit: Setting up SystemVerilog Development</a></li>
+        
+        <li><a href="/2018/01/07/dvkit-workspaces-projects-and-legacy.html">DVKit: Workspaces, Projects, and Legacy Code</a></li>
+        
+        <li><a href="/2018/01/02/dvkit-more-productive-code-development.html">DVKit: More-productive Code Development for DV Engineers</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Jan</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2017</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2017</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Dec</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/12/13/make-your-prototype-board-cloud.html">Make Your Prototype Board Cloud-Accessible</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Dec</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Oct</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/10/02/designing-standard-protocol-interfaces.html">Designing Standard-protocol Interfaces with Chisel Bundles</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Oct</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Aug</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2017/08/29/chisel-sharpening-in-end-its-all-about.html">Chisel Sharpening: In the end, it's all about results</a></li>
+        
+        <li><a href="/2017/08/20/chisel-sharpening-verification.html">Chisel Sharpening: If it's not tested, it's broken</a></li>
+        
+        <li><a href="/2017/08/03/chisel-sharpening-initial-impressions.html">Chisel Sharpening: Initial impressions</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Aug</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+        <li list-style-type="none"><span class="caret">2014</span>
+        <!--
+        <a class="sidebar-nav-item active" href="">2014</a>
+          -->
+        <ul class="nested" list-style-type="none">
+        
+        
+        <li><span class="caret">Apr</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/04/12/system-level-verification-what-another.html">System Level Verification: What, Another Framework?</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Apr</a>
+          -->
+        </ul>
+        
+        <li><span class="caret">Mar</span>
+        <ul class="nested" list-style-type="none">
+        
+        <li><a href="/2014/03/29/system-level-verification-islands-vs.html">System-level verification: Islands vs Continents</a></li>
+        
+        <li><a href="/2014/03/19/verification-frameworks-and-system.html">Verification Frameworks and System-Level Verification</a></li>
+        
+        <li><a href="/2014/03/16/sveditor-whats-that-reference-part-1.html">SVEditor: What's that reference? (Part 1)</a></li>
+        
+        <!--
+        <a class="sidebar-nav-item active" href="">Mar</a>
+          -->
+        </ul>
+        
+        </ul>
+        </li>
+    
+    </ul>
+
+    
+    <a class="sidebar-nav-item" href="https://bitsbytesgates.com/about.html">About</a>
+
+    <!--
+    <a class="sidebar-nav-item" href="">GitHub</a>
+    <span class="sidebar-nav-item">Currently v</span>
+      -->
+  </nav>
+
+  <div class="sidebar-item">
+    <div class="hbox">
+        <div class="image">
+            <a href="https://bitsbytesgates.com/feed.xml"><img src="https://bitsbytesgates.com/imgs/rss_16_16.png"/></a>
+        </div>
+        <div class="text">
+            <a href="https://bitsbytesgates.com/feed.xml">RSS Feed</a>
+        </div>
+    </div>
+    <br/>
+    <p>
+        Subscribe to Bits, Bytes, and Gates
+    </p>
+    
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+
+    <p>
+      &copy; 2014-2026 Matthew Ballance. 
+      <br/>
+      All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">Bits, Bytes, and Gates</a>
+            <small></small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+    
+      Interacting with Devices via PSS Registers &middot; Bits, Bytes, and Gates
+    
+  </title>
+
+  
+  <link rel="canonical" href="https://bitsbytesgates.com/pss/2023/04/18/InteractingWithDevicesViaRegisters.html">
+  
+
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/poole.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/syntax.css">
+  <link rel="stylesheet" href="https://bitsbytesgates.com/public/css/lanyon.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://bitsbytesgates.com/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://bitsbytesgates.com/public/favicon.ico">
+
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://bitsbytesgates.com/feed.xml">
+
+  
+  <!--
+  <script type="module">
+    import mermaid from "https://bitsbytesgates.com/public/js/mermaid.esm.min.mjs";
+  </script>
+    -->
+<!-- Google tag (gtag.js) -->
+
+<!--
+Pre-env
+production
+Post-env
+-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HHGYPST0ZT"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HHGYPST0ZT');
+</script>
+
+
+</head>
+
+
+
+  <body>
+
+
+  <div class="post">
+    <h1 class="post-title">Interacting with Devices via PSS Registers</h1>
+    <span class="post-date">18 Apr 2023</span>
+
+    <p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/InteractingWithDevicesViaPssRegisters_splash.png" /> 
+</p>
+<p>We’ve been looking at properly modeling the types of behaviors that we want
+to exercise on our DMA IP for the last few posts. Of course, until we can 
+actually start programming the DMA registers, all of our modeling won’t
+actually <em>do</em> anything.</p>
+
+<p>PSS provides two primary ways to connect the model of test behavior we 
+want to exercise to the device on which we will exercise that behavior:</p>
+<ul>
+  <li>Calling functions that are implemented in the target environment</li>
+  <li>Using PSS features to read/write registers and memory</li>
+</ul>
+
+<p>Both of these approaches have benefits and drawbacks. If functions
+already exist to program IP registers, leveraging these from PSS
+helps to get tests up and running more quickly. However, functions
+are typically only implemented in a single language. Greater 
+portability is achieved by directly describing the interactions
+between PSS model and device registers in PSS.</p>
+
+<p>This post will look at describing the register interface 
+using the PSS register model.</p>
+
+<!--more-->
+
+<h1 id="registers-in-different-contexts">Registers in Different Contexts</h1>
+
+<p>Looking across the various contexts in which registers appear, it 
+quickly becomes clear that the critical capabilities are
+quite different.</p>
+
+<ul>
+  <li>Within the RTL implementation of an IP, registers communicate
+control values set by firmware to the implementing logic and
+feed back status data from hardware to firmware. In addition,
+some degree of change event may be useful (eg register written).
+In other words, data storage and the structure of that data
+are the key care-abouts here.</li>
+  <li>In a UVM block-level verification environment, there are a
+significant number of overlapping requirements. A UVM register
+model captures the structure of data within registers (eg 
+named fields), and layout of registers within memory. A
+UVM register model enables a shadow copy of register 
+contents to be maintained for debug and analysis purposes.
+Since access to registers is typically via a memory-mapped
+address space, the register model supports mapping between
+high-level changes to register values and writes to the
+addresses of those modified registers. All in all, the UVM
+register model may be the most complex that we work with.</li>
+  <li>At system level, we interact with the registers in our
+IP blocks and subsystems using firmware. When we’re 
+writing this firmware by hand, it’s typical to have a 
+set of C ‘#define’ macros that help to calculate the 
+address of registers, and that extract and set the value
+of register fields. At this level, there’s little to 
+no value in caching a copy of the last known value of
+a device register.</li>
+</ul>
+
+<p>Because PSS has a system-level focus, it’s probably no surprise 
+that it focuses on the key capabilities required at system
+level: being able to efficiently model how registers fit into
+the address space space of a device, and efficiently read and
+write them. Unlike the UVM register model, the PSS register
+model doesn’t maintain a copy of the data stored in registers.</p>
+
+<h1 id="the-pss-register-model">The PSS Register Model</h1>
+<p>The PSS register model focuses on capturing the field layout
+of each register, the layout of device registers in the
+memory map, and on providing efficient mechanisms for
+reading and writing to the device registers.</p>
+
+<p>The key elements to be aware of are:</p>
+<ul>
+  <li>Register group component that collects registers and sub-groups of registers together</li>
+  <li>Register component that describes a single register – often in-line</li>
+  <li>Register definition struct that describes the fields of a register</li>
+</ul>
+
+<p>Both the register group and register components are pre-defined components
+defined by the PSS <em>Core Library</em>. While they are not built-in constructs
+in the language, they are special types that tools are expected to 
+implement specially.</p>
+
+<h2 id="register-group">Register Group</h2>
+
+<p>We define a register group to contain the top-level registers and register
+groups of a device (eg our DMA engine). Or, any time we collections of 
+registers that we want to use mulitple times.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/WB_DMA_TopLevel_Channel_Regs.png" />
+</p>
+
+<p>Let’s look at the first part of the DMA Engine registers (shown above). We have
+some control registers that are common across all of the DMA channels. Then, 
+groups of registers that are replicated for each channel.</p>
+
+<p>We will create a register group for the full set of DMA engine registers
+and a register group for the per-channel registers. The full DMA engine
+register group will contain both the individual registers and an array
+of the per-channel register groups.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaChannelRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+
+<span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="n">WbDmaChannelRegs</span>        <span class="n">channels</span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+<span class="p">}</span></code></pre></figure>
+
+<h2 id="register-definition-struct-and-component">Register Definition Struct and Component</h2>
+
+<p>Each register is composed of some number of fields. When these fields have
+special meaning, we define a <code class="language-plaintext highlighter-rouge">packed struct</code> to capture the field layout.</p>
+
+<p align="center">
+<img src="https://bitsbytesgates.com/imgs/2023/04/WB_DMA_Channel_SZ_Reg.png" />
+</p>
+
+<p>The image above shows the layout of the <em>size</em> register within the block
+of per-channel registers. We declare the struct below to capture the 
+layout of the fields in the register. Note that the start of the first 
+field in the struct corresponds to the lowest bit in the register.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">struct</span> <span class="nc">WbDmaChannelSz</span> <span class="p">:</span> <span class="n">packed_s</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span>           <span class="n">TOT_SZ</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>            <span class="n">RESERVED_1</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span>            <span class="n">CHK_SZ</span><span class="p">;</span>
+    <span class="kt">bit</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>            <span class="n">RESERVED_2</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The struct shown above just defines the layout of data within a
+register.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaChannelRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaChannelSZ</span><span class="o">&gt;</span>          <span class="n">SZ</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddr</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SrcAddrMask</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddr</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">DstAddrMask</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">LinkListPtr</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>                 <span class="n">SwPtr</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>When declaring a register within a register group, we add a field
+of type <code class="language-plaintext highlighter-rouge">reg_c</code> that is parameterized with the data type 
+that describes the register. This core data type could be a packed
+struct as is shown above. It could also be an integer in cases where
+giving names to all the fields isn’t so important.</p>
+
+<p>For example, we use packed structs to define the layout of the CSR
+and SZ fields. Address and address-mask fields are defined using
+plain integer data types.</p>
+
+<p>From this point on, we simply build up. We define a register struct
+for any register whose field layout we care about. We add a 
+type-parameterized <code class="language-plaintext highlighter-rouge">reg_c</code> field for each register to its containing
+register group, and fields of <code class="language-plaintext highlighter-rouge">reg_group_c</code> type for instances
+of register groups.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">WbDmaRegs</span> <span class="p">:</span> <span class="n">reg_group_c</span> <span class="p">{</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="n">WbDmaCSR</span><span class="o">&gt;</span>         <span class="n">CSR</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_A</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_MSK_B</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_A</span><span class="p">;</span>
+    <span class="n">reg_c</span><span class="o">&lt;</span><span class="kt">bit</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span>          <span class="n">INT_SRC_B</span><span class="p">;</span>
+
+    <span class="n">WbDmaChannelRegs</span>        <span class="n">channels</span><span class="p">[</span><span class="mi">31</span><span class="p">];</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>For the DMA engine, this process results in a top-level register block
+for the IP such as the one shown above. In this case, we have a few
+individual registers and an array of channel register groups.</p>
+
+<h1 id="the-pss-register-model-in-the-real-world">The PSS Register Model in the Real World</h1>
+
+<p>In the prior sections, we manually created a PSS register model.
+In practice this is quite rare because, in a production environment,<br />
+all of the various register descriptions 
+(RTL, UVM, firmware, documentation, etc)
+are derived automatically from a single description. That 
+central description might be captured in a spreadsheet or
+CSV file, IP-XACT document [3], or a SystemRDL description [1].</p>
+
+<p>Personally, I’m very interested in SystemRDL. My feeling is that
+it’s easier to create and modify than IP-XACT, and I just learned
+about an open source toolchain named 
+<a href="https://github.com/orgs/SystemRDL">PeakRDL</a> that can be used to 
+derive various outputs from it.</p>
+
+<p>As you begin to look at applying PSS in your environment, it’s
+a good idea to understand what single representation your
+organization uses for register information, and what 
+facilities exist for adding new automatically-derived
+output formats.</p>
+
+<h1 id="instantiating-and-connecting-the-register-model">Instantiating and Connecting the Register Model</h1>
+
+<p>Our PSS register model is simply a mechanism for associating
+the addresses and bit patterns of memory-mapped registers
+with symbolic representations. Consequently, we need to 
+connect our register model to an address space before we
+can actually use it for reading and writing registers.</p>
+
+<h2 id="connecting-to-register-space">Connecting to Register Space</h2>
+<p>Registers are always mapped at some location within the 
+address space. In order to determine the correct address
+to use when accessing a register, we need to know where
+its containing register model is located in memory.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
+    
+    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x8000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x0000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">aspace</span><span class="o">.</span><span class="n">add_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The code above shows defining a region within the memory
+map that is defined as non-allocatable. In other words,
+we cannot use <code class="language-plaintext highlighter-rouge">addr_claim_s</code> fields within actions to
+claim memory from this region. Note that 
+<code class="language-plaintext highlighter-rouge">add_nonallocatable_region</code> returns an address handle that we save.
+We will use this handle to specify where the register block 
+is located.</p>
+
+<h2 id="connecting">Connecting</h2>
+<p>In this little example, the register model that we’re focusing on
+is the one and only register model. This is not the case most 
+of the time. It’s much more frequently the case that the register
+model for our IP is just one part of much larger system-level
+register model.</p>
+
+<p>Generally speaking, PSS provides two different strategies for
+associating a component with the register model it should use,
+and associating the register model with the base address it 
+must use:</p>
+<ul>
+  <li>We can create a large register model that has a base address
+and distribute references to register sub-models to components</li>
+  <li>We can create a register model per consumer component and 
+calculate a base address to associate with each.</li>
+</ul>
+
+<h3 id="large-register-model--distribute-refs">Large Register Model ; Distribute Refs</h3>
+
+<p>In this scheme, our DMA component has a reference to the 
+register model, not an instance:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
+
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+
+    <span class="c1">// Handle to the register model</span>
+    <span class="kd">ref</span> <span class="n">WbDmaRegs</span>           <span class="n">regs</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The code that uses the register model doesn’t care whether it is
+using a reference or an instance of a register model. Either way,
+registers get written and read.</p>
+
+<p>The register for all instances of our DMA engine are included in
+the top-level register model, as shown below.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">pure</span> <span class="kd">component</span> <span class="nc">SysRegModel</span> <span class="p">:</span> <span class="n">reg_group_c</span><span class="o">&lt;&gt;</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+    <span class="n">WbDmaRegs</span>           <span class="n">dma0</span><span class="p">;</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Finally, our system-level register model is instanced at the top
+level of the component tree.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
+
+    <span class="n">SysRegModel</span>                              <span class="n">regs</span><span class="p">;</span>
+
+    <span class="n">WbDma</span>                                    <span class="n">dma0</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">regs</span><span class="o">.</span><span class="n">set_handle</span><span class="p">(</span><span class="n">mmio_h</span><span class="p">);</span>
+
+        <span class="n">dma</span><span class="o">.</span><span class="n">regs</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">dma0</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>A few things are going on here:</p>
+<ul>
+  <li>After obtaining a handle to the root of the memory-mapped I/O
+space, we configure this as the base address of the system
+register map by calling the <code class="language-plaintext highlighter-rouge">set_handle</code> function on the system
+register model.</li>
+  <li>Next, we hook set the register-model reference field in the 
+dma0 component instance to point to its instance of the 
+register in the system register model.</li>
+</ul>
+
+<p>And, with that we’re done. The advantages of this approach are that
+we’re only concerned with the base address of the full register
+space and it might be easier to construct this ‘super’ register
+model using automation tools. We also have the option to directly
+reach down through the register model to access registers. 
+The biggest downside is a loss of some degree of modularity.</p>
+
+<h3 id="individual-register-models--distribute-base-addresses">Individual Register Models ; Distribute Base Addresses</h3>
+
+<p>This approach is nearly mirror image of the previous approach. 
+In this approach, each component with registers “owns” its 
+register block and we distribute base-address handles.</p>
+
+<p>So, here’s the DMA component:</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">WbDma</span> <span class="p">{</span>
+
+    <span class="k">pool</span> <span class="n">MemBuf</span>     <span class="n">mem_buf_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">mem_buf_p</span>  <span class="o">*</span><span class="p">;</span>
+
+    <span class="k">pool</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="n">Channel</span>    <span class="n">channels_p</span><span class="p">;</span>
+    <span class="k">bind</span> <span class="n">channels_p</span> <span class="o">*</span><span class="p">;</span>
+
+    <span class="c1">// DMA register model</span>
+    <span class="n">WbDmaRegs</span>           <span class="n">regs</span><span class="p">;</span>
+
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Note that we have full register model instance here, instead of
+just a reference.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">component</span> <span class="nc">pss_top</span> <span class="p">{</span>
+    <span class="n">transparent_addr_space_c</span><span class="o">&lt;&gt;</span>               <span class="n">aspace</span><span class="p">;</span>
+    <span class="n">addr_handle_t</span>                            <span class="n">mmio_h</span><span class="p">;</span>
+
+    <span class="n">WbDma</span>                                    <span class="n">dma</span><span class="p">;</span>
+
+    <span class="k">exec</span> <span class="k">init_down</span> <span class="p">{</span>
+        <span class="n">transparent_addr_region_s</span><span class="o">&lt;&gt;</span>          <span class="n">region</span><span class="p">;</span>
+
+        <span class="c1">// ...</span>
+
+        <span class="n">region</span><span class="o">.</span><span class="n">addr</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">region</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mh">0x1000_0000</span><span class="p">;</span>
+        <span class="n">mmio_h</span> <span class="o">=</span> <span class="n">aspace</span><span class="o">.</span><span class="n">add_nonallocatable_region</span><span class="p">(</span><span class="n">region</span><span class="p">);</span>
+
+        <span class="n">dma</span><span class="o">.</span><span class="n">regs</span><span class="o">.</span><span class="n">set_handle</span><span class="p">(</span><span class="n">make_handle_from_handle</span><span class="p">(</span><span class="n">mmio_h</span><span class="p">,</span> <span class="mh">0x1000</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>At the top level, things are a bit different as well. There is not
+unified top-level register model. Instead of setting the DMA 
+register-model handle within the DMA component, we set the base address
+handle on the register-model instance within the DMA component. Note
+that we need to compute the proper offset to create the correct address
+handle for the DMA registers.</p>
+
+<h1 id="using-the-register-model">Using the Register Model</h1>
+<p>Now that we have our register model integrated and connected, we can
+write PSS test realization code to program a DMA channel to perform
+a transfer.</p>
+
+<figure class="highlight"><pre><code class="language-pss" data-lang="pss"><span class="kd">action</span> <span class="nc">Mem2Mem</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="k">exec</span> <span class="k">body</span> <span class="p">{</span>
+        <span class="c1">// Setup the transfer size</span>
+        <span class="n">WbDmaChannelSZ</span> <span class="n">sz</span><span class="p">;</span>
+        <span class="n">sz</span><span class="o">.</span><span class="n">CHK_SZ</span> <span class="o">=</span> <span class="mi">16</span><span class="p">;</span>
+        <span class="n">sz</span><span class="o">.</span><span class="n">TOT_SZ</span> <span class="o">=</span> <span class="n">dst_o</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">;</span> <span class="c1">// We always work in words</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">SZ</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sz</span><span class="p">);</span>
+
+        <span class="c1">// Configure source and destination addresses</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">INT_SRC_A</span><span class="o">.</span><span class="n">write_val</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">src_i</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">INT_DST_A</span><span class="o">.</span><span class="n">write_val</span><span class="p">(</span><span class="n">addr_value</span><span class="p">(</span><span class="n">dst_o</span><span class="o">.</span><span class="n">addr_h</span><span class="p">));</span>
+
+        <span class="c1">// Enable the channel</span>
+        <span class="n">WbDmaChannelCSR</span> <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
+        <span class="n">csr</span><span class="o">.</span><span class="n">CH_EN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">csr</span><span class="p">);</span>
+
+        <span class="c1">// Wait for the transfer to complete</span>
+        <span class="k">repeat</span> <span class="p">{</span>
+            <span class="n">csr</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">CSR</span><span class="o">.</span><span class="n">read</span><span class="p">();</span>
+            <span class="c1">// ...</span>
+        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">csr</span><span class="o">.</span><span class="n">DONE</span> <span class="o">==</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>First, we’ll want to configure a couple of details about the 
+size of the transfer. For this, we use the WbDmaChannelSZ packed struct to 
+properly format data to write to the register.</p>
+
+<p>Next, we’ll setup the source and destination addresses. For these, we will
+use the <code class="language-plaintext highlighter-rouge">write_val</code> function to just write the address value to the register.</p>
+
+<p>We need to enable the channel before the transfer will start. To do this, 
+we want to modify a bit within the configuration and status register while
+leaving the other fields as-is. To do this, we can read the value of the
+CSR into a register struct, set the <code class="language-plaintext highlighter-rouge">CH_EN</code> bit, then write it back 
+to the register.</p>
+
+<p>At this point, the DMA engine will begin transferring memory. Finally, we
+need to wait until the channel’s <code class="language-plaintext highlighter-rouge">DONE</code> bit is set. This signals that the
+transfer is complete. Here, again, we use the register struct to make it
+easy to extract the bits that we care about.</p>
+
+<p>This code is concise and easy to write – generally much more so than
+the equivalent hand-coded bare-metal C code. The great thing, of course,
+is that the resulting implementation is just as efficient as if it 
+were hand-coded in C.</p>
+
+<h1 id="conclusion-and-next-steps">Conclusion and Next Steps</h1>
+
+<p>We have now worked through all the key topics in exercising the 
+memory to memory copy functionality of our DMA engine. We’ve looked
+at:</p>
+<ul>
+  <li>Buffers to represent data transfer between sequential actions</li>
+  <li>Memory management to remove complexity from our tests</li>
+  <li>Resource management to ensure concurrent test behavior doesn’t
+collide over resource usage like DMA channels</li>
+  <li>And finally, using the PSS register model to capture the layout
+of registers and register blocks, and access device registers.</li>
+</ul>
+
+<p>But, if you remember, there is one other key part of the DMA
+engine’s functionality: supporting DMA transfer for peripheral
+devices without their own internal DMA engines. Modeling this
+type of behavior brings unique challenges. Especially so when 
+we want to be able to exercise that behavior with multiple different 
+devices at the system. In the next post, we’ll look at approaches
+for modeling this with PSS.</p>
+
+<h1 id="resources">Resources</h1>
+<ul>
+  <li>[1] <a href="https://www.accellera.org/images/downloads/standards/systemrdl/SystemRDL_2.0_Jan2018.pdf">SystemRDL 2.0 LRM</a></li>
+  <li>[2] <a href="https://github.com/orgs/SystemRDL">PeakRDL</a></li>
+  <li>[3] <a href="https://www.accellera.org/downloads/standards/ip-xact">IP-XACT</a></li>
+  <li>[4] <a href="https://bitsbytesgates.com/code_html/2023/04/wb_dma_4_registers.html">DMA Example (Viewing)</a></li>
+  <li>[5] <a href="https://bitsbytesgates.com/code/2023/04/wb_dma_4_registers.pss">DMA Example (Raw Text)</a></li>
+</ul>
+
+  </div>
+
+
+  <div/>
+  <center>
+  <b>Copyright 2014-2026 Matthew Ballance. All Rights Reserved</b>
+  </center>
+  <em>The views and opinions expressed above are solely those of the author and do not 
+      represent those of my employer or any other party.</em>
+
+    
+    <br/>
+    <br/>
+      
+      
+      <h2>Posts in the series "Intro to PSS"</h2>
+      <ul>
+        
+        
+        <li><a href="/pss/2023/02/25/AutomatingBareMetalTestsWithPSS.html">Automating Bare-Metal Tests with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/03/ActionsComponents_and_TestGeneration.html">PSS Fundamentals: Actions, Components, and Test Generation</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/11/DeclarativeMultiCoreTests.html">Declarative Programming and Multi-Core Tests</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/18/RelatingActionsWithDataflow.html">Relating Actions with Dataflow</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/03/25/ModelingTestScenariosForDMA.html">Modeling DMA Test Scenarios with PSS</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/04/02/ManagingMemoryInPSS.html">PSS Memory Management Fundamentals</a></li>
+        
+        
+        
+        <li><a href="/pss/2023/04/09/PSSConcurrencyAndResources.html">PSS Concurrency and Resources</a></li>
+        
+        
+        
+        <li>Interacting with Devices via PSS Registers</li>
+        
+        
+        
+        <li><a href="/pss/2023/05/07/RelatingActionsWithDataflowPart2.html">Relating Actions with Dataflow Part2 -- Parallelism</a></li>
+        
+        
+      </ul>
+      
+    
+
+  <br/>
+  <h3>Bits, Bytes, and Gates Direct to your Inbox</h3>
+  
+<form action="https://docs.google.com/forms/d/e/1FAIpQLSeGDpQMtOqutWiLVXcR84rMQV5hzkYbPVlhx23KxEN8NMnsXA/formResponse"
+method="POST" id="ss-form" target="_self" style="">
+<input type="email" name="entry.9235671" value="" class="ss-q-short" 
+id="entry_323321176" dir="auto"
+aria-label="Email:  Must be a valid email" 
+aria-required="true" title="Must be a valid email" style=""/>
+<input type="submit" name="submit" value="Submit" id="ss-submit" 
+class="jfk-button jfk-button-action " style="">
+</form>
+
+  <br/>
+  <br/>
+
+  
+
+  </body>
+</html>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script src='/public/js/script.js'></script>
+  </body>
+</html>
