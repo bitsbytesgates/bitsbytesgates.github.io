@@ -57,15 +57,30 @@ const localFor = (cdnUrl, fallback) => {
 // blogspot.com address; left alone, every one of those is a reader sent off to
 // the retired blog to read something this site already serves.
 const slugByOrig = new Map()
-for (const name of readdirSync(CONTENT).filter((f) => f.endsWith('.md'))) {
-  const head = readFileSync(join(CONTENT, name), 'utf8').slice(0, 4000)
+
+// Posts are filed under YYYY/MM/, so this has to recurse. It used to be a flat
+// readdirSync, which after the re-filing matched nothing and made the whole script
+// a silent no-op -- it still exits 0 and still reports "0 links rewritten".
+// The SLUG is the basename alone, matching the generateId override in
+// src/content.config.ts; the directories are filing and never appear in a URL.
+function posts(dir = CONTENT) {
+  const out = []
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (e.isDirectory()) out.push(...posts(join(dir, e.name)))
+    else if (e.name.endsWith('.md')) out.push({ name: e.name, path: join(dir, e.name) })
+  }
+  return out
+}
+const ALL = posts()
+
+for (const { name, path } of ALL) {
+  const head = readFileSync(path, 'utf8').slice(0, 4000)
   const m = head.match(/^blogger_orig_url:\s*["']?(\S+?)["']?\s*$/m)
   if (m) slugByOrig.set(m[1].replace(/^http:/, 'https:'), `/blog/${name.replace(/\.md$/, '')}/`)
 }
 
 let files = 0, links = 0, unmapped = 0, selfLinks = 0, selfMiss = 0
-for (const name of readdirSync(CONTENT).filter((f) => f.endsWith('.md'))) {
-  const p = join(CONTENT, name)
+for (const { path: p } of ALL) {
   const src = readFileSync(p, 'utf8')
   let out = src
 
