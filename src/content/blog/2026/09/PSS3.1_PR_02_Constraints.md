@@ -20,7 +20,7 @@ PSS 3.1 adds several new capabilities to make constraint descriptions more
 compact, readable, and rich. These are exactly the types of features to review
 carefully in a public-review draft!
 
-`<!--more-->`
+<!--more-->
 
 ---
 
