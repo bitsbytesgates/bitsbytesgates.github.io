@@ -1,6 +1,6 @@
 ---
 title: 'PSS 3.1: Simplifying Constraint Modeling'
-date: 2026-09-10
+date: 2026-09-12
 series: PSS in the Open
 categories: [PSS, Open Source EDAs]
 syndicate: derived
