@@ -100,13 +100,23 @@ jobs:
           # appearing more than once (three copies in the Jekyll includes).
           # Assert against both. The ID is derived by grep so it cannot drift
           # from src/site.config.ts.
-          GA_ID=$(grep -oE "G-[A-Z0-9]{6,}" src/site.config.ts | head -1)
+          # This step runs under `bash -e -o pipefail`, which both of the
+          # greps below have to be written around, or the check fails on a
+          # HEALTHY site:
+          #   - `grep -rl ... | wc -l` exits non-zero when grep matches
+          #     nothing, and pipefail propagates it. Without `|| true` the
+          #     assignment aborts the step and the untagged-site error message
+          #     below never prints -- the exact case this exists to report.
+          #   - a loop body ending in `[ ... ] && echo` returns 1 when the
+          #     condition is false, so a loop that finds no duplicates exits
+          #     1. `if` returns 0 in that case; `&&` does not.
+          GA_ID=$(grep -oE "G-[A-Z0-9]{6,}" src/site.config.ts | head -1 || true)
           if [ -n "$GA_ID" ]; then
-            tagged=$(grep -rl "$GA_ID" dist --include='*.html' | wc -l)
+            tagged=$(grep -rl "$GA_ID" dist --include='*.html' | wc -l || true)
             echo "pages carrying the analytics tag: $tagged"
             [ "$tagged" -ge 150 ] || { echo "::error::analytics tag on only $tagged pages; expected ~183"; exit 1; }
-            dupes=$(for f in $(grep -rl "gtag/js" dist --include='*.html'); do
-                      [ "$(grep -c "gtag/js" "$f")" -gt 1 ] && echo "$f"
+            dupes=$(for f in $(grep -rl "gtag/js" dist --include='*.html' || true); do
+                      if [ "$(grep -c "gtag/js" "$f")" -gt 1 ]; then echo "$f"; fi
                     done)
             [ -z "$dupes" ] || { echo "::error::more than one analytics tag on: $dupes"; exit 1; }
           else

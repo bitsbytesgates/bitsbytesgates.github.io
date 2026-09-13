@@ -91,13 +91,16 @@ jobs:
           echo "redirect rules: $r"
           [ "$r" -ge 160 ] || { echo "::error::only $r redirect rules; expected ~167. Old URLs would 404."; exit 1; }
           test -s dist/pagefind/pagefind.js || { echo "::error::pagefind did not index the site"; exit 1; }
-          GA_ID=$(grep -oE "G-[A-Z0-9]{6,}" src/site.config.ts | head -1)
+          # Runs under `bash -e -o pipefail`. See the GitHub side for why the
+          # `|| true` and the `if` (rather than `&&`) are load-bearing: without
+          # them this check fails on a healthy site.
+          GA_ID=$(grep -oE "G-[A-Z0-9]{6,}" src/site.config.ts | head -1 || true)
           if [ -n "$GA_ID" ]; then
-            tagged=$(grep -rl "$GA_ID" dist --include='*.html' | wc -l)
+            tagged=$(grep -rl "$GA_ID" dist --include='*.html' | wc -l || true)
             echo "pages carrying the analytics tag: $tagged"
             [ "$tagged" -ge 150 ] || { echo "::error::analytics tag on only $tagged pages; expected ~183"; exit 1; }
-            dupes=$(for f in $(grep -rl "gtag/js" dist --include='*.html'); do
-                      [ "$(grep -c "gtag/js" "$f")" -gt 1 ] && echo "$f"
+            dupes=$(for f in $(grep -rl "gtag/js" dist --include='*.html' || true); do
+                      if [ "$(grep -c "gtag/js" "$f")" -gt 1 ]; then echo "$f"; fi
                     done)
             [ -z "$dupes" ] || { echo "::error::more than one analytics tag on: $dupes"; exit 1; }
           else
