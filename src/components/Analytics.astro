@@ -1,0 +1,63 @@
+---
+/**
+ * GA4, loaded once from BaseLayout and nowhere else.
+ *
+ * The Jekyll site had three copies of this snippet in three files, one of them broken and
+ * one commented out. That is the failure this component exists to make impossible: if you
+ * are about to add a second <script> that mentions googletagmanager, add it here instead.
+ */
+import { GA_MEASUREMENT_ID, ANALYTICS_HOST } from '../site.config'
+
+// Gate 1: never in dev or preview builds. No ID configured means no tag, anywhere.
+const enabled = import.meta.env.PROD && GA_MEASUREMENT_ID !== ''
+---
+{enabled && (
+  <script is:inline define:vars={{ GA_MEASUREMENT_ID, ANALYTICS_HOST }}>
+    (function () {
+      // Gate 2: the build artifact is produced once and deployed by hand-off, so the same
+      // bytes can land on a *.pages.dev preview. Without this, preview traffic pollutes the
+      // property.
+      if (location.hostname !== ANALYTICS_HOST) return
+
+      // Gate 3: honour Do Not Track and Global Privacy Control.
+      if (navigator.doNotTrack === '1' || window.doNotTrack === '1' || navigator.globalPrivacyControl) return
+
+      window.dataLayer = window.dataLayer || []
+      function gtag() { dataLayer.push(arguments) }
+      window.gtag = gtag
+
+      // Consent Mode v2, default-denied. analytics_storage: 'denied' means GA4 sends
+      // COOKIELESS pings -- pageviews, referrer, geography, modelled sessions, but no
+      // client_id persisted and no cross-visit identity. That is the entire useful signal
+      // for a blog, and it costs no cookie banner and no consent record-keeping.
+      //
+      // These pushes MUST happen before gtag.js arrives. They do: dataLayer is a plain
+      // array until the library loads and replays it.
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+      })
+      gtag('js', new Date())
+      gtag('config', GA_MEASUREMENT_ID, {
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      })
+
+      // Off the critical path. A text blog's paint must never wait on Google's CDN, and
+      // deferring costs nothing in data quality on a static site. Note the deliberate
+      // absence of <link rel="preconnect"> -- that spends a connection on something that
+      // is, by construction, not critical.
+      function load() {
+        var s = document.createElement('script')
+        s.async = true
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_MEASUREMENT_ID
+        document.head.appendChild(s)
+      }
+      var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1) }
+      if (document.readyState === 'complete') idle(load)
+      else window.addEventListener('load', function () { idle(load) })
+    })()
+  </script>
+)}

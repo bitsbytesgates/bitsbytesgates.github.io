@@ -17,6 +17,16 @@ import BaseLayout from '../layouts/BaseLayout.astro'
         showSubResults: true,
         showImages: false,
         excerptLength: 30,
+        // Pagefind keeps queries entirely client-side and puts nothing in the
+        // URL, so search terms are invisible to analytics unless sent here.
+        // This runs on the settled query, not per keystroke: the UI debounces
+        // 300ms before the call that applies processTerm, and the per-keystroke
+        // preload() bypasses it. gtag may be absent (DNT, preview, dev), hence
+        // the optional call rather than a guard.
+        processTerm: (term) => {
+          window.gtag?.('event', 'search', { search_term: term })
+          return term
+        },
       })
     })
   </script>

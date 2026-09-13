@@ -129,5 +129,26 @@ const archive = await (await fetch(BASE + '/archive/')).text()
 const archLinks = new Set([...archive.matchAll(/href="(\/blog\/[^"]+)"/g)].map(m => m[1]))
 ok(archLinks.size === 81, `archive lists ${archLinks.size} posts (expected 81)`)
 
+// ---- 10. analytics ---------------------------------------------------------
+// CI proves the bytes were built. This proves they arrived and that the gates
+// behave on the real host.
+console.log('\n[10] analytics')
+const gaId = readFileSync(`${REPO}/src/site.config.ts`, 'utf8').match(/G-[A-Z0-9]{6,}/)?.[0]
+if (!gaId) {
+  console.log('  info  no measurement ID configured; skipping')
+} else {
+  const gaPages = ['/', '/about/', '/archive/', [...archLinks][0]]
+  for (const p of gaPages) {
+    const html = await (await fetch(BASE + p)).text()
+    ok((html.match(/googletagmanager\.com\/gtag\/js/g) || []).length <= 1, `${p} has at most one gtag loader`)
+    ok(html.includes(gaId), `${p} carries ${gaId}`)
+  }
+  ok(home.includes('analytics_storage'), 'consent-mode defaults present')
+  ok(!/rel="preconnect"[^>]*googletagmanager/.test(home), 'no preconnect on the critical path')
+  const csp = (await fetch(BASE + '/')).headers.get('content-security-policy') || ''
+  ok(csp.includes('googletagmanager'), 'CSP allows the analytics host')
+  ok(csp.includes("frame-ancestors 'none'"), 'CSP sets frame-ancestors')
+}
+
 console.log(`\n=== ${pass} passed, ${fail} failed ===`)
 process.exit(fail ? 1 : 0)

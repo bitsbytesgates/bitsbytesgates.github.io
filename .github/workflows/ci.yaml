@@ -95,6 +95,23 @@ jobs:
           [ "$r" -ge 160 ] || { echo "::error::only $r redirect rules; expected ~167. Old URLs would 404."; exit 1; }
           # Pagefind runs last and fails soft if the site tree surprises it.
           test -s dist/pagefind/pagefind.js || { echo "::error::pagefind did not index the site"; exit 1; }
+          # Analytics. Two failure modes, both of which this repo has actually
+          # shipped: the tag silently vanishing (the Astro migration) and the tag
+          # appearing more than once (three copies in the Jekyll includes).
+          # Assert against both. The ID is derived by grep so it cannot drift
+          # from src/site.config.ts.
+          GA_ID=$(grep -oE "G-[A-Z0-9]{6,}" src/site.config.ts | head -1)
+          if [ -n "$GA_ID" ]; then
+            tagged=$(grep -rl "$GA_ID" dist --include='*.html' | wc -l)
+            echo "pages carrying the analytics tag: $tagged"
+            [ "$tagged" -ge 150 ] || { echo "::error::analytics tag on only $tagged pages; expected ~183"; exit 1; }
+            dupes=$(for f in $(grep -rl "gtag/js" dist --include='*.html'); do
+                      [ "$(grep -c "gtag/js" "$f")" -gt 1 ] && echo "$f"
+                    done)
+            [ -z "$dupes" ] || { echo "::error::more than one analytics tag on: $dupes"; exit 1; }
+          else
+            echo "::warning::no measurement ID in src/site.config.ts; site will ship untagged"
+          fi
 
       - name: Upload site
         # The published tree is an artifact, so the deploy job ships exactly the

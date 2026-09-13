@@ -5,5 +5,18 @@
 # recognise it as a subscribable feed. GitHub Pages had the same behaviour, so
 # this is a long-standing defect being fixed at the migration, not a regression
 # introduced by it.
+# The CSP's real value here is the HOST ALLOWLIST: googletagmanager is the only
+# external script origin that can load at all, so any future third-party script
+# is a visible diff rather than a silent addition. 'unsafe-inline' in script-src
+# is load-bearing and an honest weakening -- the no-FOUC theme setter,
+# CodeEnhancements, Mermaid, the Pagefind init and the analytics snippet are all
+# inline, and nonces need per-request generation that a static Pages deploy
+# cannot do. style-src 'unsafe-inline' is required by Shiki's inline style=
+# attributes; frame-src covers the one youtube-nocookie embed in the corpus.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://www.youtube-nocookie.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
 /feed.xml
   Content-Type: application/atom+xml; charset=utf-8
