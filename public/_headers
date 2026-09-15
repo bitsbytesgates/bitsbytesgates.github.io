@@ -5,16 +5,30 @@
 # recognise it as a subscribable feed. GitHub Pages had the same behaviour, so
 # this is a long-standing defect being fixed at the migration, not a regression
 # introduced by it.
-# The CSP's real value here is the HOST ALLOWLIST: googletagmanager is the only
-# external script origin that can load at all, so any future third-party script
-# is a visible diff rather than a silent addition. 'unsafe-inline' in script-src
-# is load-bearing and an honest weakening -- the no-FOUC theme setter,
+# The CSP's real value here is the HOST ALLOWLIST: no external script origin
+# can load unless it is named below, so any future third-party script is a
+# visible diff rather than a silent addition. 'unsafe-inline' in script-src is
+# load-bearing and an honest weakening -- the no-FOUC theme setter,
 # CodeEnhancements, Mermaid, the Pagefind init and the analytics snippet are all
 # inline, and nonces need per-request generation that a static Pages deploy
 # cannot do. style-src 'unsafe-inline' is required by Shiki's inline style=
 # attributes; frame-src covers the one youtube-nocookie embed in the corpus.
+#
+# cloudflareinsights.com is Cloudflare Web Analytics, and it is NOT in the build
+# output -- Cloudflare injects the beacon into HTML at the edge, and only for
+# requests that look like a browser. A plain `curl` never sees it, and neither
+# does grepping dist/. The first version of this CSP therefore blocked it and
+# broke a working analytics product that had been collecting for months.
+#
+# Two hosts are needed, not one: static.cloudflareinsights.com serves
+# beacon.min.js, and the beacon POSTs its RUM payload to
+# https://cloudflareinsights.com/cdn-cgi/rum. Allowing only the first would let
+# the script load and then fail silently at report time.
+#
+# LESSON: verify this header with a browser User-Agent, not curl, and with
+# DevTools open. Edge-injected scripts are invisible to every static check.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://www.youtube-nocookie.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://cloudflareinsights.com; img-src 'self' data: https://*.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://www.youtube-nocookie.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 

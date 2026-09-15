@@ -150,5 +150,47 @@ if (!gaId) {
   ok(csp.includes("frame-ancestors 'none'"), 'CSP sets frame-ancestors')
 }
 
+// ---- 11. CSP vs. what the page ACTUALLY loads ------------------------------
+// The first CSP shipped broken because it was audited against dist/. Cloudflare
+// injects the Web Analytics beacon into HTML at the edge, and only for requests
+// that look like a browser -- so it is absent from the build output AND from a
+// plain curl. It blocked a working analytics product for a full release.
+//
+// This check is deliberately generic: fetch as a browser, find every external
+// script host the page really pulls, and assert the CSP permits each one. It
+// catches the next edge-injected script too (Zaraz, Rocket Loader, bot JS),
+// not just the one that bit us.
+console.log('\n[11] CSP vs. edge-injected scripts')
+const BROWSER_UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
+const uaRes = await fetch(BASE + '/', {
+  headers: { 'User-Agent': BROWSER_UA, Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' },
+})
+const uaHtml = await uaRes.text()
+const cspHeader = uaRes.headers.get('content-security-policy') || ''
+const directives = Object.fromEntries(
+  cspHeader.split(';').map(s => s.trim()).filter(Boolean).map(s => { const [k, ...v] = s.split(/\s+/); return [k, v] })
+)
+const permits = (directive, url) => {
+  const { host, origin } = new URL(url)
+  return (directives[directive] || []).some(src =>
+    src === origin || src === `https://${host}` ||
+    (src.startsWith('https://*.') && host.endsWith(src.slice('https://*.'.length))))
+}
+const scriptHosts = [...new Set(
+  [...uaHtml.matchAll(/<script[^>]+src="(https?:\/\/[^"]+)"/g)].map(m => m[1]))]
+console.log(`  info  ${scriptHosts.length} external script(s) in the browser-UA response`)
+for (const url of scriptHosts) {
+  ok(permits('script-src', url), `script-src permits ${new URL(url).host}`)
+}
+// The beacon loading is not enough -- it POSTs its payload to a different host.
+if (uaHtml.includes('cloudflareinsights.com')) {
+  ok(permits('connect-src', 'https://cloudflareinsights.com/cdn-cgi/rum'),
+    'connect-src permits the Cloudflare RUM endpoint (beacon would load but not report)')
+}
+const plainHtml = await (await fetch(BASE + '/')).text()
+if (uaHtml.length !== plainHtml.length) {
+  console.log(`  info  edge injects ${uaHtml.length - plainHtml.length} bytes for browser UAs; curl-based checks are blind to it`)
+}
+
 console.log(`\n=== ${pass} passed, ${fail} failed ===`)
 process.exit(fail ? 1 : 0)
