@@ -15,3 +15,11 @@ dist/
 
 # wrangler pages dev scratch state
 .wrangler/
+
+.agents/
+.claude/
+.codex/
+.cursor/
+
+packages/
+

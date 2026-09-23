@@ -16,7 +16,9 @@ package:
   dep-sets:
 
   - name: default-dev
-    deps: []
+    deps:
+    - name: pssparser
+      url: https://github.com/psstools/pssparser.git
 
   - name: default
     deps: []
