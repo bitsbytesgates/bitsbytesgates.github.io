@@ -1,0 +1,7 @@
+buffer Mem { rand bit[32] addr; }
+
+component pss_top {
+    action Write { output Mem dat_o; }
+    action Read  { input Mem dat_i; }
+    action Copy  { input Mem dat_i; output Mem dat_o; }
+}

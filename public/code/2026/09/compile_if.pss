@@ -1,0 +1,4 @@
+package p {
+    compile if (true)
+        const int X = 1;
+}

@@ -34,3 +34,10 @@
 
 /feed.xml
   Content-Type: application/atom+xml; charset=utf-8
+
+# Post source files (public/code/<year>/<month>/). Pages has no type for .pss
+# and served them as application/octet-stream, so every "Raw Text" link
+# downloaded instead of displaying. Everything under /code/ is plain text by
+# convention -- keep binaries out of it.
+/code/*
+  Content-Type: text/plain; charset=utf-8

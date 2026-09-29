@@ -1,0 +1,4 @@
+import addr_reg_pkg::*;
+component pss_top {
+    action A { addr_claim_s<> claim; }
+}

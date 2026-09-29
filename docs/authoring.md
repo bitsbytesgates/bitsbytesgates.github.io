@@ -149,6 +149,27 @@ the intended display size.
 
 `/legacy-img/` is the Blogger-era image pool. New posts should not add to it.
 
+**Code files** -- complete, runnable examples a reader can download -- go under
+`public/code/<year>/<month>/`, next to the images for the same post. Each file gets two URLs:
+
+| URL | What it is |
+|---|---|
+| `/code/2026/09/missing_brace.pss` | the file, served as `text/plain` (see `public/_headers`) |
+| `/code_html/2026/09/missing_brace/` | a highlighted viewer page with a link back to the raw file |
+
+The viewer pages are generated from `public/code/` by `src/pages/code_html/[...path].astro`;
+there is nothing to hand-write. Link whichever suits, usually both in the Resources list:
+
+```markdown
+- [missing_brace.pss](/code_html/2026/09/missing_brace/) ([raw](/code/2026/09/missing_brace.pss))
+```
+
+Rules: text files only (everything under `/code/` is served as plain text); stems must be
+unique within a month, since `foo.pss` and `foo.c` would both claim `/code_html/…/foo/`;
+highlighting is picked by extension in the viewer route, so add a new one there if needed.
+Shown in the post as a fence, a snippet is often an excerpt -- the file under `public/code/`
+is the whole thing, so line numbers in quoted tool output should match *the file*.
+
 **Mermaid diagrams** are raw HTML blocks:
 
 ```html
@@ -202,7 +223,7 @@ Search (`/search/`) only works against `preview`, not `dev` — Pagefind indexes
 ## 5. Commit
 
 ```sh
-git add src/content/blog/2026/08/<slug>.md public/imgs/2026/08/
+git add src/content/blog/2026/08/<slug>.md public/imgs/2026/08/ public/code/2026/08/
 git commit -m "Post: Writing a PSS Model"
 git push origin main
 ```
@@ -268,6 +289,7 @@ against production after a release. Non-zero exit = something regressed.
 - [ ] `title`, `date`, and tags from the vocabulary (project tag included)
 - [ ] `<!--more-->` after the opening paragraph
 - [ ] Images under `public/imgs/<year>/<month>/`, absolute `/imgs/…` paths
+- [ ] Example files under `public/code/<year>/<month>/`, linked from the post
 - [ ] No blank lines inside any `<div class="mermaid">`
 - [ ] `npm run check && npm run build && npm run preview` clean
 - [ ] Commit + push `main`, CI green

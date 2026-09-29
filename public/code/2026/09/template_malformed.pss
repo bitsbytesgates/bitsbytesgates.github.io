@@ -1,0 +1,5 @@
+component pss_top {
+    action A {
+        exec body C = """n={{ 1 + }}""";
+    }
+}

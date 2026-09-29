@@ -1,0 +1,5 @@
+buffer Mem { rand bit[32] addr; }
+
+component pss_top {
+    action Read  { input Mem in; }   // 'in' is a keyword
+}

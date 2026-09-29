@@ -1,0 +1,42 @@
+---
+// Viewer pages for the raw files under public/code/<year>/<month>/.
+// public/code is the single source: each file is served as-is at /code/…
+// and rendered here, highlighted, at /code_html/<year>/<month>/<stem>/.
+import { readdirSync, readFileSync } from 'node:fs'
+import { join, extname } from 'node:path'
+import { Code } from 'astro:components'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { pssLang } from '../../../grammars/pss-lang.mjs'
+
+export function getStaticPaths() {
+  const root = 'public/code'
+  const langs: Record<string, any> = {
+    '.pss': pssLang, '.c': 'c', '.h': 'c', '.cpp': 'cpp', '.py': 'python',
+    '.sv': 'systemverilog', '.v': 'verilog', '.sh': 'sh', '.toml': 'toml',
+    '.json': 'json', '.yaml': 'yaml', '.yml': 'yaml',
+  }
+  return readdirSync(root, { recursive: true, encoding: 'utf8' })
+    .filter((rel) => extname(rel) && !rel.split('/').pop()!.startsWith('.'))
+    .map((rel) => {
+      const ext = extname(rel)
+      return {
+        params: { path: rel.slice(0, -ext.length) },
+        props: {
+          rel,
+          code: readFileSync(join(root, rel), 'utf8'),
+          lang: langs[ext] ?? 'text',
+        },
+      }
+    })
+}
+
+const { rel, code, lang } = Astro.props
+const name = rel.split('/').pop()
+---
+<BaseLayout title={name} description="Source listing from a Bits, Bytes, and Gates post.">
+  <div class="prose">
+    <h1>{name}</h1>
+    <p><a href={`/code/${rel}`}>Raw text</a></p>
+    <Code code={code} lang={lang} themes={{ light: 'github-light', dark: 'github-dark' }} />
+  </div>
+</BaseLayout>

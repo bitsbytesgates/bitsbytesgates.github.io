@@ -1,0 +1,9 @@
+buffer Mem { rand bit[32] addr; }
+
+component pss_top {
+    action Write { output Mem dat_o; }
+
+    action Test {
+        activity { do Writ; }
+    }
+}

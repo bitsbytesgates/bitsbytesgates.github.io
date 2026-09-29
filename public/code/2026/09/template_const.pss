@@ -1,0 +1,7 @@
+component pss_top {
+    int sz;
+    static const string bad = """n={{sz}}""";   // PSS115
+    action A {
+        exec body C = """n={{sz}}""";           // fine -- not a constant context
+    }
+}

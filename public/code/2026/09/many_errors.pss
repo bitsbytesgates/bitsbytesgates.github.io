@@ -1,0 +1,6 @@
+component pss_top {
+    action A { rand bit[8] v; constraint { x < 1; } }
+    action B { rand bit[8] v; constraint { y < 1; } }
+    action C { rand bit[8] v; constraint { z < 1; } }
+    action D { rand bit[8] v; constraint { w < 1; } }
+}

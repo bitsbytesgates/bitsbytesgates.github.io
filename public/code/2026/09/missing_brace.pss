@@ -1,0 +1,4 @@
+component pss_top {
+    action A {
+        rand bit[8] val;
+    }

@@ -1,0 +1,6 @@
+component pss_top {
+    action A {
+        rand bit[32] addr;
+        constraint { adr < 10; }   // field is 'addr'
+    }
+}
