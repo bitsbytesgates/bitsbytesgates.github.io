@@ -7,6 +7,7 @@ import PrevNext from '../../components/PrevNext.astro'
 import RelatedPosts from '../../components/RelatedPosts.astro'
 import Mermaid from '../../components/Mermaid.astro'
 import PostFooter from '../../components/PostFooter.astro'
+import Subscribe from '../../components/Subscribe.astro'
 import { topicsOf, formatDate, byDateDesc, relatedTo, readingTime } from '../../lib/topics'
 
 export async function getStaticPaths() {
@@ -64,6 +65,7 @@ const hasMermaid = /class=["']mermaid["']/.test(post.body ?? '')
     <Content />
 
     <PostFooter body={post.body} />
+    <Subscribe />
 
     {post.data.series && <SeriesNav post={post} all={all} />}
     <PrevNext prev={older} next={newer} />

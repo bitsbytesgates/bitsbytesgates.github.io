@@ -1,0 +1,4 @@
+version = 1
+
+[severity]
+PSS117 = "info"      # migrating to generic constraints; keep it visible

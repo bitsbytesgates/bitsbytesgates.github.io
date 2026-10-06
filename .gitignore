@@ -23,3 +23,10 @@ dist/
 
 packages/
 
+
+# Listmonk host-side secrets and data (infra/listmonk/README.md)
+infra/listmonk/.env
+infra/listmonk/cloudflared/config.yml
+infra/listmonk/cloudflared/*.json
+*.dump
+subscriber*.csv

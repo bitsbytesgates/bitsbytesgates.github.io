@@ -1,0 +1,5 @@
+package dma_pkg { // DMA engine model
+  component dma_c{
+    action xfer_a { rand bit[32] len; }
+  }
+}

@@ -1,0 +1,109 @@
+---
+/**
+ * Email signup, posting to the self-hosted Listmonk (docs/email-subscription.md §4).
+ *
+ * Works without JS: a plain POST to Listmonk's /subscription/form, which redirects to
+ * /subscribe/thanks/ because `next` is one of its Trusted URLs. With JS, the same POST goes
+ * through fetch and the box swaps in a "check your inbox" message, so the reader stays on
+ * the post. That matters: the old Google Form threw readers onto Google's "response
+ * recorded" page mid-post.
+ *
+ * It posts to the form endpoint, not /api/public/subscription, because only the form
+ * endpoint checks the `nonce` honeypot and the captcha. The API endpoint is never exposed
+ * through the tunnel.
+ *
+ * Use at most one per page; the ids are fixed.
+ */
+import { SUBSCRIBE_ENABLED, LISTMONK_URL, LISTMONK_LIST_UUID, SUBSCRIBE_THANKS_URL } from '../site.config'
+
+interface Props { heading?: string }
+const { heading = 'New posts by email' } = Astro.props
+const enabled = LISTMONK_LIST_UUID !== ''
+---
+{SUBSCRIBE_ENABLED && (
+<aside class="subscribe" aria-labelledby="subscribe-heading">
+  <h2 id="subscribe-heading">{heading}</h2>
+  {enabled ? (
+    <>
+      <p class="deal">Roughly monthly, one email per post. Unsubscribe in one click.</p>
+      <form method="post" action={`${LISTMONK_URL}/subscription/form`} data-subscribe>
+        <input type="hidden" name="l" value={LISTMONK_LIST_UUID} />
+        <input type="hidden" name="next" value={SUBSCRIBE_THANKS_URL} />
+        {/* Honeypot: Listmonk rejects any submission where this is filled. */}
+        <div class="hp" aria-hidden="true">
+          <label>Leave this empty <input type="text" name="nonce" tabindex="-1" autocomplete="off" /></label>
+        </div>
+        <label for="subscribe-email">Email address</label>
+        <div class="row">
+          <input id="subscribe-email" type="email" name="email" autocomplete="email" required
+                 placeholder="you@example.com" />
+          <button type="submit">Subscribe</button>
+        </div>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+      <p class="alt">Or follow by <a href="/feed.xml">RSS</a>.</p>
+    </>
+  ) : (
+    <p class="alt">Follow new posts by <a href="/feed.xml">RSS</a>.</p>
+  )}
+</aside>
+)}
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-subscribe]')) {
+    const status = form.querySelector<HTMLElement>('.status')!
+    const button = form.querySelector<HTMLButtonElement>('button')!
+
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault()
+      const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>)
+      // The redirect is for the no-JS path. Here, staying on the page is the point.
+      body.delete('next')
+      button.disabled = true
+      status.textContent = 'Subscribing…'
+      let res: Response
+      try {
+        // URL-encoded body = a CORS "simple" request: no preflight. Listmonk adds the
+        // Access-Control-Allow-Origin header because this site is in its Trusted URLs.
+        res = await fetch(form.action, { method: 'POST', body })
+      } catch {
+        // Network or CORS failure: fall back to the plain POST, which still works.
+        form.submit()
+        return
+      }
+      if (res.ok) {
+        form.replaceChildren(Object.assign(document.createElement('p'), {
+          className: 'done',
+          textContent: 'Almost done. Check your inbox and click the confirmation link.',
+        }))
+        ;(window as any).gtag?.('event', 'subscribe', { method: 'inline' })
+      } else {
+        button.disabled = false
+        status.textContent = res.status === 400
+          ? 'That address was not accepted. Check it and try again.'
+          : 'Something went wrong. Please try again in a minute.'
+      }
+    })
+  }
+</script>
+
+<style>
+  .subscribe { margin-block: 2.5rem; padding: 1.1rem 1.25rem; background: var(--bg-subtle);
+               border: 1px solid var(--border); border-radius: var(--radius); }
+  h2 { font-size: 1.15rem; margin: 0 0 .3rem; }
+  .deal, .alt { margin: 0; color: var(--fg-muted); font-size: .9rem; }
+  form { margin-block: .8rem .6rem; }
+  label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .3rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .5rem; }
+  input[type='email'] { flex: 1 1 14rem; min-width: 0; font: inherit; padding: .45rem .6rem;
+                        color: var(--fg); background: var(--bg);
+                        border: 1px solid var(--border); border-radius: var(--radius); }
+  button { font: inherit; font-weight: 600; padding: .45rem 1rem; cursor: pointer;
+           color: var(--bg); background: var(--accent); border: 0; border-radius: var(--radius); }
+  button:hover { background: var(--accent-hover); }
+  button:disabled { opacity: .6; cursor: progress; }
+  .status { margin: .4rem 0 0; font-size: .85rem; min-height: 1.2em; }
+  .status:empty { display: none; }
+  .done { margin: 0; font-weight: 600; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+</style>

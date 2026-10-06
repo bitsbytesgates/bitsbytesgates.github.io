@@ -1,0 +1,18 @@
+---
+/**
+ * Where Listmonk redirects a no-JS signup (SUBSCRIBE_THANKS_URL; it must be in Listmonk's
+ * Trusted URLs). The JS path never comes here; it confirms inline.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro'
+---
+<BaseLayout title="Check your inbox" description="Confirm your email subscription.">
+  <div class="prose">
+    <h1>Almost done</h1>
+    <p>
+      Check your inbox for a confirmation email and click the link inside. You won't get any
+      posts until you do. If it doesn't arrive within a few minutes, check your spam folder.
+    </p>
+    <p><a href="/">Back to the blog</a></p>
+  </div>
+  <script is:inline>window.gtag?.('event', 'subscribe', { method: 'form' })</script>
+</BaseLayout>

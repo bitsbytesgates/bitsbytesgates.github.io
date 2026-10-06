@@ -1,0 +1,13 @@
+component dma_c {
+    action mem2mem_a {
+        rand bit[64] src_addr, dst_addr;
+        rand bit[32] size;
+        constraint c_align {
+            src_addr % 4 == 0;
+            dst_addr%4==0;
+        }
+        constraint c_size {
+            size in [64..4096];
+        }
+    }
+}

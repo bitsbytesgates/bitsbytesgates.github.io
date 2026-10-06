@@ -1,0 +1,15 @@
+---
+/** Linkable signup page, and where the footer and emails can point. */
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Subscribe from '../../components/Subscribe.astro'
+---
+<BaseLayout title="Subscribe" description="Get new Bits, Bytes, and Gates posts by email or RSS.">
+  <div class="prose">
+    <h1>Subscribe</h1>
+    <p>
+      Each new post goes out as a short email: the opening of the post and a link to the
+      rest, plus a line or two from me. No tracking pixels, and nothing else is sent to the list.
+    </p>
+    <Subscribe heading="Get new posts by email" />
+  </div>
+</BaseLayout>

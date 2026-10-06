@@ -1,0 +1,21 @@
+package dma_pkg{
+
+  buffer data_b{
+    rand bit[32]  size;
+    constraint size in [64..4096];
+  };
+
+
+  component dma_c {
+    action mem2mem_a{
+      input data_b   src;
+      output  data_b dst;
+      rand bit[64] src_addr,dst_addr;
+      constraint c_align{
+        src_addr%4==0;
+        dst_addr % 4 == 0;
+      }
+    }
+    function bit[64] chan_base( int index ){ return DMA_CH_BASE+index*DMA_CH_STRIDE; }
+  }
+}

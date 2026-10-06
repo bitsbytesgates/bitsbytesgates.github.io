@@ -1,0 +1,5 @@
+[tool.pssparser]
+version = 1
+
+[tool.pssparser.severity]
+PSS053 = "error"     # imports first: other tools reject the other order

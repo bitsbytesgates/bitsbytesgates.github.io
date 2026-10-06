@@ -1,0 +1,8 @@
+component dma_c {
+  action start_a{
+    exec body C = """
+	dma_program_chunk( 0 );
+            dma_start();   
+""";
+  }
+}

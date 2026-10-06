@@ -3,6 +3,7 @@ import type { GetStaticPaths, Page } from 'astro'
 import { getCollection } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import PostCard from '../components/PostCard.astro'
+import Subscribe from '../components/Subscribe.astro'
 import { byDateDesc, type Post } from '../lib/topics'
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
@@ -31,6 +32,7 @@ const next = slash(page.url.next)
   <ul class="card-list">
     {page.data.map((post) => <PostCard post={post} />)}
   </ul>
+  {page.currentPage === 1 && <Subscribe />}
   <nav class="pagination" aria-label="Pagination">
     {prev ? <a href={prev}>← Newer</a> : <span />}
     <span>Page {page.currentPage} of {page.lastPage}</span>

@@ -1,0 +1,12 @@
+component spi_c {
+	// pssfmt off
+	struct	spi_csr_s {
+	    bit[8]  cmd;	bit[16] addr;
+	    bit[8]  status;	bit[16] mask;
+	}
+	// pssfmt on
+
+	action  xfer_a{
+	   rand bit[16]  len;
+	}
+}

@@ -1,0 +1,26 @@
+package dma_types_pkg {
+    enum xfer_mode_e { SINGLE, BURST };
+}
+
+package dma_pkg {
+    const int MAX_LEN = 4096;
+    import dma_types_pkg::*;
+
+    component dma_c {
+        action xfer_a {
+            rand xfer_mode_e mode;
+            rand bit[32]     len;
+            constraint len <= MAX_LEN;
+        }
+
+        action burst_a {
+            rand bit[32] len;
+            dynamic constraint short_xfer { len <= 64; }
+
+            activity {
+                short_xfer;
+                do xfer_a;
+            }
+        }
+    }
+}

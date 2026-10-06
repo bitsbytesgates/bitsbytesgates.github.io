@@ -1,0 +1,13 @@
+function bit[32] words(bit[32] n, bit[8] width, bool packed) {
+    if(packed){
+        n = (n + width-1)/width;
+    }
+    else if (width==8) {
+        n = n>>2;
+    }
+    else
+    {
+        n = n*2;
+    }
+    return n;
+}

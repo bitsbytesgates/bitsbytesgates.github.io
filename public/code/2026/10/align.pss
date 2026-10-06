@@ -1,0 +1,11 @@
+component regs_c {
+    // an author-built table: three lines, columns already lined up
+    bit[8]   cmd;      // command register
+    bit[16]  addr;     // destination address
+    bit[8]   status;   // completion status
+
+    // a ragged block: nobody built a column here
+    bit[32]     ctrl;
+    bit[8]  mode;
+    bit[16]   irq_mask;
+}

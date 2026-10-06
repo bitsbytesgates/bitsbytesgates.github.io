@@ -1,0 +1,8 @@
+version = 1
+
+[severity]
+PSS053 = "error"     # imports first: other tools reject the other order
+PSS117 = "off"       # dynamic constraints stay until the 3.1 migration
+
+[warnings]
+error = true         # any other warning fails the build

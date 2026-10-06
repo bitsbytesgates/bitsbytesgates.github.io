@@ -1,0 +1,4 @@
+component dma_c {
+    function bit[32] desc_words(bit[32] nbytes, bit[8] width, bool packed, bit[32] base_addr);
+    function bit[32] chan_base(int index) { return DMA_CH_BASE + index * DMA_CH_STRIDE; }
+}
