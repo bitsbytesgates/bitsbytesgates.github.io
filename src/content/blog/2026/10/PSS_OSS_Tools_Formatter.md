@@ -4,7 +4,7 @@ date: 2026-10-06
 series: PSS in the Open
 categories: [PSS, Open Source EDAs]
 syndicate: derived
-draft: true
+draft: false
 image: /imgs/2026/10/pssfmt_banner.png
 ---
 
