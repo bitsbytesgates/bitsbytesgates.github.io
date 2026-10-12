@@ -1,0 +1,32 @@
+# Address-claim usage checks.
+# Interim form: has_flag/type_decl/derives_from (pssparser lint-core C6.8)
+# are not built yet, so the flag test is arithmetic and the type test
+# matches the claim type's path.
+pss-rules:
+  rules:
+    - id: ACME010
+      name: claim-not-rand
+      tier: suspicious
+      family: decl
+      summary: An address claim is not declared 'rand'.
+      message: >-
+        claim '${node.name.id}' is not 'rand', so it is not randomized:
+        its size, alignment and trait keep their default values
+      match: { kind: Field, inside: { kind: Action } }
+      let:
+        t: >-
+          type(node.type) == DataTypeUserDefined
+            ? decl_path(resolves_to(node.type.type_id)) : ""
+      where: >-
+        t.matches("^addr_reg_pkg::.*addr_claim_s$")
+        && (node.attr / FieldAttr.Rand) % 2 == 0
+      examples:
+        - code: |
+            import addr_reg_pkg::*;
+            component pss_top {
+              transparent_addr_space_c<> mem;
+              action my_action {
+                transparent_addr_claim_s<> claim;       // expect: ACME010
+                rand transparent_addr_claim_s<> ok;
+              }
+            }

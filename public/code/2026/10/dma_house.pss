@@ -1,0 +1,20 @@
+import addr_reg_pkg::*;
+
+struct dma_desc {
+    rand bit[32] src;
+    rand bit[32] dst;
+    rand bit[16] len;
+}
+
+component dma_engine {
+    action xfer_a {
+        rand dma_desc               desc;
+        transparent_addr_claim_s<>  buf;
+        constraint buf.size == desc.len;
+    }
+}
+
+component pss_top {
+    transparent_addr_space_c<> sys_mem;
+    dma_engine                 dma;
+}

@@ -1,0 +1,48 @@
+# ACME house naming conventions
+pss-rules:
+  defaults:
+    family: naming
+    tier: style
+    severity: warning
+
+  rules:
+    - id: ACME001
+      name: action-suffix
+      summary: Action type names end in '_a'.
+      message: "action '${node.name.id}' should end in '_a'"
+      match: { kind: Action }
+      where: "!node.name.id.endsWith('_a')"
+      report: "[node.name]"
+      examples:
+        - code: |
+            component pss_top {
+              action xfer { }      // expect: ACME001
+              action xfer_a { }
+            }
+
+    - id: ACME002
+      name: component-suffix
+      summary: Component type names end in '_c'.
+      message: "component '${node.name.id}' should end in '_c'"
+      match: { kind: Component }
+      where: >-
+        node.name.id != 'pss_top' && !node.name.id.endsWith('_c')
+      report: "[node.name]"
+      examples:
+        - code: |
+            component dma { }      // expect: ACME002
+            component dma_c { }
+            component pss_top { }
+
+    - id: ACME003
+      name: struct-suffix
+      summary: Struct type names end in '_s'.
+      message: "struct '${node.name.id}' should end in '_s'"
+      match: { kind: Struct }
+      where: "!node.name.id.endsWith('_s')"
+      report: "[node.name]"
+      examples:
+        - code: |
+            struct desc { }        // expect: ACME003
+            struct desc_s { }
+            component pss_top { }

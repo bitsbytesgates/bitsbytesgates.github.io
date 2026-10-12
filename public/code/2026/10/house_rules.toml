@@ -1,0 +1,6 @@
+# .pssparser.toml
+version = 1
+
+[lint]
+rules = ["house_naming.yaml", "memory_claims.yaml"]
+select = ["ACME"]
