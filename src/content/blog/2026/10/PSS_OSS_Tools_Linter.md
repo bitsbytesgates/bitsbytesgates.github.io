@@ -4,31 +4,13 @@ date: 2026-10-12
 series: PSS in the Open
 categories: [PSS, Open Source EDAs]
 syndicate: derived
-draft: true
+draft: false
 image: /imgs/2026/10/pss_linter_banner.png
 ---
 
 <p align="center">
 <img src="/imgs/2026/10/pss_linter_banner.png" width="660" alt="Checking beyond the LRM (Open Source PSS: lint rules as data). A rules.yaml file with match, where and examples sections goes into pssparser's C++ core, which evaluates CEL. It fans out to four places -- CLI, CI, editor and agent -- and each reports the same finding: warning ACME010 on claim 'buf'."/>
 </p>
-
-<!--
-DRAFT (2026-10-11). Every console block in this part is real output from
-pssparser built from branch lint-core-c0 (not yet released; PyPI is 3.1.7),
-run on the files in public/code/2026/10/. Regenerate with
-notes/2027/post-pss-linter/examples/run-rules.sh before publishing, against
-the release that ships the rules engine.
-
-Figures: notes/2027/post-pss-linter/imgs/make_figs.py (SVG) + export.sh (PNG).
-
-Waiting on pssparser (docs/design/linter-post-readiness-2026-10-11.md):
-- C6.8 (has_flag, type_decl, derives_from): the claim rule below is shown in
-  its target form; memory_claims.yaml on disk is the interim form that
-  produced the output. Swap the file once C6.8 lands.
-- B6: the agent-authoring skill, for the "Writing rules with an agent" section.
-- E1/E2: if the name-span default lands, drop `report:` from the naming rules;
-  if --select lands, show the command-line form beside the TOML.
--->
 
 Compilers check whether source code is legal according to the language
 reference manual (LRM). But legal isn't the same as right. A model can be
