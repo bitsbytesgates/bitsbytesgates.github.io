@@ -1,6 +1,6 @@
 ---
 title: 'Open Source PSS: Checking Beyond the LRM'
-date: 2026-10-05
+date: 2026-10-12
 series: PSS in the Open
 categories: [PSS, Open Source EDAs]
 syndicate: derived
