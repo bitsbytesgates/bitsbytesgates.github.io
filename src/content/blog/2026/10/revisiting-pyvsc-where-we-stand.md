@@ -1,11 +1,10 @@
 ---
 title: 'Revisiting PyVSC: Where we Stand'
-date: 2026-10-05
+date: 2026-10-25
 series: Revisiting PyVSC
 seriesOrder: 1
 categories: [Python DV, Constraint Solvers, PyVSC, Open Source EDAs]
 syndicate: derived
-draft: true
 image: /imgs/2026/10/pyvsc_intro_banner.png
 ---
 
