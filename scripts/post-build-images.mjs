@@ -63,7 +63,10 @@ for (const file of walk(DIST)) {
   const src = readFileSync(file, 'utf8')
   let changed = false
   let first = true
-  const out = src.replace(/<img\b([^>]*?)\s*\/?>/g, (tag, attrs) => {
+  // Attributes are matched as runs of non-quote characters or whole "..."
+  // values, so a `>` inside a quoted value (alt="kind == 7 -> len > 8") does
+  // not end the tag early and spill the rest of the alt text onto the page.
+  const out = src.replace(/<img\b((?:[^>"]|"[^"]*")*?)\s*\/?>/g, (tag, attrs) => {
     imgs++
     // The trailing slash of a self-closing <img ... /> has to come off before
     // anything is appended, or the output is `... height="351" / loading="lazy"`
@@ -118,7 +121,7 @@ for (const file of walk(DIST)) {
   // uninformative beats unnamed, and inventing alt text would be worse than both.
   let named = 0
   const out2 = out.replace(
-    /<a\b(?![^>]*\baria-label=)([^>]*?)href="(\/legacy-img\/[^"]+|\/imgs\/[^"]+)"([^>]*)>(\s*<img\b[^>]*>\s*)<\/a>/g,
+    /<a\b(?![^>]*\baria-label=)([^>]*?)href="(\/legacy-img\/[^"]+|\/imgs\/[^"]+)"([^>]*)>(\s*<img\b(?:[^>"]|"[^"]*")*>\s*)<\/a>/g,
     (m, pre, href, post, img) => {
       // Only anchors whose sole content is an image with no text alternative.
       if (/\balt="[^"]+"/.test(img)) return m
