@@ -371,9 +371,6 @@ they should be. constrainedrandom passes comfortably. I'd rather show you this
 than leave it out. Relational constraints between fields are the next thing
 we're fixing in the sampler, and this grid is going into the test suite as a
 gate.
-<!-- CONFIRM: the commitment above (fix next + grid as a CI gate) is written
-     on your behalf. Found 2026-10-11 while making the figure; vdc front-end
-     gives the same result over 30,000 draws (11/55 even, corners 5.5%/5.7%). -->
 
 ## Back to the scoreboard
 
@@ -417,10 +414,6 @@ it well:
 > verification libraries."
 
 Next time: the solver.
-
-<!-- TODO at release: install line (pip install pyvsc[dv-solve]) and the
-     version number. Until then: the work is on the mballance/dv-solve branch
-     of github.com/fvutils/pyvsc (24 commits not yet pushed as of 2026-10-11). -->
 
 ## References
 
